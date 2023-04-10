@@ -4,32 +4,40 @@ import { fetchUtils } from "@/fetch-utils";
 
 const { fetcher } = fetchUtils;
 
-type ChatCompletionResponse = {
+interface OpenAICompletionsResponse {
   id: string;
   object: string;
   created: number;
   model: string;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-  choices: Array<{
-    text: string;
-    index: number;
-    logprobs: object;
-    finish_reason: string;
-  }>;
-};
+  usage: Usage;
+  choices: Choice[];
+}
+
+interface Usage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+}
+
+interface Choice {
+  message: Message;
+  finish_reason: string;
+  index: number;
+}
+
+interface Message {
+  role: string;
+  content: string;
+}
 
 export async function fetchChatCompletion(
   prompt: string,
   debug?: boolean
-): Promise<ChatCompletionResponse> {
+): Promise<Message[]> {
   const endpoint = "https://api.openai.com/v1/chat/completions";
 
   if (debug) {
-    console.log({endpoint, prompt});
+    console.log({ endpoint, prompt });
   }
 
   const options: RequestInit = {
@@ -45,8 +53,16 @@ export async function fetchChatCompletion(
   };
 
   if (debug) {
-    console.log(options)
+    console.log(options);
   }
-    
-  return await fetcher<ChatCompletionResponse>(endpoint, options);
+
+  const response = await fetcher<OpenAICompletionsResponse>(endpoint, options);
+
+  const messages: Message[] = [];
+
+  response.choices.forEach((choice) => {
+    messages.push(choice.message);
+  });
+
+  return messages;
 }
