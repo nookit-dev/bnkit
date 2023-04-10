@@ -1,0 +1,11 @@
+{
+  "name": "openai-test",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run ./index.ts --watch "
+  },
+  "devDependencies": {
+    "bun-types": "^0.5.0"
+  }
+}
