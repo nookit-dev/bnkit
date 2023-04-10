@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "cli-utils",
   "module": "index.ts",
   "type": "module",
   "devDependencies": {

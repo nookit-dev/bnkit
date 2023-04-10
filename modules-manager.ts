@@ -3,6 +3,29 @@ import path from "path";
 
 const srcPath = path.join(__dirname, "modules");
 
+function formatModuleName(moduleName: string): string {
+  return moduleName
+    .split("-")
+    .map((word, index) =>
+      index > 0 ? word[0].toUpperCase() + word.slice(1) : word
+    )
+    .join("");
+}
+
+function updateIndexExports(modules: string[]) {
+  const indexFilePath = path.join(srcPath, "index.ts");
+  const exportsContent = modules
+    .map((moduleName) => {
+      const exportName = moduleName.replace(/[-_](.)/g, (_, letter) =>
+        letter.toUpperCase()
+      );
+      return `export * as ${exportName} from './${moduleName}';`;
+    })
+    .join("\n");
+
+  createFileWithContent(indexFilePath, exportsContent);
+}
+
 // Ensure a directory exists by creating it if it doesn't
 function ensureDirectoryExists(directoryPath: string) {
   fs.mkdirSync(directoryPath, { recursive: true });
@@ -45,17 +68,38 @@ function isDefaultModule(modulePath: string, moduleName: string) {
   const indexFilePath = path.join(modulePath, "index.ts");
   const readmeFilePath = path.join(modulePath, "README.md");
 
+  if (!fs.existsSync(modulePath)) {
+    return true;
+  }
+
+  // Check if the module directory is empty
+  const directoryContents = fs.readdirSync(modulePath);
+  if (directoryContents.length === 0) {
+    return true;
+  }
+
+  // Check if the module has default content
   return (
-    !fs.existsSync(modulePath) ||
-    (fs.readFileSync(indexFilePath, "utf-8") === "" &&
-      fs.readFileSync(readmeFilePath, "utf-8") === `# ${moduleName}\n`)
+    fs.existsSync(indexFilePath) &&
+    fs.existsSync(readmeFilePath) &&
+    fs.readFileSync(indexFilePath, "utf-8") === "" &&
+    fs.readFileSync(readmeFilePath, "utf-8") === `# ${moduleName}\n`
   );
 }
 
 // Create or overwrite a module by scaffolding its directory, index.ts, README.md, test directory, moduleName.test.ts, and package.json
 function scaffoldModule(moduleName: string, modulePath: string) {
+  // Create module directory, index.ts, README.md, and test directory with moduleName.test.ts
   ensureDirectoryExists(modulePath);
-  createFileWithContent(path.join(modulePath, "index.ts"), "");
+
+  const formattedModuleName = formatModuleName(moduleName);
+
+  // Add a named export to the index.ts file for each module
+  createFileWithContent(
+    path.join(modulePath, "index.ts"),
+    `export const ${formattedModuleName} = {};\n`
+  );
+
   createFileWithContent(
     path.join(modulePath, "README.md"),
     `# ${moduleName}\n`
@@ -100,6 +144,9 @@ modules.forEach((moduleName) => {
     results.skipped.push(moduleName);
   }
 });
+
+// Update modules/index.ts with proper exports
+updateIndexExports(modules);
 
 console.log(`Created modules: ${results.created.join(", ")}`);
 console.log(`Overwritten modules: ${results.overwritten.join(", ")}`);
