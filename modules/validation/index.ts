@@ -1,4 +1,4 @@
-import { InferType, TypeMap } from "../type-inference";
+import { InferType, TypeMap } from "modules/types";
 
 // Simple type validation schema
 const fruitSchema = {

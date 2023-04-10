@@ -1,0 +1,106 @@
+import fs from "fs";
+import path from "path";
+
+const srcPath = path.join(__dirname, "modules");
+
+// Ensure a directory exists by creating it if it doesn't
+function ensureDirectoryExists(directoryPath: string) {
+  fs.mkdirSync(directoryPath, { recursive: true });
+}
+
+// Create a file with the specified content
+function createFileWithContent(filePath: string, content: string) {
+  fs.writeFileSync(filePath, content);
+}
+
+// Create a package.json file in the specified modulePath with the specified moduleName
+function createPackageJson(modulePath: string, moduleName: string) {
+  createFileWithContent(
+    path.join(modulePath, "package.json"),
+    JSON.stringify(
+      {
+        name: moduleName,
+        module: "index.ts",
+        type: "module",
+        devDependencies: {
+          "bun-types": "^0.5.0",
+        },
+      },
+      null,
+      2
+    )
+  );
+}
+
+// Get module names by reading the directory names in the specified directoryPath
+function getModulesFromPath(directoryPath: string) {
+  return fs
+    .readdirSync(directoryPath, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+}
+
+// Check if a module has default content (empty index.ts file and a README.md with just the module name)
+function isDefaultModule(modulePath: string, moduleName: string) {
+  const indexFilePath = path.join(modulePath, "index.ts");
+  const readmeFilePath = path.join(modulePath, "README.md");
+
+  return (
+    !fs.existsSync(modulePath) ||
+    (fs.readFileSync(indexFilePath, "utf-8") === "" &&
+      fs.readFileSync(readmeFilePath, "utf-8") === `# ${moduleName}\n`)
+  );
+}
+
+// Create or overwrite a module by scaffolding its directory, index.ts, README.md, test directory, moduleName.test.ts, and package.json
+function scaffoldModule(moduleName: string, modulePath: string) {
+  ensureDirectoryExists(modulePath);
+  createFileWithContent(path.join(modulePath, "index.ts"), "");
+  createFileWithContent(
+    path.join(modulePath, "README.md"),
+    `# ${moduleName}\n`
+  );
+
+  const testPath = path.join(modulePath, "test");
+  ensureDirectoryExists(testPath);
+  createFileWithContent(path.join(testPath, `${moduleName}.test.ts`), "");
+
+  createPackageJson(modulePath, moduleName);
+}
+
+// Ensure the project directory exists
+ensureDirectoryExists(srcPath);
+
+// Create main entry file
+createFileWithContent(path.join(srcPath, "index.ts"), "");
+
+// Read module directories from ./modules
+const modules = getModulesFromPath(srcPath);
+
+const results: Record<string, string[]> = {
+  created: [],
+  overwritten: [],
+  skipped: [],
+};
+
+// Process each module
+modules.forEach((moduleName) => {
+  const modulePath = path.join(srcPath, moduleName);
+
+  // Check if the module has default content or doesn't exist
+  if (isDefaultModule(modulePath, moduleName)) {
+    const isNew = !fs.existsSync(modulePath);
+    isNew
+      ? results.created.push(moduleName)
+      : results.overwritten.push(moduleName);
+
+    // Scaffold the module
+    scaffoldModule(moduleName, modulePath);
+  } else {
+    results.skipped.push(moduleName);
+  }
+});
+
+console.log(`Created modules: ${results.created.join(", ")}`);
+console.log(`Overwritten modules: ${results.overwritten.join(", ")}`);
+console.log(`Skipped modules: ${results.skipped.join(", ")}`);
