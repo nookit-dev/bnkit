@@ -39,7 +39,7 @@ async function ensureDirectoryExists(directoryPath: string) {
   try {
     await Bun.write(directoryPath, "");
   } catch (error) {
-    console.error(`Failed to ensure directory exists: ${error}`);
+    throw error
   }
 }
 
@@ -48,7 +48,8 @@ async function createFileWithContent(filePath: string, content: string) {
   try {
     await Bun.write(filePath, content);
   } catch (error) {
-    console.error(`Failed to create file with content: ${error}`);
+    throw error
+    
   }
 }
 
@@ -71,6 +72,7 @@ async function createPackageJson(modulePath: string, moduleName: string) {
   );
 }
 
+// Get module names by reading the directory names in the specified directoryPath
 // Get module names by reading the directory names in the specified directoryPath
 async function getModulesFromPath(directoryPath: string) {
   const directory = Bun.file(directoryPath);
