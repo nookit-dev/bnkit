@@ -1,9 +1,19 @@
-
 // RUN THIS FILE WHEN CREATING A NEW MODULE
 import fs from "fs";
 import path from "path";
 
 const srcPath = path.join(__dirname, "modules");
+
+function generateModuleNamesType(moduleNames: string[]): void {
+  const typeFilePath = path.join(srcPath, "generated", "module-names.ts");
+  ensureDirectoryExists(path.dirname(typeFilePath));
+
+  const typeContent = `// Auto-generated file. Do not edit directly.
+export type ModuleName = ${moduleNames.map((name) => `'${name}'`).join(" | ")};
+`;
+
+  createFileWithContent(typeFilePath, typeContent);
+}
 
 function formatModuleName(moduleName: string): string {
   return moduleName
@@ -149,6 +159,9 @@ modules.forEach((moduleName) => {
 
 // Update modules/index.ts with proper exports
 updateIndexExports(modules);
+
+// Generate a TypeScript file with a union type containing all module names
+generateModuleNamesType(modules);
 
 console.log(`Created modules: ${results.created.join(", ")}`);
 console.log(`Overwritten modules: ${results.overwritten.join(", ")}`);
