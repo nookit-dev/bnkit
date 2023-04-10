@@ -73,3 +73,17 @@ Project Motivation
 ------------------
 
 The motivation behind this project is to improve development processes and learn more about Bun.
+
+Install in your bun app
+
+```bash
+bun add https://github.com/brandon-schabel/instant-bun
+```
+
+
+then import into your module
+
+
+```jsx
+import {  } from 'instant-bun'
+```

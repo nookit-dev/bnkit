@@ -1,9 +1,10 @@
-// Utility type to infer TypeScript types from the schema
-export type TypeInference<T extends Record<string, keyof TypeMapping>> = {
-  [K in keyof T]: TypeMapping[T[K]];
-};
+// export type utils
+export { infer } from "./type-inference-utils";
+// export types
+export type {
+  SchemaType,
+  TypeInference,
+  ValidationResult
+} from "./type-inference-utils";
 
-export type TypeMapping = {
-  string: string;
-  number: number;
-};
+

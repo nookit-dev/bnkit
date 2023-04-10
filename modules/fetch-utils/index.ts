@@ -42,7 +42,3 @@ export async function fetcher<T>(
     throw error;
   }
 }
-
-export const fetchUtils = {
-  fetcher,
-};

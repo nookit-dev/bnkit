@@ -1,8 +1,6 @@
 const OPENAI_API_KEY = Bun.env.OPENAI_API_KEY;
 
-import { fetchUtils } from "@/fetch-utils";
-
-const { fetcher } = fetchUtils;
+import { fetcher } from "@/fetch-utils";
 
 interface OpenAICompletionsResponse {
   id: string;

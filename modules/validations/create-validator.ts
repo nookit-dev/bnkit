@@ -1,18 +1,6 @@
-import { TypeInference, TypeMapping } from "@/types";
+import { TypeInference } from "@/types";
 
-type ValidationResult<Schema extends Record<string, keyof TypeMapping>> = {
-  error?: string;
-  data?: TypeInference<Schema>[];
-};
-
-type SchemaType = Record<string, keyof TypeMapping>;
-
-// Validator function
 export function createValidator<Schema extends SchemaType>(schema: Schema) {
-  function infer(data?: unknown): TypeInference<Schema> {
-    return data as TypeInference<Schema>;
-  }
-
   function validateItem(
     schema: Schema,
     item: unknown
@@ -56,6 +44,5 @@ export function createValidator<Schema extends SchemaType>(schema: Schema) {
 
   return {
     validate,
-    infer,
   };
 }
