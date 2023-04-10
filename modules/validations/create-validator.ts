@@ -1,54 +1,61 @@
-import { InferType, TypeMap } from "@/types";
+import { TypeInference, TypeMapping } from "@/types";
 
-// to be used in tests
-// Simple type validation schema
-const fruitSchema = {
-  name: "string",
-  calories: "number",
-  fatsGrams: "number",
-  proteinsGrams: "number",
-} as const;
+type ValidationResult<Schema extends Record<string, keyof TypeMapping>> = {
+  error?: string;
+  data?: TypeInference<Schema>[];
+};
 
-export type FruitType = InferType<SchemaType>;
-type SchemaType = typeof fruitSchema;
+type SchemaType = Record<string, keyof TypeMapping>;
 
 // Validator function
-export function createValidator<T extends Record<string, keyof TypeMap>>(
-  schema: T
-) {
-  return function validate(data: unknown[]): {
-    error?: string;
-    data?: InferType<T>[];
-  } {
-    for (const item of data) {
-      if (typeof item !== "object" || item === null) {
-        return { error: "Data item is not an object" };
-      }
-      for (const key in schema) {
-        if (
-          !Object.prototype.hasOwnProperty.call(item, key) ||
-          typeof item[key] !== schema[key]
-        ) {
-          return { error: `Invalid data type for ${key}` };
-        }
-      }
+export function createValidator<Schema extends SchemaType>(schema: Schema) {
+  function infer(data?: unknown): TypeInference<Schema> {
+    return data as TypeInference<Schema>;
+  }
+
+  function validateItem(
+    schema: Schema,
+    item: unknown
+  ): TypeInference<Schema> | { error: string } {
+    if (typeof item !== "object" || item === null) {
+      return { error: "Data item is not an object" };
     }
-    return { data: data as InferType<T>[] };
+
+    const validatedItem: TypeInference<Schema> = {} as TypeInference<Schema>;
+
+    const isValid = Object.keys(schema).every((key) => {
+      const expectedType = schema[key];
+      const actualType = typeof item[key];
+
+      if (actualType !== expectedType) {
+        return false;
+      }
+
+      validatedItem[key] = item[key] as TypeInference<Schema>[keyof Schema];
+      return true;
+    });
+
+    if (!isValid) {
+      return { error: "Invalid data type" };
+    }
+
+    return validatedItem;
+  }
+
+  function validate(schema: Schema, data: unknown[]): ValidationResult<Schema> {
+    const validatedData = data.map((item) => validateItem(schema, item));
+
+    const invalidItem = validatedData.find((item) => !!item.error);
+
+    if (invalidItem) {
+      return { error: invalidItem.error };
+    }
+
+    return { data: validatedData as TypeInference<Schema>[] };
+  }
+
+  return {
+    validate,
+    infer,
   };
 }
-
-// Usage
-// const validateUserApiResponse = createValidator(fruitSchema);
-// const parsedJson = JSON.parse(chatGptMockFruitPrompt.response);
-
-// console.log({ data: parsedJson });
-
-// const validatedResponse = validateUserApiResponse(parsedJson);
-
-// if (validatedResponse.error) {
-//   console.error(validatedResponse.error);
-// } else {
-//   validatedResponse.data.forEach((fruit: FruitType) => {
-//     console.log(fruit.name);
-//   });
-// }
