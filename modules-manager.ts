@@ -1,9 +1,10 @@
-// RUN THIS FILE WHEN CREATING A NEW MODULE
 import fs from "fs";
 import path from "path";
 
+// Set the source path for modules
 const srcPath = path.join(__dirname, "modules");
 
+// Generate a TypeScript file with a union type containing all module names
 function generateModuleNamesType(moduleNames: string[]): void {
   const typeFilePath = path.join(srcPath, "generated", "module-names.ts");
   ensureDirectoryExists(path.dirname(typeFilePath));
@@ -15,6 +16,7 @@ export type ModuleName = ${moduleNames.map((name) => `'${name}'`).join(" | ")};
   createFileWithContent(typeFilePath, typeContent);
 }
 
+// Format module names by capitalizing the first letter of each word (except the first one)
 function formatModuleName(moduleName: string): string {
   return moduleName
     .split("-")
@@ -24,6 +26,7 @@ function formatModuleName(moduleName: string): string {
     .join("");
 }
 
+// Update the main index file to export all modules
 function updateIndexExports(modules: string[]) {
   const indexFilePath = path.join(srcPath, "index.ts");
   const exportsContent = modules
