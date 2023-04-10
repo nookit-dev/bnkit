@@ -85,5 +85,9 @@ then import into your module
 
 
 ```jsx
-import {  } from 'instant-bun'
+import { fetchUtils } from 'instant-bun'
 ```
+
+watch tests
+`bun --watch test`
+

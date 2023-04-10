@@ -12,8 +12,6 @@ const fruitDataResponseSchema = {
   proteinsGrams: "number",
 } as const;
 
-console.log(beGpt);
-
 const result = await fetchChatCompletion(`
 2 foods that are roughly 200 calories each
 Return Data as JSON format, below is expected JSON format. The keys are the field names and the value is the expect type of that field::
@@ -30,9 +28,6 @@ Return Data as JSON format, below is expected JSON format. The keys are the fiel
 console.log({ result });
 
 result.forEach((message) => {
-  console.log({ message });
   const { content } = message;
-  console.log({ content });
   const parsedContent = JSON.parse(content);
-  console.log({ parsedContent });
 });

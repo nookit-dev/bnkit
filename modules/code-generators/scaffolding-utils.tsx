@@ -1,8 +1,9 @@
-import Bun from "bun";
+import fs from "fs";
+import path from "path";
 
-function generateModuleNamesType(moduleNames: string[]): void {
-  const typeFilePath = "modules/generated/module-names.ts";
-  ensureDirectoryExists("modules/generated");
+export function generateModuleNamesType(srcPath: string, moduleNames: string[]): void {
+  const typeFilePath = path.join(srcPath, "generated", "module-names.ts");
+  ensureDirectoryExists(path.dirname(typeFilePath));
 
   const typeContent = `// Auto-generated file. Do not edit directly.
 export type ModuleName = ${moduleNames.map((name) => `'${name}'`).join(" | ")};
@@ -11,7 +12,7 @@ export type ModuleName = ${moduleNames.map((name) => `'${name}'`).join(" | ")};
   createFileWithContent(typeFilePath, typeContent);
 }
 
-function formatModuleName(moduleName: string): string {
+export function formatModuleName(moduleName: string): string {
   return moduleName
     .split("-")
     .map((word, index) =>
@@ -20,8 +21,8 @@ function formatModuleName(moduleName: string): string {
     .join("");
 }
 
-function updateIndexExports(modules: string[]) {
-  const indexFilePath = "modules/index.ts";
+export function updateIndexExports(srcPath: string, modules: string[]) {
+  const indexFilePath = path.join(srcPath, "index.ts");
   const exportsContent = modules
     .map((moduleName) => {
       const exportName = moduleName.replace(/[-_](.)/g, (_, letter) =>
@@ -35,28 +36,19 @@ function updateIndexExports(modules: string[]) {
 }
 
 // Ensure a directory exists by creating it if it doesn't
-async function ensureDirectoryExists(directoryPath: string) {
-  try {
-    await Bun.write(directoryPath, "");
-  } catch (error) {
-    throw error
-  }
+export function ensureDirectoryExists(directoryPath: string) {
+  fs.mkdirSync(directoryPath, { recursive: true });
 }
 
 // Create a file with the specified content
-async function createFileWithContent(filePath: string, content: string) {
-  try {
-    await Bun.write(filePath, content);
-  } catch (error) {
-    throw error
-    
-  }
+export function createFileWithContent(filePath: string, content: string) {
+  fs.writeFileSync(filePath, content);
 }
 
 // Create a package.json file in the specified modulePath with the specified moduleName
-async function createPackageJson(modulePath: string, moduleName: string) {
-  await createFileWithContent(
-    `${modulePath}/package.json`,
+export function createPackageJson(modulePath: string, moduleName: string) {
+  createFileWithContent(
+    path.join(modulePath, "package.json"),
     JSON.stringify(
       {
         name: moduleName,
@@ -73,63 +65,58 @@ async function createPackageJson(modulePath: string, moduleName: string) {
 }
 
 // Get module names by reading the directory names in the specified directoryPath
-// Get module names by reading the directory names in the specified directoryPath
-async function getModulesFromPath(directoryPath: string) {
-  const directory = Bun.file(directoryPath);
-  const directoryContents = await directory.text();
-  return directoryContents
-    .split("\n")
-    .filter((line) => line && !line.endsWith("."))
-    .map((line) => line.trim());
+export function getModulesFromPath(directoryPath: string) {
+  return fs
+    .readdirSync(directoryPath, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
 }
 
 // Check if a module has default content (empty index.ts file and a README.md with just the module name)
-async function isDefaultModule(modulePath: string, moduleName: string) {
-  const indexFilePath = `${modulePath}/index.ts`;
-  const readmeFilePath = `${modulePath}/README.md`;
+export function isDefaultModule(modulePath: string, moduleName: string) {
+  const indexFilePath = path.join(modulePath, "index.ts");
+  const readmeFilePath = path.join(modulePath, "README.md");
 
-  const indexFile = Bun.file(indexFilePath);
-  const readmeFile = Bun.file(readmeFilePath);
-
-  if (indexFile.size === 0 && readmeFile.size === 0) {
+  if (!fs.existsSync(modulePath)) {
     return true;
   }
 
-  const indexContent = await indexFile.text();
-  const readmeContent = await readmeFile.text();
+  // Check if the module directory is empty
+  const directoryContents = fs.readdirSync(modulePath);
+  if (directoryContents.length === 0) {
+    return true;
+  }
 
-  return indexContent === "" && readmeContent === `# ${moduleName}\n`;
+  // Check if the module has default content
+  return (
+    fs.existsSync(indexFilePath) &&
+    fs.existsSync(readmeFilePath) &&
+    fs.readFileSync(indexFilePath, "utf-8") === "" &&
+    fs.readFileSync(readmeFilePath, "utf-8") === `# ${moduleName}\n`
+  );
 }
+
 // Create or overwrite a module by scaffolding its directory, index.ts, README.md, test directory, moduleName.test.ts, and package.json
-async function scaffoldModule(moduleName: string, modulePath: string) {
+export function scaffoldModule(moduleName: string, modulePath: string) {
   // Create module directory, index.ts, README.md, and test directory with moduleName.test.ts
-  await ensureDirectoryExists(modulePath);
+  ensureDirectoryExists(modulePath);
 
   const formattedModuleName = formatModuleName(moduleName);
 
   // Add a named export to the index.ts file for each module
-  await createFileWithContent(
-    `${modulePath}/index.ts`,
+  createFileWithContent(
+    path.join(modulePath, "index.ts"),
     `export const ${formattedModuleName} = {};\n`
   );
 
-  await createFileWithContent(`${modulePath}/README.md`, `# ${moduleName}\n`);
+  createFileWithContent(
+    path.join(modulePath, "README.md"),
+    `# ${moduleName}\n`
+  );
 
-  const testPath = `${modulePath}/test`;
-  await ensureDirectoryExists(testPath);
-  await createFileWithContent(`${testPath}/${moduleName}.test.ts`, "");
+  const testPath = path.join(modulePath, "test");
+  ensureDirectoryExists(testPath);
+  createFileWithContent(path.join(testPath, `${moduleName}.test.ts`), "");
 
-  await createPackageJson(modulePath, moduleName);
+  createPackageJson(modulePath, moduleName);
 }
-
-export {
-  ensureDirectoryExists,
-  createFileWithContent,
-  getModulesFromPath,
-  isDefaultModule,
-  scaffoldModule,
-  updateIndexExports,
-  generateModuleNamesType,
-  formatModuleName,
-  createPackageJson,
-};
