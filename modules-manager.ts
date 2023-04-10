@@ -1,3 +1,5 @@
+
+// RUN THIS FILE WHEN CREATING A NEW MODULE
 import fs from "fs";
 import path from "path";
 

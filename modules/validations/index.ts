@@ -1,1 +1,1 @@
-export const validations = {};
+export { createValidator } from "./create-validator";

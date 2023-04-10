@@ -1,5 +1,9 @@
 {
-  "name": "no-dependency-app",
+  "scripts": {
+    "modules-manager": "bun ./modules-manager.ts"
+  },
+  "name": "instant-bun",
+  "version": "0.0.1",
   "module": "index.ts",
   "type": "module",
   "devDependencies": {

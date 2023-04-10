@@ -1,3 +1,4 @@
+export * as gptInterface from './gpt-interface';
 export * as types from './types';
 export * as fetcher from './fetcher';
 export * as sqliteInterface from './sqlite-interface';

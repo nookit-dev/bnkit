@@ -17,7 +17,7 @@
     "baseUrl": ".",
     // type alias packages
     "paths": {
-      "@/*": ["oldModules/modules/*"]
+      "@*": ["modules/*"]
     }
   }
 }

@@ -1,70 +1,75 @@
-Using this library
-Right now it own supports bun becuase this project will not rely on any external dependecies 
+Project Overview
+================
 
+Introduction
+------------
 
+This project aims to build a fast, dependency-less app using the following technologies:
 
+-   Bun
+-   TypeScript
+-   SQLite
+-   ChatGPT
+-   Formatting/Link tools (optional: Prettier)
 
+The goal is to create an app and system for projects without relying on numerous external dependencies.
 
+Getting Started
+---------------
 
-# no-dependency-app
+### Installation and Running
 
-To install dependencies:
+To install dependencies, run:
 
-```bash
-bun install
-```
+bashCopy code
 
-To run:
+`bun install`
 
-```bash
-bun run index.ts
-```
+To start the project, run:
 
-This project was created using `bun init` in bun v0.5.9. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+bashCopy code
 
+`bun run index.ts`
 
+This project was initialized using `bun init` in bun v0.5.9. [Bun](https://bun.sh/) is a fast all-in-one JavaScript runtime.
 
-Create a render to webpage function
+### Project Goal
 
+Build a fully function typsafe safe full stack web app with this technology stack, focusing on ease of use and quick response times. The frontend will be mostly static, but there may be ways to load CSS files and other assets. Maybe even SSR?? Fingers crossed
 
-Hard limitations are I can only use:
-- Bun
-- TypeScript
-- Sqlite
-- Chatgpt for advice
-- Formatting/Link tools(but if anything maybe just add like prettier to the package.json config or something)
-- Since bun is fully compatible with node using chatgpt is a good way to generate scripts, cause they can still be ran with bun, use this to make generators
+Limitations and Dependencies
+----------------------------
 
-Bun is my only dependency, there nothing else can slow me down or stop me, build everything from scratch in a reusable way, If something becomes overly complicated, build a new version,
+The project has the following limitations:
 
-Learn bun, understand bun, and contribute to bun?
+-   Only Bun can be used as a dependency.
+-   Everything should be built from scratch in a reusable way.
+-   If something becomes overly complicated, create a new version.
+-   Focus on learning and contributing to Bun.
 
-Initially these apps aren’t mean to look pretty, but be so fast at responding, everything is instantious
+Nice to Haves
+------------
 
+-   A Hot Module Replacement (HMR) style feature to reload the app whenever there's a change.
 
-# GOAL
-Build dream pop stack app with this stack, build ease of use of dream pop into this dependency-less app. (The frontend will be very static) but there might be ways of loading in css files and things like that
+Project Structure and Ideas
+---------------------------
 
-I want to build an app and system  that I can use for projects, and not have to worry about so many external dependencies moving around
+Each idea should be its own module within the project. Modules should be modular, unit testable, and only export things that are worth using outside the module. They should be able to operate independently and may depend on each other. Maintain a flat hierarchy within modules.
 
-# Nice to have would be a HMR style thing that would reload the app whenever there is a change — not sure how far the watch command goes
+### Modules
 
-# Ideas
-Every idea is it’s own module within the project
-Within each module everything should be very modular and unit testable, and only export things that are worth using outside the module
-Each module should be able to be operated independently, they may depend on each other, but all build on each other and uses no external dependencies, it is a flat hierarchy, and then each module should have a fairly flat hierarchy as well
-- Type inference will be it’s own module
-- validation will be it’s own module (inference + validation = zod)
-- Data fetching will be it’s own module (inference + validation + api)
-- WebPage Render 
-- Server Module ( in a response would return webpage rendrer for example)
-- Server Route Module(for getting all the server routes)
-- Start.ts or index.ts will start the web server
-- Eventually using all the above utilities, build  beautiful-gpt tool in pure bun
+- cli-utils
+- fetcher
+- sqlite-interface
+- types
+- validations
+- web-page-render
+### Note
 
-# note to self separate api routes by /api
-For the web server
-And then basically anything else can be page routes, 
+-   Separate API routes by `/api` for the web server. Anything else can be considered page routes.
 
+Project Motivation
+------------------
 
-
+The motivation behind this project is to improve development processes and learn more about Bun.
