@@ -31,10 +31,7 @@ Some features of this project I have or will implement, in no particular order:
 - Types and TypeSafety through TypeScript type inferencing
 - Validation utilities(STARTED - IN PROGRESS)
 - Web Page Rendering utilities(NOT STARTED)
-- Web Server utilities(NOT START)
-
-Note: WIP = Work in Progress, TODO = To Do
-
+- Web Server utilities(NOT STARTED)
 
 Getting Started
 ---------------
