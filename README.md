@@ -10,11 +10,15 @@ Introduction
 ![Untitled-2022-09-19-0838](https://user-images.githubusercontent.com/18100375/231221346-0543dacd-9704-4bd5-8488-8fb19160eda4.png)
 
 
+
 Ever had a brilliant idea but felt overwhelmed by the countless options and dependencies? Worry no more! Introducing Instant Bun, your sleek and simplified solution for indie hacker apps.
 Say goodbye to the cumbersome stacks of large companies, and hello to a toolkit designed to deliver lightning-fast experiences in your app. Built with hobbyists at heart, Instant Bun streamlines project building, putting the excitement and joy back into programming. 
 Dive into a world where every design choice fuels your creative endeavors, and let the fun begin!
 
 The goal will always to be building this toolkit with no extra dependencies so your apps stay lean and fast, just Bun itself
+
+This is a literally a toolkit to develop servers, dcentralized networks, developer tools, custom raspberry pi software, realtime software. Use tiny direct bun source code modules to solve your problem.
+
 
 Some features of this project I have or will implement, in no particular order:
 - A CLI tool to create a new project (NOT STARTED)
@@ -93,10 +97,29 @@ Project Motivation
 The motivation behind this project is to improve development processes and learn more about Bun.
 
 
-
 # Usage Details
-Install in your bun app
+If you don't have bun installed run:
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
 
+
+
+ceate a new directory and cd into it :
+
+
+```bash
+mkdir playground && cd playground
+```
+
+
+init bun project
+```bash
+bun init 
+```
+
+
+Install instant-bun in your bun app, 
 ```bash
 bun add https://github.com/brandon-schabel/instant-bun
 ```
@@ -105,13 +128,18 @@ Why would I add the repo directly you might ask?
 Because you use the source code directly, every commit is a new version, and you can use whatever version 
 of each module that you want.
 
+You can even use a single module directly
+
 
 then import into your module
 
-
+## more example to come but you have direct add to the source code
+the below imports 
 ```jsx
 import { fetchUtils } from 'instant-bun'
 ```
+
+
 
 watch tests
 `bun --watch test`
