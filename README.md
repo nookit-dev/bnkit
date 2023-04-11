@@ -4,6 +4,7 @@ Project Overview
 Introduction
 ------------
 
+![brandonschabel_simple_flat_geometric_multi_color_modern_logo_bu_a6489642-e13f-48c8-a342-746f9f698143](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
 
 
 Ever had a brilliant idea but felt overwhelmed by the countless options and dependencies? Worry no more! Introducing Instant Bun, your sleek and simplified solution for indie hacker apps.
@@ -13,7 +14,7 @@ Dive into a world where every design choice fuels your creative endeavors, and l
 The goal will always to be building this toolkit with no extra dependencies so your apps stay lean and fast, just Bun itself
 
 Some features of this project I have or will implement, in no particular order:
--  A CLI tool to create a new project (NOT STARTED)
+- A CLI tool to create a new project (NOT STARTED)
 - Code generators (STARTED - IN PROGRESS)
 - Error handling (STARTED - IN PROGRESS)n            
 - Data Fetching utilities (STARTED - IN PROGRESS)
@@ -25,6 +26,7 @@ Some features of this project I have or will implement, in no particular order:
 - Validation utilities(STARTED - IN PROGRESS)
 - Web Page Rendering utilities(NOT STARTED)
 - Web Server utilities(NOT STARTED)
+- Audio handling(Not STARTED)
 
 Getting Started
 ---------------
