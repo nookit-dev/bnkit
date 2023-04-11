@@ -15,7 +15,7 @@ The goal will always to be building this toolkit with no extra dependencies so y
 Some features of this project I have or will implement, in no particular order:
 -  A CLI tool to create a new project (NOT STARTED)
 - Code generators (STARTED - IN PROGRESS)
-- Error handling (STARTED - IN PROGRESS)
+- Error handling (STARTED - IN PROGRESS)n            
 - Data Fetching utilities (STARTED - IN PROGRESS)
 - Files and Directory utilities (STARTED - IN PROGRESS)
 - GPT Prompt Generators (STARTED - IN PROGRESS)
@@ -31,15 +31,11 @@ Getting Started
 
 ### Installation and Running
 
-To install dependencies, run:
-
-bashCopy code
+To install dependencies (it's literally just bun type typescript types don't worry, it would work without but this is what makes the typescript magic work), run:
 
 `bun install`
 
 To start the project, run:
-
-bashCopy code
 
 `bun run index.ts`
 
@@ -71,12 +67,21 @@ Each idea should be its own module within the project. Modules should be modular
 
 ### Modules
 
-- cli-utils
-- fetcher
-- sqlite-interface
-- types
-- validations
-- web-page-render
+- generated
+- html-formatter 
+- markdown-to-html 
+- error-handling 
+- types 
+- files-folders 
+- sqlite-interface 
+- gpt-utils 
+- validations 
+- templating-engine 
+- fetch-utils 
+- code-generators 
+- scripts 
+- web-page-render 
+- cli-utils'
 ### Note
 
 -   Separate API routes by `/api` for the web server. Anything else can be considered page routes.

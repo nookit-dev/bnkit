@@ -1,8 +1,10 @@
 export * as generated from './generated';
+export * as jwt from './jwt';
 export * as htmlFormatter from './html-formatter';
 export * as markdownToHtml from './markdown-to-html';
 export * as errorHandling from './error-handling';
 export * as types from './types';
+export * as sessionManager from './session-manager';
 export * as filesFolders from './files-folders';
 export * as sqliteInterface from './sqlite-interface';
 export * as gptUtils from './gpt-utils';
