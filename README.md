@@ -10,8 +10,6 @@ Introduction
 ![Untitled-2022-09-19-0838](https://user-images.githubusercontent.com/18100375/231221346-0543dacd-9704-4bd5-8488-8fb19160eda4.png)
 
 
-
-
 Ever had a brilliant idea but felt overwhelmed by the countless options and dependencies? Worry no more! Introducing Instant Bun, your sleek and simplified solution for indie hacker apps.
 Say goodbye to the cumbersome stacks of large companies, and hello to a toolkit designed to deliver lightning-fast experiences in your app. Built with hobbyists at heart, Instant Bun streamlines project building, putting the excitement and joy back into programming. 
 Dive into a world where every design choice fuels your creative endeavors, and let the fun begin!
@@ -33,7 +31,7 @@ Some features of this project I have or will implement, in no particular order:
 - Web Server utilities(NOT STARTED)
 - Audio handling(Not STARTED)
 
-Getting Started
+Getting Started 
 ---------------
 
 ### Installation and Running
@@ -62,10 +60,6 @@ The project has the following limitations:
 -   If something becomes overly complicated, create a new version.
 -   Focus on learning and contributing to Bun.
 
-Nice to Haves
-------------
-
--   A Hot Module Replacement (HMR) style feature to reload the app whenever there's a change.
 
 Project Structure and Ideas
 ---------------------------
@@ -98,11 +92,18 @@ Project Motivation
 
 The motivation behind this project is to improve development processes and learn more about Bun.
 
+
+
+# Usage Details
 Install in your bun app
 
 ```bash
 bun add https://github.com/brandon-schabel/instant-bun
 ```
+
+Why would I add the repo directly you might ask?
+Because you use the source code directly, every commit is a new version, and you can use whatever version 
+of each module that you want.
 
 
 then import into your module
