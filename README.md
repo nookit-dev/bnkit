@@ -128,19 +128,27 @@ Why would I add the repo directly you might ask?
 Because you use the source code directly, every commit is a new version, and you can use whatever version 
 of each module that you want.
 
-You can even use a single module directly
 
 
 then import into your module
-
-## more example to come but you have direct add to the source code
-the below imports 
 ```jsx
 import { fetchUtils } from 'instant-bun'
 ```
 
+You can even use a single module directly
+
+```
+bun add https://github.com/brandon-schabel/instant-bun/tree/main/modules/sqlite-interface
+```
+
+you'll have node modules which will contain the source code directly to instant-bun
+
+Fork the project and you can even start making your own versions of each module. Do whatever you want, everything is highly modular.
 
 
 watch tests
 `bun --watch test`
+
+
+I will move unnesssary things out of the source code as the project matures, my goal is to simplify constantly. 
 
