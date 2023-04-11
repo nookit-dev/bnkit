@@ -4,7 +4,7 @@
   "description": "",
   "module": "index.ts",
   "scripts": {
-    "modules-manager": "bun ./script/modules-manager.ts",
+    "modules-scaffold": "bun ./modules-scaffold.ts",
     "beautiful-gpt": "bun ./apps/beautiful-gpt/index.ts"
   },
   "author": "Brandon Schabel <codersoutpost@gmail.com> (https://codersoutpost.com)",
