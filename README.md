@@ -4,6 +4,11 @@ Project Overview
 Introduction
 ------------
 
+
+
+Ever had a brilliant idea but felt overwhelmed by the countless options and dependencies? Worry no more! Introducing Instant Bun, your sleek and simplified solution for indie hacker apps.
+Say goodbye to the cumbersome stacks of large companies, and hello to a toolkit designed to deliver lightning-fast experiences in your app. Built with hobbyists at heart, Instant Bun streamlines project building, putting the excitement and joy back into programming. 
+Dive into a world where every design choice fuels your creative endeavors, and let the fun begin!
 This project aims to build a fast, dependency-less app using the following technologies:
 
 -   Bun
@@ -12,7 +17,24 @@ This project aims to build a fast, dependency-less app using the following techn
 -   ChatGPT
 -   Formatting/Link tools (optional: Prettier)
 
-The goal is to create an app and system for projects without relying on numerous external dependencies.
+The goal is to create an app and system for projects without relying on ANY external dependencies, just Bun itself
+
+Some features of this project I have or will implement, in no particular order:
+-  A CLI tool to create a new project (NOT STARTED)
+- Code generators (STARTED - IN PROGRESS)
+- Error handling (STARTED - IN PROGRESS)
+- Data Fetching utilities (STARTED - IN PROGRESS)
+- Files and Directory utilities (STARTED - IN PROGRESS)
+- GPT Prompt Generators (STARTED - IN PROGRESS)
+- Markdown and HTML utilities (STARTED - IN PROGRESS)
+- SQLite utilities (STARTED - IN PROGRESS) (Bun HAS a SQLite module built in)
+- Types and TypeSafety through TypeScript type inferencing
+- Validation utilities(STARTED - IN PROGRESS)
+- Web Page Rendering utilities(NOT STARTED)
+- Web Server utilities(NOT START)
+
+Note: WIP = Work in Progress, TODO = To Do
+
 
 Getting Started
 ---------------

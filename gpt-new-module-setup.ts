@@ -62,14 +62,18 @@ async function setupNewModule(moduleName: ModuleName) {
   console.log("Technical summary and analysis generated.");
 
   console.log("Generating recommended starter code and README...");
-  const starterCodePromptTemplate = `Based on the analysis of the module called {moduleName}, the current readme is:\n\n{currentReadme}\n\nThe file contents are:\n\n{fileContents}\n\nPlease provide some recommended starter code for the module and a README (separately).`;
-  const starterCodeAndReadme = await generateMarkdownFromPromptForModule(
+  const starterCodePromptTemplate = `Based on the analysis of the module called {moduleName}, the current readme is:\n\n{currentReadme}\n\nThe file contents are:\n\n{fileContents}\n\nPlease provide some recommended starter code for the module avoid using classes and make sure it is typesafe and uses no external modules to bun`;
+  const starterCodeMarkdownReadme = await generateMarkdownFromPromptForModule(
     moduleName,
     starterCodePromptTemplate
   );
-  console.log("Recommended starter code and README generated.");
+  console.log("Recommended starter README generated.");
 
   console.log("New module setup completed.");
+
+  console.log({ analysis, starterCodeMarkdownReadme });
+
+  //  TODO write file to module
 }
 
 // Usage example:
