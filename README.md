@@ -1,7 +1,7 @@
 Project Overview
 ================
 
-Introduction
+Software Utilities Standard Introduction
 ------------
 
 ![brandonschabel_simple_flat_geometric_multi_color_modern_logo_bu_a6489642-e13f-48c8-a342-746f9f698143](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
@@ -18,6 +18,8 @@ Dive into a world where every design choice fuels your creative endeavors, and l
 The goal will always to be building this toolkit with no extra dependencies so your apps stay lean and fast, just Bun itself
 
 This is a literally a toolkit to develop servers, dcentralized networks, developer tools, custom raspberry pi software, realtime software. Use tiny direct bun source code modules to solve your problem.
+
+I'm not asking you to replace anything you're to try this software, simply I gurantee that you can use this in your toolkit if you learn it.
 
 
 Some features of this project I have or will implement, in no particular order:
