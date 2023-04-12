@@ -1,32 +1,40 @@
-import { spawn } from "./spawn";
+import { handleError } from "error-handler";
 
-const fs = require("fs");
-const path = require("path");
+export async function getUserInput({}: {}): Promise<string> {
+  // use async await to get user input
+  const proc = Bun.spawn([]);
 
-const appsDir = "./_apps";
+  const text = await new Response(proc.stdout).text();
+  return text;
+}
 
-const appFiles = fs
-  .readdirSync(appsDir)
-  .filter((filename) => path.extname(filename) === ".ts")
-  .map((filename) => path.join(appsDir, filename));
+interface ParsedArgs {
+  [key: string]: string | boolean;
+}
 
-console.log(`Choose an app to run (${appFiles.join(", ")}):`);
+export async function parseCliArgs(): Promise<ParsedArgs> {
+  try {
+    const args = process.argv.slice(2);
+    const parsedArgs: ParsedArgs = {};
 
-process.stdin.once("data", (data: Buffer) => {
-  const input = data.toString().trim();
-  const chosenAppFile = appFiles.find((file) => file === input);
+    for (let i = 0; i < args.length; i++) {
+      const arg = args[i];
 
-  if (!chosenAppFile) {
-    console.log("Invalid choice.");
-    process.exit(1);
+      if (arg.startsWith("--")) {
+        const key = arg.slice(2);
+        const nextArg = args[i + 1];
+
+        if (nextArg && !nextArg.startsWith("--")) {
+          parsedArgs[key] = nextArg;
+          i++;
+        } else {
+          parsedArgs[key] = true;
+        }
+      }
+    }
+
+    return parsedArgs;
+  } catch (error) {
+    throw handleError(error, true);
   }
-
-  const proc = spawn(["npx", "ts-node", chosenAppFile]);
-
-  proc.stdout?.pipe(process.stdout);
-  proc.stderr?.pipe(process.stderr);
-
-  proc.exited.then((code) => {
-    console.log(`Process exited with code ${code}`);
-  });
-});
+}

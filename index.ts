@@ -1,4 +1,4 @@
-export * as cliUtils from './cli-utils';
+export * as cliUtils from './cli';
 export * as codeGenerators from './code-generators';
 export * as sqliteInterface from './crud-sqlite';
 export * as errorHandling from './error-handler';
