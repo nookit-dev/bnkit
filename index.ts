@@ -1,20 +1,19 @@
 export * as cliUtils from './cli-utils';
 export * as codeGenerators from './code-generators';
-export * as errorHandling from './error-handling';
-export * as fetchUtils from './fetch-utils';
+export * as sqliteInterface from './crud-sqlite';
+export * as errorHandling from './error-handler';
+export * as fetchUtils from './fetcher';
 export * as filesFolders from './files-folders';
-export * as generated from './generated';
 export * as gptUtils from './gpt-utils';
 export * as htmlFormatter from './html-prettify';
 export * as jsonFileManager from './json-file-manager';
-export * as jwt from './jwt/jwt';
+export * as jwt from './jwt';
 export * as markdownToHtml from './markdown-to-html';
 export * as scripts from './scripts';
 export * as sessionManager from './session-manager';
-export * as sqliteInterface from './sqlite-interface';
 export * as templatingEngine from './templating-engine';
 export * as types from './types';
 export * as validations from './validations';
 export * as webPageRender from './web-page-render';
-export * as websockets from './websockets';
+export * as websockets from './websocket';
 

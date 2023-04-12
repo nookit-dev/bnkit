@@ -1,6 +1,3 @@
-
-
-
 export type TypeMapping = {
   string: string;
   number: number;

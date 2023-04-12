@@ -1,7 +1,7 @@
-import { createValidator } from "@/validations"; // Assuming validators are in a separate file
 import { Database } from "bun:sqlite";
+import { createValidator } from "./validator"; // Assuming validators are in a separate file
 
-import { TypeInference, TypeMapping } from "@/types";
+import { TypeInference, TypeMapping } from "./types";
 
 // Utility functions
 export function createTableQuery<
@@ -14,12 +14,20 @@ export function createTableQuery<
   return `CREATE TABLE IF NOT EXISTS ${tableName} (${fields});`;
 }
 
+
+export type CreateSqliteInterface<Schema extends SchemaType> = {
+  create: (item: TypeInference<Schema>) => Promise<void>;
+  read: () => Promise<TypeInference<Schema>[]>;
+  update: (id: number, item: Partial<TypeInference<Schema>>) => Promise<void>;
+  deleteById: (id: number) => Promise<void>;
+};
+
 // CRUD Interface
-export function sqliteInterface<
+export function createSqliteInterface<
   Schema extends Record<string, keyof TypeMapping>
 >(tableName: string, schema: Schema) {
   const db = new Database("mydb.sqlite", { create: true });
-  const { validate, infer } = createValidator(schema);
+  const { validateItem, validateAgainstArraySchema } = createValidator(schema);
 
   // Create table
   const createTable = db.query(createTableQuery(tableName, schema));
@@ -43,7 +51,10 @@ export function sqliteInterface<
   async function read(): Promise<TypeInference<Schema>[]> {
     const selectQuery = db.query(`SELECT * FROM ${tableName};`);
     const data = selectQuery.all();
-    const { error, data: validatedData } = validate(data);
+    const { error, data: validatedData } = validateAgainstArraySchema(
+      schema,
+      data
+    );
 
     if (error) {
       throw new Error(`Error during read: ${error}`);
