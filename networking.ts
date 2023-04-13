@@ -285,6 +285,8 @@ const createOpenAICompletions = <Type>({ apiKey }: { apiKey: string }) => {
         // n: numCompletions,
       });
 
+      console.log("Creating request to https://api.openai.com/v1/chat/completions")
+
       try {
         const response = await (
           await fetchCompletions
