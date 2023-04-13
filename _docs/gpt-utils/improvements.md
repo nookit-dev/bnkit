@@ -1,0 +1,5 @@
+- Add input and output formatting options to make the prompt more readable.
+- Allow for the customization of the prompt message, so that the user can have more control of the message content.
+- Add an option to enable a flag that automatically logs the input and output to the console.
+- Allow for the inclusion of the expected output as an input parameter, so that the function can provide additional information to the user if the actual output does not match the expected output.
+- Add support for formatting the code in the prompt, so that it is more readable and easier to understand for the user.

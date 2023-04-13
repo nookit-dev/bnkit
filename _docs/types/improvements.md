@@ -1,0 +1,5 @@
+- The `infer` function currently returns the input `data` parameter as-is, which may not always be of the expected type according to the schema. This could be improved by implementing logic to validate that the input `data` conforms to the specified schema before attempting to infer its type.
+- The `ValidationResult` type currently only allows for a single error message to be returned. It could be improved to allow for multiple error messages or other types of error handling (e.g. returning an array of invalid data and their associated error messages).
+- It may be useful to add support for additional data types to the `TypeMapping` object, such as arrays or objects.
+- The `SchemaType` type could be made more specific by defining the allowed keys as strings only (currently any key is allowed).
+- The `TypeInference` type could be made more robust by adding support for nested objects or arrays within the schema.

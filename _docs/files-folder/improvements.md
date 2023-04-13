@@ -1,0 +1,9 @@
+- Use default parameter values instead of destructuring to prevent undefined values, e.g. `ignoreFiles = []`.
+- Consider using `path.resolve` instead of `path.join` to build absolute paths.
+- Add error handling for cases where `findAppRoot` returns `null` in `getFilesForDirectoryFromRoot`.
+- Use `fs.promises` instead of `fs` to simplify asynchronous file operations.
+- Rename `getFilesForDirectory` to a more descriptive name like `getDirectoriesInDirectory`.
+- Add a parameter to `getDirectoriesInDirectory` to include/exclude files from the results.
+- Use a more specific type than `string` for the `directory` parameter, e.g. `string & {startsWith: (prefix: '_apps' | '_tests' | '_docs' | '.' | '../' | '.../') => boolean}`.
+- Consider using path constants like `path.sep` instead of hardcoding directory separators.
+- Add more extensive unit tests to cover different scenarios.

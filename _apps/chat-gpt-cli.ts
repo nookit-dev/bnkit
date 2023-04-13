@@ -34,11 +34,11 @@ const promptConfig = {
   },
   summarize: {
     prompt:
-      "summarize the the most important features on this module? Include a list of all exports",
+      "summarize the the most important features on this module? Include a list of all exports, return as raw markdown",
     fileExtension: "md",
   },
   unitTest: {
-    prompt: `THis needs TLC`,
+    prompt: `This needs TLC`,
     fileExtension: "ts",
   },
   improvements: {
@@ -157,8 +157,15 @@ const consolidatedResponses = allResponseText.join("\n\n");
 
 const consolidatedOutputPath = path.join(
   "_docs",
-  promptAction,
-  "consolidated.md"
+  `${promptAction}-consolidated.md`
 );
 
 await saveResultToFile(consolidatedOutputPath, consolidatedResponses);
+
+// How to automate unit tests,
+// if there is already unit tests for the file, run the unit tests  and just see whether they're passing or failing
+// generate unit tests based on a modules source code
+// save unit test to a file with random name(maybe use the modules name plus a random number)
+// spawn a new process to run the unit tests
+// if all pass then move into the _tests folder with that modules name for example _tests/module-name.test.ts, try this 3 times
+// if after 3 times they fail
