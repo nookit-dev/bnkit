@@ -1,4 +1,0 @@
-This module exports a function called "createDebugPromptFromInputOutput" that takes in two string parameters "input" and "output", and an optional object parameter "options" with three possible properties - "functionName", "moduleName", and "additionalContentToAppend". This function returns a string prompt that includes the input and output parameters, as well as any additional information specified in the "options" object properties. 
-
-Exports:
-- createDebugPromptFromInputOutput: a function that creates a formatted debug prompt based on input and output strings, with optional additional information specified in the options object properties.

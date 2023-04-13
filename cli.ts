@@ -36,12 +36,12 @@ export async function parseCliArgs(): Promise<ParsedArgs> {
 
 // Ensure directory exists and create file with content
 function createFileWithContent(filePath: string, content: string) {
-  ensureDirectoryExists(path.dirname(filePath));
+  directoryExists(path.dirname(filePath));
   fs.writeFileSync(filePath, content);
 }
 
 // Ensure directory exists
-function ensureDirectoryExists(directoryPath: string) {
+export function directoryExists(directoryPath: string) {
   fs.mkdirSync(directoryPath, { recursive: true });
 }
 

@@ -1,6 +1,6 @@
 import { Server, ServerWebSocket, serve } from "bun";
 import { handleError } from "./error-handler-validation";
-import { SchemaType, TypeInference, TypeMapping } from "./types";
+import { SchemaType, TypeMapping } from "./types";
 
 export async function createFetcher<Type, ErrorType>() {
   return async function fetcher<Type>(
@@ -38,8 +38,8 @@ export type ServerRouter = {
   handleRequest: (req: Request) => Response;
 };
 
-function createRouter(): ServerRouter {
-  const routes: ServerRoute[] = [];
+export function createRouter(routeConfigs?: ServerRoute[]): ServerRouter {
+  const routes: ServerRoute[] = [...(routeConfigs || [])];
 
   function addRoute(path: string, method: string, handler: RouteHandler) {
     routes.push({ path, method, handler });
@@ -69,25 +69,30 @@ function createRouter(): ServerRouter {
 export type CrudServer<Schema extends SchemaType> = {
   start: () => Server;
   stop: () => void;
-  router: CrudServerRouter;
+  router: ServerRouter;
 };
 
-export type CrudServerRouter = {
-  [path: string]: (req: Request) => Promise<Response>;
-};
 // TODO: Add encryption keys
 export function createCrudServer<
   Schema extends Record<string, keyof TypeMapping>
->(schema: Schema, router?: CrudServerRouter): CrudServer<Schema> {
+>({
+  router,
+  port = 4000,
+}: {
+  router?: ServerRouter;
+  port?: number;
+}): CrudServer<Schema> {
   const server = serve({
+    port: port ? `:${port}` : ":4000",
     async fetch(req: Request): Promise<Response> {
       const url = new URL(req.url);
 
       // Check for frontend identifier
-      const identifier = req.headers.get("x-identifier");
-      if (!identifier) {
-        return new Response("Not authorized", { status: 401 });
-      }
+      // const identifier = req.headers.get("x-identifier");
+      // if (!identifier) {
+      //   return new Response("Not authorized", { status: 401 });
+      // }
+      console.log(req);
 
       try {
         if (url.pathname.startsWith("/api")) {
@@ -96,7 +101,7 @@ export function createCrudServer<
           switch (req.method) {
             case "POST":
               if (path === "/create") {
-                const item = (await req.json()) as TypeInference<Schema>;
+                const item = await req.json();
                 return new Response("Created", { status: 201 });
               }
               break;
@@ -129,7 +134,7 @@ export function createCrudServer<
           }
         } else {
           // Router for frontend pages
-          const handler = router[url.pathname];
+          const handler = router && router[url.pathname];
           if (handler) {
             const response = await handler(req);
             return response;
@@ -147,7 +152,10 @@ export function createCrudServer<
   });
 
   return {
-    start: () => server,
+    start: () => {
+      console.log(`Server started on port ${port}`);
+      return server;
+    },
     stop: () => server.stop(),
     router: router || {}, // Add this line
   };
