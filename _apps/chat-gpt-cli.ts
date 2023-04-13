@@ -1,8 +1,11 @@
+console.log("Args: ", process.argv);
 import { parseCliArgs } from "cli";
 import { getFilesForDirectoryFromRoot } from "files-folder";
 import fs from "fs";
 import path from "path";
-import createOpenAICompletions from "../openai-completions";
+import createOpenAICompletions, {
+  CompletionsResponse,
+} from "../openai-completions";
 
 const API_KEY = Bun.env.OPENAI_API_KEY || "";
 
@@ -51,7 +54,7 @@ const splitIntoChunks = (str: string, chunkSize: number) => {
   return chunks;
 };
 
-const fileToPass = allSourceFiles.map((file) => {
+const sourceFilesArray = allSourceFiles.map((file) => {
   const fileContent = file.content;
   return fileContent;
 });
@@ -60,39 +63,107 @@ const openAICompletions = createOpenAICompletions({ apiKey: API_KEY });
 
 const userPrompt = args.prompt.toString();
 
-type PromptActionType = "clean" | "createReadme" | "addComments";
-
-const promptAction = args?.action?.toString();
-
-console.log(args)
-
-const promptMap: Record<PromptActionType, string> = {
+const promptMap = {
   clean:
     "Can you clean up this code? Please use TypeScript syntax, do not class based syntax, make sure it it readable and performant",
-  createReadme:
+  readme:
     "Can you create a README.md file for this module? Please use markdown syntax and return the raw markdown string",
-  addComments:
+  comments:
     "Can you add comments to this code? Please use TypeScript syntax, do not class based syntax, make sure it it readable and performant",
+  explain: `Can you explain this file? List other modules it depends on List the features of the module, and then give a brief technical description of the module. 
+    Please use markdown syntax and return the raw markdown string.`,
+  examples: `Can you give examples of how to use this module? Please use markdown syntax and return the raw markdown string.`,
+  summarize:
+    "Can you summarize the the most important features on this module?",
+  unitTest:
+    "Can you write unit tests for this module? Please use the following files as examples of how to write unit tests in this repo",
+  improvements:
+    "Can you list improvements that can be made to this module? Please use markdown syntax and return the raw markdown string.",
 };
 
+const promptAction = args?.action?.toString() as keyof typeof promptMap;
 
-const randomFile = Math.floor(Math.random() * allSourceFiles.length);
-
-console.log(fileToPass[5])
+const randomFileIdx = Math.floor(Math.random() * allSourceFiles.length);
+// const randomFile = allSourceFiles[randomFileIdx];
 
 const finalPrompt = `
 ${userPrompt}
 
-${fileToPass[randomFile]}
+${sourceFilesArray[randomFileIdx]}
 
 ${promptMap[promptAction]}
 `;
 
 const result = await openAICompletions.getCompletions({
-  prompt: finalPrompt,
+  prompt: finalPrompt || "",
 });
 
-console.log(result);
 // write content to file suffixed with -${actionFlag}
 
-await fs.writeFile(`${randomFile.path}`, result, { encoding: "utf-8" });
+const fileExtension = {
+  readme: "md",
+  comments: "md",
+  explain: "md",
+  examples: "md",
+  summarize: "md",
+  unitTest: "ts",
+  improvements: "md",
+};
+
+const folders = {
+  readme: "_docs",
+  comments: "_docs",
+  explain: "_docs",
+  examples: "_docs",
+  summarize: "_docs",
+  unitTest: "_tests",
+  improvements: "_improvements",
+};
+
+const saveResultToFile = async (filePath: string, content: string) => {
+  try {
+    await fs.promises.writeFile(filePath, content, "utf8");
+    console.log(`Successfully saved result to ${filePath}`);
+  } catch (err) {
+    console.error(`Failed to save result to ${filePath}:`, err);
+  }
+};
+
+for (const file of allSourceFiles) {
+  const finalPrompt = `
+${userPrompt}
+
+${file.content}
+
+${promptMap[promptAction]}
+`;
+
+  const result = (await openAICompletions.getCompletions({
+    prompt: finalPrompt || "",
+    // TODO not sure why the type is not working here
+  })) as CompletionsResponse;
+
+  const fileExtensionForAction = fileExtension[promptAction];
+
+  console.log({
+    promptAction,
+    fileExtensionForAction,
+  });
+
+  const fileNameWithoutExtension = path.basename(file.path, ".ts");
+  const newFileName = `${fileNameWithoutExtension}-${promptAction}.${fileExtensionForAction}`;
+  const newFilePath = path.join(folders[promptAction], newFileName);
+
+  console.log({
+    fileNameWithoutExtension,
+    newFileName,
+    newFilePath,
+  });
+
+  console.log({
+    path: newFilePath,
+    content: result?.[0].message,
+  });
+
+  await saveResultToFile(newFilePath, result?.[0].message.content);
+}
