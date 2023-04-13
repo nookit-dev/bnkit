@@ -45,3 +45,14 @@ export function findAppRoot(startingPath: string): string | null {
 
   return currentPath;
 }
+
+
+
+export const saveResultToFile = async (filePath: string, content: string) => {
+  try {
+    await fs.promises.writeFile(filePath, content, "utf8");
+    console.log(`Successfully saved result to ${filePath}`);
+  } catch (err) {
+    console.error(`Failed to save result to ${filePath}:`, err);
+  }
+};

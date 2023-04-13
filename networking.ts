@@ -25,21 +25,21 @@ export async function createFetcher<Type, ErrorType>() {
   };
 }
 
-type RouteHandler = (req: Request) => Response;
+export type RouteHandler = (req: Request) => Response;
 
-type Route = {
+export type ServerRoute = {
   path: string;
   method: string;
   handler: RouteHandler;
 };
 
-type Router = {
+export type ServerRouter = {
   addRoute: (path: string, method: string, handler: RouteHandler) => void;
   handleRequest: (req: Request) => Response;
 };
 
-function createRouter(): Router {
-  const routes: Route[] = [];
+function createRouter(): ServerRouter {
+  const routes: ServerRoute[] = [];
 
   function addRoute(path: string, method: string, handler: RouteHandler) {
     routes.push({ path, method, handler });

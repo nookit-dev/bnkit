@@ -1,0 +1,1 @@
+As there is no specific module mentioned in the question, it is not possible to write tests for a specific module. However, the provided documentation can be used to write tests for any module in Bun using the Jest-like API.

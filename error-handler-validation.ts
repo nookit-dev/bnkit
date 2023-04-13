@@ -48,7 +48,6 @@ export function handleError(
   }
 }
 
-import { handleError } from "./error-handler-validation";
 import { SchemaType, TypeInference, ValidationResult } from "./types";
 
 export function createValidator<Schema extends SchemaType>(schema: Schema) {

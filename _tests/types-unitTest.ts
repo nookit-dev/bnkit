@@ -1,0 +1,1 @@
+Sorry, as an AI language model, I do not know what module you are referring to. Please provide more context or code for me to understand and write unit tests for it in Bun.
