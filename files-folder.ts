@@ -54,3 +54,11 @@ export const saveResultToFile = async (filePath: string, content: string) => {
     console.error(`Failed to save result to ${filePath}: ${err.message}`);
   }
 };
+
+export const readFilesContents = (filePaths: string[]) => {
+  return filePaths.map((filePath) => {
+    const filename = path.basename(filePath);
+    const content = fs.readFileSync(filePath, "utf8");
+    return { path: filename, content };
+  });
+};

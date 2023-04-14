@@ -1,0 +1,5 @@
+This file is a module that provides functions and types to create a CRUD server using the "bun" HTTP server library. It depends on other modules such as "error-handler-validation" and "types" to handle errors and define the schema types used in the server. 
+
+Features of the module include creating a server router with the ability to add routes and handle requests, creating a CRUD server with API and router routes, and creating a WebSocket handler. It also includes a function to fetch data from an API with error handling.
+
+The technical description includes async functions that use the "bun" server library to handle HTTP requests and responses, and a function that fetches data from an API. Types are defined for routes, routers, and servers. The module also includes a function to create completions using the OpenAI API.

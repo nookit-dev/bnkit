@@ -1,15 +1,11 @@
-## Module Summary
+# Module Summary
 
-This module contains functions for handling user input, parsing command line arguments, file manipulation, directory validation, and extracting module names from a directory path.
+The module includes functions for handling user input, parsing command line arguments, ensuring directory existence, creating files with content, and getting module names from a path.
 
 ## Exports
 
-- `getUserInput(): Promise<string>` - a function that gets user input asynchronously and returns a promise that resolves with the user input as a string.
-
-- `parseCliArgs(): Promise<ParsedArgs>` - a function that parses command line arguments and returns a promise that resolves with an interface defining the parsed arguments.
-
-- `createFileWithContent(filePath: string, content: string): void` - a function that ensures a directory exists and creates a file with the specified content.
-
-- `directoryExists(directoryPath: string): void` - a function that ensures a directory exists at the specified path.
-
-- `getModulesFromPath(directoryPath: string): string[]` - a function that returns an array of module names extracted from the provided directory path.
+- `getUserInput()`: Asynchronously gets user input as a string.
+- `parseCliArgs()`: Asynchronously parses command line arguments and returns an object with keyed values.
+- `directoryExists(directoryPath: string)`: Ensures a directory exists at the provided path. If it doesn't exist, it creates the directory.
+- `createFileWithContent(filePath: string, content: string)`: Ensures a directory exists at the path of the specified file, and creates the file with the specified content. If the directory doesn't exist, it creates the directory.
+- `getModulesFromPath(directoryPath: string)`: Returns an array of module names found in the specified directory.

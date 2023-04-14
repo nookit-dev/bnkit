@@ -1,17 +1,73 @@
-## Summary
+## SQLite Interface Module
 
-This module provides functions for creating a SQLite interface for CRUD (create, read, update, delete) operations on a database table with a specified schema. It includes a utility function for generating SQL create table queries, as well as functions for validating and manipulating data based on the schema.
+This module provides a convenient CRUD interface for SQLite databases, allowing users to easily create, read, update, and delete data.
 
-## Exports
+### Exports
 
-- `createTableQuery(tableName: string, schema: Record<string, keyof TypeMapping>): string`: Utility function for generating a SQL CREATE TABLE query based on a table name and schema.
+The following exports are available:
 
-- `createSqliteInterface<Schema extends Record<string, keyof TypeMapping>>(tableName: string, schema: Schema): CreateSqliteInterface<Schema>`: Function for creating a CRUD interface for a SQLite database table based on a specified schema. Returns an object with functions for create, read, update, and delete operations.
+- `createTableQuery`: A utility function for creating a SQL CREATE TABLE query based on a provided schema object.
+- `createSqliteInterface`: A function that creates an interface object for performing CRUD operations on a SQLite database.
+- `CreateSqliteInterface`: A type definition for the interface object returned by `createSqliteInterface`.
+- `TypeMapping`: A type definition for mapping TypeScript types to SQLite column types.
+- `TypeInference`: A type definition for inferring the TypeScript type of a schema object based on its values.
 
-- `TypeInference<T>`: Generic type for inferring the types of a record in the schema.
+### Usage
 
-- `TypeMapping`: Object mapping of types used in the schema.
+To use this module, first install it in your project:
 
-- `createValidator<T extends Record<string, keyof TypeMapping>>(schema: T): { validateItem: (item: any) => { error: string | null, data: any }, validateAgainstArraySchema: (schema: any, data: any) => { error: string | null, data: any } }`: Function for creating a data validator based on a specified schema. Returns an object with functions for validating individual items and arrays of items.
+```bash
+npm install sqlite-interface
+```
 
-- `Database`: Class for connecting to and interacting with a SQLite database. Can be imported from the "bun:sqlite" package.
+Then, import the desired exports:
+
+```js
+import { createSqliteInterface, CreateSqliteInterface, TypeMapping, TypeInference } from "sqlite-interface";
+```
+
+Next, create a schema object that defines the structure of your database table:
+
+```js
+const mySchema = {
+  id: "INTEGER PRIMARY KEY AUTOINCREMENT",
+  name: "TEXT",
+  age: "INTEGER",
+};
+```
+
+Note that the keys of the schema object define the column names, while their values map to SQLite column types.
+
+Then, create a SQLite interface object by calling the `createSqliteInterface` function:
+
+```js
+const myInterface = createSqliteInterface("myTable", mySchema);
+```
+
+This function takes two arguments: the name of the database table, and the schema object.
+
+The resulting interface object has four methods: `create`, `read`, `update`, and `deleteById`. These methods allow you to perform CRUD operations on your database.
+
+For example, to create a new record:
+
+```js
+myInterface.create({ name: "John", age: 30 });
+```
+
+Or to read all records:
+
+```js
+const allRecords = await myInterface.read();
+```
+
+Or to update a record:
+
+```js
+myInterface.update(1, { age: 31 });
+```
+
+Or to delete a record:
+
+```js
+myInterface.deleteById(1);
+```

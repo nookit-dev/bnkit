@@ -1,175 +1,220 @@
-_docs/summarize.md
+_docs/text-utils/summarize.md
 
-## Module Summary
+This module provides a number of functions and utilities for working with HTML and Markdown:
 
-This module provides utility functions for parsing and formatting HTML and markdown text. The main export is `prettifyHTMLString`, which takes a raw HTML string and formats it for better readability by indenting nested tags. Other exports include utility functions for parsing markdown syntax and replacing it with corresponding HTML tags.
+exports:
+- `prettifyHTMLString(rawHTML: string): string`: Formats an HTML string with proper indentation and formatting
+- `replaceMarkdown(text: string, regex: RegExp, replacement: string): string`: Replaces Markdown syntax with HTML tags
+- `parseHeaders(text: string): string`: Parses Markdown headers into HTML headings
+- `templatingEngine`: An empty object that can be used as a starting point for building a templating engine. 
+
+Additionally, the `useMdToHtml()` function returns an object with several methods for parsing various Markdown elements into HTML, including:
+- `parseBold(text: string): string`: Parses double asterisks (`**text**`) into HTML strong tags
+- `parseItalic(text: string): string`: Parses single asterisks (`*text*`) into HTML emphasis tags
+- `parseLinks(text: string): string`: Parses links (`[text](url)`) into HTML anchor tags
+- `parseUnorderedLists(text: string): string`: Parses unordered lists (`- list item`) into HTML unordered lists
+- `parseOrderedLists(text: string): string`: Parses ordered lists (`1. list item`) into HTML ordered lists.
+
+Overall, this module provides helpful tools for working with HTML and Markdown, making it easier to parse and format text for use on the web.
+
+_docs/cli/summarize.md
+
+# Module Summary
+
+The module includes functions for handling user input, parsing command line arguments, ensuring directory existence, creating files with content, and getting module names from a path.
 
 ## Exports
 
-- `prettifyHTMLString(rawHTML: string): string` - Formats a raw HTML string by indenting nested tags for better readability.
-- `replaceMarkdown(text: string, regex: RegExp, replacement: string): string` - Replaces instances of a regular expression in a string with a replacement string.
-- `parseHeaders(text: string): string` - Parses markdown headers into corresponding HTML tags.
-- `useMdToHtml()`: An object with the following methods for parsing various markdown syntax into HTML tags:
-  - `parseBold(text: string): string`
-  - `parseItalic(text: string): string`
-  - `parseLinks(text: string): string`
-  - `parseUnorderedLists(text: string): string`
-  - `parseOrderedLists(text: string): string`
-- `templatingEngine`: An empty object that currently does not hold any functionality.
+- `getUserInput()`: Asynchronously gets user input as a string.
+- `parseCliArgs()`: Asynchronously parses command line arguments and returns an object with keyed values.
+- `directoryExists(directoryPath: string)`: Ensures a directory exists at the provided path. If it doesn't exist, it creates the directory.
+- `createFileWithContent(filePath: string, content: string)`: Ensures a directory exists at the path of the specified file, and creates the file with the specified content. If the directory doesn't exist, it creates the directory.
+- `getModulesFromPath(directoryPath: string)`: Returns an array of module names found in the specified directory.
 
-_docs/summarize.md
+_docs/networking/summarize.md
 
-## Module Summary
+## Module `bun`
 
-This module contains functions for handling user input, parsing command line arguments, file manipulation, directory validation, and extracting module names from a directory path.
+### Exports
+- `Server`: A class for creating and running a web server.
+- `ServerWebSocket`: A class for handling WebSocket connections.
+- `serve`: A function that creates a new server instance.
 
-## Exports
+## Module `error-handler-validation`
 
-- `getUserInput(): Promise<string>` - a function that gets user input asynchronously and returns a promise that resolves with the user input as a string.
+### Exports
+- `handleError`: A function for handling and validating errors.
 
-- `parseCliArgs(): Promise<ParsedArgs>` - a function that parses command line arguments and returns a promise that resolves with an interface defining the parsed arguments.
+## Module `types`
 
-- `createFileWithContent(filePath: string, content: string): void` - a function that ensures a directory exists and creates a file with the specified content.
+### Types
+- `SchemaType`: An interface for defining a schema.
+- `TypeMapping`: A mapping of data types to TypeScript types.
 
-- `directoryExists(directoryPath: string): void` - a function that ensures a directory exists at the specified path.
+## Module `crud-server`
 
-- `getModulesFromPath(directoryPath: string): string[]` - a function that returns an array of module names extracted from the provided directory path.
+### Types
+- `CrudServer`: An interface for defining a CRUD server.
+- `ServerRoute`: An interface for defining a server route.
+- `ServerRouter`: An interface for defining a server router.
+- `CompletionsResponse`: An interface for defining a response from the OpenAI completions API.
 
-_docs/summarize.md
+### Functions
+- `createFetcher<Type, ErrorType>()`: A function for creating a fetcher function that handles errors.
+- `createRouter(routeConfigs?: ServerRoute[]): ServerRouter`: A function for creating a new server router instance.
+- `createCrudServer<Schema extends Record<string, keyof TypeMapping>>({ router, port }: { router?: ServerRouter; port?: number }): CrudServer<Schema>`: A function for creating a new CRUD server instance.
+- `useWebSockets(): Record<string, Function>`: A function that returns an object containing callback functions for WebSocket events.
 
-## Module: `bun`
+## Module `openai-completions`
+
+### Types
+- `BaseOpenAICompletionsParams`: An interface for defining the parameters of a request to the OpenAI completions API.
+
+### Functions
+- `createOpenAICompletions<Type>({ apiKey }: { apiKey: string }): { getCompletions(params: BaseOpenAICompletionsParams): Promise<Type> }`: A function for creating a new instance of the OpenAI completions API client.
+
+_docs/data-storage/summarize.md
+
+## SQLite Interface Module
+
+This module provides a convenient CRUD interface for SQLite databases, allowing users to easily create, read, update, and delete data.
+
+### Exports
+
+The following exports are available:
+
+- `createTableQuery`: A utility function for creating a SQL CREATE TABLE query based on a provided schema object.
+- `createSqliteInterface`: A function that creates an interface object for performing CRUD operations on a SQLite database.
+- `CreateSqliteInterface`: A type definition for the interface object returned by `createSqliteInterface`.
+- `TypeMapping`: A type definition for mapping TypeScript types to SQLite column types.
+- `TypeInference`: A type definition for inferring the TypeScript type of a schema object based on its values.
+
+### Usage
+
+To use this module, first install it in your project:
+
+```bash
+npm install sqlite-interface
+```
+
+Then, import the desired exports:
+
+```js
+import { createSqliteInterface, CreateSqliteInterface, TypeMapping, TypeInference } from "sqlite-interface";
+```
+
+Next, create a schema object that defines the structure of your database table:
+
+```js
+const mySchema = {
+  id: "INTEGER PRIMARY KEY AUTOINCREMENT",
+  name: "TEXT",
+  age: "INTEGER",
+};
+```
+
+Note that the keys of the schema object define the column names, while their values map to SQLite column types.
+
+Then, create a SQLite interface object by calling the `createSqliteInterface` function:
+
+```js
+const myInterface = createSqliteInterface("myTable", mySchema);
+```
+
+This function takes two arguments: the name of the database table, and the schema object.
+
+The resulting interface object has four methods: `create`, `read`, `update`, and `deleteById`. These methods allow you to perform CRUD operations on your database.
+
+For example, to create a new record:
+
+```js
+myInterface.create({ name: "John", age: 30 });
+```
+
+Or to read all records:
+
+```js
+const allRecords = await myInterface.read();
+```
+
+Or to update a record:
+
+```js
+myInterface.update(1, { age: 31 });
+```
+
+Or to delete a record:
+
+```js
+myInterface.deleteById(1);
+```
+
+_docs/types/summarize.md
+
+## Module: Type Inference
 
 ### Exports:
-- `Server`: a class representing a web server that can be started and stopped
-- `ServerWebSocket`: a class representing a WebSocket connection on the server side
-- `serve`: a function that creates a new `Server` instance and starts it
+- `TypeMapping`: A type that maps the supported data types to their corresponding TypeScript types.
+- `TypeInference`: A utility type that infers TypeScript types from a given schema using `TypeMapping`.
+- `ValidationResult`: A type that defines the return value of schema validation functions. It includes an optional error message and an array of objects that match the inferred types of the provided schema.
+- `SchemaType`: A type that represents a schema, which is simply a `Record` with keys of `string` type and values of any type from `TypeMapping`.
+- `infer`: A function that takes a schema and optional data as input, and returns an inferred object using `TypeInference`.
 
-### Functions:
-- `createFetcher<Type, ErrorType>()`: creates a function that can be used to make HTTP requests with error handling
-- `createRouter(routeConfigs?: ServerRoute[]): ServerRouter`: creates a router for handling HTTP requests
-- `createCrudServer<Schema>()`: creates a CRUD server with API routes for create, read, update, and delete operations
-- `useWebSockets()`: returns a set of functions for handling WebSocket connections
+_docs/security/summarize.md
 
-### Types:
-- `SchemaType`: a type representing the schema of a database
-- `TypeMapping`: a type mapping from schema keys to value types
-- `RouteHandler`: a function that handles a HTTP request and returns a response
-- `ServerRoute`: an object representing a route on the server with a path, HTTP method, and route handler function
-- `ServerRouter`: an object representing a router on the server with functions for adding routes and handling requests
-- `CrudServer<Schema>`: an object representing a CRUD server with functions for starting and stopping the server and a router for handling HTTP requests
+### Summary of Module Features
+- Generates an encryption key consisting of 32 characters
+- Uses a combination of uppercase and lowercase letters, as well as numbers
+- Randomly selects characters from the possible characters string
 
-### Interfaces:
-- `CompletionChoice`: an interface representing a possible completion for OpenAI's GPT-3 model
-- `CompletionsResponse`: an interface representing the response from the OpenAI GPT-3 completions API
+### List of Exports
+- `generateEncryptionKey` function: generates and returns the encryption key as a string.
 
-### Usage:
-This module provides several useful functions and types for creating web servers and handling HTTP requests and WebSocket connections. The `createFetcher` function can be used to create a function that can make HTTP requests with error handling, while the `createRouter` function can be used to create a router that can handle HTTP requests based on their path and HTTP method. The `createCrudServer` function can be used to create a full-featured CRUD server with API routes for create, read, update, and delete operations.
+_docs/gpt-utils/summarize.md
 
-In addition, the `useWebSockets` function returns a set of functions for handling WebSocket connections. OpenAI's GPT-3 model is also supported through a set of interfaces and a function for creating completions with the model.
+## Module Summary
 
-_docs/summarize.md
-
-## Summary
-
-This module provides functions for creating a SQLite interface for CRUD (create, read, update, delete) operations on a database table with a specified schema. It includes a utility function for generating SQL create table queries, as well as functions for validating and manipulating data based on the schema.
+This module contains a function (`createDebugPromptFromInputOutput`) that creates a debug prompt message from provided input and output strings. It also accepts optional parameters for specifying the function name, file name, and additional content to include in the prompt.
 
 ## Exports
 
-- `createTableQuery(tableName: string, schema: Record<string, keyof TypeMapping>): string`: Utility function for generating a SQL CREATE TABLE query based on a table name and schema.
+### `DebugPromptOptions`
 
-- `createSqliteInterface<Schema extends Record<string, keyof TypeMapping>>(tableName: string, schema: Schema): CreateSqliteInterface<Schema>`: Function for creating a CRUD interface for a SQLite database table based on a specified schema. Returns an object with functions for create, read, update, and delete operations.
+An object type that defines the optional parameters for creating a debug prompt message. It includes:
+- `functionName`: a string representing the name of the function being debugged
+- `moduleName`: a string representing the name of the file/module being debugged
+- `additionalContentToAppend`: a string representing any additional information to append to the prompt message
 
-- `TypeInference<T>`: Generic type for inferring the types of a record in the schema.
+### `createDebugPromptFromInputOutput(input: string, output: string, options?: DebugPromptOptions): string`
 
-- `TypeMapping`: Object mapping of types used in the schema.
+A function that creates a debug prompt message from provided input and output strings. It accepts optional parameters for specifying the function name, file name, and additional content to include in the prompt. It returns a string representing the complete debug prompt message.
 
-- `createValidator<T extends Record<string, keyof TypeMapping>>(schema: T): { validateItem: (item: any) => { error: string | null, data: any }, validateAgainstArraySchema: (schema: any, data: any) => { error: string | null, data: any } }`: Function for creating a data validator based on a specified schema. Returns an object with functions for validating individual items and arrays of items.
+_docs/error-handler-validation/summarize.md
 
-- `Database`: Class for connecting to and interacting with a SQLite database. Can be imported from the "bun:sqlite" package.
+## Overview
 
-_docs/summarize.md
+The `errorUtils` module provides utilities for handling and mapping errors. It also exports a `CustomError` type and an `ErrorType` union type for use across the application.
 
-### Module Summary
-
-This module defines a `TypeMapping` object that maps TypeScript types to their corresponding JavaScript types. It also provides a type inference utility function `infer`, which takes a `SchemaType` object and optional data as input, and returns a type-inferred object based on the given schema.
-
-The module also includes types for validation results and the schema, as well as a utility type `TypeInference` that infers TypeScript types from the provided schema.
-
-### Exports
-
-This module exports the following items:
-
-- `TypeMapping`: a type object that maps TypeScript types to JavaScript types.
-- `TypeInference`: a utility type to infer TypeScript types from the schema.
-- `ValidationResult`: a type for validation results.
-- `SchemaType`: a type alias for defining the schema.
-- `infer`: a function that infers the TypeScript types of an object based on the provided schema.
-
-_docs/summarize.md
-
-## Summary
-
-This module exports a single function that generates a random encryption key string.
+Additionally, the module exports a `createValidator` function that returns an object with methods for validating data against a schema.
 
 ## Exports
 
-### `generateEncryptionKey(): string`
+- `ErrorType`: a union type representing the types of errors that can occur in the application (`ValidationError`, `APIError`, or `JavaScriptError`).
+- `CustomError`: an object type with `type` and `message` properties, used to wrap and handle errors.
+- `apiErrorMap`: an object mapping `ErrorType` values to human-readable error messages.
+- `getErrorType`: a function that takes an error object and returns its `ErrorType`, either by checking the error type directly or by mapping built-in `Error` types to an `ErrorType`.
+- `handleError`: a function that takes an error object and a boolean flag indicating whether to re-throw the error, and returns a `CustomError`. If `throwError` is `true`, the function will also throw the `CustomError`.
+- `createValidator`: a function that takes a schema object and returns an object with methods for validating data against that schema. The returned object includes `validateAgainstArraySchema` and `validateItem` methods.
 
-Generates and returns a random encryption key string consisting of 32 characters, including uppercase and lowercase letters and digits.
+_docs/files-folder/summarize.md
 
-_docs/summarize.md
+# Module Summary
 
-## Summary
-
-This module exports a function `createDebugPromptFromInputOutput` for generating a string prompt based on input and output values, with optional arguments for specifying function name, module name, and additional content to append.
+This module provides functions for working with files and directories, including getting a list of files in a specific directory, finding the root directory of a project, and saving content to a file.
 
 ## Exports
 
-- `createDebugPromptFromInputOutput(input: string, output: string, options: DebugPromptOptions = {}): string` - Generates a string prompt based on input and output values, with optional arguments for specifying function name, module name, and additional content to append.
-- `DebugPromptOptions` - An interface for defining optional parameters for `createDebugPromptFromInputOutput()`, including `functionName`, `moduleName`, and `additionalContentToAppend`.
-
-_docs/summarize.md
-
-### ErrorUtils Module
-
-This module provides utility functions for handling and mapping errors.
-
-#### Exported Types:
-
-- `ErrorType`: a union type of strings representing different error types (`ValidationError`, `APIError`, `JavaScriptError`).
-- `CustomError`: an interface describing a custom error with a `type` field and a `message` field.
-- `ValidationError`: an interface extending `CustomError` specifically for validation errors.
-
-#### Exported Constants:
-
-- `apiErrorMap`: a map of error types to string representations.
-
-#### Exported Functions:
-
-- `getErrorType`: a function that takes an `Error` or a `CustomError` object and returns its type (`ErrorType`).
-- `handleError`: a function that takes an `Error` or a `CustomError` object and an optional boolean flag to indicate if the error should be thrown. It returns a `CustomError` object if the flag is `false`, otherwise it throws the error.
-- `createValidator`: a higher-order function that takes a schema of a certain type and returns an object with two functions: `validateAgainstArraySchema` and `validateItem`. These functions validate data against the schema either individually or as an array.
-
-_docs/summarize.md
-
-## Module Overview
-
-This module provides functions for working with files and directories, specifically for retrieving file names from a specified directory, identifying the root directory of a project, and saving content to a file.
-
-### Exports
-
-- `getFilesForDirectory(directory: string, options: { ignoreFiles?: string[] }): string[]`: Retrieves a list of file names from the specified directory.
-  - `directory`: The directory path to search for files.
-  - `options.ignoreFiles`: An optional array of file names to exclude from the results.
-- `getFilesForDirectoryFromRoot(directory: string, options: { ignoreFiles?: string[] }): string[]`: Retrieves a list of file names from the specified directory, starting from the root directory of the project.
-  - `directory`: The directory path to search for files.
-  - `options.ignoreFiles`: An optional array of file names to exclude from the results.
-- `isRootFolder(folderPath: string): boolean`: Returns `true` if the provided folder path is the root directory of a project.
-  - `folderPath`: The directory path to check.
-- `findAppRoot(startingPath: string): string | null`: Uses the provided path to recursively search for the root directory of a project. Returns the root directory path or `null` if not found.
-  - `startingPath`: The path to start the search from.
-- `saveResultToFile(filePath: string, content: string): Promise<void>`: Writes content to the specified file path. Creates the file and any necessary directories if they do not exist.
-  - `filePath`: The path of the file to write to.
-  - `content`: The string to write to the file.
-
-Note: Some functions accept a directory path argument with specific string values, such as `_apps` and `_tests`. These are likely project-specific and should be modified or removed for use in other projects.
+- `getFilesForDirectory(directory: string, options?: { ignoreFiles?: string[] }): string[]`: Returns a list of files in the specified directory, excluding any files listed in the `ignoreFiles` array.
+- `getFilesForDirectoryFromRoot(directory: string, options?: { ignoreFiles?: string[] }): string[]`: Returns a list of files in the specified directory relative to the project root, excluding any files listed in the `ignoreFiles` array.
+- `findAppRoot(startingPath: string): string | null`: Returns the path to the root directory of the project that contains the specified `startingPath`.
+- `saveResultToFile(filePath: string, content: string): Promise<void>`: Saves the given `content` to the file specified by `filePath`. Any missing directories in the path will be created automatically.

@@ -13,7 +13,6 @@ const config: ServerRoute[] = [
 
 const router = createRouter(config);
 
-const server = createCrudServer(router);
+const server = createCrudServer({ router });
 
-
-server.start()
+server.start();

@@ -1,19 +1,14 @@
-### ErrorUtils Module
+## Overview
 
-This module provides utility functions for handling and mapping errors.
+The `errorUtils` module provides utilities for handling and mapping errors. It also exports a `CustomError` type and an `ErrorType` union type for use across the application.
 
-#### Exported Types:
+Additionally, the module exports a `createValidator` function that returns an object with methods for validating data against a schema.
 
-- `ErrorType`: a union type of strings representing different error types (`ValidationError`, `APIError`, `JavaScriptError`).
-- `CustomError`: an interface describing a custom error with a `type` field and a `message` field.
-- `ValidationError`: an interface extending `CustomError` specifically for validation errors.
+## Exports
 
-#### Exported Constants:
-
-- `apiErrorMap`: a map of error types to string representations.
-
-#### Exported Functions:
-
-- `getErrorType`: a function that takes an `Error` or a `CustomError` object and returns its type (`ErrorType`).
-- `handleError`: a function that takes an `Error` or a `CustomError` object and an optional boolean flag to indicate if the error should be thrown. It returns a `CustomError` object if the flag is `false`, otherwise it throws the error.
-- `createValidator`: a higher-order function that takes a schema of a certain type and returns an object with two functions: `validateAgainstArraySchema` and `validateItem`. These functions validate data against the schema either individually or as an array.
+- `ErrorType`: a union type representing the types of errors that can occur in the application (`ValidationError`, `APIError`, or `JavaScriptError`).
+- `CustomError`: an object type with `type` and `message` properties, used to wrap and handle errors.
+- `apiErrorMap`: an object mapping `ErrorType` values to human-readable error messages.
+- `getErrorType`: a function that takes an error object and returns its `ErrorType`, either by checking the error type directly or by mapping built-in `Error` types to an `ErrorType`.
+- `handleError`: a function that takes an error object and a boolean flag indicating whether to re-throw the error, and returns a `CustomError`. If `throwError` is `true`, the function will also throw the `CustomError`.
+- `createValidator`: a function that takes a schema object and returns an object with methods for validating data against that schema. The returned object includes `validateAgainstArraySchema` and `validateItem` methods.

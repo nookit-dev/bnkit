@@ -1,13 +1,16 @@
 import { directoryExists } from "cli";
-import { getFilesForDirectoryFromRoot, saveResultToFile } from "files-folder";
-import fs from "fs";
+import {
+  getFilesForDirectoryFromRoot,
+  readFilesContents,
+  saveResultToFile,
+} from "files-folder";
 import createOpenAICompletions, { CompletionsResponse } from "networking";
 import path from "path";
 import readline from "readline";
 
 const API_KEY = Bun.env.OPENAI_API_KEY || "";
 
-const promptConfig = {
+const actionsConfig = {
   clean: {
     prompt:
       "clean up this code? Please use TypeScript syntax, do not class based syntax, make sure it it readable and performant",
@@ -38,8 +41,8 @@ const promptConfig = {
     fileExtension: "md",
   },
   unitTest: {
-    prompt: `This needs TLC`,
-    fileExtension: "ts",
+    prompt: `Based on the above module, write unit tests for it. Please use TypeScript syntax and return the raw string.`,
+    fileExtension: "test.ts",
   },
   improvements: {
     prompt:
@@ -54,22 +57,9 @@ const fileOptions = { ignoreFiles };
 const files = await getFilesForDirectoryFromRoot(".", fileOptions);
 const tsFiles = files.filter((file) => file.endsWith(".ts"));
 
-const readFilesContents = (filePaths: string[]) => {
-  return filePaths.map((filePath) => {
-    const filename = path.basename(filePath);
-    const content = fs.readFileSync(filePath, "utf8");
-    return { path: filename, content };
-  });
-};
-
 const allSourceFiles = readFilesContents(
   tsFiles.filter((file) => !ignoreFiles.includes(file))
 );
-
-const sourceFilesArray = allSourceFiles.map((file) => {
-  const fileContent = file.content;
-  return fileContent;
-});
 
 const openAICompletions = createOpenAICompletions({ apiKey: API_KEY });
 
@@ -88,84 +78,100 @@ const getAdditionalPrompt = () =>
     );
   });
 
-const chooseAction = async () => {
-  return new Promise<string>((resolve) => {
-    console.log("\nChoose an action:");
-    const actions = Object.keys(promptConfig);
+const chooseActions = async () => {
+  return new Promise<string[]>((resolve) => {
+    console.log("\nChoose actions (separated by commas):");
+    const actions = Object.keys(actionsConfig);
     actions.forEach((action, index) => {
       console.log(`${index + 1}. ${action}`);
     });
 
     rl.question(
-      "Enter the number corresponding to the action: ",
-      (actionIndex) => {
-        const selectedIndex = parseInt(actionIndex) - 1;
-        if (selectedIndex >= 0 && selectedIndex < actions.length) {
-          resolve(actions[selectedIndex]);
+      "Enter the numbers corresponding to the actions: ",
+      (actionIndexes) => {
+        const selectedIndexes = actionIndexes
+          .split(",")
+          .map((index) => parseInt(index.trim()) - 1);
+
+        const validSelection = selectedIndexes.every(
+          (index) => index >= 0 && index < actions.length
+        );
+
+        if (validSelection) {
+          resolve(selectedIndexes.map((index) => actions[index]));
         } else {
           console.log("Invalid input, please try again.");
-          resolve(chooseAction());
+          resolve(chooseActions());
         }
       }
     );
   });
 };
 
-const promptAction = (await chooseAction()) as keyof typeof promptConfig;
+const promptActions = (await chooseActions()) as Array<
+  keyof typeof actionsConfig
+>;
 const additionalPrompt = await getAdditionalPrompt();
 
 // close the readline interface after all input is taken
 rl.close();
 
-const allResponseText: string[] = [];
+const allResponseText: Map<string, string[]> = new Map();
 
 for (const file of allSourceFiles) {
   console.log(`\nProcessing module: ${file.path}`);
-  console.log(`Action: ${promptAction}`);
+  const promises = [];
 
-  const finalPrompt = `
-${file.content}
+  for (const promptAction of promptActions) {
+    console.log(`Action: ${promptAction}`);
 
-${promptConfig[promptAction].prompt}
+    const finalPrompt = `
+  ${file.content}
+  
+  ${actionsConfig[promptAction].prompt}
+  
+  ${additionalPrompt}
+  `;
 
-${additionalPrompt}
-`;
+    const resultPromise = openAICompletions
+      .getCompletions({
+        prompt: finalPrompt || "",
+      })
+      .then((result) => {
+        const response = result as CompletionsResponse;
+        const fileExtensionForAction =
+          actionsConfig[promptAction].fileExtension;
+        const messageContent = response?.[0].message.content;
 
-  const result = (await openAICompletions.getCompletions({
-    prompt: finalPrompt || "",
-  })) as CompletionsResponse;
+        const moduleNameWithoutExtension = path.basename(file.path, ".ts");
+        const saveFilePath = `_docs/${moduleNameWithoutExtension}/${promptAction}.${fileExtensionForAction}`;
 
-  const fileExtensionForAction = promptConfig[promptAction].fileExtension;
-  const moduleName = path.dirname(file.path);
-  const moduleNameWithoutExtension = path.basename(file.path, ".ts");
-  const newFileName = `${promptAction}.${fileExtensionForAction}`;
-  const newFilePath = path.join("_docs", moduleName, newFileName);
+        directoryExists(path.dirname(saveFilePath));
 
-  const messageContent = result?.[0].message.content;
+        console.log(`Saving to: ${saveFilePath} \n`);
+        // Always overwrite
+        return saveResultToFile(saveFilePath, messageContent).then(() => {
+          if (!allResponseText.has(promptAction)) {
+            allResponseText.set(promptAction, []);
+          }
+          allResponseText.get(promptAction)?.push(saveFilePath, messageContent);
+        });
+      });
 
-  const saveFilePath = `_docs/${moduleNameWithoutExtension}/${promptAction}.${fileExtensionForAction}`;
+    promises.push(resultPromise);
+  }
 
-  directoryExists(path.dirname(newFilePath));
-
-  console.log(`Saving to: ${newFilePath} \n`);
-  // Always overwrite
-  await saveResultToFile(saveFilePath, messageContent);
-  allResponseText.push(newFilePath, messageContent);
+  // Wait for all actions to complete for the current file
+  await Promise.all(promises);
 }
 
-const consolidatedResponses = allResponseText.join("\n\n");
+for (const [action, responseTexts] of allResponseText.entries()) {
+  const consolidatedResponses = responseTexts.join("\n\n");
 
-const consolidatedOutputPath = path.join(
-  "_docs",
-  `${promptAction}-consolidated.md`
-);
+  const consolidatedOutputPath = path.join(
+    "_docs",
+    `${action}-consolidated.md`
+  );
 
-await saveResultToFile(consolidatedOutputPath, consolidatedResponses);
-
-// How to automate unit tests,
-// if there is already unit tests for the file, run the unit tests  and just see whether they're passing or failing
-// generate unit tests based on a modules source code
-// save unit test to a file with random name(maybe use the modules name plus a random number)
-// spawn a new process to run the unit tests
-// if all pass then move into the _tests folder with that modules name for example _tests/module-name.test.ts, try this 3 times
-// if after 3 times they fail
+  await saveResultToFile(consolidatedOutputPath, consolidatedResponses);
+}
