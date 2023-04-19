@@ -1,6 +1,6 @@
 {
   "name": "instant-bun",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Instant Bun is a simple zero-dependency, fast, and lightweight framework for Bun",
   "main": "index.ts",
   "license": "MIT",
