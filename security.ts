@@ -1,4 +1,4 @@
-function generateEncryptionKey(): string {
+export function generateEncryptionKey(): string {
   const possibleChars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let key = "";
