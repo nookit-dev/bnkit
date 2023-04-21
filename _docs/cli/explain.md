@@ -1,16 +1,19 @@
-This file is a collection of utility functions related to file handling and command line argument parsing. 
+This file is a collection of utility functions for common tasks in command line interface (CLI) applications. 
 
-Dependencies:
+Dependencies: 
 - "error-handler-validation"
 - "fs"
 - "path"
-- "Bun" (assuming it is defined elsewhere)
+- "readline"
 
 Features:
-- `getUserInput`: a function that uses a child process to get user input asynchronously and returns a promise that resolves with the input string.
-- `parseCliArgs`: a function that takes command line arguments as input and returns a parsed object of key-value pairs. The keys are the flag names (without the "--" prefix) and the values are the flag values. If a flag doesn't have a value, its value is set to `true`.
-- `createFileWithContent`: a function that creates a file with the given file path and content. If the directory for the file path doesn't exist, it is created. 
-- `directoryExists`: a function that ensures the directory for the given path exists. If it doesn't exist, it is created. 
-- `getModulesFromPath`: a function that returns an array of module names within the given directory path. 
+- `getUserInput`: Asynchronously retrieves user input from the CLI.
+- `parseCliArgs`: Parses CLI arguments into a JavaScript object, with support for different data types and default values.
+- `createFileWithContent`: Creates a file with the given content and ensures the directory exists.
+- `directoryExists`: Checks if a directory exists, and creates it if it does not exist.
+- `getModulesFromPath`: Retrieves the names of all directories in a given path.
+- `getAdditionalPrompt`: Asynchronously prompts the user for additional input.
+- `chooseActions`: Asynchronously prompts the user to select from a list of available actions.
 
-The technical description of the module is that it provides a set of utility functions for file handling and command line argument parsing. These functions can be used in various file handling scenarios to ensure directories and files exist, get user input, parse command line arguments, and retrieve the names of modules within a directory.
+Technical description:
+The module uses built-in Node.js modules such as `fs`, `path`, and `readline` to perform common CLI tasks. The functions are designed to be modular and reusable, with convenient abstractions for common actions such as file and directory creation, user input retrieval, and action selection. The `parseCliArgs` function supports a wide range of parameter types and allows for the specification of default values, making it suitable for use in a variety of CLI applications. Overall, this module provides a useful set of utilities for building command line interfaces in Node.js.

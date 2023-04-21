@@ -1,5 +1,13 @@
-This file is a module that provides functions and types to create a CRUD server using the "bun" HTTP server library. It depends on other modules such as "error-handler-validation" and "types" to handle errors and define the schema types used in the server. 
+This module is a CRUD (Create, Read, Update, Delete) server for an API, with support for websockets and integration with OpenAI's API for generating completions. 
 
-Features of the module include creating a server router with the ability to add routes and handle requests, creating a CRUD server with API and router routes, and creating a WebSocket handler. It also includes a function to fetch data from an API with error handling.
+Dependencies: "bun" for serving http requests and websockets, "error-handler-validation" for handling and validating errors, and "types" for defining type mappings.
 
-The technical description includes async functions that use the "bun" server library to handle HTTP requests and responses, and a function that fetches data from an API. Types are defined for routes, routers, and servers. The module also includes a function to create completions using the OpenAI API.
+Features:
+- A fetcher function for making http requests to the API.
+- A router for defining and handling routes.
+- A CRUD server for handling API requests, with support for creating, reading, updating, and deleting items.
+- Integration with OpenAI's API for generating completions.
+- Support for websockets for real-time communication.
+
+Technical Description:
+The module creates a fetcher function for making http requests to the API, and a router for defining and handling routes. It then creates a CRUD server for handling API requests, with support for creating, reading, updating, and deleting items. Additionally, it integrates with OpenAI's API for generating completions, using a function to create a completion client with an API key. The module also supports websockets for real-time communication with connected clients.

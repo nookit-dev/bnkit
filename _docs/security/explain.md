@@ -1,7 +1,9 @@
-This module is a JavaScript function that generates a random encryption key string consisting of 32 characters from a set of possible characters. It does not depend on any other modules. The features of this module include: 
+This file contains a single exported function called "generateEncryptionKey()" which generates a random string of 32 alphanumeric characters. It depends on just the JavaScript built-in Math and String methods.
 
-- Generating a random encryption key
-- The length of the key is fixed at 32 characters
-- The key is generated from a set of possible characters: uppercase and lowercase letters of the English alphabet, and digits from 0 to 9
+Features of the module:
+- Generates a random encryption key
+- Uses a combination of uppercase letters, lowercase letters, and numbers
+- Returns the key as a string
 
-The technical description of the module is that it uses a for loop to iterate 32 times and append a random character from the set of possible characters to the key string using the charAt() method. The randomization is achieved by multiplying a randomly generated decimal between 0 and 1 by the length of possibleChars and using the Math.floor() method to round down to the nearest integer index of a character in the string. Finally, the generated key is returned as a string value.
+Technical description:
+The "generateEncryptionKey()" function initializes a variable called "possibleChars" with a string containing all possible characters to use in the encryption key. It then loops 32 times and randomly selects a character from "possibleChars" using the Math.random() method and adds it to the "key" variable using the String.charAt() method. Finally, it returns the complete "key" string.

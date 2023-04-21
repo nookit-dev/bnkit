@@ -1,6 +1,6 @@
 import path from "path";
 import readline from "readline";
-import { directoryExists } from "../../cli";
+import { chooseActions, directoryExists, getAdditionalPrompt } from "../../cli";
 import {
   getFilesForDirectoryFromRoot,
   readFilesContents,
@@ -23,49 +23,6 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-
-const getAdditionalPrompt = () =>
-  new Promise<string>((resolve) => {
-    rl.question("Do you want to add anything else...", (additionalPrompt) => {
-      resolve(additionalPrompt);
-    });
-  });
-
-const chooseActions = async (
-  actionsConfig: ActionsConfig
-): Promise<Array<keyof typeof actionsConfig>> => {
-  console.log("\nChoose actions (separated by commas):");
-  const actions = Object.keys(actionsConfig);
-  actions.forEach((action, index) => {
-    console.log(`${index + 1}. ${action}`);
-  });
-
-  const actionIndexes = await new Promise<string>((resolve) => {
-    rl.question(
-      "Enter the numbers corresponding to the actions: ",
-      (actionIndexes) => {
-        resolve(actionIndexes);
-      }
-    );
-  });
-
-  const selectedIndexes = actionIndexes
-    .split(",")
-    .map((index) => parseInt(index.trim()) - 1);
-
-  const validSelection = selectedIndexes.every(
-    (index) => index >= 0 && index < actions.length
-  );
-
-  if (validSelection) {
-    return selectedIndexes.map(
-      (index) => actions[index] as keyof typeof actionsConfig
-    );
-  } else {
-    console.log("Invalid input, please try again.");
-    return chooseActions(actionsConfig);
-  }
-};
 
 const promptActions = (await chooseActions(chatGptActionsConfig)) as Array<
   keyof typeof chatGptActionsConfig

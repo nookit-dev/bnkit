@@ -1,10 +1,9 @@
-This file exports a function called "createDebugPromptFromInputOutput" which takes in two strings (input and output) and an optional object parameter with three optional properties (functionName, moduleName, and additionalContentToAppend) and returns a string. The function concatenates the input and output strings with some optional information (function name, module name, and additional content) to create a debugging prompt. This prompt can be used to help identify issues with code.
+This file exports a type called DebugPromptOptions and a function called createDebugPromptFromInputOutput. The function takes in two string parameters (input and output) and an optional object parameter (options) that can have properties of functionName, moduleName, and additionalContentToAppend. 
 
-This module depends on TypeScript.
+The function creates a string that displays the input and output of a given task/problem, including any additional content specified in the options object. If functionName or moduleName are specified, they will be included in the display string as well. 
 
-Features:
-- Takes in input/output strings and optional parameters
-- Creates a debugging prompt with relevant information
-- Output is a markdown string
+This module does not depend on any other modules. 
 
-Overall, this module serves as a helpful debugging tool for developers.
+The main feature of this module is to create a debug prompt for displaying input/output for a specific task/problem. The prompt can be customized with additional information such as function or module names. 
+
+In technical terms, this module takes in two strings and an optional object parameter. It then creates a new string by concatenating the input and output strings along with any additional content specified in the options object. If functionName or moduleName are specified, they are also concatenated into the string. Finally, the resulting string is returned. The module utilizes basic string manipulation techniques and optional parameter handling.

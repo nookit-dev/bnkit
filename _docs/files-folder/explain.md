@@ -1,15 +1,16 @@
-This file is a module written in TypeScript that provides several functions for working with files and directories. 
+This file is a collection of utility functions for working with files and directories in a Node.js application. 
 
-Dependencies:
-- fs: A module for interacting with the file system.
-- path: A module for working with file paths.
+Modules it depends on:
+- fs: a built-in Node.js module for interacting with the file system
+- path: a built-in Node.js module for working with file and directory paths
 
-Features:
-- `getFilesForDirectory`: Returns an array of file names from a specified directory. It takes an optional array of file names to ignore.
-- `getFilesForDirectoryFromRoot`: Returns an array of file names from a specified directory relative to the project root directory. It takes an optional array of file names to ignore.
-- `isRootFolder`: Checks if a specified directory is the root directory for a project. It currently checks if there is a `tsconfig.json` file present in the directory.
-- `findAppRoot`: Starting from a specified directory, finds the project root directory by recursively checking parent directories until it finds the root.
-- `saveResultToFile`: Saves a string of content to a specified file path.
+Features of the module:
+- `getFilesForDirectory`: given a directory path, returns an array of file names (without extensions) within that directory, optionally ignoring specified files
+- `getFilesForDirectoryFromRoot`: given a directory path relative to the root of the application (determined by searching upwards for a 'tsconfig.json' file), returns an array of file names (without extensions) within that directory, optionally ignoring specified files
+- `isRootFolder`: determines whether a given path represents the root directory of the application (in this case, by checking for the presence of a 'tsconfig.json' file)
+- `findAppRoot`: given a starting path, searches upward for the application root directory (see `isRootFolder` for definition)
+- `saveResultToFile`: given a file path and contents, creates any necessary directories and writes the contents to the file
+- `readFilesContents`: given an array of file paths, returns an array of objects containing the file name and contents
 
 Technical description:
-The module uses the `fs` and `path` modules to recursively search for files and directories. It makes use of TypeScript syntax, including type annotations and interface definitions to improve code readability and maintainability. The `saveResultToFile` function makes use of the `async` and `await` keywords to work with `promises` returned by the `fs` module's methods. Overall, the module provides useful utility functions for working with files and directories in a TypeScript project.
+This file defines several functions that interact with the file system using the `fs` module and manipulate file paths using the `path` module. These functions can be used in a Node.js application to perform file-related tasks, such as finding files in a directory, reading file contents, and saving results to a file. Some of the functions are designed to work relative to the application root directory, which is determined by searching upwards for a specific file ('tsconfig.json' in this case) using the `findAppRoot` function. The `saveResultToFile` function also creates any directories needed to write to the specified file path. Overall, these functions provide useful utility for working with files and directories in a Node.js application.

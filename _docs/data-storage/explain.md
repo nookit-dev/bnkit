@@ -1,8 +1,10 @@
-This module is a utility for creating a SQLite CRUD interface. It depends on the "bun:sqlite" and "./validator" modules. 
+This file is a module that exports a function called `createSqliteInterface`. It depends on the `bun:sqlite` package, the `createValidator` function from a separate file, and the `TypeInference` and `TypeMapping` types from another file. 
 
-Features:
-- createTableQuery: a function that takes a table name and schema as arguments and returns a SQL query to create a table in a SQLite database.
-- CreateSqliteInterface: a type definition for the CRUD interface.
-- createSqliteInterface: a function that takes a table name and schema as arguments and returns a CRUD interface for that table.
+Features of the module are:
+- `createTableQuery` function to create a table query string based on a schema object
+- `CreateSqliteInterface` type for defining the interface of a SQLite database CRUD operations
+- `createSqliteInterface` function to create a SQLite database CRUD interface based on a schema object and a table name
 
-The createSqliteInterface function first creates a database instance using "bun:sqlite" and creates a table with the specified schema using createTableQuery. It then defines the necessary CRUD functions for the table by constructing and executing SQL queries. The create function inserts a new record into the table, the read function selects all records from the table and validates them against the schema using the Validator module, the update function updates an existing record in the table, and the deleteById function deletes a record from the table based on its ID. Overall, this module provides a simplified way to interact with a SQLite database using TypeScript.
+The `createSqliteInterface` function accepts a schema object that maps field names to data types, and a table name. It creates a new SQLite database using the `bun:sqlite` package and creates a table in the database based on the schema object. It then returns an object with four methods: `create`, `read`, `update`, and `deleteById`, which correspond to the CRUD operations for interfacing with the database. 
+
+Overall, this module provides a simple and convenient way to create a SQLite database interface in TypeScript.
