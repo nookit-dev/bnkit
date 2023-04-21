@@ -1,6 +1,6 @@
 {
   "name": "instant-bun",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "scripts": {
     "docs-gen": "bun run ./_apps/repo-docs-generator/repo-docs-generator.ts"
   },
