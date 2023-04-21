@@ -3,3 +3,5 @@ _docs
 _tests
 .env.example
 README.md
+bun.lockb
+.env
