@@ -1,4 +1,6 @@
 import { handleError } from "error-handler-validation";
+// node serialport
+import SerialPort from "serialport";
 
 export type ArduinoOptions = {
   port: string;
@@ -36,6 +38,18 @@ export function createArduinoInterface({
   }
 
   return { onData, write };
+}
+
+export async function listPorts(): Promise<void> {
+  try {
+    const ports = await SerialPort.list();
+    console.log("Discovered Ports:");
+    ports.forEach((port) => {
+      console.log(`- Path: ${port.path}, Manufacturer: ${port.manufacturer}`);
+    });
+  } catch (error) {
+    handleError({ type: "APIError", message: error.message });
+  }
 }
 
 //  example usage:
