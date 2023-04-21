@@ -124,10 +124,15 @@ Install instant-bun in your bun app,
 bun add https://github.com/Modular-Architecture-Toolkit/instant-bun
 ```
 
+*OR* do an install from the npm registry
+
+```bash
+bun add instant-bun
+```
+
 Why would I add the repo directly you might ask?
 Because you use the source code directly, every commit is a new version, and you can use whatever version 
 of each module that you want.
-
 
 
 then import into your module
