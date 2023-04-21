@@ -1,7 +1,15 @@
 export type ActionConfig = {
   prompt: string;
   fileExtension: string;
+  outputFolder?: string;
 };
+
+export type ActionsConfigKeys = keyof typeof chatGptActionsConfig;
+
+export type ActionsConfig = {
+  [key in ActionsConfigKeys]: ActionConfig;
+};
+
 
 export const chatGptActionsConfig = {
   clean: {
@@ -36,6 +44,7 @@ export const chatGptActionsConfig = {
   unitTest: {
     prompt: `Based on the above module, write unit tests for it. Please use TypeScript syntax and return the raw string.`,
     fileExtension: "test.ts",
+    outputFolder: "_docs"
   },
   improvements: {
     prompt:
@@ -44,8 +53,3 @@ export const chatGptActionsConfig = {
   },
 };
 
-export type ActionsConfigKeys = keyof typeof chatGptActionsConfig;
-
-export type ActionsConfig = {
-  [key in ActionsConfigKeys]: ActionConfig;
-};

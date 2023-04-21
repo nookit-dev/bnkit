@@ -6,7 +6,10 @@ import {
   saveResultToFile,
 } from "../../files-folder";
 import createOpenAICompletions, { CompletionsResponse } from "../../networking";
-import { ActionsConfig, chatGptActionsConfig } from "./actions-config";
+import {
+  ActionsConfig,
+  chatGptActionsConfig,
+} from "./repo-docs-generator-config";
 
 const API_KEY = Bun.env.OPENAI_API_KEY || "";
 
@@ -54,11 +57,13 @@ async function processAction(
     prompt: finalPrompt || "",
   });
   const response = result as CompletionsResponse;
-  const fileExtensionForAction = actionsConfig[promptAction].fileExtension;
   const messageContent = response?.[0].message.content;
+  const fileExtensionForAction = actionsConfig[promptAction].fileExtension;
+  const outputFolderForAction =
+    actionsConfig[promptAction].outputFolder || "_docs";
 
   const moduleNameWithoutExtension = path.basename(file.path, ".ts");
-  const saveFilePath = `_docs/${moduleNameWithoutExtension}/${promptAction}.${fileExtensionForAction}`;
+  const saveFilePath = `${outputFolderForAction}/${moduleNameWithoutExtension}/${promptAction}.${fileExtensionForAction}`;
 
   directoryExists(path.dirname(saveFilePath));
   console.log(`Saving to: ${saveFilePath} \n`);
@@ -96,12 +101,10 @@ async function createConsolidatedFiles() {
 }
 
 // Main function to process all files and create consolidated output
-async function main(actionsConfig: ActionsConfig) {
+export async function cliApp(actionsConfig: ActionsConfig) {
   const fileProcessingPromises = allSourceFiles.map((file) =>
     processFile(file, actionsConfig)
   );
   await Promise.all(fileProcessingPromises);
   await createConsolidatedFiles();
 }
-
-await main(chatGptActionsConfig);

@@ -2,7 +2,7 @@
   "name": "instant-bun",
   "version": "0.0.2",
   "scripts": {
-    "docs-gen": "bun run ./_apps/gpt-cli-docs-generator/index.ts"
+    "docs-gen": "bun run ./_apps/repo-docs-generator/repo-docs-generator.ts"
   },
   "description": "Instant Bun is a simple zero-dependency, fast, and lightweight framework for Bun",
   "main": "index.ts",
