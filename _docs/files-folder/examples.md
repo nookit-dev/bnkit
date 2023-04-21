@@ -1,36 +1,65 @@
-## Examples
-
-### Example 1: Get files for a specific directory
+### Example usage of the "getFilesForDirectory" function
 
 ```typescript
 import { getFilesForDirectory } from "./file-utils";
 
-// Get all files in the "_apps" directory, except for "index" and "config"
-const files = getFilesForDirectory("_apps", { ignoreFiles: ["index", "config"] });
-console.log(files);
-// Output: ["home", "search", "profile", "settings"]
+// Get files in "_tests" directory, ignoring files named "test1" and "test2"
+const files = getFilesForDirectory("_tests", { ignoreFiles: ["test1", "test2"] });
+
+if (files?.length) {
+  console.log(files); // ["file1", "file2", ...]
+} else {
+  console.log("No files found in directory");
+}
 ```
 
-### Example 2: Get files from root directory
+### Example usage of the "getFilesForDirectoryFromRoot" function
 
 ```typescript
 import { getFilesForDirectoryFromRoot } from "./file-utils";
 
-// Get all files in the "_tests" directory of the root directory, except for "index" and "config"
-const files = getFilesForDirectoryFromRoot("_tests", { ignoreFiles: ["index", "config"] });
-console.log(files);
-// Output: ["test1", "test2", "test3"]
+// Get files in "_apps" directory of the root folder, ignoring files named "app1" and "app2"
+const files = getFilesForDirectoryFromRoot("_apps", { ignoreFiles: ["app1", "app2"] });
+
+if (files?.length) {
+  console.log(files); // ["file1", "file2", ...]
+} else {
+  console.log("No files found in directory");
+}
 ```
 
-### Example 3: Save result to file
+### Example usage of the "saveResultToFile" function
 
 ```typescript
 import { saveResultToFile } from "./file-utils";
 
-const result = "This is a sample result";
-const filePath = "./results/sample.txt";
+const filePath = "./results/result1.txt";
+const content = "This is the content to save to the file.";
 
-// Save the result to the file path
-saveResultToFile(filePath, result);
-// A file named "sample.txt" with the content "This is a sample result" is created in the "results" directory
+saveResultToFile(filePath, content)
+  .then(() => console.log("File saved successfully"))
+  .catch((err) => console.error(`Error saving file: ${err}`));
+```
+
+### Example usage of the "readFilesContents" function
+
+```typescript
+import { readFilesContents } from "./file-utils";
+
+const filePaths = ["./file1.txt", "./file2.txt", "./file3.txt"];
+
+const files = readFilesContents(filePaths);
+
+if (files?.length) {
+  console.log(files[0].path); // "file1.txt"
+  console.log(files[0].content); // "This is the content of file1"
+
+  console.log(files[1].path); // "file2.txt"
+  console.log(files[1].content); // "This is the content of file2"
+
+  console.log(files[2].path); // "file3.txt"
+  console.log(files[2].content); // "This is the content of file3"
+} else {
+  console.log("No files found");
+}
 ```

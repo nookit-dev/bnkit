@@ -1,36 +1,61 @@
 # Markdown Parser Module
 
-This module provides utility functions to parse markdown syntax and convert it to HTML tags. The module exports the following functions:
+This is a Node.js module that can be used to parse markdown syntax and convert it to HTML.
 
-- `replaceMarkdown(text: string, regex: RegExp, replacement: string): string`: replaces markdown syntax with the specified replacement string using the provided regular expression.
-- `parseHeaders(text: string): string`: identifies header tags (h1 to h6) in the provided text and converts them to HTML header tags.
-- `useMdToHtml()`: returns an object with the following functions to handle various markdown elements:
-  - `parseBold(text: string): string`: identifies bold text in the provided text and converts it to HTML strong tags.
-  - `parseItalic(text: string): string`: identifies italicized text in the provided text and converts it to HTML em tags.
-  - `parseLinks(text: string): string`: identifies links in the provided text and converts them to HTML anchor tags.
-  - `parseUnorderedLists(text: string): string`: identifies unordered list items in the provided text and converts them to HTML unordered list tags.
-  - `parseOrderedLists(text: string): string`: identifies ordered list items in the provided text and converts them to HTML ordered list tags.
+### Functions
 
-Additionally, the module exports a `templatingEngine` object, which is currently empty.
+- `replaceMarkdown(text: string, regex: RegExp, replacement: string): string` - Replaces text that matches a given regular expression with a specified replacement.
+- `convertMarkdownToHTML(markdownText: string): string` - Converts markdown syntax to HTML by applying a series of parsing functions to the text.
 
-To use the module, simply import the desired functions and call them with the appropriate arguments. For example:
+### Parsers
+
+The module provides the following parsers:
+
+- `headers` - Parses up to six levels of header syntax (`#`).
+- `bold` - Parses bold syntax (`**`).
+- `italic` - Parses italic syntax (`*`).
+- `links` - Parses link syntax (`[]()`).
+- `unorderedLists` - Parses unordered list syntax (`-`).
+- `orderedLists` - Parses ordered list syntax (`1.`).
+- `blockquotes` - Parses blockquote syntax (`>`).
+- `codeBlocks` - Parses code block syntax (`` ``` ``).
+- `inlineCode` - Parses inline code syntax (`\``).
+
+### Example Usage
 
 ```javascript
-import { parseHeaders, useMdToHtml } from 'markdown-parser';
+const { convertMarkdownToHTML } = require('markdown-parser-module');
 
-const myMarkdown = '# My Header \n\nThis is **bold** text and this is *italic*.\n\n[This is a link](https://www.example.com).\n\n- This is an unordered list item.\n- So is this.\n\n1. This is an ordered list item.\n2. So is this.';
+const markdownText = '# Hello World\n\nThis is **bold** and this is *italic*. Click [here](https://example.com) to visit a link.\n\n- This is an unordered list item\n- This is another unordered list item\n\n1. This is an ordered list item\n2. This is another ordered list item\n\n> This is a blockquote.\n\n```\nconsole.log("This is a code block");\n```\n\nInline `code` is also supported.';
 
-const formatted = parseHeaders(myMarkdown);
-const { parseBold, parseItalic, parseLinks, parseUnorderedLists, parseOrderedLists } = useMdToHtml();
+const html = convertMarkdownToHTML(markdownText);
 
-const finalFormatted = parseOrderedLists(parseUnorderedLists(parseLinks(parseItalic(parseBold(formatted)))));
-
-console.log(finalFormatted);
-// Output:
-// <h1>My Header</h1>
-// <p>This is <strong>bold</strong> text and this is <em>italic</em>.</p>
-// <p><a href="https://www.example.com">This is a link</a>.</p>
-// <ul><li>This is an unordered list item.</li><li>So is this.</li></ul><ol><li>This is an ordered list item.</li><li>So is this.</li></ol>
+console.log(html);
 ```
 
-This will convert the provided markdown string to formatted HTML using the `parseHeaders` function for header tags and the `useMdToHtml` object to handle other markdown elements. The resulting HTML string can then be used in a web page or application.
+Output:
+
+```html
+<h1>Hello World</h1>
+
+<p>This is <strong>bold</strong> and this is <em>italic</em>. Click <a href="https://example.com">here</a> to visit a link.</p>
+
+<ul>
+<li>This is an unordered list item</li>
+<li>This is another unordered list item</li>
+</ul>
+
+<ol>
+<li>This is an ordered list item</li>
+<li>This is another ordered list item</li>
+</ol>
+
+<blockquote>
+<p>This is a blockquote.</p>
+</blockquote>
+
+<pre><code>console.log("This is a code block");
+</code></pre>
+
+<p>Inline <code>code</code> is also supported.</p>
+```

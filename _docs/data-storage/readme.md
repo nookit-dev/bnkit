@@ -1,68 +1,102 @@
-# Simple SQLite Interface
+# sqlite-interface
 
-This is a simple SQLite interface written in TypeScript that supports basic CRUD operations. 
+A simple CRUD interface for SQLite databases in TypeScript.
 
 ## Installation
 
 ```
-npm install simple-sqlite-interface
+npm install sqlite-interface
 ```
 
 ## Usage
 
-### Creating the Interface
-
-To create an SQLite interface, use the `createSqliteInterface` function. It takes two arguments: the name of the table and a schema object that defines the columns of the table and their data types.
-
 ```typescript
-import { createSqliteInterface } from "simple-sqlite-interface";
+import { createSqliteInterface } from "sqlite-interface";
 
-const schema = {
-  id: "integer primary key autoincrement",
-  title: "text",
-  completed: "boolean",
-};
+interface Task {
+  id: number;
+  title: string;
+  description?: string;
+  completed: boolean;
+}
 
-const todos = createSqliteInterface("todos", schema);
-```
+const taskSchema = {
+  id: "integer PRIMARY KEY",
+  title: "text NOT NULL",
+  description: "text",
+  completed: "integer NOT NULL"
+} as const;
 
-### CRUD Operations
+const taskInterface = createSqliteInterface<Task>("tasks", taskSchema);
 
-#### Create
-
-To create a new row in the table, use the `create` function. It takes an object that matches the schema of the table.
-
-```typescript
-await todos.create({
-  title: "Buy groceries",
-  completed: false,
+// Create
+await taskInterface.create({
+  title: "Do laundry",
+  completed: false
 });
+
+// Read
+const tasks = await taskInterface.read();
+console.log(tasks);
+
+// Update
+await taskInterface.update(1, { completed: true });
+
+// Delete
+await taskInterface.deleteById(1);
 ```
 
-#### Read
+## API
 
-To read all rows in the table, use the `read` function. It returns an array of objects that match the schema of the table.
+The `createSqliteInterface` function creates a new CRUD interface for a SQLite database table.
 
-```typescript
-const allTodos = await todos.read();
+```
+createSqliteInterface<Schema extends Record<string, keyof TypeMapping>>(
+  tableName: string,
+  schema: Schema
+): CreateSqliteInterface<Schema>
 ```
 
-#### Update
+### `tableName`
 
-To update an existing row in the table, use the `update` function. It takes the id of the row to update and an object containing the fields to update.
+The name of the SQLite database table to create the interface for.
 
-```typescript
-await todos.update(1, { completed: true });
+### `schema`
+
+An object describing the structure of the database table. The keys are the column names, and the values are strings describing the data type, optionally followed by database constraints. These strings should be compatible with SQLite data types.
+
+### Returned interface
+
+The `createSqliteInterface` function returns an object with the following methods:
+
+#### `create`
+
+```
+create(item: TypeInference<Schema>): Promise<void>
 ```
 
-#### Delete
+Inserts a new item into the database table.
 
-To delete an existing row in the table, use the `deleteById` function. It takes the id of the row to delete.
+#### `read`
 
-```typescript
-await todos.deleteById(1);
+```
+read(): Promise<TypeInference<Schema>[]>
 ```
 
-## Contributing
+Reads all items from the database table.
 
-PRs accepted! 👍 Please lint, test, and write good commit messages.
+#### `update`
+
+```
+update(id: number, item: Partial<TypeInference<Schema>>): Promise<void>
+```
+
+Updates an existing item in the database table.
+
+#### `deleteById`
+
+```
+deleteById(id: number): Promise<void>
+```
+
+Deletes an existing item from the database table by ID.

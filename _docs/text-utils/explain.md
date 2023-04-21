@@ -1,10 +1,11 @@
-This module is a tool for formatting and prettifying HTML and converting markdown syntax to HTML tags. It has several utility functions for handling different markdown elements, including headers, bold and italic text, links, and ordered and unordered lists. It also includes a templating engine of unspecified functionality. 
+This file contains two main functions: "prettifyHTMLString" and "convertMarkdownToHTML", as well as a helper function "replaceMarkdown" and an object with various parsers for different markdown elements. 
 
-This module depends on regular expressions and the built-in string and array methods of JavaScript. 
+Dependencies: This module does not appear to depend on any other modules.
 
-Features of the module include: 
-- Prettifying raw HTML code with proper indentation and line breaks
-- Converting markdown syntax to HTML tags for headers, bold and italic text, links, and lists
-- Ability to add custom functionality through the templating engine
+"prettifyHTMLString": This function takes a raw HTML string and formats it by adding indentation and line breaks to make it more human-readable. It achieves this by using regular expressions to parse through the HTML tags, identifying opening and closing tags and their corresponding attributes, and then adding appropriate spacing and line breaks to the formatted output.
 
-Overall, this module provides useful tools for developers working with HTML and markdown syntax.
+"convertMarkdownToHTML": This function takes a raw markdown string and converts it to HTML. It does this by iterating through an object of parsers for different markdown elements (such as headers, bold/italic text, links, lists, etc.), and applying the appropriate parser to the markdown string. Once all the parsers have been applied, the resulting string is returned as HTML.
+
+"replaceMarkdown": This is a helper function used by the various parsers in "convertMarkdownToHTML". It takes a text string, a regular expression to match, and a replacement string, and applies the regular expression to the text string, replacing any matches with the replacement string.
+
+Overall, this module provides functionality for converting and formatting HTML and markdown strings.

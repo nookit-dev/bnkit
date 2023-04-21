@@ -1,10 +1,18 @@
-This file is a module that exports a function called `createSqliteInterface`. It depends on the `bun:sqlite` package, the `createValidator` function from a separate file, and the `TypeInference` and `TypeMapping` types from another file. 
+# Module: `sqlite-interface.ts`
 
-Features of the module are:
-- `createTableQuery` function to create a table query string based on a schema object
-- `CreateSqliteInterface` type for defining the interface of a SQLite database CRUD operations
-- `createSqliteInterface` function to create a SQLite database CRUD interface based on a schema object and a table name
+## Dependencies:
+- `bun:sqlite`: A SQLite database driver for Node.js.
+- `./validator`: A module that exports functions for validating data against a specified schema.
+- `./types`: A module that exports type mappings used for SQLite table creation.
 
-The `createSqliteInterface` function accepts a schema object that maps field names to data types, and a table name. It creates a new SQLite database using the `bun:sqlite` package and creates a table in the database based on the schema object. It then returns an object with four methods: `create`, `read`, `update`, and `deleteById`, which correspond to the CRUD operations for interfacing with the database. 
+## Features:
+- `createTableQuery`: A utility function that generates a SQLite CREATE TABLE query based on a specified table name and schema.
+- `CreateSqliteInterface`: A generic type that describes the shape of a SQLite CRUD interface.
+- `createSqliteInterface`: A function that creates a SQLite CRUD interface based on a specified table name and schema.
+  - `create`: A function that creates a new record in the table based on a specified data object.
+  - `read`: A function that returns all records in the table and validates them against the specified schema.
+  - `update`: A function that updates a record in the table with the specified ID and data object.
+  - `deleteById`: A function that deletes a record from the table with the specified ID.
 
-Overall, this module provides a simple and convenient way to create a SQLite database interface in TypeScript.
+## Technical Description:
+`sqlite-interface.ts` is a module that exports functions for creating a CRUD interface for a SQLite database based on a specified schema. The `createSqliteInterface` function creates a new SQLite database connection, generates a CREATE TABLE query using the `createTableQuery` utility function, and returns an object with four functions that correspond to the CRUD operations available in a typical database: create, read, update, and delete. The `create` function inserts a new record into the table, the `read` function returns all records in the table and validates them against the specified schema using the `validateAgainstArraySchema` function from the `./validator` module, the `update` function updates a specific record in the table with the specified ID and data object, and the `deleteById` function deletes a specific record from the table with the specified ID. The module depends on the `bun:sqlite` database driver for Node.js, the `./validator` module for validating data against the specified schema, and the `./types` module for type mappings used in SQLite table creation.

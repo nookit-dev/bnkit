@@ -1,35 +1,22 @@
 # Module Name
 
-This is the module description.
-
-## Installation
-
-```bash
-npm install module-name
-```
+This is a template for a Node.js module.
 
 ## Usage
 
-```javascript
-const moduleName = require("module-name");
+To use this module, follow these steps:
 
-// Do something with the module
-```
+1. Install the module using npm: `npm install module-name`
+2. Import the module in your script: `const moduleName = require('module-name')`
+3. Use the module's functions as needed
 
-## API
+## Functions
 
-### `functionName(param1: type, param2: type): returnType`
+This module contains the following functions:
 
-Description of the function.
-
-- `param1`: Description of the first parameter.
-- `param2`: Description of the second parameter.
-- `returnType`: Description of the return value.
-
-### `property`
-
-Description of the property.
-
-## License
-
-This module is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+- `getUserInput()`
+- `parseCliArgs()`
+- `directoryExists(directoryPath: string)`
+- `getModulesFromPath(directoryPath: string)`
+- `getAdditionalPrompt(): Promise<string>`
+- `chooseActions(actionsConfig: Record<string, any>): Promise<Array<keyof typeof actionsConfig>>`

@@ -1,44 +1,87 @@
-# createDebugPromptFromInputOutput
+# Debug Prompt Module
 
-A function that generates a debug prompt message given input and output strings. The prompt message includes the input and output strings, as well as an optional function name and module name.
+This module provides a utility function `createDebugPromptFromInputOutput` that makes it easy to create debug prompts with relevant information. 
 
 ## Installation
 
+To install, simply run:
+
 ```
-npm install create-debug-prompt-from-input-output
+npm install debug-prompt
 ```
 
 ## Usage
 
-```js
-import { createDebugPromptFromInputOutput } from 'create-debug-prompt-from-input-output';
+```javascript
+import { createDebugPromptFromInputOutput } from 'debug-prompt';
 
-const input = 'Hello, world!';
-const output = 'Hola, mundo!';
-const options = { functionName: 'greet', moduleName: 'greetings.js' };
+const input = '2, 3, 4';
+const output = '10';
 
-const prompt = createDebugPromptFromInputOutput(input, output, options);
+const options = {
+  functionName: 'sumArray',
+  moduleName: 'math.js',
+  additionalContentToAppend: 'Check for edge cases',
+};
+
+const debugPrompt = createDebugPromptFromInputOutput(input, output, options);
+
+console.log(debugPrompt);
+// I'm given:
+// 2, 3, 4
+//
+// Output:
+// 10
+//
+// Function name: sumArray
+// File name: math.js
+//
+// Additional content:
+// Check for edge cases
 ```
 
 ## API
 
-### createDebugPromptFromInputOutput(input: string, output: string, options?: DebugPromptOptions): string
+### `createDebugPromptFromInputOutput(input: string, output: string, options?: DebugPromptOptions): string`
 
-Generates a debug prompt message given input and output strings. 
+This function returns a string that contains the input, output, and any additional information passed in through the `options` object. 
 
-#### Parameters:
+#### `input`
 
-- `input` (string): The input string to include in the debug prompt message.
-- `output` (string): The output string to include in the debug prompt message.
-- `options` (optional object):
-  - `functionName` (string): The name of the function that generated the given output.
-  - `moduleName` (string): The name of the module/file that contains the function that generated the given output.
-  - `additionalContentToAppend` (string): Additional content to append to the end of the debug prompt message.
+Type: `string`
 
-#### Returns:
+The input that was given to the function or code being debugged.
 
-- (string): The generated debug prompt message.
+#### `output`
+
+Type: `string`
+
+The output that was produced by the function or code being debugged.
+
+#### `options`
+
+Type: `DebugPromptOptions` (optional)
+
+An object that contains additional information to be included in the debug prompt. 
+
+##### `functionName`
+
+Type: `string` (optional)
+
+The name of the function being debugged.
+
+##### `moduleName`
+
+Type: `string` (optional)
+
+The name of the module or file that contains the function being debugged.
+
+##### `additionalContentToAppend`
+
+Type: `string` (optional)
+
+Any additional information that should be included in the debug prompt. 
 
 ## License
 
-MIT © [Your Name]
+This module is licensed under the [MIT License](https://opensource.org/licenses/MIT).

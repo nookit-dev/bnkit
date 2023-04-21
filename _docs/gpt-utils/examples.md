@@ -1,12 +1,12 @@
-### Example 1
+#### Example 1
 
-```typescript
-const input = "hello";
-const output = "olleh";
+```javascript
+const input = "Hello";
+const output = "olleH";
 const options = {
   functionName: "reverseString",
-  moduleName: "stringUtils.ts",
-  additionalContentToAppend: "This function is used to reverse a string.",
+  moduleName: "stringUtils.js",
+  additionalContentToAppend: "This is a helper function for manipulating strings."
 };
 
 const debugPrompt = createDebugPromptFromInputOutput(input, output, options);
@@ -14,74 +14,48 @@ const debugPrompt = createDebugPromptFromInputOutput(input, output, options);
 console.log(debugPrompt);
 ```
 
-This will output:
+Output:
 
 ```
 I'm given:
-hello
+Hello
 
 Output:
-olleh
+olleH
 
 Function name: reverseString
-File name: stringUtils.ts
+File name: stringUtils.js
 
 Additional content:
-This function is used to reverse a string.
+This is a helper function for manipulating strings.
 ```
 
-### Example 2
+#### Example 2
 
-```typescript
-const input = "hello";
-const output = "hello";
+```javascript
+const input = "23,54,123";
+const output = "300";
 const options = {
-  functionName: "capitalizeString",
-  moduleName: "stringUtils.ts",
+  functionName: "sumValues",
+  additionalContentToAppend: "This function calculates the sum of the values in a comma-separated string."
 };
 
 const debugPrompt = createDebugPromptFromInputOutput(input, output, options);
 
-console.log(debugPrompt);
+alert(debugPrompt);
 ```
 
-This will output:
-
-```
-I'm given:
-hello
-
-Output:
-hello
-
-Function name: capitalizeString
-File name: stringUtils.ts
-```
-
-### Example 3
-
-```typescript
-const input = "10, 20, 30";
-const output = "60";
-const options = {
-  additionalContentToAppend:
-    "This is the output of adding the numbers in the input string.",
-};
-
-const debugPrompt = createDebugPromptFromInputOutput(input, output, options);
-
-console.log(debugPrompt);
-```
-
-This will output:
+Output (as an alert box):
 
 ```
 I'm given:
-10, 20, 30
+23,54,123
 
 Output:
-60
+300
+
+Function name: sumValues
 
 Additional content:
-This is the output of adding the numbers in the input string.
+This function calculates the sum of the values in a comma-separated string.
 ```

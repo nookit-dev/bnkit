@@ -1,65 +1,83 @@
-# JSON Web Token (JWT) Library
+# JWT Util Module
 
-This is a simple library for encoding and decoding JSON Web Tokens (JWTs).
+This is a module for encoding, decoding, signing, and verifying JSON Web Tokens (JWTs) in Node.js applications.
+
+## Installation
+
+To install this module, use the following command:
+
+```
+npm install --save jwt-util
+```
 
 ## Usage
 
-### Client-side
+### Client-Side
 
-To use this library on the client-side (i.e. in the browser), you can import it as follows:
+#### `decodeJwt(token: string)`
 
-```
-import { jwtClient } from "jwt-library";
-```
+This function decodes a JWT string and returns an object containing the decoded header and payload.
 
-You can then use the `decodeJwt` and `isJwtExpired` functions to decode and verify JWTs:
+**Arguments:**
 
-```
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+- `token` (string): The JWT string to decode.
 
-jwtClient().isJwtExpired(token); // returns false
-jwtClient().decodeJwt(token);   // returns { header: { alg: "HS256", typ: "JWT" }, payload: { sub: "1234567890", name: "John Doe", iat: 1516239022 } }
-```
+**Returns:**
 
-### Server-side
+An object with the following properties:
 
-To use this library on the server-side (i.e. in Node.js), you can import it as follows:
+- `header` (object): The decoded header object.
+- `payload` (object): The decoded payload object.
 
-```
-import { jwtServer } from "jwt-library";
-```
+#### `isJwtExpired(token: string)`
 
-You can then use the `createJwt` and `verifyJwt` functions to create and verify JWTs:
+This function checks whether a JWT has expired.
 
-```
-const secret = "my-secret-key";
+**Arguments:**
 
-const payload = { sub: "1234567890", name: "John Doe" };
-const expiresIn = 60 * 60; // 1 hour
+- `token` (string): The JWT string to check.
 
-const token = jwtServer(secret).createJwt(payload, secret, expiresIn);
+**Returns:**
 
-jwtServer(secret).verifyJwt(token, secret); // returns { header: { alg: "HS256", typ: "JWT" }, payload: { sub: "1234567890", name: "John Doe", iat: 1516239022, exp: 1516242622 } }
-```
+A boolean indicating whether the JWT has expired.
 
-## API
+### Server-Side
 
-### `jwtClient`
+#### `createJwt(payload: JwtPayload, secret: string, expiresIn?: number)`
 
-#### `decodeJwt(token: string): { header: object, payload: object }`
+This function creates a new JWT string.
 
-This function decodes a JWT and returns its header and payload as objects.
+**Arguments:**
 
-#### `isJwtExpired(token: string): boolean`
+- `payload` (object): The payload object to include in the JWT.
+- `secret` (string): The secret key to sign the JWT with.
+- `expiresIn` (number, optional): The expiration time of the JWT, in seconds. Default is 3600 (1 hour).
 
-This function checks if a JWT has expired and returns a boolean.
+**Returns:**
 
-### `jwtServer(secret: string)`
+The JWT string.
 
-#### `createJwt(payload: object, secret: string, expiresIn: number = 3600): string`
+#### `verifyJwt(token: string, secret: string)`
 
-This function creates a JWT with the given payload and secret. The `expiresIn` parameter is optional and specifies the number of seconds until the token expires (default: 1 hour).
+This function verifies the signature and expiration time of a JWT.
 
-#### `verifyJwt(token: string, secret: string): { header: object, payload: object }`
+**Arguments:**
 
-This function verifies a JWT and returns its header and payload as objects. If the token is invalid or has expired, an error is thrown.
+- `token` (string): The JWT string to verify.
+- `secret` (string): The secret key to verify the JWT with.
+
+**Returns:**
+
+An object with the following properties:
+
+- `header` (object): The decoded header object.
+- `payload` (object): The decoded payload object.
+
+**Throws:**
+
+- `"Invalid signature"`: If the JWT signature is invalid.
+- `"Token expired"`: If the JWT has expired.
+
+## License
+
+This module is licensed under the MIT License. See the `LICENSE` file for more information.

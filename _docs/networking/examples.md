@@ -1,90 +1,41 @@
-# Examples of Using the CRUD Server Module
+# Example Usage of `createCrudServer`
 
-## Creating a Server
+```typescript
+import { createRouter, createCrudServer, ServerRoute } from "./crud-server";
 
-To create a CRUD server, first import the `createCrudServer` method from the module:
+// Define API route handlers
+const createHandler = (req: Request) => new Response("Create handler reached");
+const readHandler = (req: Request) => new Response("Read handler reached");
+const updateHandler = (req: Request) => new Response("Update handler reached");
+const deleteHandler = (req: Request) => new Response("Delete handler reached");
 
-```javascript
-import { createCrudServer } from "./crud-server";
+// Create server routes
+const routes: ServerRoute[] = [
+  { path: "/api/create", method: "POST", handler: createHandler },
+  { path: "/api/read", method: "GET", handler: readHandler },
+  { path: "/api/update", method: "PUT", handler: updateHandler },
+  { path: "/api/delete", method: "DELETE", handler: deleteHandler },
+];
+
+// Create router and server
+const router = createRouter(routes);
+const server = createCrudServer({ router, port: 8000 });
+
+// Start server
+server.start();
 ```
 
-Then, call the method with optional parameters:
+# Example Usage of `createOpenAICompletions`
 
-```javascript
-const server = createCrudServer({
-  router,
-  port: 4000,
-});
+```typescript
+import createOpenAICompletions from "./openai-completions";
+
+// Set up OpenAI Completions API client
+const openAI = createOpenAICompletions({ apiKey: "your-api-key-here" });
+
+// Call getCompletions method
+openAI.getCompletions({ prompt: "What is the meaning of life?" }).then(
+  (completions) => console.log(completions),
+  (error) => console.error(error)
+);
 ```
-
-Here, the `router` parameter is an optional `ServerRouter` object that you can use to handle requests for frontend pages. The `port` parameter sets the port number for the server. If not provided, it defaults to 4000.
-
-## Adding Routes
-
-To add routes to the server, you can call the `addRoute` method on the `ServerRouter` object. For example:
-
-```javascript
-const router = createRouter();
-
-router.addRoute("/", "GET", (req: Request) => {
-  return new Response("Hello, world!");
-});
-```
-
-Here, a route is added to handle GET requests to the root URL path. The handler function returns a new Response object with a "Hello, world!" message.
-
-## Handling Requests
-
-To handle requests, call the `handleRequest` method on the `ServerRouter` object or provide a fetch method to the `serve()` function. For example:
-
-```javascript
-const server = serve({
-  port: port ? `:${port}` : ":4000",
-  async fetch(req: Request): Promise<Response> {
-    const url = new URL(req.url);
-
-    try {
-      if (url.pathname.startsWith("/api")) {
-        // Handle API routes
-      } else {
-        // Handle frontend pages
-        const handler = router && router[url.pathname];
-        if (handler) {
-          const response = await handler(req);
-          return response;
-        }
-      }
-    } catch (error) {
-      // Handle errors
-    }
-
-    return new Response("Not found", { status: 404 });
-  },
-});
-```
-
-Here, the `fetch` method is provided to the `serve()` function to handle all incoming requests. If the request URL path starts with "/api", API routes are handled. Otherwise, router handlers are used to handle frontend pages. If an error occurs, it is handled according to the `handleError` method provided by the module.
-
-## Creating OpenAI Completions
-
-To create OpenAI completions, first import the `createOpenAICompletions` method from the module:
-
-```javascript
-import createOpenAICompletions from "./crud-server";
-```
-
-Then, call the method with an `apiKey` parameter and use the returned object to get completions:
-
-```javascript
-const openai = createOpenAICompletions<{ choices: CompletionChoice[] }>({
-  apiKey: "your-api-key-here",
-});
-
-const completions = await openai.getCompletions({
-  prompt: "What is the meaning of life?",
-  maxTokens: 50,
-  numCompletions: 1,
-});
-```
-
-Here, the `getCompletions` method is called with a prompt and optional parameters for `maxTokens` and `numCompletions`. The method returns an array of `CompletionChoice` objects with the completed text. The `apiKey` parameter is required to authenticate with the OpenAI API.

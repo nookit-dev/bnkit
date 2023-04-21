@@ -1,45 +1,133 @@
-Example usage of the `errorUtils` module:
+### Example Usage of ErrorUtils Module
 
 ```typescript
 import createValidator from "./validator";
-import { CustomError, apiErrorMap } from "./errorUtils";
+import { CustomError, ErrorType } from "./errorUtils";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  age: number;
-}
-
+// Example schema for validating incoming data
 const userSchema = {
-  id: "number",
   name: "string",
-  email: "string",
   age: "number",
+  email: "string",
+  address: {
+    line1: "string",
+    line2: "string",
+    city: "string",
+    state: "string",
+    zip: "number",
+  },
 };
 
-const validator = createValidator(userSchema);
+// Create a validator function for the schema
+const userValidator = createValidator(userSchema);
 
-function getUsers(): User[] {
-  try {
-    const rawData = fetch("https://myapi.com/users").then((res) => res.json());
-    const validatedData = validator.validateAgainstArraySchema(userSchema, rawData);
-    return validatedData.data;
-  } catch (error) {
-    const handledError = handleError(error);
-    if (handledError) {
-      const apiError = {
-        type: "APIError",
-        message: apiErrorMap[handledError.type] ?? handledError.message,
-      } as CustomError;
-      throw apiError;
+// Example usage of validateItem function
+try {
+  const userData = {
+    name: "John Doe",
+    age: 32,
+    email: "johndoe@example.com",
+    address: {
+      line1: "123 Main St",
+      line2: "Apt 5",
+      city: "Anytown",
+      state: "CA",
+      zip: 12345,
+    },
+  };
+
+  const validatedUserData = userValidator.validateItem(userData);
+  console.log(validatedUserData);
+
+  /*
+  Output:
+  {
+    name: "John Doe",
+    age: 32,
+    email: "johndoe@example.com",
+    address: {
+      line1: "123 Main St",
+      line2: "Apt 5",
+      city: "Anytown",
+      state: "CA",
+      zip: 12345,
     }
   }
+  */
+} catch (error) {
+  // Handle errors using handleError function
+  const handledError: CustomError = handleError(error);
+  console.log(apiErrorMap[handledError.type]); // "JavaScript Error"
+}
+
+// Example usage of validateAgainstArraySchema function
+try {
+  const userData = [
+    {
+      name: "John Doe",
+      age: 32,
+      email: "johndoe@example.com",
+      address: {
+        line1: "123 Main St",
+        line2: "Apt 5",
+        city: "Anytown",
+        state: "CA",
+        zip: 12345,
+      },
+    },
+    {
+      name: "Jane Doe",
+      age: 28,
+      email: "janedoe@example.com",
+      address: {
+        line1: "456 Oak St",
+        line2: "",
+        city: "Somecity",
+        state: "NY",
+        zip: 67890,
+      },
+    },
+  ];
+
+  const validatedUserData = userValidator.validateAgainstArraySchema(
+    userData
+  );
+  console.log(validatedUserData);
+
+  /*
+  Output:
+  {
+    data: [
+      {
+        name: "John Doe",
+        age: 32,
+        email: "johndoe@example.com",
+        address: {
+          line1: "123 Main St",
+          line2: "Apt 5",
+          city: "Anytown",
+          state: "CA",
+          zip: 12345,
+        }
+      },
+      {
+        name: "Jane Doe",
+        age: 28,
+        email: "janedoe@example.com",
+        address: {
+          line1: "456 Oak St",
+          line2: "",
+          city: "Somecity",
+          state: "NY",
+          zip: 67890,
+        }
+      }
+    ]
+  }
+  */
+} catch (error) {
+  // Handle errors using handleError function
+  const handledError: CustomError = handleError(error);
+  console.log(apiErrorMap[handledError.type]); // "JavaScript Error"
 }
 ```
-
-In the example above, we first define a schema for our "User" object, which specifies the expected types for each property. We then use the `createValidator` function to create a validator object that we can use to validate data against this schema.
-
-In the `getUsers` function, we first fetch some raw data from an external API, and then pass it through our validator using the `validateAgainstArraySchema` method. If any validation errors occur, we catch them and convert them into a more user-friendly "APIError" object using the `handleError` function and the `apiErrorMap` object.
-
-Note that since `handleError` function can return `undefined`, we need to check for this when creating our "APIError" object. We do this using the nullish coalescing operator (`??`), which returns the value on the left if it is not null or undefined, and the value on the right otherwise.

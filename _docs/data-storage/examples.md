@@ -1,26 +1,28 @@
-### Example Usage
+Example usage:
 
-Assuming we have a schema for a `users` table with `id` (integer), `name` (string), and `age` (integer) fields:
-
-```javascript
+```typescript
 import { createSqliteInterface } from "./sqlite-interface";
 
-const userInterface = createSqliteInterface("users", {
-  id: "integer",
-  name: "text",
-  age: "integer",
-});
+// Define schema
+const userSchema = {
+  id: "INTEGER PRIMARY KEY AUTOINCREMENT",
+  name: "TEXT",
+  age: "INTEGER",
+};
 
-// Create a new user
-await userInterface.create({ id: 1, name: "John Doe", age: 30 });
+// Create interface
+const userInterface = createSqliteInterface("users", userSchema);
 
-// Read all users
-const allUsers = await userInterface.read();
-console.log(allUsers); // [{ id: 1, name: "John Doe", age: 30 }]
+// Create item
+userInterface.create({ name: "John Doe", age: 30 });
 
-// Update a user by id
-await userInterface.update(1, { age: 31 });
+// Read items
+const users = await userInterface.read();
+console.log(users);
 
-// Delete a user by id
-await userInterface.deleteById(1);
+// Update item
+userInterface.update(users[0].id, { age: 31 });
+
+// Delete item
+userInterface.deleteById(users[0].id);
 ```

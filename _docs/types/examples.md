@@ -1,51 +1,59 @@
-### Example 1: Validating Data
+#### Example 1: 
+```typescript
+type MySchema = {
+  name: 'string';
+  age: 'number';
+  isStudent: 'boolean';
+}
 
-```
-// Define a schema
-const mySchema = {
-  name: "string",
-  age: "number",
-  active: "boolean"
-};
+const data = {
+  name: 'John',
+  age: '30', // should be a number
+  isStudent: 'true', // should be a boolean
+}
 
-// Validate data against schema
-const dataToValidate = [
-  { name: "John", age: 30, active: true },
-  { name: "Jane", age: "not a number", active: false },
-  { name: 123, age: 25, active: "not a boolean" }
-];
+const result: ValidationResult<MySchema> = validate(data, MySchema);
+/*
+result: {
+  error: "age should be type number. isStudent should be type boolean.",
+  data: undefined,
+}
+*/
 
-const validationResult: ValidationResult<typeof mySchema> = {
-  data: dataToValidate.map((d) => infer(mySchema, d)),
-  error: "Invalid data type for age and active fields in second and third records"
-};
-```
-
-### Example 2: Inferring Data Types
-
-```
-// Define a schema
-const mySchema = {
-  name: "string",
-  age: "number",
-  active: "boolean",
-  createdAt: "date"
-};
-
-// Infer data types from an object
-const myData = {
+const inferredData: TypeInference<MySchema> = infer(MySchema, data);
+/*
+inferredData: {
   name: "John",
   age: 30,
-  active: true,
-  createdAt: new Date("2022-02-22")
+  isStudent: true,
+}
+*/
+```
+
+#### Example 2:
+```typescript
+type ProductSchema = {
+  name: 'string';
+  price: 'number';
+  description?: 'string';
+  isInStock: 'boolean';
+  createdAt: 'date';
 };
 
-const inferredData = infer(mySchema, myData);
+const product: ProductSchema = {
+  name: 'Example Product',
+  price: 19.99,
+  isInStock: true,
+  createdAt: new Date(),
+};
 
-// inferredData: {
-//   name: string;
-//   age: number;
-//   active: boolean;
-//   createdAt: Date;
-// }
+const inferredProduct: TypeInference<ProductSchema> = infer(ProductSchema, product);
+/*
+inferredProduct: {
+  name: "Example Product",
+  price: 19.99,
+  isInStock: true,
+  createdAt: Tue Aug 10 2021 14:02:12 GMT-0400 (Eastern Daylight Time)
+}
+*/
 ```

@@ -1,64 +1,56 @@
-# Type Mapping Utility
+# Module README
 
-This TypeScript module provides utility types and functions for working with type mappings.
+This module provides utility types and functions for working with JSON schemas that define the types of data to be validated or inferred in TypeScript.
 
-## Installation
+## Types
 
-To install this module, run the following command:
+### `TypeMapping`
 
-```bash
-npm install type-mapping-utility
-```
+A type mapping object that defines the correspondence between schema types (strings) and TypeScript types. The default mapping includes `string`, `number`, `boolean`, and `date`.
 
-## Usage
+### `TypeInference<Schema>`
 
-### TypeMapping
+A utility type that infers TypeScript types from a given schema, based on its corresponding `TypeMapping`. The `Schema` type parameter should be a record that maps schema property names to schema type strings.
 
-The `TypeMapping` type is a TypeScript type definition that maps JavaScript types to their corresponding TypeScript types.
+### `ValidationResult<Schema>`
 
-### TypeInference
+A validation result object that contains either an error message or validated data (inferred TypeScript types), based on a given schema.
 
-The `TypeInference` type is a TypeScript type definition that infers TypeScript types from a schema that maps keys to `TypeMapping` values.
+### `SchemaType`
 
-### ValidationResult
+A type alias for a record that maps schema property names to schema type strings.
 
-The `ValidationResult` type is a TypeScript type definition that represents the result of validating data against a schema.
+## Functions
 
-### SchemaType
+### `infer<Schema>(schema: Schema, data?: unknown): TypeInference<Schema>`
 
-The `SchemaType` type is a TypeScript type definition that represents a schema mapping keys to `TypeMapping` values.
+A function that performs type inference on the given `data` object, based on the given `schema`. If `data` is not provided, the function returns a stub object with the inferred types.
 
-### infer()
-
-The `infer()` function is a TypeScript function that infers TypeScript types from data and a schema.
-
-## Example
+## Example Usage
 
 ```typescript
-import { infer } from 'type-mapping-utility';
+import { infer } from './index'
 
 const schema = {
   name: 'string',
   age: 'number',
   isEmployed: 'boolean',
-  lastLogin: 'date',
-};
+  dateOfBirth: 'date'
+}
 
 const data = {
   name: 'John Doe',
-  age: 35,
+  age: 30,
   isEmployed: true,
-  lastLogin: new Date(),
-};
+  dateOfBirth: new Date('1990-01-01')
+}
 
-const inferredData = infer(schema, data);
+const inferredData = infer(schema, data)
 
-console.log(inferredData.name); // "John Doe"
-console.log(inferredData.age); // 35
-console.log(inferredData.isEmployed); // true
-console.log(inferredData.lastLogin); // Date object
+// inferredData has type: {
+//   name: string;
+//   age: number;
+//   isEmployed: boolean;
+//   dateOfBirth: Date;
+// }
 ```
-
-## License
-
-This module is licensed under the MIT License. See the LICENSE file for more information.

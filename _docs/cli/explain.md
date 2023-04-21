@@ -1,19 +1,34 @@
-This file is a collection of utility functions for common tasks in command line interface (CLI) applications. 
+# Module: cli-utils
 
-Dependencies: 
-- "error-handler-validation"
-- "fs"
-- "path"
-- "readline"
+## Dependencies
+- error-handler-validation
+- fs
+- path
+- readline
 
-Features:
-- `getUserInput`: Asynchronously retrieves user input from the CLI.
-- `parseCliArgs`: Parses CLI arguments into a JavaScript object, with support for different data types and default values.
-- `createFileWithContent`: Creates a file with the given content and ensures the directory exists.
-- `directoryExists`: Checks if a directory exists, and creates it if it does not exist.
-- `getModulesFromPath`: Retrieves the names of all directories in a given path.
-- `getAdditionalPrompt`: Asynchronously prompts the user for additional input.
-- `chooseActions`: Asynchronously prompts the user to select from a list of available actions.
+## Features
+- `getUserInput()`: Get user input asynchronously
+- `ParsedArgs`: Interface for parsed command line arguments
+- `parseCliArgs()`: Parse command line arguments
+- `createFileWithContent(filePath: string, content: string)`: Ensure directory exists and create file with content
+- `directoryExists(directoryPath: string)`: Ensure directory exists
+- `getModulesFromPath(directoryPath: string)`: Get module names from path
+- `getAdditionalPrompt()`: Get additional prompt from user
+- `chooseActions(actionsConfig: Record<string, any>): Promise<Array<keyof typeof actionsConfig>>`: Choose and return selected actions from given config
 
-Technical description:
-The module uses built-in Node.js modules such as `fs`, `path`, and `readline` to perform common CLI tasks. The functions are designed to be modular and reusable, with convenient abstractions for common actions such as file and directory creation, user input retrieval, and action selection. The `parseCliArgs` function supports a wide range of parameter types and allows for the specification of default values, making it suitable for use in a variety of CLI applications. Overall, this module provides a useful set of utilities for building command line interfaces in Node.js.
+## Technical Description
+`cli-utils` is a collection of utility functions that aid in creating a command line interface (CLI) for Node.js programs. 
+
+`parseCliArgs()` takes command line arguments passed to the program and returns an object with parsed key-value pairs. 
+
+`createFileWithContent()` creates a file at the given file path with provided contents. The function also ensures that the directory containing the file exists. 
+
+`directoryExists()` checks if a directory exists at the given file path and creates it if it doesn't exist.
+
+`getModulesFromPath()` returns an array of module names present in a directory.
+
+`getAdditionalPrompt()` prompts the user for additional input and returns the user's response as a string.
+
+`chooseActions()` takes a configuration object with various actions and prompts the user to choose among those actions by entering their corresponding numbers. It returns an array of selected action keys.
+
+These functions provide a streamlined way of accepting user input, handling command line arguments, and performing file system related tasks in a command line interface.

@@ -1,23 +1,39 @@
-# Error Utils
+# error-utils
 
-This module contains utility functions for handling and mapping errors in JavaScript applications.
+A utility module for handling errors and creating validators.
 
-## Error Types
+## Handlers
 
-There are three types of errors handled by this module: ValidationError, APIError, and JavaScriptError. Custom errors can also be defined using the CustomError type.
+### `getErrorType(error: Error | CustomError): ErrorType`
 
-## API Error Map
+- `error` - An instance of an Error or CustomError.
 
-An API error map is provided for mapping API errors to their corresponding type.
+Returns the type of error as a string, either "ValidationError", "APIError", or "JavaScriptError".
 
-## Error Type Mapping
+### `handleError(error: Error | CustomError, throwError = false): CustomError | undefined`
 
-The `mapBuiltInErrorType` function maps built-in JavaScript errors to their corresponding ErrorType.
+- `error` - An instance of an Error or CustomError.
+- `throwError` - A boolean indicating whether to throw the error or return it.
 
-## Error Handling
+Returns a CustomError object with a type and message property. If `throwError` is `true`, throws the error instead of returning it.
 
-The `handleError` function can be used to handle errors by returning a CustomError object or throwing the error if `throwError` is set to true.
+## Validators
 
-## Validator
+### `createValidator<Schema>()`
 
-The `createValidator` function returns a validator object with two methods: `validateAgainstArraySchema` and `validateItem`. These can be used to validate data against a schema and return the validated data or an error message.
+- `schema` - An object representing the expected schema for validation.
+
+Returns an object with two methods:
+
+#### `validateItem(item: unknown): TypeInference<Schema>`
+
+- `item` - An unknown value to validate against the schema.
+
+Returns an object representing the validated item. Throws a `CustomError` if the input `item` is not an object or if it does not match the expected schema.
+
+#### `validateAgainstArraySchema(schema: Schema, data: unknown[]): ValidationResult<Schema>`
+
+- `schema` - An object representing the expected schema for validation.
+- `data` - An array of unknown values to validate against the schema.
+
+Returns an object with either a `data` property containing an array of validated items or an `error` property containing a validation error message.

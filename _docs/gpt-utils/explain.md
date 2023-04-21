@@ -1,9 +1,11 @@
-This file exports a type called DebugPromptOptions and a function called createDebugPromptFromInputOutput. The function takes in two string parameters (input and output) and an optional object parameter (options) that can have properties of functionName, moduleName, and additionalContentToAppend. 
+## Module: createDebugPromptFromInputOutput
 
-The function creates a string that displays the input and output of a given task/problem, including any additional content specified in the options object. If functionName or moduleName are specified, they will be included in the display string as well. 
+### Dependencies:
+- None
 
-This module does not depend on any other modules. 
+### Features:
+- Creates a debug prompt from input and output, with optional parameters for function name, module name, and additional content to append.
+- Returns the formatted prompt as a string.
 
-The main feature of this module is to create a debug prompt for displaying input/output for a specific task/problem. The prompt can be customized with additional information such as function or module names. 
-
-In technical terms, this module takes in two strings and an optional object parameter. It then creates a new string by concatenating the input and output strings along with any additional content specified in the options object. If functionName or moduleName are specified, they are also concatenated into the string. Finally, the resulting string is returned. The module utilizes basic string manipulation techniques and optional parameter handling.
+### Technical Description:
+The `createDebugPromptFromInputOutput` function takes in two strings representing the input and output of a code snippet, along with an optional configuration object containing a function name, module name, and additional content to append. It then formats and returns a string prompt including the input and output, as well as any optional configuration parameters. The function does not depend on any external modules or libraries, and can be used standalone to generate debug prompts for code testing and troubleshooting.
