@@ -1,4 +1,7 @@
 # Instant Bun
+
+![brandonschabel_simple_flat_geometric_multi_color_modern_logo_bu_a6489642-e13f-48c8-a342-746f9f698143](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
+
 ## A Zero Dependency Toolkit For Developing Bun Apps Instantly
 This project is a collection of utility functions and modules designed to provide users with an easy-to-use and efficient set of tools for various tasks in web development, data manipulation, networking, and more.
 
@@ -42,13 +45,6 @@ We welcome contributions to this project! If you have a utility function or modu
 
 License
 This project is licensed under the MIT License.
-
-
-# Project Overview
-
-
-![brandonschabel_simple_flat_geometric_multi_color_modern_logo_bu_a6489642-e13f-48c8-a342-746f9f698143](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
-
 
 
 Ever had a brilliant idea but felt overwhelmed by the countless options and dependencies? Worry no more! Introducing Instant Bun, your sleek and simplified solution for indie hacker apps.
@@ -124,10 +120,15 @@ Install instant-bun in your bun app,
 bun add https://github.com/Modular-Architecture-Toolkit/instant-bun
 ```
 
+*OR* do an install from the npm registry
+
+```bash
+bun add instant-bun
+```
+
 Why would I add the repo directly you might ask?
 Because you use the source code directly, every commit is a new version, and you can use whatever version 
 of each module that you want.
-
 
 
 then import into your module
