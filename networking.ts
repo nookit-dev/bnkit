@@ -168,7 +168,7 @@ export const useWebSockets = () => {
 type CompletionChoice = {
   message: {
     role: string;
-    text: string;
+    content: string;
   };
   index: number;
   finish_reason: string;
@@ -186,9 +186,6 @@ export type CompletionsResponse = {
   };
   choices: CompletionChoice[];
 };
-
-// Set up the fetcher function
-const fetchCompletions = createFetcher<CompletionsResponse, "APIError">();
 
 type BaseOpenAICompletionsParams = {
   numCompletions?: number;
@@ -243,40 +240,39 @@ type BaseOpenAICompletionsParams = {
   user?: string;
 };
 
-const createOpenAICompletions = <Type>({ apiKey }: { apiKey: string }) => {
+const createOpenAICompletions = ({ apiKey }: { apiKey: string }) => {
   return {
     async getCompletions({
       prompt,
       maxTokens,
       numCompletions = 1,
-    }: BaseOpenAICompletionsParams): Promise<Type> {
-      const url = "https://api.openai.com/v1/chat/completions";
+    }: BaseOpenAICompletionsParams): Promise<CompletionsResponse> {
+      const baseUrl = "https://api.openai.com/";
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       };
 
-      const body = JSON.stringify({
+      const body = {
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: `$${prompt}` }],
-        // max_tokens: maxTokens,
-        // n: numCompletions,
-      });
+      };
 
-      console.log(
-        "Creating request to https://api.openai.com/v1/chat/completions"
-      );
+      const completionsEndpoint = "v1/chat/completions";
+
+      console.log(`Creating request to ${baseUrl} ${completionsEndpoint}`);
+
+      // Set up the fetcher function
+      const fetchCompletions = createFetcher({ baseUrl });
 
       try {
-        const response = await (
-          await fetchCompletions
-        )<Type>(url, {
-          method: "POST",
+        const response = await fetchCompletions.post<CompletionsResponse>({
+          endpoint: completionsEndpoint,
           headers,
-          body,
+          params: body,
         });
 
-        return response.choices;
+        return response;
       } catch (error) {
         console.error("Error fetching completions:", error);
         throw error;

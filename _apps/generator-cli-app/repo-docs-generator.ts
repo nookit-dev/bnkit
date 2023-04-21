@@ -1,3 +1,5 @@
+import { cliApp } from "./generator-cli-app";
+
 export type ActionConfig = {
   prompt: string;
   fileExtension: string;
@@ -9,7 +11,6 @@ export type ActionsConfigKeys = keyof typeof chatGptActionsConfig;
 export type ActionsConfig = {
   [key in ActionsConfigKeys]: ActionConfig;
 };
-
 
 export const chatGptActionsConfig = {
   clean: {
@@ -28,8 +29,7 @@ export const chatGptActionsConfig = {
     fileExtension: "md",
   },
   explain: {
-    prompt: `explain this file? List other modules it depends on List the features of the module, and then give a brief technical description of the module. 
-      "use markdown syntax and return the raw markdown string.`,
+    prompt: `explain this file. List other modules it depends on List the features of the module, and then give a brief technical description of the module. use markdown syntax and return the raw markdown string.`,
     fileExtension: "md",
   },
   examples: {
@@ -44,7 +44,7 @@ export const chatGptActionsConfig = {
   unitTest: {
     prompt: `Based on the above module, write unit tests for it. Please use TypeScript syntax and return the raw string.`,
     fileExtension: "test.ts",
-    outputFolder: "_docs"
+    outputFolder: "_docs",
   },
   improvements: {
     prompt:
@@ -53,3 +53,4 @@ export const chatGptActionsConfig = {
   },
 };
 
+await cliApp(chatGptActionsConfig);

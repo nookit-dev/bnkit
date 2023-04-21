@@ -2,26 +2,34 @@ import { handleError } from "error-handler-validation";
 
 // fetcher.ts
 export type FetchOptions = {
-  url: string;
+  baseUrl: string;
 };
 
-export function createFetcher({ url }: FetchOptions) {
+export function createFetcher({ baseUrl }: FetchOptions) {
   async function get<Type>(endpoint: string): Promise<Type> {
-    const response = await fetch(url + endpoint);
+    const response = await fetch(baseUrl + endpoint);
     return await handleResponse<Type>(response);
   }
 
-  async function post<Type>(endpoint: string, params: any): Promise<Type> {
-    const response = await fetch(url + endpoint, {
+  async function post<Type>({
+    endpoint,
+    params,
+    headers,
+  }: {
+    endpoint?: string;
+    params?: any;
+    headers?: Record<string, any>;
+  }): Promise<Type> {
+    const response = await fetch(baseUrl + (endpoint || ""), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...headers },
       body: JSON.stringify(params),
     });
     return await handleResponse<Type>(response);
   }
 
   async function getStatus<Type>(endpoint: string): Promise<Type> {
-    const response = await fetch(url + endpoint, { method: "HEAD" });
+    const response = await fetch(baseUrl + endpoint, { method: "HEAD" });
     return await handleResponse<Type>(response);
   }
 
