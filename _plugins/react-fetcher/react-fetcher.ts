@@ -1,6 +1,6 @@
 // useFetcher.ts
+import { FetchOptions, createFetcher } from "@instant-bun/instant-bun/fetcher";
 import { useCallback, useState } from "react";
-import { FetchOptions, createFetcher } from "../fetcher";
 
 export function useFetcher(options: FetchOptions) {
   const fetcher = createFetcher(options);
