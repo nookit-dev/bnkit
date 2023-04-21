@@ -40,18 +40,20 @@ export function createArduinoInterface({
   return { onData, write };
 }
 
-export async function listPorts(): Promise<void> {
+export async function listPorts(): Promise<
+  Array<{ path: string; manufacturer: string }>
+> {
   try {
     const ports = await SerialPort.list();
-    console.log("Discovered Ports:");
-    ports.forEach((port) => {
-      console.log(`- Path: ${port.path}, Manufacturer: ${port.manufacturer}`);
-    });
+    return ports.map((port) => ({
+      path: port.path,
+      manufacturer: port.manufacturer,
+    }));
   } catch (error) {
     handleError({ type: "APIError", message: error.message });
+    return [];
   }
 }
-
 //  example usage:
 // import { createArduinoInterface } from "./arduino";
 
