@@ -3,7 +3,7 @@ cd into this directory
 
 and then 
 ```bash
-bun run index.ts
+bun run rep-docs-generator.ts
 ```
 
 
@@ -16,6 +16,15 @@ The main purpose of this module is to simplify the process of creating documenta
 
 To get started with the TypeScript Documentation Generator, simply provide your OpenAI API key and follow the prompts to choose the desired actions and input. The script will then process each TypeScript file in the project directory, generate the corresponding documentation, and save the results in separate files.
 
-Note: Please refer to the next sections in this README for instructions on how to set up and run the TypeScript Documentation Generator.
+you can run this app from the root of the repo using 
+`bun run docs-gen`
 
-After this point, you can add instructions on how to run the TypeScript Documentation Generator, including any prerequisites, installation steps, and how to execute the script.
+OR 
+
+cd into this app (`cd _apps/cli_app`)
+make sure you update your `.env`
+
+and then run 
+`bun run repo-docs-generators`
+
+this will use the `cli-app` file and pass a configuration, this would allow you to make different GPT generators for different needs
