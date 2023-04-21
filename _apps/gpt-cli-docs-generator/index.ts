@@ -1,5 +1,4 @@
 import path from "path";
-import readline from "readline";
 import { chooseActions, directoryExists, getAdditionalPrompt } from "../../cli";
 import {
   getFilesForDirectoryFromRoot,
@@ -11,75 +10,81 @@ import { ActionsConfig, chatGptActionsConfig } from "./actions-config";
 
 const API_KEY = Bun.env.OPENAI_API_KEY || "";
 
+// Define files to ignore
 const ignoreFiles = ["index.ts", "tsconfig.json", "bun-types.d.ts"];
 const fileOptions = { ignoreFiles };
+
+// Get all TypeScript files in the current directory
 const files = await getFilesForDirectoryFromRoot(".", fileOptions);
 const tsFiles = files.filter((file) => file.endsWith(".ts"));
+
+// Read the contents of the TypeScript files
 const allSourceFiles = readFilesContents(
   tsFiles.filter((file) => !ignoreFiles.includes(file))
 );
-const openAICompletions = createOpenAICompletions({ apiKey: API_KEY });
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 
+// Initialize OpenAI completions
+const openAICompletions = createOpenAICompletions({ apiKey: API_KEY });
+
+// Get user input for actions and additional prompts
 const promptActions = (await chooseActions(chatGptActionsConfig)) as Array<
   keyof typeof chatGptActionsConfig
 >;
 const additionalPrompt = await getAdditionalPrompt();
-rl.close();
 
+// Store all response texts for consolidation
 const allResponseText: Map<string, string[]> = new Map();
 
-async function main(actionsConfig: ActionsConfig) {
-  const processFile = async (file: { path: string; content: string }) => {
-    console.log(`\nProcessing module: ${file.path}`);
-    const promises = [];
+// Process a single action for a file
+async function processAction(
+  file: { path: string; content: string },
+  promptAction: keyof typeof chatGptActionsConfig,
+  actionsConfig: ActionsConfig
+) {
+  console.log(`Action: ${promptAction.toString()}`);
+  const finalPromptArray = [
+    file.content,
+    actionsConfig[promptAction].prompt,
+    additionalPrompt,
+  ];
 
-    for (const promptAction of promptActions) {
-      console.log(`Action: ${promptAction.toString()}`);
-      const finalPromptArray = [
-        file.content,
-        actionsConfig[promptAction].prompt,
-        additionalPrompt,
-      ];
+  const finalPrompt = finalPromptArray.join("\n");
 
-      const finalPrompt = finalPromptArray.join("\n");
+  const result = await openAICompletions.getCompletions({
+    prompt: finalPrompt || "",
+  });
+  const response = result as CompletionsResponse;
+  const fileExtensionForAction = actionsConfig[promptAction].fileExtension;
+  const messageContent = response?.[0].message.content;
 
-      const resultPromise = openAICompletions
-        .getCompletions({ prompt: finalPrompt || "" })
-        .then((result) => {
-          const response = result as CompletionsResponse;
-          const fileExtensionForAction =
-            actionsConfig[promptAction].fileExtension;
-          const messageContent = response?.[0].message.content;
+  const moduleNameWithoutExtension = path.basename(file.path, ".ts");
+  const saveFilePath = `_docs/${moduleNameWithoutExtension}/${promptAction}.${fileExtensionForAction}`;
 
-          const moduleNameWithoutExtension = path.basename(file.path, ".ts");
-          const saveFilePath = `_docs/${moduleNameWithoutExtension}/${promptAction}.${fileExtensionForAction}`;
+  directoryExists(path.dirname(saveFilePath));
+  console.log(`Saving to: ${saveFilePath} \n`);
 
-          directoryExists(path.dirname(saveFilePath));
-          console.log(`Saving to: ${saveFilePath} \n`);
+  await saveResultToFile(saveFilePath, messageContent);
 
-          return saveResultToFile(saveFilePath, messageContent).then(() => {
-            if (!allResponseText.has(promptAction)) {
-              allResponseText.set(promptAction, []);
-            }
-            allResponseText
-              .get(promptAction)
-              ?.push(saveFilePath, messageContent);
-          });
-        });
+  if (!allResponseText.has(promptAction)) {
+    allResponseText.set(promptAction, []);
+  }
+  allResponseText.get(promptAction)?.push(saveFilePath, messageContent);
+}
 
-      promises.push(resultPromise);
-    }
+// Process all actions for a single file
+async function processFile(
+  file: { path: string; content: string },
+  actionsConfig: ActionsConfig
+) {
+  console.log(`\nProcessing module: ${file.path}`);
+  const promises = promptActions.map((promptAction) =>
+    processAction(file, promptAction, actionsConfig)
+  );
+  await Promise.all(promises);
+}
 
-    await Promise.all(promises);
-  };
-
-  const fileProcessingPromises = allSourceFiles.map(processFile);
-  await Promise.all(fileProcessingPromises);
-
+// Create consolidated files for each action
+async function createConsolidatedFiles() {
   for (const [action, responseTexts] of allResponseText.entries()) {
     const consolidatedResponses = responseTexts.join("\n\n");
     const consolidatedOutputPath = path.join(
@@ -88,6 +93,15 @@ async function main(actionsConfig: ActionsConfig) {
     );
     await saveResultToFile(consolidatedOutputPath, consolidatedResponses);
   }
+}
+
+// Main function to process all files and create consolidated output
+async function main(actionsConfig: ActionsConfig) {
+  const fileProcessingPromises = allSourceFiles.map((file) =>
+    processFile(file, actionsConfig)
+  );
+  await Promise.all(fileProcessingPromises);
+  await createConsolidatedFiles();
 }
 
 await main(chatGptActionsConfig);
