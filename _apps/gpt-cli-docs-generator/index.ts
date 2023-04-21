@@ -1,12 +1,12 @@
-import { directoryExists } from "cli";
+import path from "path";
+import readline from "readline";
+import { directoryExists } from "../../cli";
 import {
   getFilesForDirectoryFromRoot,
   readFilesContents,
   saveResultToFile,
-} from "files-folder";
-import createOpenAICompletions, { CompletionsResponse } from "networking";
-import path from "path";
-import readline from "readline";
+} from "../../files-folder";
+import createOpenAICompletions, { CompletionsResponse } from "../../networking";
 import { ActionsConfig, chatGptActionsConfig } from "./actions-config";
 
 const API_KEY = Bun.env.OPENAI_API_KEY || "";
