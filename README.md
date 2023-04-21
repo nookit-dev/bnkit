@@ -93,6 +93,25 @@ Each idea should be its own module within the project. Modules should be modular
 - cli-utils
 
 
+# Contributing
+Because there are a lot of generated docs you can begin by look at the _docs folder and look for each module, this folder contains all modules 
+documentation, summaries, etc.
+
+To get the project setup run:
+`bun install`
+
+this will just install the types for bun there are no distributed dependencies besides bun itself
+
+if you want to test this in your own project while making changes you can link this project by running the following command in this directory:
+`bun link`
+
+Then in your app run
+`bun link instant-bun`
+
+this will allow you to make changes to this repo and se the changes reflect in your own repo. Since instant-bun has no dependencies, I've decided to 
+do away with any build step and just distribute as raw source code. Eventually i don't want o distribute the apps and plugins, so I will have to create a script to publish, but ignore those.
+
+
 # Installation Details
 If you don't have bun installed run:
 ```bash
