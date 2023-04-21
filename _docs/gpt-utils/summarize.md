@@ -1,16 +1,8 @@
 ## Module Summary
 
-This module contains a function (`createDebugPromptFromInputOutput`) that creates a debug prompt message from provided input and output strings. It also accepts optional parameters for specifying the function name, file name, and additional content to include in the prompt.
+This module provides a function for creating a debug prompt string from input and output strings, with the ability to optionally include function and file name information as well as additional content.
 
-## Exports
+### Exports
 
-### `DebugPromptOptions`
-
-An object type that defines the optional parameters for creating a debug prompt message. It includes:
-- `functionName`: a string representing the name of the function being debugged
-- `moduleName`: a string representing the name of the file/module being debugged
-- `additionalContentToAppend`: a string representing any additional information to append to the prompt message
-
-### `createDebugPromptFromInputOutput(input: string, output: string, options?: DebugPromptOptions): string`
-
-A function that creates a debug prompt message from provided input and output strings. It accepts optional parameters for specifying the function name, file name, and additional content to include in the prompt. It returns a string representing the complete debug prompt message.
+- `DebugPromptOptions`: A TypeScript interface defining the optional inputs for the `createDebugPromptFromInputOutput` function.
+- `createDebugPromptFromInputOutput`: A function that takes in input and output strings, along with optional `DebugPromptOptions`, and returns a debug prompt string.

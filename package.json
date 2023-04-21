@@ -1,6 +1,9 @@
 {
   "name": "instant-bun",
   "version": "0.0.2",
+  "scripts": {
+    "docs-gen": "bun run ./_apps/gpt-cli-docs-generator/index.ts"
+  },
   "description": "Instant Bun is a simple zero-dependency, fast, and lightweight framework for Bun",
   "main": "index.ts",
   "license": "MIT",

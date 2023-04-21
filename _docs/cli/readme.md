@@ -1,33 +1,35 @@
-# Module README
+# Module Name
 
-This is the documentation for this module. It contains information on how to use the functions provided by this module, as well as any important notes or caveats to be aware of.
+This is the module description.
+
+## Installation
+
+```bash
+npm install module-name
+```
 
 ## Usage
 
-To use this module, simply import it into your project and call the desired functions. Make sure to pass in any required parameters and handle any errors according to best practices.
+```javascript
+const moduleName = require("module-name");
 
-## Functions
+// Do something with the module
+```
 
-### `getUserInput()`
+## API
 
-This function gets user input asynchronously and returns a Promise containing the input as a string.
+### `functionName(param1: type, param2: type): returnType`
 
-### `parseCliArgs()`
+Description of the function.
 
-This function parses command line arguments and returns an object containing the parsed arguments.
+- `param1`: Description of the first parameter.
+- `param2`: Description of the second parameter.
+- `returnType`: Description of the return value.
 
-### `createFileWithContent(filePath: string, content: string)`
+### `property`
 
-This function ensures that the directory for the given file path exists, and then creates the file with the given content.
+Description of the property.
 
-### `directoryExists(directoryPath: string)`
+## License
 
-This function ensures that the given directory path exists.
-
-### `getModulesFromPath(directoryPath: string)`
-
-This function returns an array of module names found in the given directory path.
-
-## Notes
-
-Always make sure to handle errors properly. Use the `handleError()` function provided by the `error-handler-validation` module to ensure that errors are handled consistently and effectively.
+This module is licensed under the [MIT License](https://opensource.org/licenses/MIT).

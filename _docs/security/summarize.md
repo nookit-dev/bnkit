@@ -1,7 +1,6 @@
-### Summary of Module Features
-- Generates an encryption key consisting of 32 characters
-- Uses a combination of uppercase and lowercase letters, as well as numbers
-- Randomly selects characters from the possible characters string
+### Summary:
 
-### List of Exports
-- `generateEncryptionKey` function: generates and returns the encryption key as a string.
+This module exports a function called `generateEncryptionKey` that generates a 32-character string consisting of letters and numbers.
+
+### List of exports:
+- `generateEncryptionKey`: a function that returns a randomly generated 32-character string consisting of letters and numbers.

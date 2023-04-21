@@ -34,37 +34,37 @@ const getAdditionalPrompt = () =>
 const chooseActions = async (
   actionsConfig: ActionsConfig
 ): Promise<Array<keyof typeof actionsConfig>> => {
-  return new Promise<Array<keyof typeof actionsConfig>>((resolve) => {
-    console.log("\nChoose actions (separated by commas):");
-    const actions = Object.keys(actionsConfig);
-    actions.forEach((action, index) => {
-      console.log(`${index + 1}. ${action}`);
-    });
+  console.log("\nChoose actions (separated by commas):");
+  const actions = Object.keys(actionsConfig);
+  actions.forEach((action, index) => {
+    console.log(`${index + 1}. ${action}`);
+  });
 
+  const actionIndexes = await new Promise<string>((resolve) => {
     rl.question(
       "Enter the numbers corresponding to the actions: ",
       (actionIndexes) => {
-        const selectedIndexes = actionIndexes
-          .split(",")
-          .map((index) => parseInt(index.trim()) - 1);
-
-        const validSelection = selectedIndexes.every(
-          (index) => index >= 0 && index < actions.length
-        );
-
-        if (validSelection) {
-          resolve(
-            selectedIndexes.map(
-              (index) => actions[index] as keyof typeof actionsConfig
-            )
-          );
-        } else {
-          console.log("Invalid input, please try again.");
-          resolve(chooseActions(actionsConfig));
-        }
+        resolve(actionIndexes);
       }
     );
   });
+
+  const selectedIndexes = actionIndexes
+    .split(",")
+    .map((index) => parseInt(index.trim()) - 1);
+
+  const validSelection = selectedIndexes.every(
+    (index) => index >= 0 && index < actions.length
+  );
+
+  if (validSelection) {
+    return selectedIndexes.map(
+      (index) => actions[index] as keyof typeof actionsConfig
+    );
+  } else {
+    console.log("Invalid input, please try again.");
+    return chooseActions(actionsConfig);
+  }
 };
 
 const promptActions = (await chooseActions(chatGptActionsConfig)) as Array<
@@ -76,7 +76,7 @@ rl.close();
 const allResponseText: Map<string, string[]> = new Map();
 
 async function main(actionsConfig: ActionsConfig) {
-  for (const file of allSourceFiles) {
+  const processFile = async (file: { path: string; content: string }) => {
     console.log(`\nProcessing module: ${file.path}`);
     const promises = [];
 
@@ -118,7 +118,10 @@ async function main(actionsConfig: ActionsConfig) {
     }
 
     await Promise.all(promises);
-  }
+  };
+
+  const fileProcessingPromises = allSourceFiles.map(processFile);
+  await Promise.all(fileProcessingPromises);
 
   for (const [action, responseTexts] of allResponseText.entries()) {
     const consolidatedResponses = responseTexts.join("\n\n");

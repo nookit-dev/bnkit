@@ -1,39 +1,22 @@
-## Module `bun`
+## List of Exports
 
-### Exports
-- `Server`: A class for creating and running a web server.
-- `ServerWebSocket`: A class for handling WebSocket connections.
-- `serve`: A function that creates a new server instance.
+- `createFetcher<Type, ErrorType>()`: A function that creates and returns a fetcher function to handle API requests/responses.
+- `RouteHandler`: A type that represents a request handler for a specific route.
+- `ServerRoute`: An object that contains information about a specific server route, including its path, method, and handler.
+- `ServerRouter`: An interface that defines a router for a server.
+- `createRouter(routeConfigs?: ServerRoute[]): ServerRouter`: A function that creates a new ServerRouter instance with optionally provided server route configurations.
+- `CrudServer<Schema extends SchemaType>`: A type that represents a CRUD server for a specific schema type.
+- `createCrudServer<Schema extends Record<string, keyof TypeMapping>>({ router, port }: { router?: ServerRouter; port?: number; }): CrudServer<Schema>`: A function that creates a new CRUD server instance with optional router and port configurations.
+- `useWebSockets(): {...}`: A function that returns an object containing callback functions for handling WebSocket events.
+- `CompletionChoice`: A type that represents a completion choice object returned by the OpenAI API.
+- `CompletionsResponse`: A type that represents the response object returned by the OpenAI API for generating completions.
+- `BaseOpenAICompletionsParams`: An interface that defines the parameters for requesting completions from the OpenAI API.
+- `createOpenAICompletions<Type>({ apiKey }: { apiKey: string }): {...}`: A function that creates an OpenAI completions instance with a provided API key and returns an object containing methods for requesting completions from the OpenAI API.
 
-## Module `error-handler-validation`
+## Key Features
 
-### Exports
-- `handleError`: A function for handling and validating errors.
-
-## Module `types`
-
-### Types
-- `SchemaType`: An interface for defining a schema.
-- `TypeMapping`: A mapping of data types to TypeScript types.
-
-## Module `crud-server`
-
-### Types
-- `CrudServer`: An interface for defining a CRUD server.
-- `ServerRoute`: An interface for defining a server route.
-- `ServerRouter`: An interface for defining a server router.
-- `CompletionsResponse`: An interface for defining a response from the OpenAI completions API.
-
-### Functions
-- `createFetcher<Type, ErrorType>()`: A function for creating a fetcher function that handles errors.
-- `createRouter(routeConfigs?: ServerRoute[]): ServerRouter`: A function for creating a new server router instance.
-- `createCrudServer<Schema extends Record<string, keyof TypeMapping>>({ router, port }: { router?: ServerRouter; port?: number }): CrudServer<Schema>`: A function for creating a new CRUD server instance.
-- `useWebSockets(): Record<string, Function>`: A function that returns an object containing callback functions for WebSocket events.
-
-## Module `openai-completions`
-
-### Types
-- `BaseOpenAICompletionsParams`: An interface for defining the parameters of a request to the OpenAI completions API.
-
-### Functions
-- `createOpenAICompletions<Type>({ apiKey }: { apiKey: string }): { getCompletions(params: BaseOpenAICompletionsParams): Promise<Type> }`: A function for creating a new instance of the OpenAI completions API client.
+- Provides functions and types for handling and validating API requests/responses.
+- Allows for creating and configuring a router for handling server requests.
+- Enables the creation of CRUD servers for specific schema types.
+- Offers a set of callback functions for handling WebSocket events.
+- Provides methods for generating completions using the OpenAI API.

@@ -1,137 +1,139 @@
-# Bun
+# CRUD Server
 
-Bun is a lightweight web framework that allows you to easily create HTTP servers and WebSocket servers in Deno using TypeScript. It includes a server, server router, fetcher function, and utilities for handling errors and validating data.
+A simple CRUD (Create, Read, Update, Delete) server for handling API requests and providing a router for frontend pages.
 
-## Basic Usage
+## Features
 
-```ts
-import { serve } from "bun";
+- Built with TypeScript and compatible with Deno
+- Supports API routes for creating, reading, updating, and deleting data
+- Provides a router for handling frontend pages
+- Includes a WebSocket implementation for real-time communication
+- Includes a fetcher function for handling API requests and error handling
 
-const server = serve({
-  port: 8000,
-  async fetch(request) {
-    const headers = { "Content-Type": "text/plain" };
-    const body = "Hello, World!";
-    return new Response(body, { headers });
-  },
-});
+## Installation
 
-console.log("Server listening on port 8000");
+To install the module, run:
 
-await server.run();
+```bash
+npm install crud-server
 ```
 
-## Router
+## Usage
 
-Bun includes a router that allows you to define routes using the `addRoute` method, and handle incoming requests with the `handleRequest` method.
+### Basic Usage
 
-```ts
-import { createRouter } from "bun";
+Here's an example of how to create a server and add a route:
+
+```typescript
+import { createCrudServer, createRouter } from "crud-server";
 
 const router = createRouter();
+router.addRoute("/", "GET", () => new Response("Hello, world!"));
 
-router.addRoute("/", "GET", () => {
-  const headers = { "Content-Type": "text/plain" };
-  const body = "Hello, World!";
-  return new Response(body, { headers });
-});
-
-router.addRoute("/users", "GET", () => {
-  // Handle GET request for /users
-});
-
-router.addRoute("/users", "POST", () => {
-  // Handle POST request for /users
-});
-
-const server = serve({
-  port: 8000,
-  async fetch(request) {
-    const response = await router.handleRequest(request);
-    return response;
-  },
-});
-
-console.log("Server listening on port 8000");
-
-await server.run();
+const server = createCrudServer({ router });
+server.start();
 ```
 
-## Fetcher
+This creates a server with a router and adds a simple GET route that returns "Hello, world!".
 
-Bun includes a fetcher utility that wraps the `fetch` function and handles errors for you:
+### API Routes
 
-```ts
-import { createFetcher } from "bun";
+To handle API requests, use the `createCrudServer` function and provide a router with your desired routes.
 
-const fetcher = createFetcher();
+```typescript
+import { createCrudServer, createRouter } from "crud-server";
 
-try {
-  const data = await fetcher<{ message: string }>("https://example.com/api");
-  console.log(data.message);
-} catch (error) {
-  console.error(error);
-}
+const router = createRouter();
+router.addRoute("/api/create", "POST", async (req) => {
+  const item = await req.json();
+  // create item in database
+  return new Response("Created", { status: 201 });
+});
+
+const server = createCrudServer({ router });
+server.start();
 ```
 
-## Error Handling
+This creates a server with a router and adds a `POST` route for creating items. You can add additional routes for reading, updating, and deleting items as needed.
 
-Bun includes a utility function for validating and handling errors that can be thrown when handling requests or processing data:
+### WebSocket Support
 
-```ts
-import { handleError } from "bun";
+You can also add WebSocket support to your server:
+
+```typescript
+import {
+  createCrudServer,
+  createRouter,
+  useWebSockets,
+} from "crud-server/bundle";
+
+const router = createRouter();
+const { open, message, close, error, drain } = useWebSockets();
+
+router.addRoute("/ws", "GET", () => {
+  const title = "WebSocket Example";
+  const body = `
+    <h1>${title}</h1>
+    <script>
+      const ws = new WebSocket("ws://" + window.location.host + "/ws");
+      ws.onopen = event =>
+        console.log("WebSocket connection opened");
+      ws.onmessage = event =>
+        console.log("WebSocket message received:", event.data);
+      ws.onclose = event =>
+        console.log("WebSocket connection closed");
+      ws.onerror = event =>
+        console.error("WebSocket error:", event);
+    </script>
+  `;
+  return new Response(body, { status: 200 });
+});
+
+const server = createCrudServer({ router });
+
+server.start().then((s) => {
+  const wss = s.websocket();
+  wss.accept().then((ws) => {
+    ws.on("open", () => open(ws));
+    ws.on("message", (message) => message(ws, message));
+    ws.on("close", () => close(ws));
+    ws.on("error", (error) => error(ws, error));
+    ws.on("drain", () => drain(ws));
+  });
+});
+```
+
+This creates a WebSocket route, adds an HTML page that connects to the WebSocket, and sets up handlers for WebSocket events.
+
+### Error Handling
+
+The module includes a `handleError` function that you can use to validate and handle errors in your server.
+
+```typescript
+import { handleError } from "crud-server/error-handler-validation";
 
 try {
-  const data = await validateData();
-  // Process data.
+  // some code
 } catch (error) {
   const handledError = handleError(error);
   if (handledError) {
-    console.error(handledError.message);
-  } else {
-    console.error(error);
+    return new Response(handledError.message, { status: 400 });
   }
 }
 ```
 
-## WebSocket
+The `handleError` function returns `null` if the error was not recognized or could not be handled.
 
-Bun includes utilities for handling WebSocket connections:
+### Fetcher Function
 
-```ts
-import { useWebSockets } from "bun";
+The module also includes a `createFetcher` function that you can use to create a fetcher with error handling:
 
-const webSocketHandler = useWebSockets();
+```typescript
+import { createFetcher } from "crud-server";
 
-const server = serve({
-  port: 8000,
-  async fetch(request) {
-    // Handle HTTP request.
-  },
-  async connect(webSocket) {
-    // Handle WebSocket connection.
-    webSocket.accept();
-    webSocketHandler.open(webSocket);
-  },
-  async message(webSocket, message) {
-    // Handle WebSocket message.
-    webSocketHandler.message(webSocket, message);
-  },
-  async close(webSocket) {
-    // Handle WebSocket close.
-    webSocketHandler.close(webSocket);
-  },
-  async error(webSocket, error) {
-    // Handle WebSocket error.
-    webSocketHandler.error(webSocket, error);
-  },
-  async drain(webSocket) {
-    // Handle WebSocket backpressure drain.
-    webSocketHandler.drain(webSocket);
-  },
-});
+const fetcher = createFetcher();
+
+const response = await fetcher<MyResponseType>(url, options);
 ```
 
-## License
-
-Bun is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+The `createFetcher` function returns a function that you can use to fetch data from your API. If the response is not `ok`, it throws an `APIError`, which you can catch and handle with `handleError`.

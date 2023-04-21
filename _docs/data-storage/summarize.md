@@ -1,73 +1,15 @@
-## SQLite Interface Module
+## Summary
 
-This module provides a convenient CRUD interface for SQLite databases, allowing users to easily create, read, update, and delete data.
+This module provides a utility function for creating SQLite database tables, as well as a CRUD interface for interacting with those tables. It also includes a validator for ensuring that data adheres to the specified schema.
 
-### Exports
+## Exports
 
-The following exports are available:
+- `createTableQuery`: a function that takes a table name and schema, and returns a SQL query string for creating the table
+- `CreateSqliteInterface`: a type describing the CRUD interface for a given schema
+- `createSqliteInterface`: a function for creating an instance of the CRUD interface for a given schema
 
-- `createTableQuery`: A utility function for creating a SQL CREATE TABLE query based on a provided schema object.
-- `createSqliteInterface`: A function that creates an interface object for performing CRUD operations on a SQLite database.
-- `CreateSqliteInterface`: A type definition for the interface object returned by `createSqliteInterface`.
-- `TypeMapping`: A type definition for mapping TypeScript types to SQLite column types.
-- `TypeInference`: A type definition for inferring the TypeScript type of a schema object based on its values.
+## Dependencies
 
-### Usage
-
-To use this module, first install it in your project:
-
-```bash
-npm install sqlite-interface
-```
-
-Then, import the desired exports:
-
-```js
-import { createSqliteInterface, CreateSqliteInterface, TypeMapping, TypeInference } from "sqlite-interface";
-```
-
-Next, create a schema object that defines the structure of your database table:
-
-```js
-const mySchema = {
-  id: "INTEGER PRIMARY KEY AUTOINCREMENT",
-  name: "TEXT",
-  age: "INTEGER",
-};
-```
-
-Note that the keys of the schema object define the column names, while their values map to SQLite column types.
-
-Then, create a SQLite interface object by calling the `createSqliteInterface` function:
-
-```js
-const myInterface = createSqliteInterface("myTable", mySchema);
-```
-
-This function takes two arguments: the name of the database table, and the schema object.
-
-The resulting interface object has four methods: `create`, `read`, `update`, and `deleteById`. These methods allow you to perform CRUD operations on your database.
-
-For example, to create a new record:
-
-```js
-myInterface.create({ name: "John", age: 30 });
-```
-
-Or to read all records:
-
-```js
-const allRecords = await myInterface.read();
-```
-
-Or to update a record:
-
-```js
-myInterface.update(1, { age: 31 });
-```
-
-Or to delete a record:
-
-```js
-myInterface.deleteById(1);
-```
+- `bun:sqlite`: a SQLite database driver
+- `./validator`: a module containing functions for validating data against a schema
+- `./types`: a module containing type definitions for working with schema mappings

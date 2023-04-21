@@ -1,56 +1,68 @@
-# Bun-SQLite Interface
+# Simple SQLite Interface
 
-This is a simple interface for interacting with SQLite databases using [Bun](https://github.com/boostup/bun) ORM. It provides a CRUD interface for a given schema.
+This is a simple SQLite interface written in TypeScript that supports basic CRUD operations. 
 
 ## Installation
 
-Install `bun-sqlite` package using your package manager of choice:
-
 ```
-npm install bun sqlite @types/sqlite3
-
-or
-
-yarn add bun sqlite @types/sqlite3
+npm install simple-sqlite-interface
 ```
 
 ## Usage
 
+### Creating the Interface
+
+To create an SQLite interface, use the `createSqliteInterface` function. It takes two arguments: the name of the table and a schema object that defines the columns of the table and their data types.
+
 ```typescript
-import { createSqliteInterface } from "bun-sqlite";
+import { createSqliteInterface } from "simple-sqlite-interface";
 
 const schema = {
-  id: "number",
-  name: "string",
-  email: "string",
+  id: "integer primary key autoincrement",
+  title: "text",
+  completed: "boolean",
 };
 
-const users = createSqliteInterface("users", schema);
-
-await users.create({ id: 1, name: "John Doe", email: "johndoe@example.com" });
-
-const allUsers = await users.read();
-
-await users.update(1, { name: "John Doe II" });
-
-await users.deleteById(1);
+const todos = createSqliteInterface("todos", schema);
 ```
 
-## API
+### CRUD Operations
 
-`createSqliteInterface(tableName: string, schema: Schema): CreateSqliteInterface<Schema>`
+#### Create
 
-This function returns an object with the following methods:
+To create a new row in the table, use the `create` function. It takes an object that matches the schema of the table.
 
-- `create(item: TypeInference<Schema>): Promise<void>`
-  Creates a new item in the table for the schema.
-- `read(): Promise<TypeInference<Schema>[]>`
-  Reads all items from the table for the schema.
-- `update(id: number, item: Partial<TypeInference<Schema>>): Promise<TypeInference<Schema>>`
-  Updates an item in the table for the schema by its `id`.
-- `deleteById(id: number): Promise<void>`
-  Deletes an item from the table for the schema by its `id`.
-  
-## License
+```typescript
+await todos.create({
+  title: "Buy groceries",
+  completed: false,
+});
+```
 
-This package is [MIT licensed](https://github.com/boostup/bun-sqlite/blob/main/LICENSE).
+#### Read
+
+To read all rows in the table, use the `read` function. It returns an array of objects that match the schema of the table.
+
+```typescript
+const allTodos = await todos.read();
+```
+
+#### Update
+
+To update an existing row in the table, use the `update` function. It takes the id of the row to update and an object containing the fields to update.
+
+```typescript
+await todos.update(1, { completed: true });
+```
+
+#### Delete
+
+To delete an existing row in the table, use the `deleteById` function. It takes the id of the row to delete.
+
+```typescript
+await todos.deleteById(1);
+```
+
+## Contributing
+
+PRs accepted! 👍 Please lint, test, and write good commit messages.

@@ -9,9 +9,18 @@ export async function getUserInput(): Promise<string> {
 }
 
 // Interface for parsed command line arguments
-interface ParsedArgs {
+export interface ParsedArgs {
   [key: string]: string | boolean;
 }
+
+interface OptionDefinition {
+  default?: string | boolean;
+  types: (string | boolean)[];
+}
+
+const optionDefinitions: { [key: string]: OptionDefinition } = {
+  // Define available options here
+};
 
 // Parse command line arguments
 export async function parseCliArgs(): Promise<ParsedArgs> {
@@ -23,9 +32,23 @@ export async function parseCliArgs(): Promise<ParsedArgs> {
       const arg = args[i];
       if (arg.startsWith("--")) {
         const key = arg.slice(2);
-        const nextArg = args[i + 1];
-        parsedArgs[key] = nextArg && !nextArg.startsWith("--") ? nextArg : true;
-        if (nextArg) i++;
+        if (optionDefinitions.hasOwnProperty(key)) {
+          const optionDef = optionDefinitions[key];
+          let value = optionDef.default;
+          const nextArg = args[i + 1];
+          if (nextArg && !nextArg.startsWith("--")) {
+            const type = optionDef.types.find(
+              (type) => typeof type === typeof value
+            );
+            if (type) value = type === "boolean" ? true : nextArg;
+            i++;
+          } else if (typeof value === "boolean") {
+            value = true;
+          }
+          parsedArgs[key] = value;
+        } else {
+          parsedArgs[key] = true;
+        }
       }
     }
     return parsedArgs;
@@ -42,7 +65,10 @@ function createFileWithContent(filePath: string, content: string) {
 
 // Ensure directory exists
 export function directoryExists(directoryPath: string) {
-  fs.mkdirSync(directoryPath, { recursive: true });
+  if (!fs.existsSync(directoryPath)) {
+    fs.mkdirSync(directoryPath, { recursive: true });
+    console.log(`Created directory: ${directoryPath}`);
+  }
 }
 
 // Get module names from path
