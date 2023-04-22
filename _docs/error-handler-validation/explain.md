@@ -1,46 +1,15 @@
-# ErrorUtils Module
+## Module: errorUtils.ts
 
-The `errorUtils.ts` module exports types, functions, and a validator creator that are useful for handling and validating errors in JavaScript code.
+### Dependencies:
+- ./types
 
-## Dependencies
+### Features:
+- `ErrorType` type definition: a union type of string literals that represents the different types of errors (`"ValidationError"`, `"APIError"`, `"JavaScriptError"`).
+- `CustomError` type definition: an object type that defines a custom error, consisting of a `type` property (ErrorType) and a `message` property (string).
+- `apiErrorMap` object: a mapping of the ErrorType values to human-readable strings.
+- `getErrorType(error: Error | CustomError): ErrorType` function: returns the ErrorType of an error, either by checking if it is a CustomError or by mapping a built-in JavaScript error to an ErrorType.
+- `handleError(error: Error | CustomError, throwError = false): CustomError | undefined` function: creates a custom error from the provided error, throws the error if `throwError` is true, otherwise returns the custom error.
+- `createValidator<Schema extends SchemaType>(schema: Schema)` function: a generic function that takes a schema (an object where each property represents the expected type of a key in an object) and returns an object with two methods: `validateAgainstArraySchema` that takes an array of data and returns a validated array of the same type as the schema, and `validateItem` that takes a single item and returns a validated item of the same type as the schema.
 
-The `errorUtils.ts` module depends on the following modules:
-
-- `types.ts`: provides type definitions
-
-## Features
-
-The `errorUtils.ts` module provides the following features:
-
-- `ErrorType`: a type alias for the three types of errors that the module can handle: `ValidationError`, `APIError`, and `JavaScriptError`
-- `CustomError`: an interface for creating a custom error object with a type and message
-- `apiErrorMap`: an object that maps `ErrorType` values to their respective string representations
-- `mapBuiltInErrorType`: a function that maps built-in errors to `ErrorType` values
-- `getErrorType`: a function that returns the `ErrorType` of an error object, whether it is a built-in error or a custom error
-- `handleError`: a function that handles an error object, optionally throwing an error or returning a custom error
-- `createValidator`: a function that creates a validator for a given schema, to validate items or arrays of items against their expected types.
-
-## `createValidator` Function
-
-The `createValidator` function creates a validator for a given schema that can be used to validate objects or arrays of objects against their expected types.
-
-### Parameters
-
-- `schema` (required): an object that defines the expected types of each property
-
-### Return Value
-
-The `createValidator` function returns an object with two methods:
-
-- `validateAgainstArraySchema`: a function that validates an array of data against the given schema and returns a `ValidationResult` object with either the validated data or an error message
-- `validateItem`: a function that validates a single item against the given schema and returns an object with the same structure as the `schema`, with values coerced to the expected types.
-
-## Usage
-
-To use the `errorUtils.ts` module, import the desired functionality from the module with the appropriate import statement, like this:
-
-```typescript
-import createValidator, { CustomError } from './errorUtils';
-```
-
-Then, use the imported functions and types in your JavaScript code to handle and validate errors.
+### Technical Description:
+This module provides a set of utility functions to create and handle custom errors, as well as a function to create a schema validator. The `ErrorType` and `CustomError` type definitions are used to standardize the type of errors thrown in the application. The `apiErrorMap` object maps the ErrorType values to user-friendly strings that can be displayed in the UI. The `getErrorType` function checks if the error is a CustomError or a built-in JavaScript error and returns the appropriate ErrorType. The `handleError` function creates a custom error from the provided error, either by using it directly if it is a CustomError, or by mapping it to an ErrorType and creating a new CustomError. The `createValidator` function takes a schema and returns an object with two methods that can be used to validate data against the schema.

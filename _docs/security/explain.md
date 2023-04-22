@@ -1,10 +1,19 @@
-## Module: `generateEncryptionKey.ts`
+# Module Explanation
 
-### Dependencies:
-- None
+## Dependencies
 
-### Features:
-- `generateEncryptionKey()` function that returns a randomly generated encryption key string.
+This module has no external dependencies.
 
-### Technical Description:
-This module exports a single function `generateEncryptionKey()` which generates a random 32 character string consisting of alphanumeric characters. It achieves this by initializing a string `possibleChars` containing all the possible characters and then using `Math.random()` and `Math.floor()` to select a random character for each of the 32 positions in the key. The selected character is added to the `key` string using the `+=` operator. Once all 32 positions have been filled, the function returns the generated `key` string.
+## Features
+
+- `generateEncryptionKey`: A function that generates a random encryption key.
+  - Returns a string.
+  - The string consists of 32 characters, randomly selected from a pool of letters (both upper and lower case) and numbers.
+
+## Technical Description
+
+This module exports a single function named `generateEncryptionKey`. When called, the function generates a random encryption key by selecting 32 characters from a pool of possible characters. The pool consists of 62 different characters, including both upper and lower case letters and the digits 0 through 9.
+
+To generate the key, the function loops 32 times, each time adding one character to the key string. During each iteration, a random index is selected within the pool of possible characters using `Math.floor(Math.random() * possibleChars.length)`. The character at this index is then added to the key string using the `key += possibleChars.charAt(...)` syntax.
+
+Finally, the function returns the completed key string.

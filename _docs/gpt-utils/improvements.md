@@ -1,10 +1,11 @@
-### Improvements for DebugPromptOptions
-- Instead of using `moduleName`, consider using `fileName` for consistency with the naming convention in the code.
-- Consider adding a `lineNumber` property to `DebugPromptOptions` to indicate which line the debug prompt corresponds to. This can be useful in cases where the debug prompt is used for a specific line within a file.
+- **Use template literals instead of concatenation** - Instead of using multiple concatenations to build the `prompt` variable, template literals can be used for better readability and maintainability.
 
-### Improvements for createDebugPromptFromInputOutput function
-- Consider adding input and output type definitions to the function signature for improved readability and maintainability.
-- Instead of concatenating strings using `+=`, consider using template literals for improved performance and readability.
-- Consider adding a check for empty `input` and `output` strings to prevent unnecessary whitespace in the prompt.
-- Consider renaming the `output` parameter to `result` for improved clarity.
-- Consider adding error handling to the function in case `input` or `result` contain special characters that could break the prompt formatting.
+- **Destructure options object in function parameter** - Instead of destructuring the options object inside the function body, it can be done in the function parameter for cleaner code.
+
+- **Add error handling for missing input/output parameters** - If either `input` or `output` parameters are missing, the function will still run but will yield unexpected results. Adding error handling to ensure that both parameters are present will provide better code robustness.
+
+- **Clarify function/module naming clarification** - The `functionName` and `moduleName` variables are used to provide information about the code being debugged. The naming of these variables could be more explicit and clarify what they represent.
+
+- **Add default values for optional parameters** - Although the `options` parameter has default values, the individual properties of the object do not. Providing default values for each individual property will make sure the code behaves predictably even when the properties are not explicitly passed.
+
+- **Rename `additionalContentToAppend`** - `additionalContentToAppend` is a rather verbose property name that can be simplified for better readability.

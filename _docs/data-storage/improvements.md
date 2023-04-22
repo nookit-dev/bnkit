@@ -1,7 +1,6 @@
-- Add error handling for database queries to handle potential errors when running the SQL commands in the `create`, `update`, and `deleteById` functions.
-- Add support for creating indexes on specific columns.
-- Implement transactions when updating or deleting data to ensure data consistency.
-- Add support for querying data with conditions, such as filtering by a specific column value or sorting by a specific column.
-- Improve the validation logic to provide more detailed error messages and handle nested objects.
-- Add support for database migrations and versioning to manage changes to the database schema over time.
-- Use a connection pool instead of a single connection to improve performance and handle concurrent requests more efficiently.
+- Add error handling for all database queries and operations.
+- Use parameterized queries to prevent SQL injection attacks.
+- Allow for custom database file paths and names instead of hardcoding "mydb.sqlite".
+- Implement pagination and sorting for the read function to handle large datasets.
+- Consider using a connection pool instead of creating a new database connection for each query.
+- Implement database transaction support to ensure atomicity and consistency in multi-step operations.

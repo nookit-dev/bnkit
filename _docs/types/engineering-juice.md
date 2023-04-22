@@ -1,0 +1,6 @@
+### Functions:
+* `infer<Schema extends SchemaType>(schema: Schema, data?: unknown): TypeInference<Schema>` - Input: `Schema` (Record of string keys and TypeMapping values), `data` (optional unknown type). Output: `TypeInference<Schema>`. Infers TypeScript types from a given schema and optionally provided data.
+* `type TypeMapping = {string: string; number: number; boolean: boolean; date: Date;}` - Defines a TypeMapping object with string keys and corresponding types.
+* `type TypeInference<T extends Record<string, keyof TypeMapping>> = { [K in keyof T]: TypeMapping[T[K]]; }` - Defines a TypeInference type for inferring TypeScript types from a given schema.
+* `type ValidationResult<Schema extends Record<string, keyof TypeMapping>> = { error?: string; data?: TypeInference<Schema>[]; };` - Defines a ValidationResult type for validating a schema and returning error or data. 
+* `type SchemaType = Record<string, keyof TypeMapping>;` - Defines a SchemaType type for defining a schema with string keys and corresponding TypeMapping values.

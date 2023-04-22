@@ -1,22 +1,17 @@
-# Module Description
+# Module: file-utils.js
 
-This module provides several functions for working with directories and files in a Node.js application. It depends on the `fs` and `path` built-in modules and also imports a custom `handleError()` function from another module.
+## Dependencies
+- fs
+- path
+- (local) error-handler-validation.js
 
 ## Features
+- `getFilesForDirectory(directory, { ignoreFiles })`: returns an array of filenames for a given directory, excluding any files specified in the `ignoreFiles` array.
+- `getFilesForDirectoryFromRoot(directory, { ignoreFiles })`: returns the same array of filenames as `getFilesForDirectory`, but the `directory` path is relative to the project root (determined by finding the first directory with a `tsconfig.json` file).
+- `isRootFolder(folderPath)`: checks if a given folder is the project root directory (by checking for the presence of a `tsconfig.json` file).
+- `findAppRoot(startingPath)`: recursively searches up the directory tree from `startingPath` to find the project root directory (using `isRootFolder`).
+- `saveResultToFile(filePath, content)`: writes `content` to a file at `filePath`, creating any necessary directories in the process.
+- `readFilesContents(filePaths)`: returns an array of objects, each containing a file path and its contents, for an array of file paths.
 
-- `getFilesForDirectory()`: Returns an array of file names in a specified directory, excluding any files listed in an optional `ignoreFiles` parameter.
-- `getFilesForDirectoryFromRoot()`: Similar to the above function, but starts the search for files from the root directory of the application.
-- `isRootFolder()`: Returns true if a given directory path contains a `tsconfig.json` file (indicating the root directory of a TypeScript application).
-- `findAppRoot()`: Searches upwards from a given directory until it finds the root directory of a TypeScript application.
-- `saveResultToFile()`: Writes content to a file at a specified path, including any missing directories in the path.
-- `readFilesContents()`: Returns an array of objects containing the contents of specified files and their relative paths.
-
-Note that in each of the exported functions, the `directory` parameter can be one of several string values for convenience in specifying paths relative to the current module.
-
-## Technical Description
-
-The `fs` and `path` modules are imported at the top of the file for working with file system operations and file paths, respectively. The `handleError()` function is imported from another module for standardized error handling.
-
-Each of the exported functions takes one or more parameters related to its specific function, and optional parameters can be passed as an object (destructured with default values). The functions use a combination of built-in methods for working with files and directories, such as `readdirSync()`, `join()`, `parse()`, `existsSync()`, and `promises.mkdir()`. Some functions also use utility functions defined within the module, like `isRootFolder()` and `findAppRoot()`, for convenience.
-
-If an error is encountered during function execution, it is passed to the `handleError()` function to log a detailed error message to the console. Finally, each function returns its result or `undefined` if there is an error.
+## Description
+`file-utils.js` is a module containing utility functions for working with files and directories in a Node.js project. All functions are exported and can be used individually as needed. These functions are useful for tasks such as finding files, reading and writing files, and determining the project root directory. The module depends on the built-in Node.js modules `fs` and `path`, as well as the `error-handler-validation.js` module in the same project.

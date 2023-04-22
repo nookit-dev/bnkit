@@ -1,31 +1,23 @@
-# Module Explanation
+This file exports two functions, `jwtClient` and `jwtServer`, both of which are related to JSON Web Tokens (JWTs). 
 
-This module exports two functions, `jwtClient` and `jwtServer`, for encoding and decoding JSON web tokens (JWTs). 
+This module depends on Node's built-in `crypto` module for generating HMAC signatures.
 
-## Dependencies
+### jwtClient
 
-The module imports the `crypto` module from Node.js, which is used for generating HMAC digests.
+`jwtClient` exports two methods: 
 
-## Features
+- `decodeJwt(token: string)`: decodes a JWT and returns the header and payload as a JavaScript object.
+- `isJwtExpired(token: string)`: decodes a JWT, checks if it has an expiration time, and if so, compares it to the current time to determine if the token is expired.
 
-The `jwtClient` function exports two methods: `decodeJwt` and `isJwtExpired`.
+### jwtServer
 
-`decodeJwt` takes a JWT as a string and decodes its header and payload components. It returns an object with `header` and `payload` keys.
+`jwtServer` exports two methods:
 
-`isJwtExpired` takes a JWT as a string and checks if its expiry time has passed. It returns a boolean value.
+- `createJwt(payload: JwtPayload, secret: string, expiresIn: number = 60 * 60)`: creates a JWT with an optional expiration time and returns it as a string. The payload is expected to be a JavaScript object, and the `secret` parameter is used to generate the HMAC signature.
+- `verifyJwt(token: string, secret: string): { header: JwtHeader, payload: JwtPayload }`: takes a JWT as a string, verifies its signature and expiration time, and returns the decoded header and payload as a JavaScript object.
 
-The `jwtServer` function exports two methods: `createJwt` and `verifyJwt`.
+This module makes use of the `base64UrlEncode` and `base64UrlDecode` functions to encode and decode JWT header and payload strings. It also uses the `sign` function to generate HMAC signatures for verifying and creating JWTs. 
 
-`createJwt` takes the payload data as an object, a secret string for signing the token, and an optional expiry time in seconds. It returns a JWT as a string.
+The `JwtHeader` and `JwtPayload` interfaces define the expected shape of JWT headers and payloads. 
 
-`verifyJwt` takes a JWT as a string and a secret string. It checks the integrity of the signature on the token and returns the token's header and payload as an object if successful. Otherwise, it raises an error.
-
-## Technical Description
-
-The module uses the `Buffer` class from Node.js to encode and decode base64 strings. It defines two functions, `base64UrlEncode` and `base64UrlDecode`, for encoding and decoding strings with characters that are URL-safe.
-
-The `sign` function takes a string and a secret and computes an HMAC digest using the SHA-256 algorithm. It returns the digest as a base64-encoded string.
-
-The `createJwt` function constructs a header object with an algorithm (`HS256`) and a type (`JWT`). It encodes the header and payload objects as base64 strings, concatenates them with a period (`.`) separator, and signs the resulting string with the `sign` function. It then encodes the signature as a base64 string and returns the concatenated string as a JWT.
-
-The `verifyJwt` function first extracts the header, payload, and signature components from the input JWT. It then computes the signature of the header and payload components using the `sign` function and compares it to the decoded signature. If they match, it parses and returns the header and payload objects. Otherwise, it raises an error.
+Overall, this module provides a convenient way to generate and verify JWTs, which are commonly used in authentication and authorization processes.

@@ -51,6 +51,11 @@ export const chatGptActionsConfig = {
       "list improvements that can be made to this module? Please use markdown syntax and return the raw markdown string.",
     fileExtension: "md",
   },
+  "engineering-juice": {
+    prompt:
+      "list the functions in the module, with there input and output types, very brief description of each function. return the raw markdown string. keep it short and no filler words",
+    fileExtension: "md",
+  },
 };
 
 await cliApp(chatGptActionsConfig);

@@ -1,19 +1,27 @@
-# Module Explanation: `crud-server`
+# Module Explanation
 
-## Dependent Modules
-- `bun`
-- `fetcher`
+This module defines a `CrudServer` that handles CRUD operations for a given schema. It uses a `ServerRouter` to handle incoming requests, and can also handle WebSocket connections. It also includes a function to interact with the OpenAI completions API.
+
+## Dependencies
+
+The module depends on the following modules:
+- `"bun"` - for server functionality and WebSocket support
+- `"fetcher"` - for making HTTP requests to the OpenAI API
+- `"./error-handler-validation"` and `"./types"` - for handling and validating errors and data types
 
 ## Features
-- `createRouter`: creates a router that can handle HTTP requests for different paths and methods
-- `ServerRouter`: a type for the router object that has two methods: `addRoute` to add new routes, and `handleRequest` to handle incoming HTTP requests
-- `createCrudServer`: a factory function that creates a Server object with CRUD (Create, Read, Update, Delete) functionality for a given schema
-- `CrudServer`: a type for the Server object returned by `createCrudServer`, which has three methods: `start` to start the server, `stop` to stop the server, and `router` to access the router object used by the server
-- `useWebSockets`: a function that returns an object with callback functions to handle WebSocket connections
+
+- `createRouter`: creates a `ServerRouter` that can handle incoming requests based on predefined routes
+- `createCrudServer`: creates a `CrudServer` that handles CRUD operations for a given schema, using a `ServerRouter` to handle incoming requests and WebSocket connections
+- `useWebSockets`: returns an object containing functions to handle WebSocket connections
+- `createOpenAICompletions`: a function that interacts with the OpenAI GPT-3 completions API, returning completions based on the given input prompt.
 
 ## Technical Description
-The `crud-server` module provides a set of helper functions and types for building a CRUD server. It utilizes the `createRouter` function to handle incoming HTTP requests for Create, Read, Update, and Delete operations, and `createCrudServer` to create a Server object with the CRUD functionality for a given schema. 
 
-The `useWebSockets` function provides a set of callback functions for handling WebSocket connections, and the `createOpenAICompletions` function creates an API client for the OpenAI Completions API.
+The `createRouter` function creates a `ServerRouter` object that can add and handle custom routes. It keeps track of an array of `ServerRoute` objects, each defining a path, method, and handler function.
 
-Overall, this module provides a convenient and powerful toolkit for building CRUD servers in a scalable and modular way.
+The `createCrudServer` function creates a `CrudServer` object that starts a server and listens for incoming requests. It uses a `ServerRouter` to handle incoming requests, comparing the requested path and method to defined routes. It also includes functions to handle WebSocket connections.
+
+The `useWebSockets` function returns an object containing functions to handle WebSocket connections including `open`, `message`, `close`, `error`, and `drain`.
+
+The `createOpenAICompletions` function creates an object that interacts with the OpenAI GPT-3 completions API. It contains a function `getCompletions` that receives a prompt and returns completions based on the input prompt. It uses the `fetcher` module to make HTTP requests to the API.

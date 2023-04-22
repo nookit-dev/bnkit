@@ -1,14 +1,13 @@
-## Module: type-inference.ts
+This module defines a few utility types and functions for validating and infering TypeScript types from a given schema. 
 
-**Dependencies:**
-- None
+Dependencies:
+- none
 
-**Features:**
-- TypeMapping interface: a map of TypeScript types to their corresponding JavaScript types.
-- TypeInference type: a utility type that infers TypeScript types from a given schema.
-- ValidationResult type: a type that defines the output of the validate function.
-- SchemaType type: an interface that defines the schema object structure.
-- infer function: a function that infers types from data based on a given schema.
+Features:
+- `TypeMapping`: a type with mapping of common JS types to their TypeScript counterparts
+- `TypeInference<T>`: a type that infers TypeScript types from a given schema object
+- `ValidationResult<Schema>`: a type with either an error or inferred types data property for a given schema object
+- `SchemaType`: a type that is a record with keys and values that correspond to properties and types
+- `infer<Schema>`: a function that takes a schema object and optional data and returns an inferred TypeScript type that matches the schema.
 
-**Description:**
-The `type-inference.ts` module is a utility for inferring TypeScript types from data based on a schema object. The module exports several useful types, including `TypeMapping`, which maps TypeScript types to their corresponding JavaScript types; `TypeInference`, which infers TypeScript types based on a given schema; and `ValidationResult`, which specifies the expected output of the `validate` function. The module also exports a function called `infer`, which takes a schema object and data as arguments and returns the inferred TypeScript types. This module is useful for validating data types or ensuring data is properly formatted according to a defined schema.
+Overall, this module provides a convenient way to validate and infer TypeScript types based on a given JS schema.

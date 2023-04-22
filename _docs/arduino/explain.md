@@ -1,37 +1,33 @@
-# File Explanation
+## **File Explanation**
 
-This file exports two functions, `createArduinoInterface` and `listPorts`, and imports three modules, `handleError`, `serialport`, and `SerialPort`.
+This file exports two functions, `createArduinoInterface` and `listPorts`, which work with Arduino devices over a serial port. The `createArduinoInterface` function creates a new interface with the Arduino device using the provided serial port and an optional baud rate. The `listPorts` function lists the available serial ports on the machine.
 
-## Dependencies
+The file depends on two modules, `error-handler-validation` and `serialport`.
 
-This module depends on the following modules:
+## **Module Features**
 
-- `error-handler-validation`: a module that exports a function for handling errors and validating error messages.
-- `serialport`: a module that helps with serial communication with an Arduino device.
-- `SerialPort`: a constructor for the `serialport` module.
+### **Function: createArduinoInterface**
 
-## Features
+This function creates a new interface with the Arduino device using the provided serial port and an optional baud rate. The function returns an object with two methods: `onData` and `write`.
 
-### `createArduinoInterface`
+#### **Method: onData**
 
-This function takes an object with two parameters, `port` and `baudRate`, and returns an object with two functions, `onData` and `write`. 
+The `onData` method takes a callback function that is executed every time new data is received from the Arduino device. The data is passed to the callback function as a string parameter.
 
-#### `onData`
+#### **Method: write**
 
-This function takes a callback function as a parameter and is called every time data is received from the Arduino. The data is converted to a string and passed to the callback function. Any errors thrown by the callback function are caught, and an APIError is thrown using the `handleError` function.
+The `write` method takes a string parameter that is sent to the Arduino device over the serial port. The method returns a Promise that resolves when the data is successfully written to the device, and rejects with an error if the write operation fails.
 
-#### `write`
+### **Function: listPorts**
 
-This function takes a string as a parameter and returns a `Promise`. It writes the string to the Arduino and calls the `resolve` function of the promise if successful. If an error occurs, the `reject` function of the promise is called with an APIError using the `handleError` function.
+This function lists the available serial ports on the machine. It returns a Promise that resolves with an array of objects, each representing a single available serial port. Each object contains two properties: `path`, which represents the path of the serial port, and `manufacturer`, which represents the manufacturer of the device that is currently connected to the port.
 
-### `listPorts`
+## **Technical Description**
 
-This function returns an array of objects containing information about all available ports. It calls the `list` function of the `SerialPort` module to get the list of ports. Any errors are caught, and an APIError is thrown using the `handleError` function. 
+The `createArduinoInterface` function creates a new instance of the `SerialPort` class from the `serialport` module, which is used to establish a connection with the Arduino device over a serial port. The function takes an options object with two properties: `port`, which is the path of the serial port to use, and `baudRate`, which is the rate at which to communicate with the device (optional, defaults to 9600). The function returns an object with two methods: `onData` and `write`.
 
-## Technical Description 
+The `onData` method sets up an event listener on the `data` event of the `SerialPort` object, which is triggered every time new data is received from the device. When the event is triggered, the callback function provided in the `onData` method is executed with the received data passed as a string parameter. If an error occurs in the callback function, the `handleError` function from the `error-handler-validation` module is called with an object containing an error type of "APIError" and the error message.
 
-This module is used to communicate with an Arduino device through a serial port. The `createArduinoInterface` function creates an interface for sending and receiving data to the device. It creates a new `serialport` instance using the provided `port` and `baudRate`, and returns an object with two functions, `onData` and `write`. The `onData` function listens for data from the Arduino device and passes it to the provided callback function. The `write` function writes data to the device.
+The `write` method sends data to the Arduino device over the serial port using the `SerialPort` object's `write` method. The method takes a string parameter representing the data to be sent to the device. It returns a Promise that resolves when the data is successfully written to the device, and rejects with an error if the write operation fails. If an error occurs, the `handleError` function is called with an object containing an error type of "APIError" and the error message.
 
-The `listPorts` function lists all available ports using the `SerialPort` module’s `list` function. It returns an array of objects containing the path and manufacturer of each port. 
-
-The `handleError` function is used to handle and validate errors, and is imported from the `error-handler-validation` module.
+The `listPorts` function utilizes the `list` method from the `serialport` module to list all the available serial ports on the machine. The function maps over the array of ports, creating a new object for each port with the `path` and `manufacturer` properties, and returns an array of these objects. If an error occurs during the listing operation, the `handleError` function is called with an object containing an error type of "APIError" and the error message.

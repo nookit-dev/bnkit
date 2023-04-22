@@ -1,7 +1,5 @@
-- Instead of hard-coding error messages in the code, consider creating an external file for error messages that can easily be modified or translated.
-- Consider using a library for error handling, rather than creating a custom implementation.
-- The `mapBuiltInErrorType` function currently always returns "JavaScriptError", so it could be simplified or removed.
-- The `validateAgainstArraySchema` function currently catches and handles errors thrown by `validateItem`, but it might be better to catch them outside of the loop and return an array of both valid and invalid items.
-- Consider adding additional error types for more specific types of validation errors, rather than just "invalid-type".
-- It might be useful to have a separate function for validating individual fields of an object, rather than requiring the entire object to be validated at once.
-- Consider using TypeScript's built-in `unknown` type instead of `any` to improve type safety.
+- Add more specific error messages to differentiate between different types of validation errors.
+- Consider adding support for asynchronous validation, if necessary.
+- Validate schema itself to prevent errors due to invalid schema definitions.
+- Add more built-in error types to mapBuiltInErrorType function.
+- Consider adding support for custom error messages.

@@ -1,0 +1,1 @@
+- `generateEncryptionKey(): string`: returns a randomly generated 32 character string that includes uppercase letters, lowercase letters, and digits.

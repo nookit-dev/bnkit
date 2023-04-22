@@ -1,34 +1,33 @@
-# Module: cli-utils
+# Module: cli-helpers
 
-## Dependencies
+## Dependencies:
 - error-handler-validation
 - fs
 - path
 - readline
 
-## Features
-- `getUserInput()`: Get user input asynchronously
-- `ParsedArgs`: Interface for parsed command line arguments
-- `parseCliArgs()`: Parse command line arguments
-- `createFileWithContent(filePath: string, content: string)`: Ensure directory exists and create file with content
-- `directoryExists(directoryPath: string)`: Ensure directory exists
-- `getModulesFromPath(directoryPath: string)`: Get module names from path
-- `getAdditionalPrompt()`: Get additional prompt from user
-- `chooseActions(actionsConfig: Record<string, any>): Promise<Array<keyof typeof actionsConfig>>`: Choose and return selected actions from given config
+## Features: 
+- `getUserInput()`: A function that gets user input asynchronously.
+- `parseCliArgs()`: A function that parses command line arguments.
+- `createFileWithContent(filePath: string, content: string)`: A function that ensures a directory exists and creates a file with the given content.
+- `directoryExists(directoryPath: string)`: A function that ensures a directory exists.
+- `getModulesFromPath(directoryPath: string)`: A function that gets module names from a directory path.
+- `getAdditionalPrompt()`: A function that prompts the user for additional input.
+- `chooseActions(actionsConfig: Record<string, any>)`: A function that prompts the user to choose from available actions and returns the selected actions.
 
-## Technical Description
-`cli-utils` is a collection of utility functions that aid in creating a command line interface (CLI) for Node.js programs. 
+## Technical Description:
+This module provides helper functions for command line interface (CLI) applications. 
 
-`parseCliArgs()` takes command line arguments passed to the program and returns an object with parsed key-value pairs. 
+`getUserInput()` uses the `spawn()` method of the `child_process` module to asynchronously get user input.
 
-`createFileWithContent()` creates a file at the given file path with provided contents. The function also ensures that the directory containing the file exists. 
+`parseCliArgs()` parses command line arguments by iterating through the arguments and checking if they match any of the predefined options with optional default values. It returns an object with the parsed arguments.
 
-`directoryExists()` checks if a directory exists at the given file path and creates it if it doesn't exist.
+`createFileWithContent(filePath, content)` ensures that the directory containing the file specified in `filePath` exists and creates the file with the content specified in `content` using the `writeFileSync()` method of the `fs` module.
 
-`getModulesFromPath()` returns an array of module names present in a directory.
+`directoryExists(directoryPath)` checks if a directory specified in `directoryPath` exists using the `existsSync()` method of the `fs` module, creates it if it doesn't exist, and logs a message to the console.
 
-`getAdditionalPrompt()` prompts the user for additional input and returns the user's response as a string.
+`getModulesFromPath(directoryPath)` reads the contents of a directory specified in `directoryPath` and returns an array of the names of each subdirectory using the `readdirSync()` method of the `fs` module.
 
-`chooseActions()` takes a configuration object with various actions and prompts the user to choose among those actions by entering their corresponding numbers. It returns an array of selected action keys.
+`getAdditionalPrompt()` prompts the user for additional input and returns the user's input using the `createInterface()` method of the `readline` module.
 
-These functions provide a streamlined way of accepting user input, handling command line arguments, and performing file system related tasks in a command line interface.
+`chooseActions(actionsConfig)` prompts the user to choose from a list of available actions specified in `actionsConfig`. It returns an array of keys corresponding to the selected actions.

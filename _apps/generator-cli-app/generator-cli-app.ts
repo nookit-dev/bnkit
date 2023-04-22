@@ -1,5 +1,6 @@
 import path from "path";
-import { chooseActions, directoryExists, getAdditionalPrompt } from "../../cli";
+import readline from "readline";
+import { chooseActions, directoryExists } from "../../cli";
 import {
   getFilesForDirectoryFromRoot,
   readFilesContents,
@@ -26,16 +27,15 @@ const allSourceFiles = readFilesContents(
 // Initialize OpenAI completions
 const openAICompletions = createOpenAICompletions({ apiKey: API_KEY });
 
-const additionalPrompt = await getAdditionalPrompt();
-
 // Store all response texts for consolidation
 const allResponseText: Map<string, string[]> = new Map();
 
 // Process a single action for a file
 async function processAction(
   file: { path: string; content: string },
-  promptAction: keyof ActionsConfig, // Updated this line
-  actionsConfig: ActionsConfig
+  promptAction: keyof ActionsConfig,
+  actionsConfig: ActionsConfig,
+  additionalPrompt: string
 ) {
   console.log(`Action: ${promptAction.toString()}`);
   const finalPromptArray = [
@@ -75,23 +75,35 @@ async function processAction(
     allResponseText.set(promptAction, []);
   }
   allResponseText.get(promptAction)?.push(saveFilePath, messageContent);
+
+  return messageContent;
 }
 
 // Process all actions for a single file
 async function processFile(
   file: { path: string; content: string },
   actionsConfig: ActionsConfig,
-  promptActions: Array<keyof ActionsConfig>
+  promptActions: Array<keyof ActionsConfig>,
+  additionalPrompt: string
 ) {
   console.log(`\nProcessing module: ${file.path}`);
+  const consolidatedOutput = {};
   const promises = promptActions.map((promptAction) =>
-    processAction(file, promptAction, actionsConfig)
+    processAction(file, promptAction, actionsConfig, additionalPrompt).then(
+      (output) => {
+        consolidatedOutput[promptAction] = output;
+      }
+    )
   );
   await Promise.all(promises);
+  return consolidatedOutput;
 }
 
-// Create consolidated files for each action
-async function createConsolidatedFiles() {
+// Create consolidated files for each action and pass them to the API
+async function createConsolidatedFiles(
+  actionsConfig: ActionsConfig,
+  finalUserPrompt: string
+) {
   for (const [action, responseTexts] of allResponseText.entries()) {
     try {
       const consolidatedResponses = responseTexts.join("\n\n");
@@ -99,42 +111,110 @@ async function createConsolidatedFiles() {
         "_docs",
         `${action}-consolidated.md`
       );
+
+      // Save the consolidated responses first
       await saveResultToFile(consolidatedOutputPath, consolidatedResponses);
 
       console.log(
         `Consolidated file for '${action}' created at: ${consolidatedOutputPath}`
       );
       console.log("Consolidated file content:\n", consolidatedResponses);
+
+      // Pass the consolidated result to the API along with the final user prompt
+      const finalPrompt = `${consolidatedResponses}\n${finalUserPrompt}`;
+      const finalResponse = await openAICompletions.getCompletions({
+        prompt: finalPrompt || "",
+      });
+
+      const finalMessageContent = finalResponse.choices?.[0].message.content;
+
+      // Save the final message content to the consolidated file
+      await saveResultToFile(
+        consolidatedOutputPath,
+        `## Prompt\n${finalPrompt}\n\n## Response\n${finalMessageContent}`
+      );
+
+      console.log(
+        `Updated consolidated file for '${action}' at: ${consolidatedOutputPath}`
+      );
+      console.log("Updated consolidated file content:\n", finalMessageContent);
+
+      allResponseText.set(action, [finalMessageContent]);
     } catch (error) {
       console.error(`Error creating consolidated file for '${action}':`, error);
     }
   }
+
+  // Prompt the user to either exit the program or pass the consolidated files to another prompt
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question(
+    "Do you want to exit the program or pass the consolidated files to another prompt? (exit/continue)",
+    async (answer) => {
+      if (answer === "exit") {
+        console.log("Exiting the program...");
+        process.exit(0);
+      } else if (answer === "continue") {
+        const newPrompt = await getUserInput(
+          "Enter a new prompt to pass to the consolidated files: "
+        );
+        await createConsolidatedFiles(actionsConfig, newPrompt);
+      } else {
+        console.log("Invalid input. Exiting the program...");
+        process.exit(0);
+      }
+    }
+  );
 }
 
-async function getUserInput(actionsConfig: ActionsConfig) {
-  const promptActions = (await chooseActions(actionsConfig)) as Array<
-    keyof typeof actionsConfig
-  >;
-  const additionalPrompt = await getAdditionalPrompt();
-  return { promptActions, additionalPrompt };
+function getUserInput(promptMessage: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(promptMessage, (answer) => {
+      rl.close();
+      resolve(answer);
+    });
+  });
+}
+
+export async function getAdditionalPrompt(): Promise<string> {
+  const response = await getUserInput(
+    "Enter an additional prompt (leave empty for none): "
+  );
+
+  return response;
+}
+
+export async function getFinalUserPrompt(): Promise<string> {
+  const response = await getUserInput(
+    "Enter a final prompt to pass along with the consolidated result: "
+  );
+
+  return response;
 }
 
 // Main function to process all files and create consolidated output
-export async function cliApp(actionsConfig: ActionsConfig) {
+export async function cliApp(actionsConfig: ActionsConfig): Promise<void> {
   try {
-    const { promptActions, additionalPrompt } = await getUserInput(
-      actionsConfig
-    );
+    const additionalPrompt = await getAdditionalPrompt();
+    const promptActions = (await chooseActions(actionsConfig)) as Array<
+      keyof ActionsConfig
+    >;
     const fileProcessingPromises =
       allSourceFiles?.map((file) =>
-        processFile(file, actionsConfig, promptActions)
+        processFile(file, actionsConfig, promptActions, additionalPrompt)
       ) || [];
-    await Promise.all(fileProcessingPromises);
-    await createConsolidatedFiles();
+    const fileResults = await Promise.all(fileProcessingPromises);
+    const finalUserPrompt = await getFinalUserPrompt();
+    await createConsolidatedFiles(actionsConfig, finalUserPrompt);
   } catch (error) {
     console.error("Error in cliApp:", error);
-  } finally {
-    console.log("Exiting the program...");
-    process.exit(0);
   }
 }
