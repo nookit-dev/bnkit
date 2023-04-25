@@ -1,248 +1,361 @@
-Below is a generated output of what instant bun is:
-Prompt
+## Prompt
 _docs/security/engineering-juice.md
 
-generateEncryptionKey(): string: returns a randomly generated 32 character string that includes uppercase letters, lowercase letters, and digits.
+### Functions
+- `generateEncryptionKey(): string` - Generates a 32-character encryption key composed of uppercase and lowercase letters and numbers. Returns the key as a string.
+
 _docs/gpt-utils/engineering-juice.md
 
-Sorry, as an AI language model, I do not have access to the module or its functions. Could you please provide more information or context so I can better understand your request?
-
-_docs/arduino/engineering-juice.md
-
-Functions
-createArduinoInterface
-({ port: string, baudRate?: number }): { onData: (callback: (data: string) => void) => void, write: (data: string) => Promise<void> }
-
-Creates an interface for connecting to and communicating with an Arduino device via serial port. Takes an object with port (string) and optional baudRate (number) properties. Returns an object with onData and write methods.
-
-listPorts
-() : Promise<Array<{ path: string; manufacturer: string }>>
-
-Lists available serial ports. Returns a Promise that resolves to an array of port objects with path (string) and manufacturer (string) properties.
-
-_docs/error-handler-validation/engineering-juice.md
-
-Functions
-getErrorType(error: Error | CustomError): ErrorType
-Input: error of type Error or CustomError
-Output: ErrorType
-**Description`: Determines the error type based on the input error.
-handleError(error: Error | CustomError, throwError = false): CustomError | undefined
-Input: error of type Error or CustomError, throwError of type boolean (default false)
-Output: CustomError or undefined
-**Description`: Handles the input error by creating a custom error object or throwing an error.
-createValidator<Schema extends SchemaType>(schema: Schema)
-Input: schema of type SchemaType
-Output: Object with functions validateAgainstArraySchema and validateItem
-Description: Creates a validator object with two functions to validate data against a given schema.
-_docs/text-utils/engineering-juice.md
-
-Functions:
-
-prettifyHTMLString(rawHTML: string): string - Input: string, Output: string. Formats raw HTML string by adding proper indentation and line breaks.
-replaceMarkdown(text: string, regex: RegExp, replacement: string): string - Input: string, RegExp, string, Output: string. Replaces parts of a string that match a given regular expression with a replacement string.
-convertMarkdownToHTML(markdownText: string): string - Input: string, Output: string. Converts markdown text to HTML format by applying various parsing rules.
-isSelfClosingTag(attributes: string): boolean - Input: string, Output: boolean. Checks if the given HTML tag has a self-closing slash at the end.
-updateIndent(isOpeningTag: boolean, indent: number): number - Input: boolean, number, Output: number. Updates the indentation level based on whether an HTML tag is an opening or closing one.
-_docs/networking/engineering-juice.md
-
-The module contains the following functions:
-
-createRouter(routeConfigs?: ServerRoute[]): ServerRouter
-
-Inputs: optional array of ServerRoute objects
-Output: ServerRouter object
-Creates a router object that can add routes and handle requests based on the routes.
-createCrudServer<Schema extends Record<string, keyof TypeMapping>>({ router, port }: { router?: ServerRouter; port?: number; }): CrudServer
-
-Inputs: optional ServerRouter object and port number
-Output: CrudServer object
-Creates a server that can handle CRUD operations and optional routing.
-useWebSockets()
-
-Inputs: none
-Output: an object with WebSocket event handlers
-Returns an object containing WebSocket event handlers such as open, message, close, error, and drain.
-createOpenAICompletions({ apiKey }: { apiKey: string })
-
-Inputs: an API key string
-Output: an object with a function to fetch OpenAI completions
-Returns an object containing a function to retrieve OpenAI text completions given a prompt.
-_docs/jwt/engineering-juice.md
-
-Functions
-jwtClient()
-Input: None
-
-Output: Object with methods decodeJwt() and isJwtExpired()
-
-decodeJwt(token: string)
-Input: A JWT token string
-
-Output: An object with the parsed header and payload sections of the JWT token
-
-isJwtExpired(token: string)
-Input: A JWT token string
-
-Output: Boolean, true if the token is expired, else false
-
-jwtServer(secret: string)
-Input: A secret string used for signing JWT tokens
-
-Output: Object with methods createJwt() and verifyJwt()
-
-createJwt(payload: JwtPayload, secret: string, expiresIn: number = 60 * 60)
-Input: An object containing the payload to be included in the JWT, the secret used to sign the JWT, and an optional expiration time (default 1 hour)
-
-Output: A JWT token string
-
-verifyJwt(token: string, secret: string)
-Input: A JWT token string and the secret used to sign the token
-
-Output: Object with the parsed header and payload sections of the JWT token if token is valid, otherwise throws an error
+```typescript
+/**
+ * Generates a prompt for debugging with the given input and output, including optional function and file name information.
+ *
+ * @param input - The input value as a string.
+ * @param output - The output value as a string.
+ * @param options - Additional options to append to the prompt, such as function and module name.
+ */
+export const createDebugPromptFromInputOutput = (
+  input: string,
+  output: string,
+  options?: DebugPromptOptions
+): string => {}
+```
 
 _docs/types/engineering-juice.md
 
-Functions:
-infer<Schema extends SchemaType>(schema: Schema, data?: unknown): TypeInference<Schema> - Input: Schema (Record of string keys and TypeMapping values), data (optional unknown type). Output: TypeInference<Schema>. Infers TypeScript types from a given schema and optionally provided data.
-type TypeMapping = {string: string; number: number; boolean: boolean; date: Date;} - Defines a TypeMapping object with string keys and corresponding types.
-type TypeInference<T extends Record<string, keyof TypeMapping>> = { [K in keyof T]: TypeMapping[T[K]]; } - Defines a TypeInference type for inferring TypeScript types from a given schema.
-type ValidationResult<Schema extends Record<string, keyof TypeMapping>> = { error?: string; data?: TypeInference<Schema>[]; }; - Defines a ValidationResult type for validating a schema and returning error or data.
-type SchemaType = Record<string, keyof TypeMapping>; - Defines a SchemaType type for defining a schema with string keys and corresponding TypeMapping values.
-_docs/cli/engineering-juice.md
+### Functions
 
-Functions
-getUserInput()
-Input: None
-Output: Promise<string>
-Description: Gets user input asynchronously.
-parseCliArgs()
-Input: None
-Output: Promise<ParsedArgs>
-Description: Parses and returns command line arguments.
-createFileWithContent(filePath: string, content: string)
-Input: filePath (string), content (string)
-Output: None
-Description: Ensures directory exists and creates file with the provided content.
-directoryExists(directoryPath: string)
-Input: directoryPath (string)
-Output: None
-Description: Ensures directory exists.
-getModulesFromPath(directoryPath: string)
-Input: directoryPath (string)
-Output: Array<string>
-Description: Gets module names from the provided path.
-getAdditionalPrompt()
-Input: None
-Output: Promise<string>
-Description: Returns a promise that resolves with user input.
-chooseActions(actionsConfig: Record<string, any>)
-Input: actionsConfig (Record<string, any>)
-Output: Promise<Array<keyof typeof actionsConfig>>
-Description: Returns a promise that resolves with selected action indexes.
-_docs/fetcher/engineering-juice.md
+#### `infer`
 
-Functions:
-createFetcher({ baseUrl }: FetchOptions) => { get, post, getStatus }
-Input: { baseUrl: string }
-Output: { get: (endpoint: string) => Promise<Type>, post: ({ endpoint, params, headers }: { endpoint?: string; params?: any; headers?: Record<string, any>; }) => Promise<Type>, getStatus: (endpoint: string) => Promise<Type> }
-Creates a fetch instance with base URL and returns three HTTP methods - get, post, and getStatus.
+- Input: `schema: SchemaType`, `data?: unknown`
+- Output: `TypeInference<Schema>`
+- Description: Infers TypeScript types from a given schema and data.
 
-get<Type>(endpoint: string) => Promise<Type>
-Input: endpoint: string
-Output: Promise<Type>
-Method to send a GET request to the specified endpoint and return a JSON response of specified type.
+#### `TypeInference`
 
-post<Type>({ endpoint, params, headers }: { endpoint?: string; params?: any; headers?: Record<string, any>; }) => Promise<Type>
-Input: { endpoint?: string; params?: any; headers?: Record<string, any>; }
-Output: Promise<Type>
-Method to send a POST request to the specified endpoint with optional parameters and headers and return a JSON response of specified type.
+- Input: `T extends Record<string, keyof TypeMapping>`
+- Output: `{[K in keyof T]: TypeMapping[T[K]];}`
+- Description: Utility type to infer TypeScript types from the schema.
 
-getStatus<Type>(endpoint: string) => Promise<Type>
-Input: endpoint: string
-Output: Promise<Type>
-Method to send a HEAD request to the specified endpoint to check status and return the JSON response of specified type.
+#### `ValidationResult`
 
-handleResponse<Type>(response: Response) => Promise<Type>
-Input: response: Response
-Output: Promise<Type>
-Handles the fetch response and throw an error in case of bad response code or returns JSON response of specified type.
+- Input: `Schema extends Record<string, keyof TypeMapping>`
+- Output: `{error?: string;data?: TypeInference<Schema>[];}`
+- Description: Validates and returns either error or data, from the given schema.
+
+#### `SchemaType`
+
+- Output: `Record<string, keyof TypeMapping>`
+- Description: Represents the schema type mapping.
+
+#### `TypeMapping`
+
+- Output: `{string: string;number: number;boolean: boolean;date: Date;}`
+- Description: Represents the type mapping for strings, numbers, booleans, and dates.
+
+_docs/arduino/engineering-juice.md
+
+## Functions
+
+### `createArduinoInterface(options: ArduinoOptions)`
+
+Creates an interface to communicate with an Arduino device over a serial port.
+
+- Input: `options` - An object containing the `port` string and optional `baudRate` number.
+- Output: An object containing `onData` and `write` functions.
+
+### `onData(callback: (data: string) => void)`
+
+Registers a callback function to be called when data is received from the Arduino.
+
+- Input: `callback` - A function that accepts a string parameter.
+
+### `write(data: string): Promise<void>`
+
+Writes data to the Arduino.
+
+- Input: `data` - A string to be sent to the Arduino.
+- Output: A promise which resolves when the data has been successfully written.
+
+### `listPorts(): Promise<Array<{ path: string; manufacturer: string }>>`
+
+Lists all available serial ports on the system.
+
+- Output: A promise which resolves to an array of objects containing the `path` and `manufacturer` of each available port.
+
+_docs/jwt/engineering-juice.md
+
+## Function List:
+
+### `jwtClient()`
+* (no input parameters)
+* Returns an object with two functions:
+  * `decodeJwt(token: string): { header: object, payload: object }` - Decodes a JWT token and returns an object containing the decoded header and payload.
+  * `isJwtExpired(token: string): boolean` - Takes a JWT token and returns a boolean indicating whether the token has expired.
+
+### `jwtServer(secret: string)`
+* Takes a secret string as input.
+* Returns an object with two functions:
+  * `createJwt(payload: object, secret: string, expiresIn?: number): string` - Creates and returns a signed JWT token, using the provided payload, secret, and (optional) expiration time (in seconds).
+  * `verifyJwt(token: string, secret: string): { header: object, payload: object }` - Verifies the signature of a JWT token, and returns the decoded header and payload if the signature is valid.
+
+_docs/networking/engineering-juice.md
+
+Function List:
+
+- createRouter(routeConfigs?: ServerRoute[]): ServerRouter
+  - Input: routeConfigs, an optional array of ServerRoute objects
+  - Output: ServerRouter, an object with addRoute and handleRequest functions
+  - Description: Creates a router object for handling HTTP request routing
+
+- createCrudServer<Schema extends Record<string, keyof TypeMapping>>({ router, port }: { router?: ServerRouter; port?: number; }): CrudServer<Schema> 
+  - Input: router, an optional ServerRouter object, and port, an optional number
+  - Output: CrudServer, an object with start, stop, and router properties
+  - Description: Creates a server to handle CRUD operations
+
+- useWebSockets(): Object
+  - Input: None
+  - Output: Object, an object with open, message, close, error, and drain functions
+  - Description: Sets up WebSocket communication with the server
+
+- createOpenAICompletions({ apiKey }: { apiKey: string }): Object
+  - Input: apiKey, a string representing the OpenAI API key
+  - Output: Object, an object with a getCompletions function
+  - Description: Creates a fetcher function for retrieving completion data from the OpenAI API.
 
 _docs/data-storage/engineering-juice.md
 
-Functions
-createTableQuery(tableName: string, schema: Record<string, keyof TypeMapping>): string
-Input: tableName (string), schema (Record<string, keyof TypeMapping>)
-Output: string
-Creates a SQL CREATE TABLE statement as a string based on tableName and schema
-createSqliteInterface(tableName: string, schema: Record<string, keyof TypeMapping>): CreateSqliteInterface<Record<string, keyof TypeMapping>>
-Input: tableName (string), schema (Record<string, keyof TypeMapping>)
-Output: CreateSqliteInterface<Record<string, keyof TypeMapping>>
-Creates a SQLite interface with CRUD methods based on tableName and schema
-create(item: TypeInference<Schema>): Promise<void>
-Input: item (TypeInference)
-Output: Promise
-Creates a new record in the SQLite database with the validated item
-read(): Promise<TypeInference<Schema>[]>
-Input: none
-Output: Promise<TypeInference[]>
-Reads data from the SQLite database and returns an array of validated records
-update(id: number, item: Partial<TypeInference<Schema>>): Promise<void>
-Input: id (number), item (Partial<TypeInference>)
-Output: Promise
-Updates a record in the SQLite database with the given id and validated item
-deleteById(id: number): Promise<void>
-Input: id (number)
-Output: Promise
-Deletes a record from the SQLite database with the given id
+# Functions
+
+## createTableQuery(tableName: string, schema: Record<string, keyof TypeMapping>): string
+
+- **Input:** tableName(string), schema(Record<string, keyof TypeMapping>)
+- **Output:** string
+- Returns a CREATE TABLE SQL query string.
+
+## createSqliteInterface(tableName: string, schema: Record<string, keyof TypeMapping>)
+
+- **Input:** tableName(string), schema(Record<string, keyof TypeMapping>)
+- **Output:** CreateSqliteInterface
+- Creates a new SQLite interface with CRUD functionality.
+
+## create(item: TypeInference<Schema>)
+
+- **Input:** item(TypeInference)
+- **Output:** Promise<void>
+- Creates a new item in the SQLite database.
+
+## read()
+
+- **Input:** none
+- **Output:** Promise<TypeInference[]>
+- Reads all items from the SQLite database.
+
+## update(id: number, item: Partial<TypeInference<Schema>>)
+
+- **Input:** id(number), item(Partial<TypeInference>)
+- **Output:** Promise<void>
+- Updates an item in the SQLite database.
+
+## deleteById(id: number)
+
+- **Input:** id(number)
+- **Output:** Promise<void>
+- Deletes an item from the SQLite database by its ID.
+
+_docs/fetcher/engineering-juice.md
+
+```
+## Functions
+### createFetcher
+- Input: FetchOptions
+- Output: Object containing functions `get`, `post`, and `getStatus`
+- Creates a fetcher object with a base URL and three functions for making GET, POST, and HEAD requests with error handling.
+
+### get
+- Input: string
+- Output: Promise<Type>
+- Makes a GET request to the specified endpoint and returns the resulting data as a Promise of the specified Type.
+
+### post
+- Input: Object with optional endpoint (string), params (any), and headers (Record<string, any>)
+- Output: Promise<Type>
+- Makes a POST request with the given parameters and headers to the specified endpoint (or base URL if none is provided) and returns the resulting data as a Promise of the specified Type.
+
+### getStatus
+- Input: string
+- Output: Promise<Type>
+- Makes a HEAD request to the specified endpoint and returns the resulting data as a Promise of the specified Type.
+
+### handleResponse
+- Input: Response
+- Output: Promise<Type>
+- Helper function to handle the response from any of the fetch requests. Throws an APIError if the response is not OK (status code < 200 or > 299) or returns the parsed response data as a Promise of the specified Type.
+```
+
+_docs/cli/engineering-juice.md
+
+## Functions
+
+### `getUserInput()`
+- Input: None
+- Output: `Promise<string>`
+- Asynchronously gets user input from the command line.
+
+### `parseCliArgs()`
+- Input: None
+- Output: `Promise<ParsedArgs>`
+- Parses command line arguments and returns an object with the parsed arguments.
+
+### `createFileWithContent(filePath, content)`
+- Input: `string`, `string`
+- Output: `void`
+- Ensures that the directory exists and then creates a file with the provided content and file path.
+
+### `directoryExists(directoryPath)`
+- Input: `string`
+- Output: `void`
+- Ensures that the directory exists, creating it if necessary.
+
+### `getModulesFromPath(directoryPath)`
+- Input: `string`
+- Output: `Array<string>`
+- Gets the module names from the provided directory path.
+
+### `getAdditionalPrompt()`
+- Input: None
+- Output: `Promise<string>`
+- Asynchronously prompts the user for additional input.
+
+### `chooseActions(actionsConfig)`
+- Input: `Record<string, any>`
+- Output: `Promise<Array<keyof typeof actionsConfig>>`
+- Asynchronously prompts the user to choose from a list of actions and returns the selected actions.
+
+_docs/error-handler-validation/engineering-juice.md
+
+## Functions
+
+### `getErrorType(error: Error | CustomError): ErrorType`
+
+- **Input:** `error: Error | CustomError`, an `Error` object or a `CustomError` object
+- **Returns:** `ErrorType`, the type of the error (one of "ValidationError", "APIError", or "JavaScriptError")
+- **Description:** Determines the type of the error object
+
+### `handleError(error: Error | CustomError, throwError = false): CustomError | undefined`
+
+- **Input:**
+  - `error: Error | CustomError`, an `Error` object or a `CustomError` object
+  - `throwError = false`, a boolean indicating whether or not to throw the error
+- **Returns:** `CustomError | undefined`, a `CustomError` object or `undefined`
+- **Description:** Handles the given error object, optionally throwing it
+
+### `createValidator<Schema extends SchemaType>(schema: Schema)`
+
+- **Input:** `schema: Schema`, a schema object
+- **Returns:** An object with the following properties:
+  - `validateAgainstArraySchema(schema: Schema, data: unknown[]): ValidationResult<Schema>`, a function that validates an array of objects against the given schema, returning a `ValidationResult<Schema>` object
+  - `validateItem(item: unknown): TypeInference<Schema>`, a function that validates an object against the given schema, returning a `TypeInference<Schema>` object
+- **Description:** Creates a validator object based on the given schema object, which can validate objects against the schema
+
+_docs/text-utils/engineering-juice.md
+
+Functions:
+- prettifyHTMLString(rawHTML: string): string - receives a string of raw HTML code and returns a prettified version of it.
+- replaceMarkdown(text: string, regex: RegExp, replacement: string): string - replaces all occurrences of a regular expression in a string with a replacement string.
+- parsers: object - contains different functions that each parse a specific markdown syntax and return the corresponding HTML code. The object is structured as follows:
+
+  - headers(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any headers found in the text.
+  - bold(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any bold text found in the text.
+  - italic(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any italicized text found in the text.
+  - links(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any links found in the text.
+  - unorderedLists(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any unordered lists found in the text.
+  - orderedLists(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any ordered lists found in the text.
+  - blockquotes(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any blockquotes found in the text.
+  - codeBlocks(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any code blocks found in the text.
+  - inlineCode(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any inline code found in the text.
+ 
+- convertMarkdownToHTML(markdownText: string): string - receives a string of raw markdown text and uses the parsers object to convert it to HTML code. Returns the resulting HTML code.
+
 _docs/files-folder/engineering-juice.md
 
-Functions
-getFilesForDirectory(directory: string, { ignoreFiles }: { ignoreFiles?: string[] } = {}): string[]|undefined
-Input:
-directory: A string representing the directory path to retrieve the files from.
-ignoreFiles: An optional array of strings representing the filenames to exclude from the returned array.
-Output: An array of strings representing the filenames in the specified directory that were not ignored.
-Description: Retrieves the filenames in the specified directory and filters out any ignored files.
-getFilesForDirectoryFromRoot(directory: string, { ignoreFiles }: { ignoreFiles?: string[] } = {}): string[]|undefined
-Input:
-directory: A string representing the directory path to retrieve the files from, relative to the root path.
-ignoreFiles: An optional array of strings representing the filenames to exclude from the returned array.
-Output: An array of strings representing the filenames in the specified directory that were not ignored.
-Description: Retrieves the filenames in the specified directory, relative to the app root path, and filters out any ignored files.
-isRootFolder(folderPath: string): boolean|undefined
-Input: A string representing a directory path.
-Output: A boolean indicating whether the given directory is the root folder of an app.
-Description: Checks if the given directory is the root folder of an app by checking if the tsconfig.json file exists in that path.
-findAppRoot(startingPath: string): string|null|undefined
-Input: A string representing a directory path.
-Output: A string representing the app root directory path, or null if not found.
-Description: Recursively checks the given directory and its parents until it finds the root directory of an app.
-saveResultToFile(filePath: string, content: string): Promise<void>|undefined
-Input:
-filePath: A string representing the path to the file to be saved.
-content: A string representing the content to be saved in the file.
-Output: A promise that resolves when the file is saved successfully, or undefined if an error occurs.
-Description: Saves the given content to the specified file.
-readFilesContents(filePaths: string[]): { path: string; content: string }[]|undefined
-Input: An array of strings representing the paths to the files to be read.
-Output: An array of objects, each containing a path and content property representing the file name and content respectively.
-Description: Reads the contents of the files in the specified paths and returns them as an array of objects containing the filename and content. Can you create a final text consolidation that explains the purpose of each moduless functions
-Response
-The generateEncryptionKey function generates a secure 32-character encryption key.
+## Module Functions
 
-The createArduinoInterface function creates an interface to connect to and communicate with an Arduino device via serial port.
+### `getFilesForDirectory(directory: string, options: { ignoreFiles?: string[] }): string[] | undefined`
+- Input
+    - `directory`: Directory path to retrieve files from
+    - `options`: Object containing an optional array of file names to ignore
+- Output
+    - Array of file names in the specified directory, with ignored files excluded
+- Description
+    - Retrieves all file names in the specified directory, filters out ignored files, and returns an array of the remaining file names.
 
-The getErrorType function determines the error type based on the input error, and the handleError function handles the input error by creating a custom error object or throwing an error.
+### `getFilesForDirectoryFromRoot(directory: string, options: { ignoreFiles?: string[] }): string[] | undefined`
+- Input
+    - `directory`: Directory path to retrieve files from, relative to the root directory of the application
+    - `options`: Object containing an optional array of file names to ignore
+- Output
+    - Array of file names in the specified directory, relative to the application's root, with ignored files excluded
+- Description
+    - Calls `findAppRoot` to determine the root directory of the application, then constructs the absolute path to the specified relative directory from the root, retrieves all file names in that directory, filters out ignored files, and returns an array of the remaining file names.
 
-The prettifyHTMLString function formats an HTML string with proper indentation and line breaks, and the convertMarkdownToHTML function converts markdown text to HTML format.
+### `isRootFolder(folderPath: string): boolean | undefined`
+- Input
+    - `folderPath`: Path to a directory
+- Output
+    - Boolean value representing whether the specified directory is an application root directory
+- Description
+    - Determines if the specified directory is an application root directory by checking for the existence of a `tsconfig.json` file in that directory.
 
-The createRouter and createCrudServer functions create a server with routing and CRUD functionality.
+### `findAppRoot(startingPath: string): string | null | undefined`
+- Input
+    - `startingPath`: Absolute or relative path to a directory
+- Output
+    - Absolute path to the application's root directory, or `null` if it could not be found
+- Description
+    - Traverses up the directory tree from `startingPath` until an application root directory is found (by calling `isRootFolder`), then returns the absolute path to that directory.
 
-The jwtClient and jwtServer functions create client and server interfaces for generating and verifying JSON Web Tokens.
+### `saveResultToFile(filePath: string, content: string): Promise<void> | undefined`
+- Input
+    - `filePath`: Path to the file to write to
+    - `content`: Contents to write to the file
+- Output
+    - Promise resolving to `undefined` if the file was successfully written to
+- Description
+    - Creates any directories in the file path that don't already exist, then writes `content` to the specified file.
 
-The createFetcher function creates a fetch instance with base URL and returns three HTTP methods - get, post, and getStatus - for making API requests.
+### `readFilesContents(filePaths: string[]): { path: string; content: string }[] | undefined`
+- Input
+    - `filePaths`: Array of file paths to read from
+- Output
+    - Array of objects with `path` and `content` properties, containing the file name and contents, respectively, for each file in `filePaths`
+- Description
+    - Reads the contents of each file in `filePaths`, returning an array of objects containing the file name and contents of each file.
+summarize all the technical details of each module and their responsibilities
 
-The data storage module contains functions like createTableQuery to create a SQL table, and createSqliteInterface to create a SQLite interface for CRUD operations.
+## Response
+The `engineering-juice` library contains several modules for different purposes. 
 
-The files-folder module provides functions like getFilesForDirectory to retrieve filenames in a specified directory, and saveResultToFile to save content to a specified file.
+The `security` module has a `generateEncryptionKey` function that generates a 32-character encryption key composed of uppercase and lowercase letters and numbers.
+
+The `gpt-utils` module has a `createDebugPromptFromInputOutput` function that generates a prompt for debugging with the given input and output.
+
+The `types` module has functions for inferring TypeScript types from given schemas and data, validating schemas, and representing type mappings.
+
+The `arduino` module has functions for creating an interface to communicate with an Arduino device over a serial port and listing all available serial ports on the system.
+
+The `jwt` module has functions for encoding and decoding JWT tokens and verifying the signature of a JWT token.
+
+The `networking` module has functions for creating routers for HTTP request routing, creating servers for handling CRUD operations, setting up WebSocket communication, and creating fetcher objects for making API requests.
+
+The `data-storage` module has functions for creating SQL queries and a SQLite interface with CRUD functionality.
+
+The `fetcher` module has functions for creating fetcher objects for making API requests with error handling.
+
+The `cli` module has functions for parsing command-line arguments, creating files and directories, and prompting for user input.
+
+The `error-handler-validation` module has functions for handling different types of errors and validating schemas.
+
+The `text-utils` module has functions for prettifying HTML code, parsing Markdown syntax, and converting Markdown text to HTML code.
+
+The `files-folder` module has functions for working with files and directories, including retrieving file names, determining application root directories, and reading and writing file contents.
