@@ -1,21 +1,21 @@
-The module contains the following functions:
+Function List:
 
 - createRouter(routeConfigs?: ServerRoute[]): ServerRouter
-  - Inputs: optional array of ServerRoute objects
-  - Output: ServerRouter object
-  - Creates a router object that can add routes and handle requests based on the routes.
+  - Input: routeConfigs, an optional array of ServerRoute objects
+  - Output: ServerRouter, an object with addRoute and handleRequest functions
+  - Description: Creates a router object for handling HTTP request routing
 
-- createCrudServer<Schema extends Record<string, keyof TypeMapping>>({ router, port }: { router?: ServerRouter; port?: number; }): CrudServer<Schema>
-  - Inputs: optional ServerRouter object and port number
-  - Output: CrudServer object
-  - Creates a server that can handle CRUD operations and optional routing. 
+- createCrudServer<Schema extends Record<string, keyof TypeMapping>>({ router, port }: { router?: ServerRouter; port?: number; }): CrudServer<Schema> 
+  - Input: router, an optional ServerRouter object, and port, an optional number
+  - Output: CrudServer, an object with start, stop, and router properties
+  - Description: Creates a server to handle CRUD operations
 
-- useWebSockets()
-  - Inputs: none
-  - Output: an object with WebSocket event handlers
-  - Returns an object containing WebSocket event handlers such as open, message, close, error, and drain. 
+- useWebSockets(): Object
+  - Input: None
+  - Output: Object, an object with open, message, close, error, and drain functions
+  - Description: Sets up WebSocket communication with the server
 
-- createOpenAICompletions({ apiKey }: { apiKey: string })
-  - Inputs: an API key string
-  - Output: an object with a function to fetch OpenAI completions
-  - Returns an object containing a function to retrieve OpenAI text completions given a prompt.
+- createOpenAICompletions({ apiKey }: { apiKey: string }): Object
+  - Input: apiKey, a string representing the OpenAI API key
+  - Output: Object, an object with a getCompletions function
+  - Description: Creates a fetcher function for retrieving completion data from the OpenAI API.

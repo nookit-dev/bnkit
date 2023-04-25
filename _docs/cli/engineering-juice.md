@@ -1,43 +1,36 @@
 ## Functions
 
-### `getUserInput()` 
-
+### `getUserInput()`
 - Input: None
-- Output: Promise\<string\>
-- Description: Gets user input asynchronously.
+- Output: `Promise<string>`
+- Asynchronously gets user input from the command line.
 
 ### `parseCliArgs()`
-
 - Input: None
-- Output: Promise\<ParsedArgs\>
-- Description: Parses and returns command line arguments.
+- Output: `Promise<ParsedArgs>`
+- Parses command line arguments and returns an object with the parsed arguments.
 
-### `createFileWithContent(filePath: string, content: string)`
+### `createFileWithContent(filePath, content)`
+- Input: `string`, `string`
+- Output: `void`
+- Ensures that the directory exists and then creates a file with the provided content and file path.
 
-- Input: `filePath` (string), `content` (string)
-- Output: None
-- Description: Ensures directory exists and creates file with the provided content.
+### `directoryExists(directoryPath)`
+- Input: `string`
+- Output: `void`
+- Ensures that the directory exists, creating it if necessary.
 
-### `directoryExists(directoryPath: string)`
-
-- Input: `directoryPath` (string)
-- Output: None
-- Description: Ensures directory exists.
-
-### `getModulesFromPath(directoryPath: string)`
-
-- Input: `directoryPath` (string)
-- Output: Array\<string\>
-- Description: Gets module names from the provided path.
+### `getModulesFromPath(directoryPath)`
+- Input: `string`
+- Output: `Array<string>`
+- Gets the module names from the provided directory path.
 
 ### `getAdditionalPrompt()`
-
 - Input: None
-- Output: Promise\<string\>
-- Description: Returns a promise that resolves with user input.
+- Output: `Promise<string>`
+- Asynchronously prompts the user for additional input.
 
-### `chooseActions(actionsConfig: Record<string, any>)`
-
-- Input: `actionsConfig` (Record\<string, any\>)
-- Output: Promise\<Array\<keyof typeof actionsConfig\>\>
-- Description: Returns a promise that resolves with selected action indexes.
+### `chooseActions(actionsConfig)`
+- Input: `Record<string, any>`
+- Output: `Promise<Array<keyof typeof actionsConfig>>`
+- Asynchronously prompts the user to choose from a list of actions and returns the selected actions.

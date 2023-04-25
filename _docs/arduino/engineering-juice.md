@@ -1,13 +1,27 @@
 ## Functions
 
-### createArduinoInterface
+### `createArduinoInterface(options: ArduinoOptions)`
 
-`({ port: string, baudRate?: number }): { onData: (callback: (data: string) => void) => void, write: (data: string) => Promise<void> }`
+Creates an interface to communicate with an Arduino device over a serial port.
 
-Creates an interface for connecting to and communicating with an Arduino device via serial port. Takes an object with `port` (string) and optional `baudRate` (number) properties. Returns an object with `onData` and `write` methods.
+- Input: `options` - An object containing the `port` string and optional `baudRate` number.
+- Output: An object containing `onData` and `write` functions.
 
-### listPorts
+### `onData(callback: (data: string) => void)`
 
-`() : Promise<Array<{ path: string; manufacturer: string }>>`
+Registers a callback function to be called when data is received from the Arduino.
 
-Lists available serial ports. Returns a Promise that resolves to an array of port objects with `path` (string) and `manufacturer` (string) properties.
+- Input: `callback` - A function that accepts a string parameter.
+
+### `write(data: string): Promise<void>`
+
+Writes data to the Arduino.
+
+- Input: `data` - A string to be sent to the Arduino.
+- Output: A promise which resolves when the data has been successfully written.
+
+### `listPorts(): Promise<Array<{ path: string; manufacturer: string }>>`
+
+Lists all available serial ports on the system.
+
+- Output: A promise which resolves to an array of objects containing the `path` and `manufacturer` of each available port.

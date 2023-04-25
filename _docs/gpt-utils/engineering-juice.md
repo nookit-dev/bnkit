@@ -1,1 +1,14 @@
-Sorry, as an AI language model, I do not have access to the module or its functions. Could you please provide more information or context so I can better understand your request?
+```typescript
+/**
+ * Generates a prompt for debugging with the given input and output, including optional function and file name information.
+ *
+ * @param input - The input value as a string.
+ * @param output - The output value as a string.
+ * @param options - Additional options to append to the prompt, such as function and module name.
+ */
+export const createDebugPromptFromInputOutput = (
+  input: string,
+  output: string,
+  options?: DebugPromptOptions
+): string => {}
+```

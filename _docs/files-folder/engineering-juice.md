@@ -1,43 +1,52 @@
-## Functions
+## Module Functions
 
-### `getFilesForDirectory(directory: string, { ignoreFiles }: { ignoreFiles?: string[] } = {}): string[]|undefined`
+### `getFilesForDirectory(directory: string, options: { ignoreFiles?: string[] }): string[] | undefined`
+- Input
+    - `directory`: Directory path to retrieve files from
+    - `options`: Object containing an optional array of file names to ignore
+- Output
+    - Array of file names in the specified directory, with ignored files excluded
+- Description
+    - Retrieves all file names in the specified directory, filters out ignored files, and returns an array of the remaining file names.
 
-- **Input**: 
-  - `directory`: A string representing the directory path to retrieve the files from.
-  - `ignoreFiles`: An optional array of strings representing the filenames to exclude from the returned array.
-- **Output**: An array of strings representing the filenames in the specified directory that were not ignored.
-- **Description**: Retrieves the filenames in the specified directory and filters out any ignored files.
+### `getFilesForDirectoryFromRoot(directory: string, options: { ignoreFiles?: string[] }): string[] | undefined`
+- Input
+    - `directory`: Directory path to retrieve files from, relative to the root directory of the application
+    - `options`: Object containing an optional array of file names to ignore
+- Output
+    - Array of file names in the specified directory, relative to the application's root, with ignored files excluded
+- Description
+    - Calls `findAppRoot` to determine the root directory of the application, then constructs the absolute path to the specified relative directory from the root, retrieves all file names in that directory, filters out ignored files, and returns an array of the remaining file names.
 
-### `getFilesForDirectoryFromRoot(directory: string, { ignoreFiles }: { ignoreFiles?: string[] } = {}): string[]|undefined`
+### `isRootFolder(folderPath: string): boolean | undefined`
+- Input
+    - `folderPath`: Path to a directory
+- Output
+    - Boolean value representing whether the specified directory is an application root directory
+- Description
+    - Determines if the specified directory is an application root directory by checking for the existence of a `tsconfig.json` file in that directory.
 
-- **Input**: 
-  - `directory`: A string representing the directory path to retrieve the files from, relative to the root path.
-  - `ignoreFiles`: An optional array of strings representing the filenames to exclude from the returned array.
-- **Output**: An array of strings representing the filenames in the specified directory that were not ignored.
-- **Description**: Retrieves the filenames in the specified directory, relative to the app root path, and filters out any ignored files.
+### `findAppRoot(startingPath: string): string | null | undefined`
+- Input
+    - `startingPath`: Absolute or relative path to a directory
+- Output
+    - Absolute path to the application's root directory, or `null` if it could not be found
+- Description
+    - Traverses up the directory tree from `startingPath` until an application root directory is found (by calling `isRootFolder`), then returns the absolute path to that directory.
 
-### `isRootFolder(folderPath: string): boolean|undefined`
+### `saveResultToFile(filePath: string, content: string): Promise<void> | undefined`
+- Input
+    - `filePath`: Path to the file to write to
+    - `content`: Contents to write to the file
+- Output
+    - Promise resolving to `undefined` if the file was successfully written to
+- Description
+    - Creates any directories in the file path that don't already exist, then writes `content` to the specified file.
 
-- **Input**: A string representing a directory path.
-- **Output**: A boolean indicating whether the given directory is the root folder of an app.
-- **Description**: Checks if the given directory is the root folder of an app by checking if the `tsconfig.json` file exists in that path.
-
-### `findAppRoot(startingPath: string): string|null|undefined`
-
-- **Input**: A string representing a directory path.
-- **Output**: A string representing the app root directory path, or `null` if not found.
-- **Description**: Recursively checks the given directory and its parents until it finds the root directory of an app.
-
-### `saveResultToFile(filePath: string, content: string): Promise<void>|undefined`
-
-- **Input**: 
-  - `filePath`: A string representing the path to the file to be saved.
-  - `content`: A string representing the content to be saved in the file.
-- **Output**: A promise that resolves when the file is saved successfully, or `undefined` if an error occurs.
-- **Description**: Saves the given content to the specified file.
-
-### `readFilesContents(filePaths: string[]): { path: string; content: string }[]|undefined`
-
-- **Input**: An array of strings representing the paths to the files to be read.
-- **Output**: An array of objects, each containing a `path` and `content` property representing the file name and content respectively.
-- **Description**: Reads the contents of the files in the specified paths and returns them as an array of objects containing the filename and content.
+### `readFilesContents(filePaths: string[]): { path: string; content: string }[] | undefined`
+- Input
+    - `filePaths`: Array of file paths to read from
+- Output
+    - Array of objects with `path` and `content` properties, containing the file name and contents, respectively, for each file in `filePaths`
+- Description
+    - Reads the contents of each file in `filePaths`, returning an array of objects containing the file name and contents of each file.

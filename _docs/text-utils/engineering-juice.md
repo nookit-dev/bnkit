@@ -1,6 +1,16 @@
 Functions:
-1. `prettifyHTMLString(rawHTML: string): string` - Input: `string`, Output: `string`. Formats raw HTML string by adding proper indentation and line breaks.
-2. `replaceMarkdown(text: string, regex: RegExp, replacement: string): string` - Input: `string, RegExp, string`, Output: `string`. Replaces parts of a string that match a given regular expression with a replacement string.
-3. `convertMarkdownToHTML(markdownText: string): string` - Input: `string`, Output: `string`. Converts markdown text to HTML format by applying various parsing rules.
-4. `isSelfClosingTag(attributes: string): boolean` - Input: `string`, Output: `boolean`. Checks if the given HTML tag has a self-closing slash at the end.
-5. `updateIndent(isOpeningTag: boolean, indent: number): number` - Input: `boolean, number`, Output: `number`. Updates the indentation level based on whether an HTML tag is an opening or closing one.
+- prettifyHTMLString(rawHTML: string): string - receives a string of raw HTML code and returns a prettified version of it.
+- replaceMarkdown(text: string, regex: RegExp, replacement: string): string - replaces all occurrences of a regular expression in a string with a replacement string.
+- parsers: object - contains different functions that each parse a specific markdown syntax and return the corresponding HTML code. The object is structured as follows:
+
+  - headers(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any headers found in the text.
+  - bold(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any bold text found in the text.
+  - italic(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any italicized text found in the text.
+  - links(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any links found in the text.
+  - unorderedLists(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any unordered lists found in the text.
+  - orderedLists(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any ordered lists found in the text.
+  - blockquotes(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any blockquotes found in the text.
+  - codeBlocks(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any code blocks found in the text.
+  - inlineCode(text: string): string - receives a string of markdown text and returns the corresponding HTML code for any inline code found in the text.
+ 
+- convertMarkdownToHTML(markdownText: string): string - receives a string of raw markdown text and uses the parsers object to convert it to HTML code. Returns the resulting HTML code.
