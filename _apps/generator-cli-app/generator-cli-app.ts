@@ -1,11 +1,11 @@
 import path from "path";
 import readline from "readline";
-import { chooseActions, directoryExists } from "../../cli";
 import {
   getFilesForDirectoryFromRoot,
   readFilesContents,
   saveResultToFile,
 } from "../../files-folder";
+import { chooseActions, directoryExists } from "../../modules/cli";
 import createOpenAICompletions from "../../networking";
 import type { ActionsConfig } from "./repo-docs-generator";
 

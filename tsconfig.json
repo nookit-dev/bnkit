@@ -14,7 +14,7 @@
     "types": [
       "bun-types" // add Bun global
     ],
-    "baseUrl": ".",
+    "baseUrl": "./modules",
     // type alias packages
     "paths": {
       "@plugins/*": ["plugins/*"],
