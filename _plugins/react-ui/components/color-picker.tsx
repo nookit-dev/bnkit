@@ -11,7 +11,6 @@ export const ColorPicker = (props: ColorPickerProps) => {
   const [currentColor, setCurrentColor] = useState(color);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // @ts-ignore
     const newColor = event?.target?.value;
     setCurrentColor(newColor);
     onChange(id, newColor);
@@ -23,7 +22,7 @@ export const ColorPicker = (props: ColorPickerProps) => {
       id={id}
       value={currentColor}
       onChange={handleChange}
-      className="w-8 h-8 rounded"
+      className="color-picker"
     />
   );
 };

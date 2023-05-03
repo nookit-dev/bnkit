@@ -12,7 +12,6 @@ export const Slider = (props: SliderProps) => {
   const { value, onChange, min, max, id } = props;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // @ts-ignore
     onChange(parseInt(event.target.value, 10));
   };
 
@@ -24,7 +23,7 @@ export const Slider = (props: SliderProps) => {
       min={min}
       max={max}
       onChange={handleChange}
-      className="input input-bordered w-full"
+      className="slider"
     />
   );
 };

@@ -13,17 +13,16 @@ export const Dropdown = (props: DropdownProps) => {
   const { value, onChange, options, id, name } = props;
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    // @ts-ignore
     onChange(event.target.value);
   };
 
   return (
-    <div className="relative">
+    <div className="dropdown">
       <select
         id={id}
         value={value}
         onChange={handleChange}
-        className="input input-bordered w-full"
+        className="input"
       >
         {options.map((option, index) => (
           <option key={index} value={option.value}>
@@ -31,7 +30,7 @@ export const Dropdown = (props: DropdownProps) => {
           </option>
         ))}
       </select>
-      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+      <div className="dropdown-arrow">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-4 w-4 text-gray-500"
@@ -45,7 +44,7 @@ export const Dropdown = (props: DropdownProps) => {
           />
         </svg>
       </div>
-      <label htmlFor={id} className="block mb-2">
+      <label htmlFor={id} className="dropdown-label">
         {name}:
       </label>
     </div>
