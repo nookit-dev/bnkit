@@ -3,7 +3,7 @@ import {
   getFilesForDirectoryFromRoot,
   readFilesContents,
 } from "files-factory/files-folder";
-import { convertMarkdownToHTML } from "text-utils";
+import { convertMarkdownToHTML } from "utils/text-utils";
 
 const docsDirectory = "_docs";
 

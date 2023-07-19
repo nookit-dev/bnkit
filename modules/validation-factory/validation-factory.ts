@@ -1,3 +1,5 @@
+import { SchemaType, TypeInference, ValidationResult } from "../types";
+
 // errorUtils.ts
 
 export type ErrorType = "ValidationError" | "APIError" | "JavaScriptError";
@@ -48,13 +50,13 @@ export function handleError(
   }
 }
 
-import { SchemaType, TypeInference, ValidationResult } from "./types";
-
-export function createValidator<Schema extends SchemaType>(schema: Schema) {
-  function validateItem(item: unknown): TypeInference<Schema> {
+export function createValidatorFactory<Schema extends SchemaType>(
+  schema: Schema
+) {
+  function validateItem(item: any): TypeInference<Schema> {
     if (typeof item !== "object" || item === null) {
       throw handleError(
-        { type: "invalid-type", message: "Invalid data type" },
+        { type: "ValidationError", message: "Invalid data type" },
         true
       );
     }
@@ -62,6 +64,7 @@ export function createValidator<Schema extends SchemaType>(schema: Schema) {
     const validateSchema: TypeInference<Schema> = {} as TypeInference<Schema>;
 
     const isValid = Object.keys(schema).every((key) => {
+      const typedKey = key as keyof Schema;
       const expectedType = schema[key];
       const actualType = typeof item[key];
 
@@ -69,13 +72,15 @@ export function createValidator<Schema extends SchemaType>(schema: Schema) {
         return false;
       }
 
-      validateSchema[key] = item[key] as TypeInference<Schema>[keyof Schema];
+      validateSchema[typedKey] = item[
+        key
+      ] as TypeInference<Schema>[keyof Schema];
       return true;
     });
 
     if (!isValid) {
       throw handleError(
-        { type: "invalid-type", message: "Invalid data type" },
+        { type: "ValidationError", message: "Invalid data type" },
         true
       );
     }
@@ -88,11 +93,11 @@ export function createValidator<Schema extends SchemaType>(schema: Schema) {
     data: unknown[]
   ): ValidationResult<Schema> {
     try {
-      const validatedData = data.map((item) => validateItem(schema, item));
+      const validatedData = data.map((item) => validateItem(item));
       return { data: validatedData as TypeInference<Schema>[] };
     } catch (error) {
       const handledError = handleError(error as Error);
-      if (handledError.type === "ValidationError") {
+      if (handledError?.type === "ValidationError") {
         return { error: handledError.message };
       } else {
         throw error;
@@ -107,4 +112,4 @@ export function createValidator<Schema extends SchemaType>(schema: Schema) {
 }
 
 // One export per file
-export default createValidator;
+export default createValidatorFactory;

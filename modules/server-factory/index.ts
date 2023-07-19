@@ -1,1 +1,1 @@
-export { createServer } from "./server-factory";
+export { createServerFactory } from "./server-factory";

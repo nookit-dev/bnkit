@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-export const jwtClient = () => {
+export const jwtClientFactory = () => {
   function decodeJwt(token: string) {
     const [headerEncoded, payloadEncoded] = token.split(".");
     const headerJson = Buffer.from(headerEncoded, "base64").toString();
@@ -33,7 +33,7 @@ interface JwtPayload {
   [key: string]: any;
 }
 
-export const jwtServer = (secret: string) => {
+export const jwtServerFactory = (secret: string) => {
   function base64UrlEncode(str: string): string {
     const base64 = Buffer.from(str).toString("base64");
     return base64.replace("+", "-").replace("/", "_").replace(/=+$/, "");

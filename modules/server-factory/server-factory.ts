@@ -14,7 +14,7 @@ interface Route {
  * @param routes - The routes that the server should handle
  * @return The created server
  */
-export function createServer(routes: Route[]) {
+export function createServerFactory(routes: Route[]) {
   // Define the fetch function that will handle the requests
   const fetch = (req: Request) => {
     // Find the route that matches the path of the incoming request
