@@ -4,7 +4,7 @@ import { defaultErrorHandler } from "../error-handler-factory/default-error-hand
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-export function createApiFactory<DataType, Error extends BaseError<DataType>>({
+export function createFetchFactory<DataType, Error extends BaseError<DataType>>({
   baseUrl,
   errorHandler = defaultErrorHandler<DataType, Error>(),
   logMode,

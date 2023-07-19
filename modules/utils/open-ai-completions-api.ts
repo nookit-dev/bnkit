@@ -1,5 +1,5 @@
-import { createApiFactory } from "api-factory/create-api-factory";
 import { defaultErrorHandler } from "error-handler-factory/default-error-handler";
+import { createFetchFactory } from "fetch-factory/create-fetch-factory";
 
 type CompletionChoice = {
   message: {
@@ -98,7 +98,7 @@ const createOpenAICompletions = ({ apiKey }: { apiKey: string }) => {
 
       console.log(`Creating request to ${baseUrl} ${completionsEndpoint}`);
 
-      const fetchCompletions = createApiFactory({
+      const fetchCompletions = createFetchFactory({
         baseUrl,
         errorHandler: defaultErrorHandler(),
       });
