@@ -1,35 +1,37 @@
-import { Request, Response } from "bun";
+type RouteHandler = (request: Request) => Response | Promise<Response>;
 
-// Define the type for a route handler
-type RouteHandler = (req: Request) => Response | Promise<Response>;
-
-// Define the type for a route
-interface Route {
-  path: string;
-  handler: RouteHandler;
+interface RouteMap {
+  [route: string]: RouteHandler;
 }
 
-/**
- * Creates a new Bun server with the provided routes
- * @param routes - The routes that the server should handle
- * @return The created server
- */
-export function createServerFactory(routes: Route[]) {
-  // Define the fetch function that will handle the requests
-  const fetch = (req: Request) => {
-    // Find the route that matches the path of the incoming request
-    const route = routes.find(
-      (route) => route.path === new URL(req.url).pathname
-    );
+export function createServerFactory() {
+  const routes: RouteMap = {};
 
-    // If a route was found, invoke its handler, otherwise return a 404 response
-    return route
-      ? route.handler(req)
-      : new Response("Not Found", { status: 404 });
+  const addRoute = (route: string, handler: RouteHandler) => {
+    routes[route] = handler;
   };
 
-  // Start the server with the fetch function
-  const server = Bun.serve({ fetch });
+  const fetch = (request: Request): Response | Promise<Response> => {
+    const url = new URL(request.url);
+    const handler = routes[url.pathname];
 
-  return server;
+    if (handler) {
+      return handler(request);
+    } else {
+      return new Response("404: Not Found", { status: 404 });
+    }
+  };
+
+  const start = (port: number, hostname: string = "0.0.0.0") => {
+    Bun.serve({
+      fetch,
+      port,
+      hostname,
+    });
+  };
+
+  return {
+    addRoute,
+    start,
+  };
 }
