@@ -1,7 +1,9 @@
+import { BaseError } from "base-error";
 import { handleError } from "error-handler-validation";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
+import { createErrorHandlerFactory, defaultLogger } from "../..";
 
 // Get user input asynchronously
 export async function getUserInput(): Promise<string> {
@@ -133,3 +135,84 @@ export const chooseActions = async (
     return chooseActions(actionsConfig);
   }
 };
+
+export type CLIOptions = {
+  inputPrompt?: string;
+  actionsConfig?: Record<string, any>;
+  errorHandler?: ReturnType<typeof createErrorHandlerFactory>;
+  logger?: typeof defaultLogger;
+  fileConfig?: {
+    filePath: string;
+    fileContent: string;
+  };
+};
+
+export function createCliFactory<DataType, E extends BaseError<DataType>>(
+  options: CLIOptions
+) {
+  const errorHandler =
+    options.errorHandler ??
+    createErrorHandlerFactory<DataType, E>({ logger: options.logger });
+  const actionsConfig = options.actionsConfig ?? {};
+  const inputPrompt = options.inputPrompt ?? "Please input your command:";
+
+  const processInput = async () => {
+    try {
+      const commandLineArgs = await errorHandler.handleAsync(() =>
+        parseCliArgs()
+      );
+      const userInput = await errorHandler.handleAsync(() => getUserInput());
+      // Handle user input and command line arguments...
+
+      return { commandLineArgs, userInput };
+    } catch (error) {
+      errorHandler.handleSync(() => {
+        throw error;
+      });
+    }
+  };
+
+  const executeActions = async () => {
+    try {
+      const additionalPrompt = await errorHandler.handleAsync(() =>
+        getAdditionalPrompt()
+      );
+      const chosenActions = await errorHandler.handleAsync(() =>
+        chooseActions(actionsConfig)
+      );
+
+      // Execute chosen actions...
+
+      return { additionalPrompt, chosenActions };
+    } catch (error) {
+      errorHandler.handleSync(() => {
+        throw error;
+      });
+    }
+  };
+
+  const handleFiles = () => {
+    try {
+      if (options.fileConfig) {
+        const { filePath, fileContent } = options.fileConfig;
+        errorHandler.handleSync(() => {
+          directoryExists(filePath);
+        });
+        errorHandler.handleSync(() => {
+          createFileWithContent(filePath, fileContent);
+        });
+      }
+    } catch (error) {
+      errorHandler.handleSync(() => {
+        throw error;
+      });
+    }
+  };
+
+  return {
+    inputPrompt,
+    processInput,
+    executeActions,
+    handleFiles,
+  };
+}

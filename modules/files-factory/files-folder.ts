@@ -1,6 +1,8 @@
+import { BaseError } from "base-error";
 import fs from "fs";
 import path from "path";
-import { handleError } from "./error-handler-validation";
+import { createErrorHandlerFactory } from "../..";
+import { handleError } from "../error-handler-validation";
 
 export const getFilesForDirectory = (
   directory: "_apps" | "_tests" | "_docs" | "." | "../" | ".../" | string,
@@ -86,3 +88,71 @@ export const readFilesContents = (
     handleError(error as Error);
   }
 };
+
+
+type FileFactoryOptions = {
+  baseDirectory: string;
+  errorHandler: ReturnType<typeof createErrorHandlerFactory<any, BaseError<any>>>;
+};
+
+export function createFileFactory({ baseDirectory, errorHandler }: FileFactoryOptions) {
+  const getFullPath = (filePath: string) => path.join(baseDirectory, filePath);
+
+  const updateFiles = async (filePaths: string[], data: string) => {
+    const promises = filePaths.map(async (filePath) => {
+      const fullPath = getFullPath(filePath);
+      await fs.promises.writeFile(fullPath, data);
+    });
+    await errorHandler.handleAsync(() => Promise.all(promises));
+  };
+
+  const readFilesRawText = async (filePaths: string[]) => {
+    const promises = filePaths.map(async (filePath) => {
+      const fullPath = getFullPath(filePath);
+      const data = await fs.promises.readFile(fullPath, "utf-8");
+      return data;
+    });
+    return await errorHandler.handleAsync(() => Promise.all(promises));
+  };
+
+  const searchDirectory = async (fileName: string) => {
+    return await errorHandler.handleAsync(async () => {
+      const files = await fs.promises.readdir(baseDirectory);
+      return files.includes(fileName);
+    });
+  };
+
+  const fileExists = async (filePath: string) => {
+    const fullPath = getFullPath(filePath);
+    return await errorHandler.handleAsync(async () => {
+      const exists = await fs.promises.access(fullPath, fs.constants.F_OK);
+      return exists;
+    });
+  };
+
+  const deleteFile = async (filePath: string) => {
+    const fullPath = getFullPath(filePath);
+    return await errorHandler.handleAsync(async () => {
+      await fs.promises.unlink(fullPath);
+    });
+  };
+
+  const readJson = async (filePath: string) => {
+    const rawText = await readFilesRawText([filePath]);
+    return JSON.parse(rawText[0]);
+  };
+
+  const writeJson = async (filePath: string, data: any) => {
+    await updateFiles([filePath], JSON.stringify(data, null, 2));
+  };
+
+  return {
+    updateFiles,
+    readFilesRawText,
+    searchDirectory,
+    fileExists,
+    deleteFile,
+    readJson,
+    writeJson,
+  };
+}

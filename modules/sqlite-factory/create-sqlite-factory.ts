@@ -1,7 +1,6 @@
 import { Database } from "bun:sqlite";
-import { createValidator } from "./validator"; // Assuming validators are in a separate file
-
-import { TypeInference, TypeMapping } from "./types";
+import { SchemaType, TypeInference, TypeMapping } from "types";
+import { createValidator } from "../error-handler-validation"; // Assuming validators are in a separate file
 
 // Utility functions
 export function createTableQuery<
@@ -14,7 +13,6 @@ export function createTableQuery<
   return `CREATE TABLE IF NOT EXISTS ${tableName} (${fields});`;
 }
 
-
 export type CreateSqliteInterface<Schema extends SchemaType> = {
   create: (item: TypeInference<Schema>) => Promise<void>;
   read: () => Promise<TypeInference<Schema>[]>;
@@ -23,7 +21,7 @@ export type CreateSqliteInterface<Schema extends SchemaType> = {
 };
 
 // CRUD Interface
-export function createSqliteInterface<
+export function createSqliteFactory<
   Schema extends Record<string, keyof TypeMapping>
 >(tableName: string, schema: Schema) {
   const db = new Database("mydb.sqlite", { create: true });

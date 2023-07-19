@@ -2,7 +2,7 @@ import { serve } from "bun";
 import {
   getFilesForDirectoryFromRoot,
   readFilesContents,
-} from "files-folder";
+} from "files-factory/files-folder";
 import { convertMarkdownToHTML } from "text-utils";
 
 const docsDirectory = "_docs";

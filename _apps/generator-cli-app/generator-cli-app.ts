@@ -5,7 +5,7 @@ import {
   readFilesContents,
   saveResultToFile,
 } from "../../files-folder";
-import { chooseActions, directoryExists } from "../../modules/cli";
+import { chooseActions, directoryExists } from "../../modules/cli-factory/cli";
 import createOpenAICompletions from "../../networking";
 import type { ActionsConfig } from "./repo-docs-generator";
 
