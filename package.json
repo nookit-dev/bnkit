@@ -1,5 +1,5 @@
 {
-  "name": "@instant-bun/instant-bun",
+  "name": "instant-bun",
   "version": "0.0.5",
   "scripts": {
     "docs-gen": "bun run ./_apps/generator-cli-app/repo-docs-generator.ts",
