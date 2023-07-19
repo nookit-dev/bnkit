@@ -13,4 +13,5 @@ export {
 export { createHTMLProcessor } from "./modules/text-processing/html-factory";
 export { createMarkdownProcessor } from "./modules/text-processing/markdown-factory";
 export { createValidatorFactory } from "./modules/validation-factory";
-
+export {createHIDKeyboardFactory} from './modules/hid-emulators/keyboard-hid-factory'
+export {} from './modules/hid-emulators/mouse-hid-factory'

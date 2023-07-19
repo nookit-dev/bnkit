@@ -1,12 +1,15 @@
 import path from "path";
 import readline from "readline";
-import {
-  getFilesForDirectoryFromRoot,
-  readFilesContents,
-  saveResultToFile,
-} from "../../files-folder";
+
+// TODO update this app
+// import {
+//   getFilesForDirectoryFromRoot,
+//   readFilesContents,
+//   saveResultToFile,
+// } from "../../files-folder";
 import { chooseActions, directoryExists } from "../../modules/cli-factory/cli";
-import createOpenAICompletions from "../../networking";
+// import createOpenAICompletions from "../../networking";
+import createOpenAICompletions from "utils/open-ai-completions-api";
 import type { ActionsConfig } from "./repo-docs-generator";
 
 const API_KEY = Bun.env.OPENAI_API_KEY || "";
