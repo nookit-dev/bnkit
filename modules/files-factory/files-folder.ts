@@ -1,6 +1,6 @@
-import { BaseError } from "base-error";
 import fs from "fs";
 import path from "path";
+import { BaseError } from "utils/base-error";
 import { createErrorHandlerFactory } from "../..";
 import { handleError } from "../error-handler-validation";
 

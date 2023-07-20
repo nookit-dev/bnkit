@@ -1,5 +1,5 @@
-import { type BaseError } from '../base-error'
 import { defaultLogger } from '../logger-factory/default-logger'
+import { type BaseError } from '../utils/base-error'
 
 import { createErrorHandlerFactory } from './create-error-handler-factory'
 

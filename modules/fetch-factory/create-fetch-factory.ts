@@ -1,6 +1,6 @@
-import { type BaseError } from "../base-error";
 import { type createErrorHandlerFactory } from "../error-handler-factory/create-error-handler-factory";
 import { defaultErrorHandler } from "../error-handler-factory/default-error-handler";
+import { type BaseError } from "../utils/base-error";
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
 
