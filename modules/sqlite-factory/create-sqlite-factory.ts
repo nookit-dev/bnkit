@@ -47,23 +47,23 @@ export function createSqliteFactory<
   createTable.run();
 
   // Create
-  async function create(item: Schema) {
-    const placeholders = Object.keys(schema)
-      .map((key) => `$${key}`)
-      .join(", ");
+  function create(item: TypeInference<Schema>) {
+    const valuesArray = Object.values(item);
+    const placeholders = valuesArray.map((value) => "?").join(", ");
+    const prepareQuery = `INSERT INTO notes (id, text) VALUES (${placeholders})`;
 
-    const query = `INSERT INTO ${tableName} (${Object.keys(schema).join(
-      ", "
-    )}) VALUES (${placeholders});`;
+    const stmt = db.prepare(prepareQuery);
 
     if (debug) {
       // TODO replace with logger maybe
-      console.log(query);
+      console.log({ prepareQuery, valuesArray, placeholders, stmt });
     }
-    const insertQuery = db.query(query);
 
-    // Run the query with the item object
-    insertQuery.run(item as any);
+    const insertQuery = stmt.run(...valuesArray);
+
+    console.log({ insertQuery });
+
+    return [];
   }
 
   // Read
