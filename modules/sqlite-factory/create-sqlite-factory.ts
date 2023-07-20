@@ -2,7 +2,6 @@ import { Database } from "bun:sqlite";
 import { SchemaType, TypeInference, TypeMapping } from "types";
 import { createValidatorFactory } from "../validation-factory";
 
-// Utility functions
 export function createTableQuery<
   Schema extends Record<string, keyof TypeMapping>
 >(tableName: string, schema: Schema): string {
@@ -20,75 +19,79 @@ export type CreateSqliteInterface<Schema extends SchemaType> = {
   deleteById: (id: number) => Promise<void>;
 };
 
-// CRUD Interface
-export function createSqliteFactory<
-  Schema extends Record<string, keyof TypeMapping>
->(tableName: string, schema: Schema) {
-  const db = new Database("mydb.sqlite", { create: true });
-  const { validateItem, validateAgainstArraySchema } =
-    createValidatorFactory(schema);
+export function createSqliteFactory(db: Database) {
+  function createSqliteTableFactory<
+    Schema extends Record<string, keyof TypeMapping>
+  >(tableName: string, schema: Schema): CreateSqliteInterface<Schema> {
+    const { validateItem, validateAgainstArraySchema } =
+      createValidatorFactory(schema);
 
-  // Create table
-  const createTable = db.query(createTableQuery(tableName, schema));
-  createTable.run();
+    // Create table
+    const createTable = db.query(createTableQuery(tableName, schema));
+    createTable.run();
 
-  // Create
-  async function create(item: TypeInference<Schema>) {
-    const placeholders = Object.keys(schema)
-      .map((key) => `$${key}`)
-      .join(", ");
-    const insertQuery = db.query(
-      `INSERT INTO ${tableName} (${Object.keys(schema).join(
-        ", "
-      )}) VALUES (${placeholders});`
-    );
+    // Create
+    async function create(item: TypeInference<Schema>) {
+      const placeholders = Object.keys(schema)
+        .map((key) => `$${key}`)
+        .join(", ");
+      const insertQuery = db.query(
+        `INSERT INTO ${tableName} (${Object.keys(schema).join(
+          ", "
+        )}) VALUES (${placeholders});`
+      );
 
-    // Run the query with the item object
-    insertQuery.run(item as any);
-  }
-
-  // Read
-  async function read(): Promise<TypeInference<Schema>[]> {
-    const selectQuery = db.query(`SELECT * FROM ${tableName};`);
-    const data = selectQuery.all();
-    const { error, data: validatedData } = validateAgainstArraySchema(
-      schema,
-      data
-    );
-
-    if (error) {
-      throw new Error(`Error during read: ${error}`);
+      // Run the query with the item object
+      insertQuery.run(item as any);
     }
 
-    return validatedData!;
-  }
+    // Read
+    async function read(): Promise<TypeInference<Schema>[]> {
+      const selectQuery = db.query(`SELECT * FROM ${tableName};`);
+      const data = selectQuery.all();
+      const { error, data: validatedData } = validateAgainstArraySchema(
+        schema,
+        data
+      );
 
-  // Update
-  async function update(
-    id: number,
-    item: Partial<TypeInference<Schema>>
-  ): Promise<void> {
-    const updateFields = Object.keys(item)
-      .map((key) => `${key} = $${key}`)
-      .join(", ");
-    const updateQuery = db.query(
-      `UPDATE ${tableName} SET ${updateFields} WHERE id = $id;`
-    );
+      if (error) {
+        throw new Error(`Error during read: ${error}`);
+      }
 
-    // Run the query with the item object and id
-    updateQuery.run({ ...item, id } as any);
-  }
+      return validatedData!;
+    }
 
-  // Delete
-  async function deleteById(id: number): Promise<void> {
-    const deleteQuery = db.query(`DELETE FROM ${tableName} WHERE id = $id;`);
-    deleteQuery.run({ id });
+    // Update
+    async function update(
+      id: number,
+      item: Partial<TypeInference<Schema>>
+    ): Promise<void> {
+      const updateFields = Object.keys(item)
+        .map((key) => `${key} = $${key}`)
+        .join(", ");
+      const updateQuery = db.query(
+        `UPDATE ${tableName} SET ${updateFields} WHERE id = $id;`
+      );
+
+      // Run the query with the item object and id
+      updateQuery.run({ ...item, id } as any);
+    }
+
+    // Delete
+    async function deleteById(id: number): Promise<void> {
+      const deleteQuery = db.query(`DELETE FROM ${tableName} WHERE id = $id;`);
+      deleteQuery.run({ id });
+    }
+
+    return {
+      create,
+      read,
+      update,
+      deleteById,
+    };
   }
 
   return {
-    create,
-    read,
-    update,
-    deleteById,
+    createSqliteTableFactory,
   };
 }
