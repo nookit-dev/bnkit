@@ -1,6 +1,10 @@
 import { Database } from "bun:sqlite";
-import { SchemaType, TypeInference, TypeMapping } from "types";
-import { createValidatorFactory } from "../validation-factory";
+import { SchemaType, SchemaTypeInference, TypeMapping } from "types";
+
+import {
+  CreateSqliteTableFactoryParams,
+  createSqliteTableFactory,
+} from "./create-sqlite-table-factory";
 
 // Utility functions
 export function createTableQuery<
@@ -14,113 +18,34 @@ export function createTableQuery<
 }
 
 export type CreateSqliteInterface<Schema extends SchemaType> = {
-  create: (item: TypeInference<Schema>) => Promise<void>;
-  read: () => Promise<TypeInference<Schema>[]>;
-  update: (id: number, item: Partial<TypeInference<Schema>>) => Promise<void>;
+  create: (item: SchemaTypeInference<Schema>) => Promise<void>;
+  read: () => Promise<SchemaTypeInference<Schema>[]>;
+  update: (
+    id: number,
+    item: Partial<SchemaTypeInference<Schema>>
+  ) => Promise<void>;
   deleteById: (id: number) => Promise<void>;
 };
 
-// CRUD Interface
-export function createSqliteFactory<
-  Schema extends Record<string, keyof TypeMapping>
->({
+export function createSqliteFactory({
   db,
-  schema,
-  tableName,
   debug,
 }: {
   db: Database;
-  tableName: string;
-  schema: Schema;
-  debug: boolean;
+  debug?: boolean;
 }) {
-  const { validateAgainstArraySchema } = createValidatorFactory(schema);
-
-  const query = createTableQuery(tableName, schema);
-
-  if (debug) {
-    console.log({ query });
-  }
-
-  // Create table
-  const createTable = db.query(query);
-  createTable.run();
-
-  // Create
-  function create(item: TypeInference<Schema>) {
-    const valuesArray = Object.values(item);
-    const placeholders = valuesArray.map((value) => "?").join(", ");
-    const prepareQuery = `INSERT INTO notes (id, text) VALUES (${placeholders})`;
-
-    const stmt = db.prepare(prepareQuery);
-
-    if (debug) {
-      // TODO replace with logger maybe
-      console.log({ prepareQuery, valuesArray, placeholders, stmt });
-    }
-
-    const insertQuery = stmt.run(...valuesArray);
-
-    console.log({ insertQuery });
-
-    return [];
-  }
-
-  // Read
-  async function read(): Promise<Schema[]> {
-    const selectQuery = db.query(`SELECT * FROM ${tableName};`);
-    const data = selectQuery.all();
-    const { error, data: validatedData } = validateAgainstArraySchema(
+  function dbTableFactory<Schema extends SchemaType>({
+    debug: debugTable = debug || false,
+    schema,
+    tableName,
+  }: Omit<CreateSqliteTableFactoryParams<Schema>, "db">) {
+    return createSqliteTableFactory({
+      db,
+      debug: debugTable,
       schema,
-      data
-    );
-
-    if (error) {
-      throw new Error(`Error during read: ${error}`);
-    }
-
-    if (!validatedData) {
-      throw new Error(`Error during read, no data found: ${error}`);
-    }
-
-    return validatedData;
+      tableName,
+    });
   }
 
-  // Update
-  async function update(
-    id: number,
-    item: Partial<TypeInference<Schema>>
-  ): Promise<void> {
-    const updateFields = Object.keys(item)
-      .map((key) => `${key} = $${key}`)
-      .join(", ");
-
-    const query = `UPDATE ${tableName} SET ${updateFields} WHERE id = $id;`;
-    if (debug) {
-      console.log(query);
-    }
-
-    const updateQuery = db.query(query);
-
-    // Run the query with the item object and id
-    updateQuery.run({ ...item, id } as any);
-  }
-
-  // Delete
-  async function deleteById(id: number): Promise<void> {
-    const query = `DELETE FROM ${tableName} WHERE id = $id;`;
-
-    if (debug) {
-      console.log(query);
-    }
-    const deleteQuery = db.query(query);
-    deleteQuery.run({ id });
-  }
-
-  return {
-    create,
-    read,
-    update,
-    deleteById,
-  };
+  return { dbTableFactory };
 }

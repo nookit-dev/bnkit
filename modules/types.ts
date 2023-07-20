@@ -1,12 +1,15 @@
+
 export type TypeMapping = {
   string: string;
   number: number;
   boolean: boolean;
   date: Date;
-};
+}
+
+export type TypeMappingKeys = keyof TypeMapping;
 
 // Utility type to infer TypeScript types from the schema
-export type TypeInference<T extends Record<string, keyof TypeMapping>> = {
+export type SchemaTypeInference<T extends Record<string, keyof TypeMapping>> = {
   [K in keyof T]: TypeMapping[T[K]];
 };
 
@@ -20,6 +23,6 @@ export type SchemaType = Record<string, keyof TypeMapping>;
 export function infer<Schema extends SchemaType>(
   schema: Schema,
   data?: unknown
-): TypeInference<Schema> {
-  return data as TypeInference<Schema>;
+): SchemaTypeInference<Schema> {
+  return data as SchemaTypeInference<Schema>;
 }
