@@ -14,21 +14,20 @@ export function createSqliteTableFactory<Schema extends SchemaType>({
   db,
   schema,
   tableName,
-  debug,
-}: CreateSqliteTableFactoryParams<Schema>) {
+  debug = false,
+}: // TODO add logger param factory
+CreateSqliteTableFactoryParams<Schema>) {
   const { validateAgainstArraySchema } = createValidatorFactory(schema);
 
-  const query = createTableQuery(tableName, schema);
+  const query = createTableQuery({ tableName, schema, debug });
 
   if (debug) {
     console.log({ query });
   }
 
-  // Create table
   const createTable = db.query(query);
   createTable.run();
 
-  // Create
   function create(item: SchemaTypeInference<Schema>) {
     const valuesArray = Object.values(item);
     const placeholders = valuesArray.map((value) => "?").join(", ");
@@ -42,35 +41,46 @@ export function createSqliteTableFactory<Schema extends SchemaType>({
 
     const insertQuery = stmt.run(...valuesArray);
 
-    console.log({ insertQuery });
+    if (debug) {
+      console.log({ insertQuery });
+    }
 
     return [];
   }
 
-  // Read
   async function read(): Promise<Schema[]> {
-    const selectQuery = db.query(`SELECT * FROM ${tableName};`);
+    const selectAllTableQuery = `SELECT * FROM ${tableName};`;
+    const selectQuery = db.query(selectAllTableQuery);
     const data = selectQuery.all();
-    const { error, data: validatedData } = validateAgainstArraySchema(
-      schema,
-      data
-    );
 
-    if (error) {
-      throw new Error(`Error during read: ${error}`);
+    if (debug) {
+      console.log({
+        selectAllTableQuery,
+        data,
+      });
     }
 
-    if (!validatedData) {
-      throw new Error(`Error during read, no data found: ${error}`);
-    }
+    // TODO add back validation, make validation option, i need to create a sqlite schema validator
+    // const { error, data: validatedData } = validateAgainstArraySchema(
+    //   schema,
+    //   data
+    // );
 
-    return validatedData;
+    // if (error) {
+    //   throw new Error(`Error during read: ${error}`);
+    // }
+
+    // if (!validatedData) {
+    //   throw new Error(`Error during read, no data found: ${error}`);
+    // }
+
+    return data as Schema[];
   }
 
-  // Update
   async function update(
-    id: number,
-    item: Partial<SchemaTypeInference<Schema>>
+    // TODO   maybe this can be inferred from the schema, maybe make id required?
+    id: string | number,
+    item: Partial<Schema>
   ): Promise<void> {
     const updateFields = Object.keys(item)
       .map((key) => `${key} = $${key}`)
@@ -87,7 +97,6 @@ export function createSqliteTableFactory<Schema extends SchemaType>({
     updateQuery.run({ ...item, id } as any);
   }
 
-  // Delete
   async function deleteById(id: number): Promise<void> {
     const query = `DELETE FROM ${tableName} WHERE id = $id;`;
 

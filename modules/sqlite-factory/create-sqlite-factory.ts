@@ -9,12 +9,29 @@ import {
 // Utility functions
 export function createTableQuery<
   Schema extends Record<string, keyof TypeMapping>
->(tableName: string, schema: Schema): string {
+>({
+  schema,
+  tableName,
+  debug = false,
+}: {
+  tableName: string;
+  schema: Schema;
+  debug?: boolean;
+}): string {
+  if (debug) {
+    console.log({ schema, tableName });
+  }
   const fields = Object.entries(schema)
     .map(([key, type]) => `${key} ${type.toUpperCase()}`)
     .join(", ");
 
-  return `CREATE TABLE IF NOT EXISTS ${tableName} (${fields});`;
+  const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${fields});`;
+
+  if (debug) {
+    console.log({ query, fields, schema, tableName });
+  }
+
+  return query;
 }
 
 export type CreateSqliteInterface<Schema extends SchemaType> = {

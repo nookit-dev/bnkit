@@ -11,6 +11,6 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "bun-types": "^0.5.0"
+    "bun-types": "^0.6.14"
   }
 }

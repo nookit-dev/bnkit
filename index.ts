@@ -7,11 +7,11 @@ export * from "./modules/logger-factory";
 export { createLoggerFactory } from "./modules/logger-factory/create-logger-factory";
 export { createServerFactory } from "./modules/server-factory";
 export {
-    createSqliteFactory,
-    createTableQuery
+  createSqliteFactory,
+  createTableQuery,
 } from "./modules/sqlite-factory";
 export { createHTMLProcessor } from "./modules/text-processing/html-factory";
 export { createMarkdownProcessor } from "./modules/text-processing/markdown-factory";
 export { createValidatorFactory } from "./modules/validation-factory";
-export {createHIDKeyboardFactory} from './modules/hid-emulators/keyboard-hid-factory'
-export {} from './modules/hid-emulators/mouse-hid-factory'
+export { createHIDKeyboardFactory } from "./modules/hid-emulators/keyboard-hid-factory";
+export {jwtClientSideFactory, jwtServerSideFactory} from './modules/jwt-factory'
