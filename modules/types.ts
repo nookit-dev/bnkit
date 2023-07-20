@@ -10,11 +10,10 @@ export type TypeInference<T extends Record<string, keyof TypeMapping>> = {
   [K in keyof T]: TypeMapping[T[K]];
 };
 
-export type ValidationResult<Schema extends Record<string, keyof TypeMapping>> =
-  {
-    error?: string;
-    data?: TypeInference<Schema>[];
-  };
+export type ValidationResult<Schema extends object> = {
+  error?: string;
+  data?: Schema[];
+};
 
 export type SchemaType = Record<string, keyof TypeMapping>;
 

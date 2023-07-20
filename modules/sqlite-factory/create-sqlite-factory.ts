@@ -1,10 +1,10 @@
 import { Database } from "bun:sqlite";
-import { SchemaType, TypeInference, TypeMapping } from "types";
 import { createValidatorFactory } from "../validation-factory";
 
-export function createTableQuery<
-  Schema extends Record<string, keyof TypeMapping>
->(tableName: string, schema: Schema): string {
+export function createTableQuery<Schema extends object>(
+  tableName: string,
+  schema: Schema
+): string {
   const fields = Object.entries(schema)
     .map(([key, type]) => `${key} ${type.toUpperCase()}`)
     .join(", ");
@@ -12,17 +12,18 @@ export function createTableQuery<
   return `CREATE TABLE IF NOT EXISTS ${tableName} (${fields});`;
 }
 
-export type CreateSqliteInterface<Schema extends SchemaType> = {
-  create: (item: TypeInference<Schema>) => Promise<void>;
-  read: () => Promise<TypeInference<Schema>[]>;
-  update: (id: number, item: Partial<TypeInference<Schema>>) => Promise<void>;
+export type CreateSqliteInterface<Schema extends object> = {
+  create: (item: Schema) => Promise<void>;
+  read: () => Promise<Schema[]>;
+  update: (id: number, item: Partial<Schema>) => Promise<void>;
   deleteById: (id: number) => Promise<void>;
 };
 
 export function createSqliteFactory(db: Database) {
-  function createSqliteTableFactory<
-    Schema extends Record<string, keyof TypeMapping>
-  >(tableName: string, schema: Schema): CreateSqliteInterface<Schema> {
+  function createSqliteTableFactory<Schema extends object>(
+    tableName: string,
+    schema: Schema
+  ): CreateSqliteInterface<Schema> {
     const { validateItem, validateAgainstArraySchema } =
       createValidatorFactory(schema);
 
@@ -31,7 +32,7 @@ export function createSqliteFactory(db: Database) {
     createTable.run();
 
     // Create
-    async function create(item: TypeInference<Schema>) {
+    async function create(item: Schema) {
       const placeholders = Object.keys(schema)
         .map((key) => `$${key}`)
         .join(", ");
@@ -46,7 +47,7 @@ export function createSqliteFactory(db: Database) {
     }
 
     // Read
-    async function read(): Promise<TypeInference<Schema>[]> {
+    async function read(): Promise<Schema[]> {
       const selectQuery = db.query(`SELECT * FROM ${tableName};`);
       const data = selectQuery.all();
       const { error, data: validatedData } = validateAgainstArraySchema(
@@ -62,10 +63,7 @@ export function createSqliteFactory(db: Database) {
     }
 
     // Update
-    async function update(
-      id: number,
-      item: Partial<TypeInference<Schema>>
-    ): Promise<void> {
+    async function update(id: number, item: Partial<Schema>): Promise<void> {
       const updateFields = Object.keys(item)
         .map((key) => `${key} = $${key}`)
         .join(", ");

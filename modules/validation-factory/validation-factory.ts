@@ -1,4 +1,4 @@
-import { SchemaType, TypeInference, ValidationResult } from "../types";
+import { ValidationResult } from "../types";
 
 // errorUtils.ts
 
@@ -50,10 +50,10 @@ export function handleError(
   }
 }
 
-export function createValidatorFactory<Schema extends SchemaType>(
+export function createValidatorFactory<Schema extends object>(
   schema: Schema
 ) {
-  function validateItem(item: any): TypeInference<Schema> {
+  function validateItem(item: any): Schema {
     if (typeof item !== "object" || item === null) {
       throw handleError(
         { type: "ValidationError", message: "Invalid data type" },
@@ -61,7 +61,7 @@ export function createValidatorFactory<Schema extends SchemaType>(
       );
     }
 
-    const validateSchema: TypeInference<Schema> = {} as TypeInference<Schema>;
+    const validateSchema: Schema = {} as Schema;
 
     const isValid = Object.keys(schema).every((key) => {
       const typedKey = key as keyof Schema;
@@ -74,7 +74,7 @@ export function createValidatorFactory<Schema extends SchemaType>(
 
       validateSchema[typedKey] = item[
         key
-      ] as TypeInference<Schema>[keyof Schema];
+      ] as Schema[keyof Schema];
       return true;
     });
 
@@ -94,7 +94,7 @@ export function createValidatorFactory<Schema extends SchemaType>(
   ): ValidationResult<Schema> {
     try {
       const validatedData = data.map((item) => validateItem(item));
-      return { data: validatedData as TypeInference<Schema>[] };
+      return { data: validatedData as Schema[] };
     } catch (error) {
       const handledError = handleError(error as Error);
       if (handledError?.type === "ValidationError") {
