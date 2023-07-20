@@ -16,43 +16,12 @@ interface RefreshToken {
   exp: number;
 }
 
-const refreshTokens: RefreshToken[] = [];
-const tokenBlacklist: string[] = [];
-
 function payloadValidator(payload: JwtPayload): boolean {
   // Add more validation as per your requirements
   if (!payload) {
     throw new Error("Payload cannot be empty");
   }
   return true;
-}
-
-function generateRefreshToken(): string {
-  const refreshToken = crypto.randomBytes(40).toString("hex");
-  const expiresIn = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // Token valid for one week
-  refreshTokens.push({ token: refreshToken, exp: expiresIn });
-  return refreshToken;
-}
-
-function validateRefreshToken(token: string): boolean {
-  const index = refreshTokens.findIndex((t) => t.token === token);
-  if (index === -1) {
-    return false;
-  }
-  const refreshToken = refreshTokens[index];
-  if (refreshToken.exp < Math.floor(Date.now() / 1000)) {
-    refreshTokens.splice(index, 1); // Remove expired token
-    return false;
-  }
-  return true;
-}
-
-function blacklistToken(token: string): void {
-  tokenBlacklist.push(token);
-}
-
-function isTokenBlacklisted(token: string): boolean {
-  return tokenBlacklist.includes(token);
 }
 
 function base64UrlEncode(str: string): string {
@@ -75,6 +44,42 @@ function sign(data: string, secret: string): string {
 }
 
 export const jwtServerSideFactory = (factorySecret: string) => {
+  const tokenBlacklist: string[] = [];
+  const refreshTokens: RefreshToken[] = [];
+
+  function generateRefreshToken(): string {
+    const refreshToken = crypto.randomBytes(40).toString("hex");
+    const expiresIn = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // Token valid for one week
+    refreshTokens.push({ token: refreshToken, exp: expiresIn });
+    return refreshToken;
+  }
+
+  function validateRefreshToken(token: string): boolean {
+    // Check if the token is blacklisted before validating it
+    if (isTokenBlacklisted(token)) {
+      return false;
+    }
+
+    const index = refreshTokens.findIndex((t) => t.token === token);
+    if (index === -1) {
+      return false;
+    }
+    const refreshToken = refreshTokens[index];
+    if (refreshToken.exp < Math.floor(Date.now() / 1000)) {
+      refreshTokens.splice(index, 1); // Remove expired token
+      return false;
+    }
+    return true;
+  }
+
+  function blacklistToken(token: string): void {
+    tokenBlacklist.push(token);
+  }
+
+  function isTokenBlacklisted(token: string): boolean {
+    return tokenBlacklist.includes(token);
+  }
+
   function createJwt(
     payload: JwtPayload,
     secret: string,

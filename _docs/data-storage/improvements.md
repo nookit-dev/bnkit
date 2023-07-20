@@ -1,6 +1,0 @@
-- Add error handling for all database queries and operations.
-- Use parameterized queries to prevent SQL injection attacks.
-- Allow for custom database file paths and names instead of hardcoding "mydb.sqlite".
-- Implement pagination and sorting for the read function to handle large datasets.
-- Consider using a connection pool instead of creating a new database connection for each query.
-- Implement database transaction support to ensure atomicity and consistency in multi-step operations.

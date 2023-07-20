@@ -1,13 +1,13 @@
 import { BaseError } from "base-error";
-import { handleError } from "error-handler-validation";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
-import { createErrorHandlerFactory, defaultLogger } from "../..";
+import {createErrorHandlerFactory} from "../error-handler-factory/create-error-handler-factory";
+import {defaultLogger} from "../logger-factory";
 
 // Get user input asynchronously
 export async function getUserInput(): Promise<string> {
-  const proc = Bun.spawn([]);
+  const proc = Bun.spawÏn([]);
   return await new Response(proc.stdout).text();
 }
 

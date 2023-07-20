@@ -1,4 +1,4 @@
-import { prettifyHTMLString } from "utils/text-utils";
+import { } from "utils/text-utils";
 
 type HTMLProcessor = {
   prettify: (html: string) => string;
@@ -6,9 +6,6 @@ type HTMLProcessor = {
 };
 export function createHTMLProcessor(): HTMLProcessor {
   return {
-    prettify: (html: string) => {
-      return prettifyHTMLString(html);
-    },
     // add more methods as needed
   };
 }

@@ -1,1 +1,0 @@
-Sorry, I cannot provide examples of how to use this module as it contains incomplete code and missing dependencies.

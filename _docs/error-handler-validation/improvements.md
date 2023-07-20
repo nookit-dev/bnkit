@@ -1,5 +1,0 @@
-- Add more specific error messages to differentiate between different types of validation errors.
-- Consider adding support for asynchronous validation, if necessary.
-- Validate schema itself to prevent errors due to invalid schema definitions.
-- Add more built-in error types to mapBuiltInErrorType function.
-- Consider adding support for custom error messages.
