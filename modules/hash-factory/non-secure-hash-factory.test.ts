@@ -21,9 +21,9 @@ describe("createNonSecureHashFactory", () => {
 
   const testAlgorithms: NonSecureHashAlgorithm[] = [
     "wyhash",
-    // "crc32",
-    // "adler32",
-    // "cityHash32",
+    "crc32",
+    "adler32",
+    "cityHash32",
     "cityHash64",
     "murmur32v3",
     "murmur64v2",
