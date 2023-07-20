@@ -1,6 +1,6 @@
 import { Database } from "bun:sqlite";
 import { SchemaType, TypeInference, TypeMapping } from "types";
-import { createValidator } from "../error-handler-validation"; // Assuming validators are in a separate file
+import { createValidatorFactory } from "../validation-factory";
 
 // Utility functions
 export function createTableQuery<
@@ -25,7 +25,8 @@ export function createSqliteFactory<
   Schema extends Record<string, keyof TypeMapping>
 >(tableName: string, schema: Schema) {
   const db = new Database("mydb.sqlite", { create: true });
-  const { validateItem, validateAgainstArraySchema } = createValidator(schema);
+  const { validateItem, validateAgainstArraySchema } =
+    createValidatorFactory(schema);
 
   // Create table
   const createTable = db.query(createTableQuery(tableName, schema));
@@ -42,7 +43,8 @@ export function createSqliteFactory<
       )}) VALUES (${placeholders});`
     );
 
-    insertQuery.run(item);
+    // Run the query with the item object
+    insertQuery.run(item as any);
   }
 
   // Read
@@ -73,7 +75,8 @@ export function createSqliteFactory<
       `UPDATE ${tableName} SET ${updateFields} WHERE id = $id;`
     );
 
-    updateQuery.run({ ...item, id });
+    // Run the query with the item object and id
+    updateQuery.run({ ...item, id } as any);
   }
 
   // Delete
