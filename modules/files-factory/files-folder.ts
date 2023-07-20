@@ -66,7 +66,7 @@ export function findAppRoot(startingPath: string): string | null | undefined {
 export const saveResultToFile = async (
   filePath: string,
   content: string
-): Promise<void> | undefined => {
+): Promise<void | undefined> => {
   try {
     await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
     await fs.promises.writeFile(filePath, content);
@@ -89,13 +89,17 @@ export const readFilesContents = (
   }
 };
 
-
 type FileFactoryOptions = {
   baseDirectory: string;
-  errorHandler: ReturnType<typeof createErrorHandlerFactory<any, BaseError<any>>>;
+  errorHandler: ReturnType<
+    typeof createErrorHandlerFactory<any, BaseError<any>>
+  >;
 };
 
-export function createFileFactory({ baseDirectory, errorHandler }: FileFactoryOptions) {
+export function createFileFactory({
+  baseDirectory,
+  errorHandler,
+}: FileFactoryOptions) {
   const getFullPath = (filePath: string) => path.join(baseDirectory, filePath);
 
   const updateFiles = async (filePaths: string[], data: string) => {

@@ -5,7 +5,7 @@ type SecureHashConfig = {
   cost?: number;
 };
 
-function createSecureHasher() {
+export function createSecureHashFactory() {
   const hashPassword = async (
     password: string,
     config: SecureHashConfig = {

@@ -7,6 +7,8 @@ Are you overwhelmed by countless options and dependencies? Embrace the simplicit
 ## Alpha Software
 Please use at your own risk, this is alpha software and is still very much in the early stages and the APIs are **guranteed** to change.
 
+This project is 
+
 ## Key Highlights
 
 - **Zero Dependencies**: Our goal is to build this toolkit with no extra dependencies so your apps stay lean and fast, relying solely on Bun itself.
