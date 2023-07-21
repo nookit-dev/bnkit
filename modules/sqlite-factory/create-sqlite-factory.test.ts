@@ -26,6 +26,7 @@ describe("createSqliteFactory", () => {
     const notesTable = dbTableFactory({
       schema: noteSchema,
       tableName: "notes",
+      debug: false,
     });
 
     notesTable.create({
@@ -43,6 +44,7 @@ describe("createSqliteFactory", () => {
     const notesTable = dbTableFactory({
       schema: noteSchema,
       tableName: "notes",
+      debug: false,
     });
 
     notesTable.create({
@@ -70,6 +72,7 @@ describe("createSqliteFactory", () => {
     const notesTable = dbTableFactory({
       schema: noteSchema,
       tableName: "notes",
+      debug: false,
     });
 
     notesTable.create({

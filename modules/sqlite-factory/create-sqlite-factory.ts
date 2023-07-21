@@ -1,40 +1,12 @@
 import { Database } from "bun:sqlite";
-import { SchemaType, SchemaTypeInference, TypeMapping } from "types";
+import { SchemaType, SchemaTypeInference } from "types";
 
 import {
   CreateSqliteTableFactoryParams,
   createSqliteTableFactory,
 } from "./create-sqlite-table-factory";
 
-// Utility functions
-export function createTableQuery<
-  Schema extends Record<string, keyof TypeMapping>
->({
-  schema,
-  tableName,
-  debug = false,
-}: {
-  tableName: string;
-  schema: Schema;
-  debug?: boolean;
-}): string {
-  if (debug) {
-    console.log({ schema, tableName });
-  }
-  const fields = Object.entries(schema)
-    .map(([key, type]) => `${key} ${type.toUpperCase()}`)
-    .join(", ");
-
-  const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${fields});`;
-
-  if (debug) {
-    console.log({ query, fields, schema, tableName });
-  }
-
-  return query;
-}
-
-export type CreateSqliteInterface<Schema extends SchemaType> = {
+export type CreateSqliteFactory<Schema extends SchemaType> = {
   create: (item: SchemaTypeInference<Schema>) => Promise<void>;
   read: () => Promise<SchemaTypeInference<Schema>[]>;
   update: (
@@ -44,24 +16,43 @@ export type CreateSqliteInterface<Schema extends SchemaType> = {
   deleteById: (id: number) => Promise<void>;
 };
 
-export function createSqliteFactory({
-  db,
-  debug,
-}: {
+type CreateSqliteFactoryType = {
   db: Database;
   debug?: boolean;
-}) {
+  enableForeignKeys?: boolean;
+};
+
+export function createSqliteFactory({
+  db,
+  debug = false,
+  // because foreign keys in sqlite are disabled by default
+  // https://renenyffenegger.ch/notes/development/databases/SQLite/sql/pragma/foreign_keys#:~:text=pragma%20foreign_keys%20%3D%20on%20enforces%20foreign,does%20not%20enforce%20foreign%20keys.&text=Explicitly%20turning%20off%20the%20validation,dump%20'ed%20database.
+  // turning off foreign keys may be using when importing a .dump'ed database
+  enableForeignKeys = false,
+}: CreateSqliteFactoryType) {
+  if (enableForeignKeys) {
+    // Enable foreign key constraints
+    db.query("PRAGMA foreign_keys = ON;").run();
+  }
+
   function dbTableFactory<Schema extends SchemaType>({
     debug: debugTable = debug || false,
     schema,
     tableName,
-  }: Omit<CreateSqliteTableFactoryParams<Schema>, "db">) {
-    return createSqliteTableFactory({
-      db,
-      debug: debugTable,
-      schema,
-      tableName,
-    });
+  }: Omit<CreateSqliteTableFactoryParams<Schema>, "db"> & {
+    debug: boolean;
+  }) {
+    return createSqliteTableFactory(
+      {
+        db,
+        schema,
+        tableName,
+      },
+      {
+        debug: debugTable,
+        enableForeignKeys: debug,
+      }
+    );
   }
 
   return { dbTableFactory };

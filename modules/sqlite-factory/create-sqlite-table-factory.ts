@@ -1,21 +1,36 @@
 import Database from "bun:sqlite";
 import { SchemaType, SchemaTypeInference } from "types";
-import { createTableQuery } from "./create-sqlite-factory";
+import { createTableQuery } from "./sqlite-utils";
+
+export type ForeignKeysType<Schema> =
+  | { column: keyof Schema; references: string }[]
+  | null;
 
 export type CreateSqliteTableFactoryParams<Schema extends SchemaType> = {
   db: Database;
   tableName: string;
   schema: Schema;
-  debug?: boolean;
 };
 
-export function createSqliteTableFactory<Schema extends SchemaType>({
-  db,
-  schema,
-  tableName,
-  debug = false,
-}: // TODO add logger param factory
-CreateSqliteTableFactoryParams<Schema>) {
+export type CreateSqliteTableOptions<Schema extends SchemaType> = {
+  debug?: boolean;
+  enableForeignKeys?: boolean;
+  foreignKeys?: ForeignKeysType<Schema>;
+};
+
+export function createSqliteTableFactory<Schema extends SchemaType>(
+  {
+    db,
+    schema,
+    tableName,
+  }: // TODO add logger param factory
+  CreateSqliteTableFactoryParams<Schema>,
+  {
+    debug = false,
+    enableForeignKeys: foreignKeysConstraints = false,
+    foreignKeys = null,
+  }: CreateSqliteTableOptions<Schema> = {}
+) {
   const log = (...args: any) => {
     if (debug) {
       console.log(...args);
@@ -24,11 +39,9 @@ CreateSqliteTableFactoryParams<Schema>) {
 
   // const { validateAgainstArraySchema } = createValidatorFactory(schema);
 
-  const query = createTableQuery({ tableName, schema, debug });
-
-  log({ query });
-
-  const createTable = db.query(query);
+  const createTable = db.query(
+    createTableQuery({ tableName, schema, foreignKeys, debug })
+  );
   createTable.run();
 
   function create(item: SchemaTypeInference<Schema>) {
