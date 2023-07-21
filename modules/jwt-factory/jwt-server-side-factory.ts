@@ -38,6 +38,7 @@ function base64UrlDecode(str: string): string {
 }
 
 function sign(data: string, secret: string): string {
+  // TODO: maybe use hash factory here?
   const hmac = crypto.createHmac("sha256", secret);
   hmac.update(data);
   return hmac.digest("base64");
