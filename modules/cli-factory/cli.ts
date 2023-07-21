@@ -1,9 +1,9 @@
-import { BaseError } from "base-error";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
-import {createErrorHandlerFactory} from "../error-handler-factory/create-error-handler-factory";
-import {defaultLogger} from "../logger-factory";
+import { BaseError } from "utils/base-error";
+import { createErrorHandlerFactory } from "../error-handler-factory/create-error-handler-factory";
+import { defaultLogger } from "../logger-factory";
 
 // Get user input asynchronously
 export async function getUserInput(): Promise<string> {

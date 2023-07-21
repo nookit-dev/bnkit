@@ -1,10 +1,10 @@
-import { BaseError } from "../base-error.js";
-import { clientLogger } from "../logger-factory/client-logger.js";
+import { clientLogger } from "../logger-factory/client-logger";
 import {
-	errorCodeMap,
-	type ErrorCodes,
-	type createLoggerFactory,
-} from "../logger-factory/create-logger-factory.js";
+  errorCodeMap,
+  type ErrorCodes,
+  type createLoggerFactory,
+} from "../logger-factory/create-logger-factory";
+import { BaseError } from "../utils/base-error";
 
 export type CallerFunctionAsync<OverrideDataType> =
   () => Promise<OverrideDataType>;

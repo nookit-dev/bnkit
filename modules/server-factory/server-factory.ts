@@ -11,6 +11,14 @@ export function createServerFactory() {
     routes[route] = handler;
   };
 
+  const getRoutes = () => {
+    return routes;
+  };
+
+  const deleteRoute = (route: string) => {
+    delete routes[route];
+  };
+
   const fetch = (request: Request): Response | Promise<Response> => {
     const url = new URL(request.url);
     const handler = routes[url.pathname];
@@ -30,8 +38,20 @@ export function createServerFactory() {
     });
   };
 
+  const htmlResponse = (htmlString: string, config: ResponseInit) => {
+    return new Response(htmlString, {
+      ...config,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+      },
+    });
+  };
+
   return {
     addRoute,
     start,
+    getRoutes,
+    deleteRoute,
+    htmlResponse,
   };
 }

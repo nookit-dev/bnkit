@@ -1,6 +1,5 @@
 import Database from "bun:sqlite";
 import { SchemaType, SchemaTypeInference } from "types";
-import { createValidatorFactory } from "validation-factory";
 import { createTableQuery } from "./create-sqlite-factory";
 
 export type CreateSqliteTableFactoryParams<Schema extends SchemaType> = {
@@ -17,13 +16,17 @@ export function createSqliteTableFactory<Schema extends SchemaType>({
   debug = false,
 }: // TODO add logger param factory
 CreateSqliteTableFactoryParams<Schema>) {
-  const { validateAgainstArraySchema } = createValidatorFactory(schema);
+  const log = (...args: any) => {
+    if (debug) {
+      console.log(...args);
+    }
+  };
+
+  // const { validateAgainstArraySchema } = createValidatorFactory(schema);
 
   const query = createTableQuery({ tableName, schema, debug });
 
-  if (debug) {
-    console.log({ query });
-  }
+  log({ query });
 
   const createTable = db.query(query);
   createTable.run();
@@ -33,17 +36,13 @@ CreateSqliteTableFactoryParams<Schema>) {
     const placeholders = valuesArray.map((value) => "?").join(", ");
     const prepareQuery = `INSERT INTO ${tableName} VALUES (${placeholders})`;
 
-    const stmt = db.prepare(prepareQuery);
+    const stmt = db.query(prepareQuery);
 
-    if (debug) {
-      console.log({ prepareQuery, valuesArray, placeholders, stmt });
-    }
+    log({ prepareQuery, valuesArray, placeholders, stmt });
 
     const insertQuery = stmt.run(...valuesArray);
 
-    if (debug) {
-      console.log({ insertQuery });
-    }
+    log({ insertQuery });
 
     return [];
   }
@@ -53,12 +52,10 @@ CreateSqliteTableFactoryParams<Schema>) {
     const selectQuery = db.query(selectAllTableQuery);
     const data = selectQuery.all();
 
-    if (debug) {
-      console.log({
-        selectAllTableQuery,
-        data,
-      });
-    }
+    log({
+      selectAllTableQuery,
+      data,
+    });
 
     // TODO add back validation, make validation option, i need to create a sqlite schema validator
     // const { error, data: validatedData } = validateAgainstArraySchema(
@@ -77,34 +74,59 @@ CreateSqliteTableFactoryParams<Schema>) {
     return data as Schema[];
   }
 
-  async function update(
-    // TODO   maybe this can be inferred from the schema, maybe make id required?
-    id: string | number,
-    item: Partial<Schema>
-  ): Promise<void> {
-    const updateFields = Object.keys(item)
+  const getDeleteQuery = (tableName: string) => {
+    const query = `DELETE FROM ${tableName} WHERE id = $id;`;
+
+    log(query);
+
+    return query;
+  };
+
+  const getUpdateQuery = <Schema extends SchemaType>(
+    tableName: string,
+    schema: Schema
+  ) => {
+    // Filter out the 'id' field
+    const updateFields = Object.keys(schema)
+      .filter((key) => key !== "id")
       .map((key) => `${key} = $${key}`)
       .join(", ");
 
     const query = `UPDATE ${tableName} SET ${updateFields} WHERE id = $id;`;
-    if (debug) {
-      console.log(query);
-    }
+
+    log(query);
+
+    return query;
+  };
+
+  //  TODO: need to fix types on the update method
+  async function update(
+    // TODO: maybe this can be inferred from the schema, maybe make ID required?
+    id: string | number,
+    item: Partial<Omit<Schema, "id">>
+  ): Promise<void> {
+    const query = getUpdateQuery(tableName, schema);
+
+    log(query);
 
     const updateQuery = db.query(query);
 
+    log({ item, id });
+
     // Run the query with the item object and id
-    updateQuery.run({ ...item, id } as any);
+    const params = Object.fromEntries(
+      Object.entries(item).map(([key, value]) => [`$${key}`, value])
+    );
+    updateQuery.run({ ...params, $id: id });
   }
 
   async function deleteById(id: number): Promise<void> {
-    const query = `DELETE FROM ${tableName} WHERE id = $id;`;
+    const query = getDeleteQuery(tableName);
 
-    if (debug) {
-      console.log(query);
-    }
+    log(query);
+
     const deleteQuery = db.query(query);
-    deleteQuery.run({ id });
+    deleteQuery.run({ $id: id });
   }
 
   return {
