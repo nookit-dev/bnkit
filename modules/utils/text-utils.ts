@@ -1,11 +1,3 @@
-function repeat(s: string, n: number): string {
-  let result = "";
-  for (let i = 0; i < n; i++) {
-    result += s;
-  }
-  return result;
-}
-
 function replaceMarkdown(
   text: string,
   regex: RegExp,
@@ -31,10 +23,12 @@ const parsers = {
   links(text: string): string {
     return replaceMarkdown(text, /\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
   },
+  // TODO: this neds to be fixed, it is broken
   unorderedLists(text: string): string {
     text = replaceMarkdown(text, /^-\s(.+)/gm, "<li>$1</li>");
     return text.replace(/<li>.*<\/li>/g, (match) => `<ul>${match}</ul>`);
   },
+  // TODO: this neds to be fixed, it is broken
   orderedLists(text: string): string {
     text = replaceMarkdown(text, /^\d+\.\s(.+)/gm, "<li>$1</li>");
     return text.replace(/<li>.*<\/li>/g, (match) => `<ol>${match}</ol>`);
