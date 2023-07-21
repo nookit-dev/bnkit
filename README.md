@@ -15,6 +15,22 @@ This project is
 - **Versatile**: Instant Bun is a toolkit to develop servers, decentralized networks, developer tools, custom Raspberry Pi software, and real-time software. Leverage the tiny direct Bun source code modules to solve your problems.
 - **Modular and Efficient**: Dive into a world where every design choice fuels your creative endeavors. Instant Bun's modular approach helps you build efficient applications with minimal abstraction layers.
 
+## Goals
+
+Our mission with Instant Bun is to create a dynamic, flexible, and user-friendly toolkit that can be integrated into any project, regardless of its complexity. Here are our key goals:
+
+- **Adaptable and Scalable**: Instant Bun is designed to fit seamlessly into any project, irrespective of its size or requirements. Whether you are a hobbyist building a small project or a developer part of a larger team, you can use Instant Bun as little or as much as you like, thanks to its modular architecture.
+
+- **Efficiency through Modularity**: With the modular architecture of Instant Bun, we aim to promote a "use-what-you-need" philosophy. Each module in Instant Bun is a standalone feature, allowing you to choose only what you need for your project. This reduces bloat and keeps your projects lean and efficient.
+
+- **Empowering Through Simplicity**: We believe in the power of simplicity. Instant Bun is created with a user-friendly approach, allowing developers of all skill levels to quickly and effectively use it. This fosters a more creative and productive environment.
+
+- **Evolving with Community**: We are committed to continuously improving and refining Instant Bun based on community feedback and contributions. Our goal is to create a toolkit that evolves with the needs of the community, ensuring its relevance and usefulness in the ever-evolving tech landscape.
+
+- **Promoting Direct Problem Solving**: With Instant Bun's direct source code modules, we aim to foster a problem-solving approach that reduces reliance on heavy abstraction layers. This promotes a better understanding of your code and more control over your project.
+
+Remember, with Instant Bun, your toolkit can grow with your project. Start small, add modules as you need them, and watch your project take shape with efficiency and ease. Happy coding!
+
 ## Features
 
 Instant Bun offers a wide array of utility modules including:
