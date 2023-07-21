@@ -168,10 +168,10 @@ dist
 .yarn/install-state.gz
 .pnp.\*
 
-.DS_Store
-
 .env
 ./.env
 
 bun.lockb
 .idea
+
+.DS_Store
