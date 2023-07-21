@@ -175,3 +175,5 @@ bun.lockb
 .idea
 
 .DS_Store
+
+.vscode

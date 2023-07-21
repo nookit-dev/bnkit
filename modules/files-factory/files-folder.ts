@@ -4,69 +4,16 @@ import { BaseError } from "utils/base-error";
 import { handleError } from "validation-factory/validation-factory";
 import { createErrorHandlerFactory } from "../..";
 
-export const getFilesForDirectory = (
-  directory: "_apps" | "_tests" | "_docs" | "." | "../" | ".../" | string,
-  { ignoreFiles: ignoreFiles = [] }: { ignoreFiles?: string[] } = {}
-): string[] | undefined => {
-  try {
-    const appFiles = fs
-      .readdirSync(directory)
-      .map((filename) => path.join(directory, filename))
-      .map((filename) => path.parse(filename).name);
-
-    return appFiles.filter((filename) => !ignoreFiles.includes(filename));
-  } catch (error) {
-    handleError(error as Error);
-  }
-};
-
-export const getFilesForDirectoryFromRoot = (
-  directory: "_apps" | "_tests" | "_docs" | "." | "../" | ".../" | string,
-  { ignoreFiles: ignoreFiles = [] }: { ignoreFiles?: string[] } = {}
-): string[] | undefined => {
-  try {
-    const rootPath = findAppRoot(process.cwd()) || ".";
-    const targetDirectory = path.join(rootPath, directory);
-
-    console.log(rootPath, targetDirectory);
-    return getFilesForDirectory(targetDirectory, { ignoreFiles });
-  } catch (error) {
-    handleError(error as Error);
-  }
-};
-
-export function isRootFolder(folderPath: string): boolean | undefined {
-  try {
-    return fs.existsSync(path.join(folderPath, "tsconfig.json"));
-  } catch (error) {
-    handleError(error as Error);
-  }
-}
-
-export function findAppRoot(startingPath: string): string | null | undefined {
-  try {
-    let currentPath = startingPath;
-
-    while (!isRootFolder(currentPath)) {
-      const parentPath = path.dirname(currentPath);
-
-      if (parentPath === currentPath) {
-        return null;
-      }
-
-      currentPath = parentPath;
-    }
-
-    return currentPath;
-  } catch (error) {
-    handleError(error as Error);
-  }
-}
-
+/**
+ * The `saveResultToFile` function saves the given content to a file at the specified file path.
+ * @param {string} filePath - A string representing the file path where the result will be saved.
+ * @param {string} content - The `content` parameter is a string that represents the content that you
+ * want to save to a file.
+ */
 export const saveResultToFile = async (
   filePath: string,
   content: string
-): Promise<void | undefined> => {
+): Promise<void | undefined> => {  
   try {
     await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
     await fs.promises.writeFile(filePath, content);
@@ -75,6 +22,16 @@ export const saveResultToFile = async (
   }
 };
 
+/**
+ * The function `readFilesContents` reads the contents of multiple files specified by their file paths
+ * and returns an array of objects containing the file path and its content.
+ * @param {string[]} filePaths - An array of strings representing the paths of the files you want to
+ * read.
+ * @returns The function `readFilesContents` returns an array of objects, where each object has two
+ * properties: `path` and `content`. The `path` property is a string representing the filename
+ * extracted from the file path, and the `content` property is a string representing the contents of
+ * the file. The function also has a return type of `{ path: string; content: string }[] | undefined
+ */
 export const readFilesContents = (
   filePaths: string[]
 ): { path: string; content: string }[] | undefined => {
@@ -96,12 +53,28 @@ type FileFactoryOptions = {
   >;
 };
 
+/**
+ * The `createFileFactory` function creates a file factory object that provides methods for
+ * manipulating files, such as updating files, reading file contents, searching directories, checking
+ * file existence, deleting files, reading JSON files, and writing JSON files.
+ * @param {FileFactoryOptions}  - - `baseDirectory`: The base directory where the files will be created
+ * or searched.
+ * @returns The function `createFileFactory` returns an object with the following properties and
+ * corresponding values:
+ */
 export function createFileFactory({
   baseDirectory,
   errorHandler,
 }: FileFactoryOptions) {
   const getFullPath = (filePath: string) => path.join(baseDirectory, filePath);
 
+  /**
+   * Updates multiple files with the provided data.
+   *
+   * @param {string[]} filePaths - An array of file paths to update.
+   * @param {string} data - The data to write to the files.
+   * @return {Promise<void>} A promise that resolves when all files have been updated.
+   */
   const updateFiles = async (filePaths: string[], data: string) => {
     const promises = filePaths.map(async (filePath) => {
       const fullPath = getFullPath(filePath);
@@ -110,6 +83,12 @@ export function createFileFactory({
     await errorHandler.handleAsync(() => Promise.all(promises));
   };
 
+/**
+ * Reads the raw text content of multiple files asynchronously.
+ *
+ * @param {string[]} filePaths - An array of file paths to read.
+ * @return {Promise<string[]>} A promise that resolves to an array of raw text content from the files.
+ */
   const readFilesRawText = async (filePaths: string[]) => {
     const promises = filePaths.map(async (filePath) => {
       const fullPath = getFullPath(filePath);
@@ -119,6 +98,13 @@ export function createFileFactory({
     return await errorHandler.handleAsync(() => Promise.all(promises));
   };
 
+  
+  /**
+   * Searches for a file in the specified directory.
+   *
+   * @param {string} fileName - The name of the file to search for.
+   * @return {Promise<boolean>} A promise that resolves to true if the file is found, and false otherwise.
+   */
   const searchDirectory = async (fileName: string) => {
     return await errorHandler.handleAsync(async () => {
       const files = await fs.promises.readdir(baseDirectory);
@@ -134,6 +120,12 @@ export function createFileFactory({
     });
   };
 
+  /**
+   * Deletes a file at the specified file path.
+   *
+   * @param {string} filePath - The path of the file to be deleted.
+   * @return {Promise<void>} A promise that resolves when the file is successfully deleted.
+   */
   const deleteFile = async (filePath: string) => {
     const fullPath = getFullPath(filePath);
     return await errorHandler.handleAsync(async () => {
@@ -146,6 +138,13 @@ export function createFileFactory({
     return JSON.parse(rawText[0]);
   };
 
+  /**
+   * Writes JSON data to a file.
+   *
+   * @param {string} filePath - The path of the file to write the JSON data to.
+   * @param {any} data - The JSON data to write to the file.
+   * @return {Promise<void>} - A Promise that resolves when the file has been written.
+   */
   const writeJson = async (filePath: string, data: any) => {
     await updateFiles([filePath], JSON.stringify(data, null, 2));
   };
