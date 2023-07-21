@@ -7,7 +7,39 @@ Are you overwhelmed by countless options and dependencies? Embrace the simplicit
 ## Alpha Software
 Please use at your own risk, this is alpha software and is still very much in the early stages and the APIs are **guranteed** to change.
 
-This project is 
+
+## Getting Started
+
+1. Install Bun:
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+2. Initialize a new Bun project:
+
+```bash
+mkdir playground && cd playground
+bun init 
+```
+
+3. Install Instant Bun:
+
+```bash
+bun add instant-bun
+```
+
+Now, you can import Instant Bun into your module:
+
+```jsx
+import { fetchUtils } from 'instant-bun'
+```
+
+You can also use a single module directly:
+
+```bash
+bun add https://github.com/brandon-schabel/instant-bun/tree/main/modules/cli-factory
+```
 
 ## Key Highlights
 
@@ -45,38 +77,33 @@ Instant Bun offers a wide array of utility modules including:
 - **Error Handler and Validation Utils**: Handle and validate errors in a user-friendly way.
 - **Files and Folders Utils**: Work with files and directories, such as retrieving files from a specific directory or saving results to a file.
 
-## Getting Started
 
-1. Install Bun:
 
-```bash
-curl -fsSL https://bun.sh/install | bash
-```
+## Architecture
 
-2. Initialize a new Bun project:
+Instant Bun is built upon a robust and flexible architecture using factory functions, taking full advantage of their benefits to offer a streamlined, efficient, and versatile toolkit for your development needs.
 
-```bash
-mkdir playground && cd playground
-bun init 
-```
+Our architecture is designed to ensure:
 
-3. Install Instant Bun:
+- **Encapsulation**: Factory functions hide the complexities of object creation, providing a clear and understandable interface to consumers. You get the module you need without worrying about the intricacies of its construction.
 
-```bash
-bun add https://github.com/Modular-Architecture-Toolkit/instant-bun
-```
+- **Flexibility**: Factory functions can return different types of objects based on input parameters. This provides a high degree of flexibility in object creation, ensuring Instant Bun can easily adapt to your project's requirements.
 
-Now, you can import Instant Bun into your module:
+- **Code Reuse**: Embracing the principles of functional programming, our factory functions facilitate code reuse and composability. This promotes efficient code management and rapid development across your application.
 
-```jsx
-import { fetchUtils } from 'instant-bun'
-```
+- **Object Initialization**: Instant Bun handles complex object initialization within its factory functions. If a module requires specific properties or a certain state upon creation, Instant Bun takes care of it.
 
-You can also use a single module directly:
+However, we are fully aware of the potential pitfalls of factory functions:
 
-```bash
-bun add https://github.com/Modular-Architecture-Toolkit/instant-bun/tree/main/modules/cli-factory
-```
+- **Memory Usage**: We strive to optimize memory usage by managing how and when objects are created, ensuring the efficient operation of your application.
+
+- **Code Readability**: While factory functions can add a layer of complexity, we mitigate this by breaking down complex logic into isolated utility functions, making the code easier to understand and maintain.
+
+- **Debugging and Testing**: We prioritize testability in our architecture. By isolating complex logic into utility functions, we ensure that each piece can be tested independently, making debugging easier and more effective.
+
+- **Prototypal Inheritance**: We acknowledge that simulating traditional class-based inheritance can be challenging in JavaScript. However, we utilize best practices to make this process as intuitive as possible.
+
+By strategically leveraging the power of factory functions and mitigating their disadvantages, Instant Bun delivers a toolkit that is powerful, easy to use, and efficient, ready to be integrated into any project with ease.
 
 ## Contributing
 
