@@ -44,7 +44,7 @@ export const readFilesContents = async (
       })
     );
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
@@ -82,7 +82,7 @@ export function createFileFactory({
       const fullPath = getFullPath(filePath);
       await fsPromise.writeFile(fullPath, data);
     });
-    await errorHandler.handleAsync(() => Promise.all(promises));
+    return Promise.all(promises);
   };
 
   /**
@@ -99,7 +99,7 @@ export function createFileFactory({
         return data;
       });
 
-      return await Promise.all(promises);
+      return Promise.all(promises);
     } catch (error) {
       errorHandler.handleAsync(() => {
         throw error;
@@ -115,35 +115,31 @@ export function createFileFactory({
    */
 
   const searchDirectory = async (fileName: string) => {
-    return await errorHandler.handleAsync(async () => {
-      async function searchDir(dir: string): Promise<boolean> {
-        const entries = await fsPromise.readdir(dir, { withFileTypes: true });
-        for (let entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            if (await searchDir(fullPath)) {
-              return true;
-            }
-          } else if (entry.name === fileName) {
+    async function searchDir(dir: string): Promise<boolean> {
+      const entries = await fsPromise.readdir(dir, { withFileTypes: true });
+      for (let entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (await searchDir(fullPath)) {
             return true;
           }
+        } else if (entry.name === fileName) {
+          return true;
         }
-        return false;
       }
-      return await searchDir(baseDirectory);
-    });
+      return false;
+    }
+    return searchDir(baseDirectory);
   };
 
   const fileExists = async (filePath: string) => {
     const fullPath = getFullPath(filePath);
-    return await errorHandler.handleAsync(async () => {
-      try {
-        await fsPromise.access(fullPath, fsPromise.constants.F_OK);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    });
+    try {
+      await fsPromise.access(fullPath, fsPromise.constants.F_OK);
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   /**
@@ -156,7 +152,7 @@ export function createFileFactory({
     try {
       const fullPath = getFullPath(filePath);
 
-      return await fsPromise.unlink(fullPath);
+      return fsPromise.unlink(fullPath);
     } catch (e) {
       throw e;
     }
