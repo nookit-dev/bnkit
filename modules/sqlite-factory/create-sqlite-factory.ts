@@ -22,6 +22,13 @@ type CreateSqliteFactoryType = {
   enableForeignKeys?: boolean;
 };
 
+type DBTableFactoryType<Schema extends SchemaType> = Omit<
+  CreateSqliteTableFactoryParams<Schema>,
+  "db"
+> & {
+  debug: boolean;
+};
+
 export function createSqliteFactory({
   db,
   debug = false,
@@ -39,9 +46,7 @@ export function createSqliteFactory({
     debug: debugTable = debug || false,
     schema,
     tableName,
-  }: Omit<CreateSqliteTableFactoryParams<Schema>, "db"> & {
-    debug: boolean;
-  }) {
+  }: DBTableFactoryType<Schema>) {
     return createSqliteTableFactory(
       {
         db,
