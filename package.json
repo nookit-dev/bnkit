@@ -4,7 +4,8 @@
   "scripts": {
     "docs-gen": "bun run ./_apps/generator-cli-app/repo-docs-generator.ts",
     "unit-gen": "bun run ./_apps/generator-cli-app/repo-unit-test-gen.ts",
-    "docs-server": "bun run ./_apps/docs-server/docs-server.ts"
+    "docs-server": "bun run ./_apps/docs-server/docs-server.ts",
+    "yeet": "npm version patch && npm publish"
   },
   "description": "Instant Bun is a simple zero-dependency, fast, and lightweight framework for Bun",
   "main": "index.ts",
