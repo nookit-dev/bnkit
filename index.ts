@@ -5,6 +5,7 @@ export {
 } from "./modules/cookie-factory";
 export { createErrorHandlerFactory } from "./modules/error-handler-factory/create-error-handler-factory";
 export { defaultErrorHandler } from "./modules/error-handler-factory/default-error-handler";
+export { createFetchFactory } from "./modules/fetch-factory";
 export * from "./modules/fetch-factory/create-fetch-factory";
 export { createFileFactory } from "./modules/files-factory";
 export {

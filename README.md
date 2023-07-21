@@ -31,9 +31,20 @@ bun add instant-bun
 
 Now, you can import Instant Bun into your module:
 
-```jsx
-import { fetchUtils } from 'instant-bun'
+```typescript
+import { createFetchFactory } from 'instant-bun/modules/fetch-factory'
 ```
+
+
+```typescript
+//  if you know what the data looks like you can pass it in as a generic here.
+const fetcher = createFetchFactory<DataType>()
+
+
+// however you can also pass it in on the request itsefl
+const result = await fetcher.get<GetResponse>('http://example.com/)
+```
+
 
 You can also use a single module directly:
 

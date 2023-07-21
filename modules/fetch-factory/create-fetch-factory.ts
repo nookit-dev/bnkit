@@ -4,7 +4,10 @@ import { type BaseError } from "../utils/base-error";
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-export function createFetchFactory<DataType, Error extends BaseError<DataType>>({
+export function createFetchFactory<
+  DataType,
+  Error extends BaseError<DataType>
+>({
   baseUrl,
   errorHandler = defaultErrorHandler<DataType, Error>(),
   logMode,
@@ -48,7 +51,10 @@ export function createFetchFactory<DataType, Error extends BaseError<DataType>>(
   };
 
   return {
-    get: (endpoint: string) => baseFetcher("GET", endpoint),
+    // GetDataType gives the ability to override the return type of the get method,
+    // or it can be set on the createFetchFactory (or not at all!)
+    get: <GetDataType = DataType>(endpoint: string) =>
+      baseFetcher<GetDataType>("GET", endpoint),
 
     postJson: <ResponseData = DataType, PostData = unknown>({
       endpoint,
