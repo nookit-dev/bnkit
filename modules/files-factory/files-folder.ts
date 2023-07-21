@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { BaseError } from "utils/base-error";
+import { handleError } from "validation-factory/validation-factory";
 import { createErrorHandlerFactory } from "../..";
-import { handleError } from "../error-handler-validation";
 
 export const getFilesForDirectory = (
   directory: "_apps" | "_tests" | "_docs" | "." | "../" | ".../" | string,
