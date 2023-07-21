@@ -1,7 +1,6 @@
-import fs from "fs";
+import fsPromise from "fs/promises";
 import path from "path";
 import { BaseError } from "utils/base-error";
-import { handleError } from "validation-factory/validation-factory";
 import { createErrorHandlerFactory } from "../..";
 
 /**
@@ -13,12 +12,13 @@ import { createErrorHandlerFactory } from "../..";
 export const saveResultToFile = async (
   filePath: string,
   content: string
-): Promise<void | undefined> => {  
+): Promise<void> => {
   try {
-    await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-    await fs.promises.writeFile(filePath, content);
-  } catch (err) {
-    handleError(err as Error);
+    const resolvedPath = path.resolve(filePath);
+    await fsPromise.mkdir(path.dirname(resolvedPath), { recursive: true });
+    await fsPromise.writeFile(resolvedPath, content);
+  } catch (err: any) {
+    throw new Error(`Failed to save result to file: ${err?.message}`);
   }
 };
 
@@ -32,17 +32,19 @@ export const saveResultToFile = async (
  * extracted from the file path, and the `content` property is a string representing the contents of
  * the file. The function also has a return type of `{ path: string; content: string }[] | undefined
  */
-export const readFilesContents = (
+export const readFilesContents = async (
   filePaths: string[]
-): { path: string; content: string }[] | undefined => {
+): Promise<{ path: string; content: string }[] | undefined> => {
   try {
-    return filePaths.map((filePath) => {
-      const filename = path.basename(filePath);
-      const content = fs.readFileSync(filePath, "utf8");
-      return { path: filename, content };
-    });
+    return Promise.all(
+      filePaths.map(async (filePath) => {
+        const filename = path.basename(filePath);
+        const content = await fsPromise.readFile(filePath, "utf8");
+        return { path: filename, content };
+      })
+    );
   } catch (error) {
-    handleError(error as Error);
+    throw error
   }
 };
 
@@ -78,45 +80,69 @@ export function createFileFactory({
   const updateFiles = async (filePaths: string[], data: string) => {
     const promises = filePaths.map(async (filePath) => {
       const fullPath = getFullPath(filePath);
-      await fs.promises.writeFile(fullPath, data);
+      await fsPromise.writeFile(fullPath, data);
     });
     await errorHandler.handleAsync(() => Promise.all(promises));
   };
 
-/**
- * Reads the raw text content of multiple files asynchronously.
- *
- * @param {string[]} filePaths - An array of file paths to read.
- * @return {Promise<string[]>} A promise that resolves to an array of raw text content from the files.
- */
+  /**
+   * Reads the raw text content of multiple files asynchronously.
+   *
+   * @param {string[]} filePaths - An array of file paths to read.
+   * @return {Promise<string[]>} A promise that resolves to an array of raw text content from the files.
+   */
   const readFilesRawText = async (filePaths: string[]) => {
-    const promises = filePaths.map(async (filePath) => {
-      const fullPath = getFullPath(filePath);
-      const data = await fs.promises.readFile(fullPath, "utf-8");
-      return data;
-    });
-    return await errorHandler.handleAsync(() => Promise.all(promises));
+    try {
+      const promises = filePaths.map(async (filePath) => {
+        const fullPath = getFullPath(filePath);
+        const data = await fsPromise.readFile(fullPath, "utf-8");
+        return data;
+      });
+
+      return await Promise.all(promises);
+    } catch (error) {
+      errorHandler.handleAsync(() => {
+        throw error;
+      });
+    }
   };
 
-  
   /**
    * Searches for a file in the specified directory.
    *
    * @param {string} fileName - The name of the file to search for.
    * @return {Promise<boolean>} A promise that resolves to true if the file is found, and false otherwise.
    */
+
   const searchDirectory = async (fileName: string) => {
     return await errorHandler.handleAsync(async () => {
-      const files = await fs.promises.readdir(baseDirectory);
-      return files.includes(fileName);
+      async function searchDir(dir: string): Promise<boolean> {
+        const entries = await fsPromise.readdir(dir, { withFileTypes: true });
+        for (let entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            if (await searchDir(fullPath)) {
+              return true;
+            }
+          } else if (entry.name === fileName) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return await searchDir(baseDirectory);
     });
   };
 
   const fileExists = async (filePath: string) => {
     const fullPath = getFullPath(filePath);
     return await errorHandler.handleAsync(async () => {
-      const exists = await fs.promises.access(fullPath, fs.constants.F_OK);
-      return exists;
+      try {
+        await fsPromise.access(fullPath, fsPromise.constants.F_OK);
+        return true;
+      } catch (error) {
+        return false;
+      }
     });
   };
 
@@ -127,15 +153,23 @@ export function createFileFactory({
    * @return {Promise<void>} A promise that resolves when the file is successfully deleted.
    */
   const deleteFile = async (filePath: string) => {
-    const fullPath = getFullPath(filePath);
-    return await errorHandler.handleAsync(async () => {
-      await fs.promises.unlink(fullPath);
-    });
+    try {
+      const fullPath = getFullPath(filePath);
+
+      return await fsPromise.unlink(fullPath);
+    } catch (e) {
+      throw e;
+    }
   };
 
   const readJson = async (filePath: string) => {
-    const rawText = await readFilesRawText([filePath]);
-    return JSON.parse(rawText[0]);
+    try {
+      const rawText = await fsPromise.readFile(filePath, "utf8");
+      return JSON.parse(rawText);
+    } catch (error) {
+      console.error(`Error reading JSON file: ${error}`);
+      throw error;
+    }
   };
 
   /**
@@ -146,7 +180,16 @@ export function createFileFactory({
    * @return {Promise<void>} - A Promise that resolves when the file has been written.
    */
   const writeJson = async (filePath: string, data: any) => {
-    await updateFiles([filePath], JSON.stringify(data, null, 2));
+    try {
+      const jsonString = JSON.stringify(data, null, 2);
+      const dir = path.dirname(filePath);
+
+      console.log({ dir, filePath });
+      await fsPromise.mkdir(dir, { recursive: true });
+      await updateFiles([filePath], jsonString);
+    } catch (error: any) {
+      throw error;
+    }
   };
 
   return {
