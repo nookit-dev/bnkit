@@ -5,8 +5,8 @@
 Are you overwhelmed by countless options and dependencies? Embrace the simplicity of Instant Bun, your toolkit for creating indie hacker apps. Cast aside the cumbersome stacks of large companies and say hello to lightning-fast experiences in your apps. Instant Bun is built with hobbyists at heart and puts the excitement and joy back into programming.
 
 ## Alpha Software
-Please use at your own risk, this is alpha software and is still very much in the early stages and the APIs are **guranteed** to change.
 
+Please use at your own risk, this is alpha software and is still very much in the early stages and the APIs are **guranteed** to change.
 
 ## Getting Started
 
@@ -35,7 +35,6 @@ Now, you can import Instant Bun into your module:
 import { createFetchFactory } from 'instant-bun/modules/fetch-factory'
 ```
 
-
 ```typescript
 //  if you know what the data looks like you can pass it in as a generic here.
 const fetcher = createFetchFactory<DataType>()
@@ -44,7 +43,6 @@ const fetcher = createFetchFactory<DataType>()
 // however you can also pass it in on the request itsefl
 const result = await fetcher.get<GetResponse>('http://example.com/)
 ```
-
 
 You can also use a single module directly:
 
@@ -88,8 +86,6 @@ Instant Bun offers a wide array of utility modules including:
 - **Error Handler and Validation Utils**: Handle and validate errors in a user-friendly way.
 - **Files and Folders Utils**: Work with files and directories, such as retrieving files from a specific directory or saving results to a file.
 
-
-
 ## Architecture
 
 Instant Bun is built upon a robust and flexible architecture using factory functions, taking full advantage of their benefits to offer a streamlined, efficient, and versatile toolkit for your development needs.
@@ -115,6 +111,11 @@ However, we are fully aware of the potential pitfalls of factory functions:
 - **Prototypal Inheritance**: We acknowledge that simulating traditional class-based inheritance can be challenging in JavaScript. However, we utilize best practices to make this process as intuitive as possible.
 
 By strategically leveraging the power of factory functions and mitigating their disadvantages, Instant Bun delivers a toolkit that is powerful, easy to use, and efficient, ready to be integrated into any project with ease.
+
+Example Projects:
+[Instant Bun Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-instant-bun)
+
+[Instant Bun Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-instant-bun-sqlite)
 
 ## Contributing
 
