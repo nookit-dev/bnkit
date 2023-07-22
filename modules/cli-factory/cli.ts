@@ -1,19 +1,18 @@
-import fs from "fs";
-import path from "path";
+import fsPromise from "fs/promises";
 import readline from "readline";
 import { BaseError } from "utils/base-error";
-import { createErrorHandlerFactory } from "../error-handler-factory/create-error-handler-factory";
+import { createFileFactory } from "../..";
 import { defaultLogger } from "../logger-factory";
 
 // Get user input asynchronously
 export async function getUserInput(): Promise<string> {
-  const proc = Bun.spawÏn([]);
+  const proc = Bun.spawn([]);
   return await new Response(proc.stdout).text();
 }
 
 // Interface for parsed command line arguments
 export interface ParsedArgs {
-  [key: string]: string | boolean;
+  [key: string]: string | boolean | undefined;
 }
 
 interface OptionDefinition {
@@ -26,61 +25,85 @@ const optionDefinitions: { [key: string]: OptionDefinition } = {
 };
 
 // Parse command line arguments
+export function getArguments(): string[] {
+  return process.argv.slice(2);
+}
+
+export function getOptionValue(
+  arg: string,
+  nextArg: string,
+  optionDef: OptionDefinition
+): string | boolean | undefined {
+  let value = optionDef.default;
+
+  if (nextArg && !nextArg.startsWith("--")) {
+    const type = optionDef.types.find((type) => typeof type === typeof value);
+    value = type === "boolean" ? true : nextArg;
+  } else if (typeof value === "boolean") {
+    value = true;
+  }
+
+  return value;
+}
+
+export function parseArgument(
+  arg: string,
+  nextArg: string
+): { key: string | undefined; value: string | boolean | undefined } {
+  let key: string | undefined = undefined;
+  let value: string | boolean | undefined;
+
+  if (arg.startsWith("--")) {
+    key = arg.slice(2);
+    if (optionDefinitions.hasOwnProperty(key)) {
+      const optionDef = optionDefinitions[key];
+      value = getOptionValue(arg, nextArg, optionDef);
+    } else {
+      value = true;
+    }
+  }
+
+  return { key, value };
+}
+
 export async function parseCliArgs(): Promise<ParsedArgs> {
   try {
-    const args = process.argv.slice(2);
+    const args = getArguments();
     const parsedArgs: ParsedArgs = {};
 
     for (let i = 0; i < args.length; i++) {
-      const arg = args[i];
-      if (arg.startsWith("--")) {
-        const key = arg.slice(2);
-        if (optionDefinitions.hasOwnProperty(key)) {
-          const optionDef = optionDefinitions[key];
-          let value = optionDef.default;
-          const nextArg = args[i + 1];
-          if (nextArg && !nextArg.startsWith("--")) {
-            const type = optionDef.types.find(
-              (type) => typeof type === typeof value
-            );
-            if (type) value = type === "boolean" ? true : nextArg;
-            i++;
-          } else if (typeof value === "boolean") {
-            value = true;
-          }
-          parsedArgs[key] = value;
-        } else {
-          parsedArgs[key] = true;
-        }
+      const { key, value } = parseArgument(args[i], args[i + 1]);
+
+      if (key) {
+        parsedArgs[key] = value;
       }
     }
+
     return parsedArgs;
   } catch (error) {
-    throw handleError(error, true);
+    throw error;
   }
 }
 
-// Ensure directory exists and create file with content
-function createFileWithContent(filePath: string, content: string) {
-  directoryExists(path.dirname(filePath));
-  fs.writeFileSync(filePath, content);
-}
+// // Ensure directory exists and create file with content
+// function createFileWithContent(filePath: string, content: string) {
+//   directoryExists(path.dirname(filePath));
+//   fs.writeFileSync(filePath, content);
+// }
 
 // Ensure directory exists
-export function directoryExists(directoryPath: string) {
-  if (!fs.existsSync(directoryPath)) {
-    fs.mkdirSync(directoryPath, { recursive: true });
-    console.log(`Created directory: ${directoryPath}`);
-  }
-}
 
 // Get module names from path
-export function getModulesFromPath(directoryPath: string) {
-  return fs
-    .readdirSync(directoryPath, { withFileTypes: true })
+// Get module names from path
+export const getModulesFromPath = async (directoryPath: string) => {
+  const dirents = await fsPromise.readdir(directoryPath, {
+    withFileTypes: true,
+  });
+
+  return dirents
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
-}
+};
 
 export const getAdditionalPrompt = () =>
   new Promise<string>((resolve) => {
@@ -139,73 +162,68 @@ export const chooseActions = async (
 export type CLIOptions = {
   inputPrompt?: string;
   actionsConfig?: Record<string, any>;
-  errorHandler?: ReturnType<typeof createErrorHandlerFactory>;
   logger?: typeof defaultLogger;
-  fileConfig?: {
-    filePath: string;
-    fileContent: string;
-  };
+  // fileConfig?: {
+  //   filePath: string;
+  //   fileContent: string;
+  // };
 };
 
-export function createCliFactory<DataType, E extends BaseError<DataType>>(
-  options: CLIOptions
-) {
-  const errorHandler =
-    options.errorHandler ??
-    createErrorHandlerFactory<DataType, E>({ logger: options.logger });
-  const actionsConfig = options.actionsConfig ?? {};
-  const inputPrompt = options.inputPrompt ?? "Please input your command:";
+export function createCliFactory<DataType, E extends BaseError<DataType>>({
+  inputPrompt = "Please input your command",
+  actionsConfig = {},
+
+  logger,
+}: CLIOptions) {
+  // const actionsConfig = options.actionsConfig ?? {};
+  const fileFactory = createFileFactory({
+    baseDirectory: ".", // Replace with actual path
+  });
 
   const processInput = async () => {
     try {
-      const commandLineArgs = await errorHandler.handleAsync(() =>
-        parseCliArgs()
-      );
-      const userInput = await errorHandler.handleAsync(() => getUserInput());
-      // Handle user input and command line arguments...
+      const commandLineArgs = await parseCliArgs();
 
+      const userInput = await getUserInput();
+
+      // Handle user input and command line arguments...
       return { commandLineArgs, userInput };
     } catch (error) {
-      errorHandler.handleSync(() => {
-        throw error;
-      });
+      throw error;
     }
   };
 
   const executeActions = async () => {
     try {
-      const additionalPrompt = await errorHandler.handleAsync(() =>
-        getAdditionalPrompt()
-      );
-      const chosenActions = await errorHandler.handleAsync(() =>
-        chooseActions(actionsConfig)
-      );
+      const additionalPrompt = await getAdditionalPrompt();
+
+      const chosenActions = await chooseActions(actionsConfig);
 
       // Execute chosen actions...
 
       return { additionalPrompt, chosenActions };
     } catch (error) {
-      errorHandler.handleSync(() => {
-        throw error;
-      });
+      throw error;
     }
   };
 
-  const handleFiles = () => {
+  const handleFiles = ({
+    filePath,
+    fileContent,
+  }: {
+    filePath: string;
+    fileContent: string;
+  }) => {
     try {
-      if (options.fileConfig) {
-        const { filePath, fileContent } = options.fileConfig;
-        errorHandler.handleSync(() => {
-          directoryExists(filePath);
-        });
-        errorHandler.handleSync(() => {
-          createFileWithContent(filePath, fileContent);
-        });
-      }
+      // if (options.fileConfig) {
+      // const { filePath, fileContent } = options.fileConfig;
+
+      fileFactory.directoryExists(filePath);
+
+      fileFactory.createFileWithContent(filePath, fileContent);
+      // }
     } catch (error) {
-      errorHandler.handleSync(() => {
-        throw error;
-      });
+      throw error;
     }
   };
 

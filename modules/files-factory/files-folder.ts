@@ -1,7 +1,5 @@
 import fsPromise from "fs/promises";
 import path from "path";
-import { BaseError } from "utils/base-error";
-import { createErrorHandlerFactory } from "../..";
 
 /**
  * The `saveResultToFile` function saves the given content to a file at the specified file path.
@@ -50,9 +48,6 @@ export const readFilesContents = async (
 
 type FileFactoryOptions = {
   baseDirectory: string;
-  errorHandler: ReturnType<
-    typeof createErrorHandlerFactory<any, BaseError<any>>
-  >;
 };
 
 /**
@@ -64,10 +59,7 @@ type FileFactoryOptions = {
  * @returns The function `createFileFactory` returns an object with the following properties and
  * corresponding values:
  */
-export function createFileFactory({
-  baseDirectory,
-  errorHandler,
-}: FileFactoryOptions) {
+export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
   const getFullPath = (filePath: string) => path.join(baseDirectory, filePath);
 
   /**
@@ -101,9 +93,7 @@ export function createFileFactory({
 
       return Promise.all(promises);
     } catch (error) {
-      errorHandler.handleAsync(() => {
-        throw error;
-      });
+      throw error;
     }
   };
 
@@ -188,6 +178,33 @@ export function createFileFactory({
     }
   };
 
+  async function directoryExists(directoryPath: string) {
+    try {
+      // Try accessing the directory
+      await fsPromise.access(directoryPath, fsPromise.constants.F_OK);
+    } catch (error) {
+      // If access failed because the directory doesn't exist, create the directory
+      if (error.code === "ENOENT") {
+        await fsPromise.mkdir(directoryPath, { recursive: true });
+        console.log(`Created directory: ${directoryPath}`);
+      } else {
+        // If access failed for any other reason, throw the error
+        throw error;
+      }
+    }
+  }
+
+  const createFileWithContent = async (filePath: string, content: string) => {
+    const fullPath = getFullPath(filePath);
+
+    // Check if the directory of the file exists, if not create it
+    const directoryPath = path.dirname(fullPath);
+    await directoryExists(directoryPath);
+
+    // Write the content to the file
+    await fsPromise.writeFile(fullPath, content);
+  };
+
   return {
     updateFiles,
     readFilesRawText,
@@ -196,5 +213,7 @@ export function createFileFactory({
     deleteFile,
     readJson,
     writeJson,
+    directoryExists,
+    createFileWithContent,
   };
 }
