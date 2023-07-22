@@ -1,11 +1,20 @@
-type RouteHandler = (request: Request) => Response | Promise<Response>;
+import { Server, WebSocketHandler } from "bun";
 
-interface RouteMap {
+export type RouteHandler = (request: Request) => Response | Promise<Response>;
+
+export interface RouteMap {
   [route: string]: RouteHandler;
 }
 
-export function createServerFactory() {
+export type StartServerOptions = {
+  port: number;
+  hostname: string;
+  websocket: WebSocketHandler;
+};
+
+export function createServerFactory({ wsPaths }: { wsPaths: string[] }) {
   const routes: RouteMap = {};
+  let server: Server;
 
   const addRoute = (route: string, handler: RouteHandler) => {
     routes[route] = handler;
@@ -19,8 +28,21 @@ export function createServerFactory() {
     delete routes[route];
   };
 
-  const fetch = (request: Request): Response | Promise<Response> => {
+  const fetch = (
+    request: Request
+  ): undefined | Response | Promise<Response> => {
     const url = new URL(request.url);
+    if (wsPaths.includes(url.pathname)) {
+      console.log(`upgrade!`);
+      // const username = getUsernameFromReq(req);
+      const success = server.upgrade(
+        request // { data: { username } }
+      );
+      return success
+        ? undefined
+        : new Response("WebSocket upgrade error", { status: 400 });
+    }
+    
     const handler = routes[url.pathname];
 
     if (handler) {
@@ -30,11 +52,16 @@ export function createServerFactory() {
     }
   };
 
-  const start = (port: number, hostname: string = "0.0.0.0") => {
-    Bun.serve({
+  const start = ({
+    port,
+    hostname = "0.0.0.0",
+    websocket,
+  }: StartServerOptions) => {
+    server = Bun.serve({
       fetch,
       port,
       hostname,
+      websocket,
     });
   };
 
