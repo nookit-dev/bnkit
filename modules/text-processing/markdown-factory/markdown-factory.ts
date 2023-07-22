@@ -1,4 +1,4 @@
-import { convertMarkdownToHTML } from "utils/text-utils";
+import { convertMarkdownToHTML } from "../../utils/text-utils";
 
 type MarkdownProcessor = {
   toHTML: (markdown: string) => string;
