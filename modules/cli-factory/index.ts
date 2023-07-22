@@ -1,1 +1,1 @@
-export { createCliFactory } from "./cli";
+export { createCliFactory } from "./create-cli-factory";

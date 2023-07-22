@@ -15,7 +15,7 @@ export interface ParsedArgs {
   [key: string]: string | boolean | undefined;
 }
 
-interface OptionDefinition {
+export interface OptionDefinition {
   default?: string | boolean;
   types: (string | boolean)[];
 }
@@ -37,12 +37,24 @@ export function getOptionValue(
   let value = optionDef.default;
 
   if (nextArg && !nextArg.startsWith("--")) {
-    const type = optionDef.types.find((type) => typeof type === typeof value);
-    value = type === "boolean" ? true : nextArg;
+    const type = optionDef.types.find(
+      (type) => type === typeof nextArg || type === typeof value
+    );
+    console.log("Type found: ", type); // Debug log
+    if (type === "boolean") {
+      if (nextArg.toLowerCase() === "true") {
+        value = true;
+      } else if (nextArg.toLowerCase() === "false") {
+        value = false;
+      }
+    } else {
+      value = nextArg;
+    }
   } else if (typeof value === "boolean") {
     value = true;
   }
 
+  console.log("Returned value: ", value); // Debug log
   return value;
 }
 
@@ -61,6 +73,8 @@ export function parseArgument(
     } else {
       value = true;
     }
+  } else {
+    throw new Error(`Invalid parameter: ${arg}`);
   }
 
   return { key, value };
@@ -85,15 +99,6 @@ export async function parseCliArgs(): Promise<ParsedArgs> {
   }
 }
 
-// // Ensure directory exists and create file with content
-// function createFileWithContent(filePath: string, content: string) {
-//   directoryExists(path.dirname(filePath));
-//   fs.writeFileSync(filePath, content);
-// }
-
-// Ensure directory exists
-
-// Get module names from path
 // Get module names from path
 export const getModulesFromPath = async (directoryPath: string) => {
   const dirents = await fsPromise.readdir(directoryPath, {
