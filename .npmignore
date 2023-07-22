@@ -1,6 +1,10 @@
 _apps
 _docs
 _tests
+_plugins
+.idea
+.vscode
+*.test.*
 .env.example
 README.md
 bun.lockb
