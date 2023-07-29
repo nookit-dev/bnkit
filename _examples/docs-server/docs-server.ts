@@ -7,9 +7,11 @@ import { convertMarkdownToHTML } from "utils/text-utils";
 
 const docsDirectory = "_docs";
 
-const files = readFilesContents(getFilesForDirectoryFromRoot(docsDirectory));
+const files = await readFilesContents(
+  getFilesForDirectoryFromRoot(docsDirectory)
+);
 
-const fileTree = files.reduce((tree, file) => {
+const fileTree = files.reduce(async (tree, file) => {
   const filePath = file.path.replace(".md", "");
   const parts = filePath.split("/");
   const fileName = parts.pop()!;

@@ -1,20 +1,45 @@
-// useFetcher.ts
-import { FetchOptions, createFetcher } from "@instant-bun/instant-bun/fetcher";
-import { useCallback, useState } from "react";
+import { defaultErrorHandler } from "instant-bun/modules/error-handler-factory/default-error-handler";
+import { createFetchFactory } from "instant-bun/modules/fetch-factory";
+import { useCallback, useMemo, useState } from "react";
 
-export function useFetcher(options: FetchOptions) {
-  const fetcher = createFetcher(options);
-  const [data, setData] = useState<any>(null);
+type FetchFactoryParams = Parameters<typeof createFetchFactory>[0];
+
+export function useFetcher<ResponseData>({
+  options,
+  fetchFactory,
+}: {
+  options?: FetchFactoryParams;
+  fetchFactory?: ReturnType<typeof createFetchFactory>;
+} = {}) {
+  if (!fetchFactory && !options) {
+    throw new Error("fetchFactory and options are required");
+  }
+
+  const fetcher = fetchFactory
+    ? fetchFactory
+    : createFetchFactory(
+        options
+          ? options
+          : {
+              // @ts-ignore TODO: fix ts issues in createFetchFactory
+              errorHandler: defaultErrorHandler,
+            }
+      );
+
+  const [data, setData] = useState<ResponseData | null>(null);
   const [error, setError] = useState<Error | null>(null);
+  // last updated is a unix timestamp of the last time the data was received
+  const [lastUpdated, setLastedUpdate] = useState<number | null>();
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
 
-  async function get<Type>(endpoint: string): Promise<void> {
+  async function get(endpoint: string): Promise<void> {
     setStatus("loading");
     try {
-      const result = await fetcher.get<Type>(endpoint);
-      setData(result);
+      const result = await fetcher.get<ResponseData>(endpoint);
+      setData(result.data);
+      setLastedUpdate(Date.now());
       setStatus("success");
     } catch (error) {
       setError(error);
@@ -23,27 +48,18 @@ export function useFetcher(options: FetchOptions) {
     }
   }
 
-  async function post<Type>(endpoint: string, params: any): Promise<void> {
+  async function post(endpoint: string, params: any): Promise<void> {
     setStatus("loading");
     try {
-      const result = await fetcher.post<Type>(endpoint, params);
-      setData(result);
+      const result = await fetcher.postJson<ResponseData>({
+        endpoint,
+        params,
+      });
+      setData(result?.data || null);
+      setLastedUpdate(Date.now());
       setStatus("success");
     } catch (error) {
-      setError(error);
-      setStatus("error");
-      throw error;
-    }
-  }
-
-  async function getStatus<Type>(endpoint: string): Promise<void> {
-    setStatus("loading");
-    try {
-      const result = await fetcher.getStatus<Type>(endpoint);
-      setData(result);
-      setStatus("success");
-    } catch (error) {
-      setError(error);
+      setError(error?.data);
       setStatus("error");
       throw error;
     }
@@ -53,5 +69,11 @@ export function useFetcher(options: FetchOptions) {
     return data;
   }, [data]);
 
-  return { get, post, getStatus, getData, error, status };
+  const useData = () => {
+    return useMemo(() => {
+      return getData();
+    }, [lastUpdated]);
+  };
+
+  return { get, post, getData, error, status, lastUpdated, useData  };
 }
