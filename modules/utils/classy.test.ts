@@ -1,5 +1,5 @@
 import { expect, it } from "bun:test";
-import classy from "../../_plugins/classy/index";
+import classy from "./classy";
 it("test single string argument", () => {
   expect(classy("hello")).toBe("hello");
 });

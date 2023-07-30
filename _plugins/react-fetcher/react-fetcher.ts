@@ -65,6 +65,23 @@ export function useFetcher<ResponseData>({
     }
   }
 
+  async function postJSON<PostData>(endpoint: string, data: PostData): Promise<void> {
+    setStatus("loading");
+    try {
+      const result = await fetcher.postJson<ResponseData>({
+        endpoint,
+        postData: data,
+      });
+      setData(result?.data || null);
+      setLastedUpdate(Date.now());
+      setStatus("success");
+    } catch (error) {
+      setError(error?.data);
+      setStatus("error");
+      throw error;
+    }
+  }
+
   const getData = useCallback(() => {
     return data;
   }, [data]);
@@ -75,5 +92,5 @@ export function useFetcher<ResponseData>({
     }, [lastUpdated]);
   };
 
-  return { get, post, getData, error, status, lastUpdated, useData  };
+  return { get, post, getData, error, status, lastUpdated, useData, postJSON };
 }

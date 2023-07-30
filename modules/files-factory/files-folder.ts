@@ -1,6 +1,8 @@
 import fsPromise from "fs/promises";
 import path from "path";
 
+export type FileDirInfo = { type: "file" | "folder"; name: string; fullPath: string };
+
 /**
  * The `saveResultToFile` function saves the given content to a file at the specified file path.
  * @param {string} filePath - A string representing the file path where the result will be saved.
@@ -60,7 +62,19 @@ type FileFactoryOptions = {
  * corresponding values:
  */
 export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
-  const getFullPath = (filePath: string) => path.join(baseDirectory, filePath);
+  const getFullPath = (filePath: string) => {
+    try {
+      // Check if filePath is absolute. If it is, just return it.
+      if (path.isAbsolute(filePath)) {
+        return filePath;
+      } else {
+        // Otherwise, join it with baseDirectory and return it.
+        return path.join(baseDirectory, filePath);
+      }
+    } catch (e) {
+      throw e;
+    }
+  };
 
   /**
    * Updates multiple files with the provided data.
@@ -205,6 +219,41 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
     await fsPromise.writeFile(fullPath, content);
   };
 
+  /**
+   * Retrieves a list of files and folders in the specified directory path.
+   *
+   * @param {string} dirPath - The path of the directory to retrieve the files and folders from.
+   * @return {Array<Object>} An array of objects containing information about each file and folder in the directory.
+   * Each object has the properties: type (file, directory, other), name (the name of the file or folder), and fullPath (the full path of the file or folder).
+   */
+  const listFilesAndFolderInPath = async (dirPath: string): Promise<FileDirInfo[]> => {
+    try {
+      console.log({ dirPath });
+      const fullPath = getFullPath(dirPath);
+      console.log({ fullPath });
+
+      const entries = await fsPromise.readdir(fullPath, {
+        withFileTypes: true,
+      });
+      console.log({ dirPath, fullPath, entries });
+
+      const filesAndFolders = entries.map((entry) => {
+        const type = entry.isFile()
+          ? "file"
+          : entry.isDirectory()
+          ? "directory"
+          : "other";
+        const name = entry.name;
+        const entryFullPath = path.join(fullPath, name);
+        return { type, name, fullPath: entryFullPath };
+      });
+
+      return filesAndFolders;
+    } catch (e) {
+      throw e;
+    }
+  };
+
   return {
     updateFiles,
     readFilesRawText,
@@ -215,5 +264,6 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
     writeJson,
     directoryExists,
     createFileWithContent,
+    listFilesAndFolderInPath,
   };
 }

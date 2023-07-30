@@ -1,7 +1,6 @@
-import { defaultErrorHandler } from "error-handler-factory/default-error-handler";
-import { createFetchFactory } from "fetch-factory/create-fetch-factory";
+import { createFetchFactory } from "../fetch-factory/create-fetch-factory";
 
-type CompletionChoice = {
+export type CompletionChoice = {
   message: {
     role: string;
     content: string;
@@ -23,7 +22,7 @@ export type CompletionsResponse = {
   choices: CompletionChoice[];
 };
 
-type BaseOpenAICompletionsParams = {
+export type BaseOpenAICompletionsParams = {
   numCompletions?: number;
   maxTokens?: number;
   apiKey?: string;
@@ -76,7 +75,7 @@ type BaseOpenAICompletionsParams = {
   user?: string;
 };
 
-const createOpenAICompletions = ({ apiKey }: { apiKey: string }) => {
+export const createOpenAICompletions = ({ apiKey }: { apiKey: string }) => {
   return {
     async getCompletions({
       prompt,
@@ -100,7 +99,6 @@ const createOpenAICompletions = ({ apiKey }: { apiKey: string }) => {
 
       const fetchCompletions = createFetchFactory({
         baseUrl,
-        errorHandler: defaultErrorHandler(),
       });
 
       try {

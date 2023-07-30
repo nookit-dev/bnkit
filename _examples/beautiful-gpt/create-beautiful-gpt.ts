@@ -29,12 +29,7 @@ ${JSON.stringify(
     }
     throw new Error("No JSON fields have been added");
   }
-
-
   
-
-
-
   return {
     setJsonFields,
     getFormattedJsonTypesForPrompt,

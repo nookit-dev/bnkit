@@ -1,5 +1,3 @@
-import { type createErrorHandlerFactory } from "../error-handler-factory/create-error-handler-factory";
-import { defaultErrorHandler } from "../error-handler-factory/default-error-handler";
 import { type BaseError } from "../utils/base-error";
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
@@ -7,16 +5,8 @@ type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
 export function createFetchFactory<
   DataType,
   Error extends BaseError<DataType>
->({
-  baseUrl,
-  errorHandler = defaultErrorHandler<DataType, Error>(),
-  logMode,
-}: {
-  baseUrl?: string;
-  errorHandler: ReturnType<typeof createErrorHandlerFactory<DataType, Error>>;
-  logMode?: boolean;
-}) {
-  const baseFetcher = <FetcherDataGeneric = DataType>(
+>({ baseUrl, logMode }: { baseUrl?: string; logMode?: boolean }) {
+  const baseFetcher = async <FetcherDataGeneric = DataType>(
     method: HTTPMethod,
     endpoint: string,
     headers?: HeadersInit,
@@ -25,29 +15,26 @@ export function createFetchFactory<
     data: FetcherDataGeneric;
     getRawResponse: () => Response;
   }> => {
-    return errorHandler.handleAsync<{
-      data: FetcherDataGeneric;
-      getRawResponse: () => globalThis.Response;
-    }>(async () => {
-      const finalUrl = baseUrl + endpoint;
+    const finalUrl = baseUrl + endpoint;
 
-      const response = await fetch(finalUrl, {
-        method,
-        headers,
-        body,
-      });
-
-      if (!response.ok) {
-        throw new Error("API_ERROR"); // adapt this to your needs
-      }
-
-      const getResponse = () => {
-        return response;
-      };
-
-      const data = await response.json();
-      return { data: data as FetcherDataGeneric, getRawResponse: getResponse };
+    const response = await fetch(finalUrl, {
+      method,
+      headers,
+      body,
     });
+
+    if (!response.ok) {
+      throw new Error("API_ERROR"); // adapt this to your needs
+    }
+
+    const getResponse = () => {
+      return response;
+    };
+
+    return {
+      data: (await response.json()) as FetcherDataGeneric,
+      getRawResponse: getResponse,
+    };
   };
 
   return {
@@ -88,5 +75,3 @@ export function createFetchFactory<
     delete: (endpoint: string) => baseFetcher("DELETE", endpoint),
   };
 }
-
-

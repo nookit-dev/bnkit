@@ -1,6 +1,7 @@
 import fsPromise from "fs/promises";
 
-import { describe, expect, it } from "bun:test";
+import { afterEach, describe, expect, it, jest, spyOn } from "bun:test";
+import path from "path";
 import { defaultErrorHandler } from "../..";
 import { createFileFactory, saveResultToFile } from "./files-folder";
 
@@ -39,6 +40,10 @@ it("saves content to file", async () => {
 });
 
 describe("createFileFactory", async () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   // Test that readFilesRawText reads the content of multiple files correctly
   it("reads multiple files", async () => {
     const factory = getTestFactory();
@@ -146,7 +151,6 @@ describe("createFileFactory", async () => {
       console.error(e);
     }
 
-
     expect(fileContent).toEqual(jsonContent);
 
     try {
@@ -154,5 +158,39 @@ describe("createFileFactory", async () => {
     } catch (error) {
       console.error(error);
     }
+  });
+
+  it("should list files and directories", async () => {
+    const readdirSpy = spyOn(fsPromise, "readdir");
+    //@ts-ignore
+    readdirSpy.mockResolvedValue([
+      {
+        isFile: () => true,
+        isDirectory: () => false,
+        name: "some-file.txt",
+      },
+      {
+        isFile: () => false,
+        isDirectory: () => true,
+        name: "some-dir",
+      },
+    ]);
+
+    const fileFactory = createFileFactory({ baseDirectory: "path/to" });
+
+    const result = await fileFactory.listFilesAndFolderInPath("");
+
+    expect(result).toEqual([
+      {
+        type: "file",
+        name: "some-file.txt",
+        fullPath: path.join("path/to", "some-file.txt"),
+      },
+      {
+        type: "directory",
+        name: "some-dir",
+        fullPath: path.join("path/to", "some-dir"),
+      },
+    ]);
   });
 });
