@@ -82,31 +82,35 @@ export const createOpenAICompletions = ({ apiKey }: { apiKey: string }) => {
       maxTokens,
       numCompletions = 1,
     }: BaseOpenAICompletionsParams): Promise<CompletionsResponse> {
-      const baseUrl = "https://api.openai.com/";
+      const baseUrl = "https://api.openai.com";
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       };
+
+      console.log({ prompt });
 
       const body = {
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: `$${prompt}` }],
       };
 
-      const completionsEndpoint = "v1/chat/completions";
+      const completionsEndpoint = "/v1/chat/completions";
 
-      console.log(`Creating request to ${baseUrl} ${completionsEndpoint}`);
+      // console.log(`Creating request to ${baseUrl}${completionsEndpoint}`);
 
       const fetchCompletions = createFetchFactory({
         baseUrl,
       });
 
       try {
-        const { data } = await fetchCompletions.postJson<CompletionsResponse>({
+        const { data } = await fetchCompletions.post<CompletionsResponse>({
           endpoint: completionsEndpoint,
           headers,
-          params: body,
+          postData: body,
         });
+
+        console.log({ data });
 
         return data;
       } catch (error) {

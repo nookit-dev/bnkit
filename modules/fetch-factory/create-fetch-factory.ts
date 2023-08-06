@@ -56,7 +56,7 @@ export type FetchFactoryType<DataType> = {
 export function createFetchFactory<
   DataType,
   Error extends BaseError<DataType>
->({ baseUrl, logMode }: { baseUrl?: string; logMode?: boolean }) {
+>({ baseUrl, debug }: { baseUrl?: string; debug?: boolean }) {
   const baseFetcher = async <
     FetcherDataGeneric = DataType,
     ParamsType extends Record<string, string> = {}
@@ -89,14 +89,23 @@ export function createFetchFactory<
       finalUrl += "?" + urlWithParams.toString();
     }
 
+    console.log({
+      method,
+      headers,
+      body,
+    });
+
     const response = await fetch(finalUrl, {
       method,
       headers,
       body,
     });
 
+    // TODO find better way to handle this
     if (!response.ok) {
-      throw new Error("API_ERROR"); // adapt this to your needs
+      console.log(response);
+
+      throw new Error(JSON.stringify(response)); // adapt this to your needs
     }
 
     const getResponse = () => {
@@ -134,14 +143,15 @@ export function createFetchFactory<
       postData?: PostData;
       headers?: HeadersInit;
       params?: ParamsType;
-    }) =>
-      baseFetcher<PostDataType, ParamsType>({
+    }) => {
+      return baseFetcher<PostDataType, ParamsType>({
         method: "post",
         endpoint,
         body: JSON.stringify(postData),
         headers,
         params,
-      }),
+      });
+    },
 
     postJson: <
       ResponseData = DataType,

@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type LocalStorageConfig<DataType> = {
   key: string; // LocalStorage key
   initialState: DataType; // Initial state if there's nothing in LocalStorage
 };
 
-export type LocalStorageReturnType<DataType> = {
-  data: DataType;
-  setData: (newData: DataType) => void;
-};
+export type LocalStorageReturnType<DataType> = [
+  DataType,
+  (newData: DataType) => void
+];
 
-export function useFactoryLocalStorage<DataType>(
+
+
+export function useLocalStorage<DataType>(
   config: LocalStorageConfig<DataType>
 ): LocalStorageReturnType<DataType> {
   // Initial state from local storage or fallback to initialState
@@ -32,8 +34,5 @@ export function useFactoryLocalStorage<DataType>(
     // since the useEffect will handle the synchronization.
   };
 
-  return {
-    data,
-    setData,
-  };
+  return [data, setData];
 }
