@@ -51,7 +51,7 @@ export type FetchFactoryType<DataType> = {
     data: DataType;
     getRawResponse: () => Response;
   }>;
-}
+};
 
 export function createFetchFactory<
   DataType,
@@ -84,8 +84,10 @@ export function createFetchFactory<
       urlWithParams.append(key, value);
     });
 
-    // add final url to urlWithParams
-    finalUrl += "?" + urlWithParams.toString();
+    // add final url to urlWithParams only if it's not empty
+    if (urlWithParams.toString()) {
+      finalUrl += "?" + urlWithParams.toString();
+    }
 
     const response = await fetch(finalUrl, {
       method,
