@@ -1,8 +1,8 @@
 {
   "name": "@u-tools/react",
-  "version": "0.0.7",
-  "module": "react-fetcher.ts",
-  "main": "react-fetcher.ts",
+  "version": "0.0.9",
+  "module": "index.ts",
+  "main": "index.ts",
   "scripts": {
     "dev": "bun vite",
     "build": "bun vite build",
