@@ -2,8 +2,9 @@ import {
   createFetchFactory,
   FetchFactoryType,
   HTTPMethod,
-} from "u-tools/modules/fetch-factory/create-fetch-factory";
+} from "@u-tools/core/modules/fetch-factory/create-fetch-factory";
 import { useCallback, useMemo, useState } from "react";
+import {useFactoryLocalStorage} from './use-local-storage'
 
 type RequestStatus = "idle" | "loading" | "success" | "error" | "no data";
 

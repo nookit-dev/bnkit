@@ -25,7 +25,7 @@ Usage example:
 
 js
 
-`import { useFetcher } from 'u-tools-react-fetcher';`
+`import { useFetcher } from '@u-tools/react';`
 
 `const fetch = useFetcher({ url: 'https://api.example.com' });`
 

@@ -1,7 +1,7 @@
 _apps
 _docs
 _tests
-_plugins
+plugins
 _examples
 .idea
 .vscode

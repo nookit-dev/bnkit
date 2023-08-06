@@ -26,13 +26,13 @@ bun init
 3. Install U Tools:
 
 ```bash
-bun add u-tools
+bun add @u-tools/core
 ```
 
 Now, you can import U Tools into your module:
 
 ```typescript
-import { createFetchFactory } from 'u-tools/modules/fetch-factory'
+import { createFetchFactory } from '@u-tools/modules/fetch-factory'/core
 ```
 
 ```typescript
