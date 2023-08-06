@@ -1,7 +1,11 @@
 import fsPromise from "fs/promises";
 import path from "path";
 
-export type FileDirInfo = { type: "file" | "folder"; name: string; fullPath: string };
+export type FileDirInfo = {
+  type: "file" | "directory" | "other";
+  name: string;
+  fullPath: string;
+};
 
 /**
  * The `saveResultToFile` function saves the given content to a file at the specified file path.
@@ -226,16 +230,15 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
    * @return {Array<Object>} An array of objects containing information about each file and folder in the directory.
    * Each object has the properties: type (file, directory, other), name (the name of the file or folder), and fullPath (the full path of the file or folder).
    */
-  const listFilesAndFolderInPath = async (dirPath: string): Promise<FileDirInfo[]> => {
+  const listFilesAndFolderInPath = async (
+    dirPath: string
+  ): Promise<FileDirInfo[]> => {
     try {
-      console.log({ dirPath });
       const fullPath = getFullPath(dirPath);
-      console.log({ fullPath });
 
       const entries = await fsPromise.readdir(fullPath, {
         withFileTypes: true,
       });
-      console.log({ dirPath, fullPath, entries });
 
       const filesAndFolders = entries.map((entry) => {
         const type = entry.isFile()

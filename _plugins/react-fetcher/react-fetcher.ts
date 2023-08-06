@@ -1,4 +1,3 @@
-import { defaultErrorHandler } from "instant-bun/modules/error-handler-factory/default-error-handler";
 import { createFetchFactory } from "instant-bun/modules/fetch-factory";
 import { useCallback, useMemo, useState } from "react";
 
@@ -15,23 +14,17 @@ export function useFetcher<ResponseData>({
     throw new Error("fetchFactory and options are required");
   }
 
-  const fetcher = fetchFactory
-    ? fetchFactory
-    : createFetchFactory(
-        options
-          ? options
-          : {
-              // @ts-ignore TODO: fix ts issues in createFetchFactory
-              errorHandler: defaultErrorHandler,
-            }
-      );
+  const fetcher = useMemo(
+    () =>
+      fetchFactory ? fetchFactory : createFetchFactory(options ? options : {}),
+    [options]
+  );
 
   const [data, setData] = useState<ResponseData | null>(null);
-  const [error, setError] = useState<Error | null>(null);
   // last updated is a unix timestamp of the last time the data was received
   const [lastUpdated, setLastedUpdate] = useState<number | null>();
   const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
+    "idle" | "loading" | "success" | "error" | "no data"
   >("idle");
 
   async function get(endpoint: string): Promise<void> {
@@ -42,16 +35,24 @@ export function useFetcher<ResponseData>({
       setLastedUpdate(Date.now());
       setStatus("success");
     } catch (error) {
-      setError(error);
       setStatus("error");
       throw error;
     }
   }
 
-  async function post(endpoint: string, params: any): Promise<void> {
+  async function post<PostData extends object, Params extends object>({
+    data,
+    endpoint,
+    params,
+  }: {
+    endpoint: string;
+    data: PostData;
+    params: Params;
+  }): Promise<void> {
     setStatus("loading");
     try {
       const result = await fetcher.postJson<ResponseData>({
+        postData: data,
         endpoint,
         params,
       });
@@ -59,24 +60,29 @@ export function useFetcher<ResponseData>({
       setLastedUpdate(Date.now());
       setStatus("success");
     } catch (error) {
-      setError(error?.data);
       setStatus("error");
       throw error;
     }
   }
 
-  async function postJSON<PostData>(endpoint: string, data: PostData): Promise<void> {
+  async function postJSON<PostData>(
+    endpoint: string,
+    data: PostData
+  ): Promise<void> {
     setStatus("loading");
     try {
       const result = await fetcher.postJson<ResponseData>({
         endpoint,
         postData: data,
       });
-      setData(result?.data || null);
-      setLastedUpdate(Date.now());
-      setStatus("success");
+      if (result.data) {
+        setData(result?.data || null);
+        setLastedUpdate(Date.now());
+        setStatus("success");
+      } else {
+        setStatus("no data");
+      }
     } catch (error) {
-      setError(error?.data);
       setStatus("error");
       throw error;
     }
@@ -92,5 +98,5 @@ export function useFetcher<ResponseData>({
     }, [lastUpdated]);
   };
 
-  return { get, post, getData, error, status, lastUpdated, useData, postJSON };
+  return { get, post, getData, status, lastUpdated, useData, postJSON };
 }

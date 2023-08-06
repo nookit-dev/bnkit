@@ -1,17 +1,16 @@
 {
   "name": "instant-bun",
   "version": "0.0.25",
+  "main": "index.ts",
+  "devDependencies": {
+    "bun-types": "^0.6.14"
+  },
+  "description": "Instant Bun is a simple zero-dependency, fast, and lightweight toolkit for Bun",
+  "license": "MIT",
   "scripts": {
     "docs-gen": "bun run ./_apps/generator-cli-app/repo-docs-generator.ts",
     "unit-gen": "bun run ./_apps/generator-cli-app/repo-unit-test-gen.ts",
     "docs-server": "bun run ./_apps/docs-server/docs-server.ts",
     "yeet": "npm version patch && npm publish"
-  },
-  "description": "Instant Bun is a simple zero-dependency, fast, and lightweight toolkit for Bun",
-  "main": "index.ts",
-  "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {
-    "bun-types": "^0.6.14"
   }
 }
