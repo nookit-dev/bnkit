@@ -1,6 +1,6 @@
 {
-  "name": "@instant-bun/react-fetcher",
-  "version": "0.0.6",
+  "name": "@instant-bun/react-utils",
+  "version": "0.0.7",
   "module": "react-fetcher.ts",
   "main": "react-fetcher.ts",
   "scripts": {

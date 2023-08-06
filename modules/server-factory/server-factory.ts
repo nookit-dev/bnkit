@@ -19,6 +19,7 @@ export function createServerFactory(
   let server: Server;
 
   const addRoute = (route: string, handler: RouteHandler) => {
+    console.log("creating route: ", route)
     routes[route] = handler;
   };
 

@@ -26,6 +26,19 @@ export const saveResultToFile = async (
   }
 };
 
+// Helper function to read content of a single file
+async function readFileContent(
+  filePath: string
+): Promise<{ path: string; content: string }> {
+  try {
+    const filename = path.basename(filePath);
+    const content = await fsPromise.readFile(filePath, "utf8");
+    return { path: filename, content };
+  } catch (error) {
+    throw error;
+  }
+}
+
 /**
  * The function `readFilesContents` reads the contents of multiple files specified by their file paths
  * and returns an array of objects containing the file path and its content.
@@ -41,12 +54,18 @@ export const readFilesContents = async (
 ): Promise<{ path: string; content: string }[] | undefined> => {
   try {
     return Promise.all(
-      filePaths.map(async (filePath) => {
-        const filename = path.basename(filePath);
-        const content = await fsPromise.readFile(filePath, "utf8");
-        return { path: filename, content };
-      })
+      filePaths.map(async (filePath) => readFileContent(filePath))
     );
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const readFileContents = async (
+  filePath: string
+): Promise<{ path: string; content: string } | undefined> => {
+  try {
+    return readFileContent(filePath);
   } catch (error) {
     throw error;
   }
@@ -240,7 +259,7 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
         withFileTypes: true,
       });
 
-      const filesAndFolders = entries.map((entry) => {
+      const filesAndFolders: FileDirInfo[] = entries.map((entry) => {
         const type = entry.isFile()
           ? "file"
           : entry.isDirectory()

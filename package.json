@@ -5,7 +5,7 @@
   "devDependencies": {
     "bun-types": "^0.6.14"
   },
-  "description": "Instant Bun is a simple zero-dependency, fast, and lightweight toolkit for Bun",
+  "description": "U Tools is a simple zero-dependency, fast, and lightweight toolkit for Bun",
   "license": "MIT",
   "scripts": {
     "docs-gen": "bun run ./_apps/generator-cli-app/repo-docs-generator.ts",

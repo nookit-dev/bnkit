@@ -1,4 +1,4 @@
-import { useFetcher } from "../react-fetcher";
+import { useFetcher } from "..";
 import "./App.css";
 
 interface DataType {
