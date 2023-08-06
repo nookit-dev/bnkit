@@ -1,5 +1,5 @@
 {
-  "name": "u-tools",
+  "name": "@u-tools/core",
   "version": "0.0.27",
   "main": "index.ts",
   "devDependencies": {
