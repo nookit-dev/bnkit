@@ -2,7 +2,7 @@ import {
   createFetchFactory,
   FetchFactoryType,
   HTTPMethod,
-} from "instant-bun/modules/fetch-factory/create-fetch-factory";
+} from "u-tools/modules/fetch-factory/create-fetch-factory";
 import { useCallback, useMemo, useState } from "react";
 
 type RequestStatus = "idle" | "loading" | "success" | "error" | "no data";

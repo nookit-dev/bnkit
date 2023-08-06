@@ -1,5 +1,5 @@
 {
-  "name": "@instant-bun/react-utils",
+  "name": "@u-tools/react",
   "version": "0.0.7",
   "module": "react-fetcher.ts",
   "main": "react-fetcher.ts",
@@ -26,6 +26,6 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "instant-bun": "0.0.27"
+    "u-tools": "0.0.27"
   }
 }

@@ -26,13 +26,13 @@ bun init
 3. Install U Tools:
 
 ```bash
-bun add instant-bun
+bun add u-tools
 ```
 
 Now, you can import U Tools into your module:
 
 ```typescript
-import { createFetchFactory } from 'instant-bun/modules/fetch-factory'
+import { createFetchFactory } from 'u-tools/modules/fetch-factory'
 ```
 
 ```typescript
@@ -47,7 +47,7 @@ const result = await fetcher.get<GetResponse>('http://example.com/)
 You can also use a single module directly:
 
 ```bash
-bun add https://github.com/brandon-schabel/instant-bun/tree/main/modules/cli-factory
+bun add https://github.com/brandon-schabel/u-tools/tree/main/modules/cli-factory
 ```
 
 ## Key Highlights
@@ -113,9 +113,9 @@ However, we are fully aware of the potential pitfalls of factory functions:
 By strategically leveraging the power of factory functions and mitigating their disadvantages, U Tools delivers a toolkit that is powerful, easy to use, and efficient, ready to be integrated into any project with ease.
 
 Example Projects:
-[U Tools Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-instant-bun)
+[U Tools Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-u-tools)
 
-[U Tools Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-instant-bun-sqlite)
+[U Tools Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-u-tools-sqlite)
 
 ## Contributing
 

@@ -1,5 +1,5 @@
 {
-  "name": "instant-bun",
+  "name": "u-tools",
   "version": "0.0.27",
   "main": "index.ts",
   "devDependencies": {

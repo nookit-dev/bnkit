@@ -25,7 +25,7 @@ Usage example:
 
 js
 
-`import { useFetcher } from 'instant-bun-react-fetcher';`
+`import { useFetcher } from 'u-tools-react-fetcher';`
 
 `const fetch = useFetcher({ url: 'https://api.example.com' });`
 
