@@ -75,46 +75,81 @@ export type BaseOpenAICompletionsParams = {
   user?: string;
 };
 
+export type ModelInfo = {
+  id: string;
+  object: string;
+  owned_by: string;
+  permission: any[]; // Use specific type if you know the structure of permission
+};
+
+export type ModelsListResponse = {
+  data: ModelInfo[];
+  object: string;
+};
+
+export type RetrieveModelResponse = ModelInfo;
+
 export const createOpenAICompletions = ({ apiKey }: { apiKey: string }) => {
+  const baseUrl = "https://api.openai.com";
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${apiKey}`,
+  };
+  const completionsEndpoint = "/v1/chat/completions";
+  const modelsEndpoint = "/v1/models";
+
+  const openAiAPI = createFetchFactory({
+    baseUrl,
+  });
+
   return {
     async getCompletions({
       prompt,
+      model = "gpt-3.5-turbo",
       maxTokens,
       numCompletions = 1,
     }: BaseOpenAICompletionsParams): Promise<CompletionsResponse> {
-      const baseUrl = "https://api.openai.com";
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      };
-
-      console.log({ prompt });
-
       const body = {
-        model: "gpt-3.5-turbo",
+        model,
         messages: [{ role: "user", content: `$${prompt}` }],
       };
 
-      const completionsEndpoint = "/v1/chat/completions";
-
-      // console.log(`Creating request to ${baseUrl}${completionsEndpoint}`);
-
-      const fetchCompletions = createFetchFactory({
-        baseUrl,
-      });
-
       try {
-        const { data } = await fetchCompletions.post<CompletionsResponse>({
+        const { data } = await openAiAPI.post<CompletionsResponse>({
           endpoint: completionsEndpoint,
           headers,
           postData: body,
         });
 
-        console.log({ data });
-
         return data;
       } catch (error) {
         console.error("Error fetching completions:", error);
+        throw error;
+      }
+    },
+    async listModels(): Promise<ModelsListResponse> {
+      try {
+        const { data } = await openAiAPI.get<ModelsListResponse>({
+          endpoint: modelsEndpoint,
+          headers,
+        });
+        return data;
+      } catch (error) {
+        console.error("Error fetching list of models:", error);
+        throw error;
+      }
+    },
+
+    // New method to retrieve a specific model by its ID
+    async retrieveModel(modelId: string): Promise<RetrieveModelResponse> {
+      try {
+        const { data } = await openAiAPI.get<RetrieveModelResponse>({
+          endpoint: `${modelsEndpoint}/${modelId}`,
+          headers,
+        });
+        return data;
+      } catch (error) {
+        console.error(`Error fetching model with ID ${modelId}:`, error);
         throw error;
       }
     },

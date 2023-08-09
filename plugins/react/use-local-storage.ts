@@ -7,10 +7,8 @@ type LocalStorageConfig<DataType> = {
 
 export type LocalStorageReturnType<DataType> = [
   DataType,
-  (newData: DataType) => void
+  React.Dispatch<React.SetStateAction<DataType>>
 ];
-
-
 
 export function useLocalStorage<DataType>(
   config: LocalStorageConfig<DataType>

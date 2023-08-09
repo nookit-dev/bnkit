@@ -124,11 +124,21 @@ export function createFetchFactory<
     get: <
       GetDataType = DataType,
       ParamsType extends Record<string, string> = {}
-    >(
-      endpoint: string,
-      params: ParamsType
-    ) =>
-      baseFetcher<GetDataType, ParamsType>({ method: "get", endpoint, params }),
+    >({
+      endpoint,
+      params,
+      headers,
+    }: {
+      endpoint: string;
+      params?: ParamsType;
+      headers?: HeadersInit;
+    }) =>
+      baseFetcher<GetDataType, ParamsType>({
+        method: "get",
+        endpoint,
+        params,
+        headers,
+      }),
     post: <
       PostDataType = DataType,
       PostData = unknown,
