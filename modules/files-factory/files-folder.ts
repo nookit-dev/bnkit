@@ -5,6 +5,8 @@ export type FileDirInfo = {
   type: "file" | "directory" | "other";
   name: string;
   fullPath: string;
+  size: number;
+  extension: string;
 };
 
 /**
@@ -259,15 +261,33 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
         withFileTypes: true,
       });
 
-      const filesAndFolders: FileDirInfo[] = entries.map((entry) => {
+      const filesAndFolders = entries.map((entry): FileDirInfo => {
+        const name = entry.name;
+        const entryFullPath = path.join(fullPath, name);
+        const bunFileInfo = Bun.file(entryFullPath);
+
         const type = entry.isFile()
           ? "file"
           : entry.isDirectory()
           ? "directory"
           : "other";
-        const name = entry.name;
-        const entryFullPath = path.join(fullPath, name);
-        return { type, name, fullPath: entryFullPath };
+
+        let fileExtension = "folder";
+
+        if (type === "file") {
+          // parse extension from file path, if there is no extension, set it to 'file'
+          // regex to parse extension from file path
+          const regex = /(?:\.([^.]+))?$/;
+          fileExtension = regex.exec(entryFullPath)?.[1] ?? "file";
+        }
+
+        return {
+          type,
+          name,
+          fullPath: entryFullPath,
+          extension: fileExtension,
+          size: bunFileInfo.size,
+        };
       });
 
       return filesAndFolders;
