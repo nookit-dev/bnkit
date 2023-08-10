@@ -11,13 +11,13 @@ export type LocalStorageReturnType<DataType> = [
 ];
 
 export type GetLSKeyOptions = {
-  updateHookStateWithLSVal?: boolean;
-  fallbackToInitialValOnErrror?: boolean;
+  fallbackToInitialValOnError?: boolean;
 };
 
 export type GetLSKeyFn<DataType> = (
-  options: GetLSKeyOptions
-) => DataType | undefined;
+  options: GetLSKeyOptions,
+  onData?: (data: DataType) => void
+) => DataType | null;
 export type SetLSKeyFn<DataType> = (val: DataType) => void;
 export type SyncLSKeyFn<DataType> = (
   fallbackToInitialVal: boolean
@@ -40,13 +40,54 @@ export type SyncIntervalConfig = {
 export function useLocalStorage<DataType>(
   config: LocalStorageConfig<DataType>
 ): UseLocalStorageReturn<DataType> {
-  const [lsKeyState, setLsKeyState] = useState<DataType>(
-    () =>
-      getLSKey({
-        updateHookStateWithLSVal: false,
-        fallbackToInitialValOnErrror: false,
-      }) || config.initialState
-  );
+  // Initial state from local storage or fallback to initialState
+  const getLSKey: GetLSKeyFn<DataType> = (options, onData) => {
+    const { fallbackToInitialValOnError: fallbackToInitialValOnErrror = true } =
+      options;
+
+    const storedData = localStorage.getItem(config.key);
+
+    try {
+      const parsedData = JSON.parse(storedData || "") as DataType;
+
+      if (onData) {
+        onData(parsedData);
+      }
+      return parsedData;
+    } catch (e) {
+      console.error(
+        "Failed to properly get Local Storage key/value, returning initial state",
+        config.key,
+        storedData,
+        e
+      );
+
+      if (fallbackToInitialValOnErrror) {
+        if (onData) {
+          onData(config.initialState);
+        }
+        return config.initialState;
+      }
+      return null;
+    }
+  };
+
+  const getInitState = () => {
+    let data: DataType | null = null;
+
+    getLSKey(
+      {
+        fallbackToInitialValOnError: false,
+      },
+      (dataCb) => {
+        data = dataCb;
+      }
+    );
+
+    return data ?? config.initialState;
+  };
+
+  const [lsKeyState, setLsKeyState] = useState<DataType>(getInitState());
   const [syncIntervalId, setSyncIntervalId] = useState<number | null>(null);
 
   const startSyncInterval = (syncConfig: SyncIntervalConfig) => {
@@ -75,48 +116,18 @@ export function useLocalStorage<DataType>(
     return () => stopSyncInterval();
   }, [syncIntervalId]);
 
-  // Initial state from local storage or fallback to initialState
-  const getLSKey: GetLSKeyFn<DataType> = (options) => {
-    const {
-      updateHookStateWithLSVal = false,
-      fallbackToInitialValOnErrror = true,
-    } = options;
-
-    const storedData = localStorage.getItem(config.key);
-
-    try {
-      const parsedData = JSON.parse(storedData) as DataType;
-
-      if (updateHookStateWithLSVal) {
-        setLsKeyState(parsedData);
-      }
-      return parsedData;
-    } catch (e) {
-      console.error(
-        "Failed to properly get Local Storage key/value, returning initial state",
-        config.key,
-        storedData,
-        e
-      );
-
-      if (fallbackToInitialValOnErrror) {
-        if (updateHookStateWithLSVal) {
-          setLsKeyState(config.initialState);
-        }
-        return config.initialState;
-      }
-      return undefined;
-    }
-  };
-
   // syncs the state to local storage
   const syncLSKeyState = (
     fallbackToInitialVal: boolean = false
-  ): DataType | undefined => {
-    return getLSKey({
-      fallbackToInitialValOnErrror: fallbackToInitialVal,
-      updateHookStateWithLSVal: true,
-    });
+  ): DataType | null => {
+    return getLSKey(
+      {
+        fallbackToInitialValOnError: fallbackToInitialVal,
+      },
+      (data) => {
+        setLsKeyState(data);
+      }
+    );
   };
 
   const setLSKey: SetLSKeyFn<DataType> = (value) => {
@@ -148,11 +159,25 @@ export function useLocalStorage<DataType>(
 
   // Whenever key changes, update local storage
   useEffect(() => {
-    getLSKey({
-      fallbackToInitialValOnErrror: true,
-      updateHookStateWithLSVal: true,
-    });
+    getLSKey(
+      {
+        fallbackToInitialValOnError: true,
+      },
+      (data) => {
+        setLsKeyState(data);
+      }
+    );
   }, [config.key]);
+
+  console.log({
+    set: setLSKey,
+    get: getLSKey,
+    state: lsKeyState,
+    setState: setLsKeyState,
+    sync: syncLSKeyState,
+    startSyncInterval,
+    stopSyncInterval,
+  });
 
   return {
     set: setLSKey,

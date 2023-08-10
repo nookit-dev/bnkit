@@ -259,14 +259,16 @@ export const fileExtensionMap = {
   },
 };
 
-export const fullMimeForExtension = (extension: keyof typeof fileExtensionMap | string) => {
-    let extensionType = fileExtensionMap[extension] ?? defaultExtensionInfo;
-  
-    // If there's no encoding specified, return just the MIME type.
-    if (!extensionType.encoding) {
-      return extensionType.mime;
-    }
-  
-    // Otherwise, return MIME type with encoding.
-    return `${extensionType.mime};charset=${extensionType.encoding}`;
-  };
+export const fullMimeForExtension = (
+  extension: keyof typeof fileExtensionMap | string
+) => {
+  let extensionType = fileExtensionMap[extension] ?? defaultExtensionInfo;
+
+  // If there's no encoding specified, return just the MIME type.
+  if (!extensionType.encoding) {
+    return extensionType.mime;
+  }
+
+  // Otherwise, return MIME type with encoding.
+  return `${extensionType.mime};charset=${extensionType.encoding}`;
+};
