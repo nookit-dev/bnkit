@@ -18,7 +18,9 @@ export type GetLSKeyFn<DataType> = (
   options: GetLSKeyOptions,
   onData?: (data: DataType) => void
 ) => DataType | null;
-export type SetLSKeyFn<DataType> = (val: DataType) => void;
+export type SetLSKeyFn<DataType> = (
+  val: DataType | ((prevState: DataType) => DataType)
+) => void;
 export type SyncLSKeyFn<DataType> = (
   fallbackToInitialVal: boolean
 ) => ReturnType<GetLSKeyFn<DataType>>;
@@ -169,20 +171,11 @@ export function useLocalStorage<DataType>(
     );
   }, [config.key]);
 
-  console.log({
-    set: setLSKey,
-    get: getLSKey,
-    state: lsKeyState,
-    setState: setLsKeyState,
-    sync: syncLSKeyState,
-    startSyncInterval,
-    stopSyncInterval,
-  });
-
   return {
     set: setLSKey,
     get: getLSKey,
     state: lsKeyState,
+    // set state directly, this is needed incase you need direct access to prevState for example
     setState: setLsKeyState,
     sync: syncLSKeyState,
     startSyncInterval,
