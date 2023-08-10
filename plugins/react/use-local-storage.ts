@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 
 export type LocalStorageConfig<DataType> = {
   key: string; // LocalStorage key
@@ -27,6 +27,7 @@ export type UseLocalStorageReturn<DataType> = {
   get: GetLSKeyFn<DataType>;
   set: SetLSKeyFn<DataType>;
   state: DataType;
+  setState: Dispatch<React.SetStateAction<DataType>>;
   sync: SyncLSKeyFn<DataType>;
   startSyncInterval: (syncConfig: SyncIntervalConfig) => void;
   stopSyncInterval: (syncConfig: SyncIntervalConfig) => void;
@@ -54,12 +55,14 @@ export function useLocalStorage<DataType>(
       clearInterval(syncIntervalId);
     }
 
-    // Set up the new interval
-    const id = window.setInterval(() => {
-      syncLSKeyState(true); // Assuming you want to fallback to initial value during auto-sync
-    }, syncConfig.interval);
+    if (typeof window !== "undefined") {
+      // Set up the new interval
+      const id = window?.setInterval(() => {
+        syncLSKeyState(true); // Assuming you want to fallback to initial value during auto-sync
+      }, syncConfig.interval);
 
-    setSyncIntervalId(id);
+      setSyncIntervalId(id);
+    }
   };
 
   const stopSyncInterval = () => {
@@ -155,6 +158,7 @@ export function useLocalStorage<DataType>(
     set: setLSKey,
     get: getLSKey,
     state: lsKeyState,
+    setState: setLsKeyState,
     sync: syncLSKeyState,
     startSyncInterval,
     stopSyncInterval,
