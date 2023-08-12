@@ -145,7 +145,6 @@ export function createServerFactory(
       // extract params as object
 
       // TODO: Add validation function as a optional second param
-
       return params as ParamsType;
     };
 
@@ -156,7 +155,7 @@ export function createServerFactory(
       return request.headers as HeadersType;
     };
 
-    // TODO: maybe the onrequest returns these functions? that way you wouldnt even need to pass in the request
+    // TODO: maybe the onRequest returns these functions? that way you wouldnt even need to pass in the request
     const getBody = (request: Request): RouteRequestType["body"] => {
       return getParsedBody<RouteRequestType["body"]>(request);
     };
@@ -225,10 +224,10 @@ export function createServerFactory(
         },
       });
 
-      // TODO: update host name from localhost for prod
+      
       if (verbose)
         console.log(
-          `Server started on port ${port}, press Ctrl+C to stop, http://localhost:${port}`
+          `Server started on port ${port}, press Ctrl+C to stop, http://${hostname}:${port}`
         );
 
       return server;

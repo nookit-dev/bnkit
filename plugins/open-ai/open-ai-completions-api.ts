@@ -1,4 +1,4 @@
-import { createFetchFactory } from "../fetch-factory/create-fetch-factory";
+import { createFetchFactory } from "@u-tools/core/modules/fetch-factory/create-fetch-factory";
 
 export type CompletionChoice = {
   message: {

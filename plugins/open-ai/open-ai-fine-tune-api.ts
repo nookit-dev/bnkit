@@ -1,4 +1,6 @@
-import { createFetchFactory } from "../..";
+import {
+  createFetchFactory,
+} from "@u-tools/core/modules/fetch-factory/create-fetch-factory";
 
 export type FineTuneEvent = {
   object: string;
