@@ -1,58 +1,18 @@
-import { Server, WebSocketHandler } from "bun";
-import { bodyParser, getParsedBody } from "./body-parser-middleware";
+import { Server } from "bun";
 import {
-  CorsOptions as CORSOptions,
-  createCorsMiddleware,
-} from "./cors-middleware";
+  BaseRouteRequestType,
+  CORSOptions,
+  Middleware,
+  ResponseBodyTypes,
+  RouteHandler,
+  RouteMap,
+  RouteOptions,
+  StartServerOptions,
+} from "utils/http-types";
+import { bodyParser, getParsedBody } from "./body-parser-middleware";
+import { createCorsMiddleware } from "./cors-middleware";
 
-export type RouteHandler = (request: Request) => Response | Promise<Response>;
-
-export type ResponseBodyTypes =
-  | ReadableStream
-  | BlobPart
-  | BlobPart[]
-  | FormData
-  | URLSearchParams
-  | object
-  | null;
-
-export type Middleware = (
-  request: Request,
-  next: MiddlewareNext
-) => Response | Promise<Response>;
-
-export type MiddlewareNext = () => Response | Promise<Response>;
-
-export interface RouteMap {
-  [route: string]: RouteHandler;
-}
-
-export interface StartServerOptions {
-  port?: number;
-  hostname?: string;
-  websocket?: WebSocketHandler;
-  verbose?: boolean;
-}
-
-export interface RouteOptions {
-  errorMessage?: string;
-  onError?: (error: Error, request: Request) => Response | Promise<Response>;
-}
-
-export type ErrorHandler = (error: any, request: Request) => Response;
-
-type BaseRouteRequestType = {
-  body?: any;
-  params?: object;
-  headers?: object;
-};
-
-export type JSONRequest = BaseRouteRequestType & {
-  body: object;
-};
-
-// figure out a way to set cors up for local dev automatically.
-
+// TODO: figure out a way to set cors up for local dev automatically.
 export function createServerFactory(
   {
     wsPaths,
@@ -265,6 +225,12 @@ export function createServerFactory(
       throw error;
     }
   };
+
+  console.log({
+    middle,
+    route,
+    start,
+  });
 
   return {
     middle,

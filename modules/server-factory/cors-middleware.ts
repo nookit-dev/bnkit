@@ -1,38 +1,7 @@
-import { Middleware } from "./server-factory";
-
-type HttpMethod =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "DELETE"
-  | "PATCH"
-  | "OPTIONS"
-  | "HEAD";
-
-type CommonHttpHeaders =
-  | "Accept"
-  | "Authorization"
-  | "Cache-Control"
-  | "Content-Type"
-  | "Date"
-  | "Host"
-  | "Origin"
-  | "Referer"
-  | "User-Agent"
-  | "X-Requested-With"
-  | "X-Forwarded-For"
-  | "X-HTTP-Method-Override"
-  | string; // This allows for custom headers in addition to the common ones.
-
-export type CorsOptions = {
-  allowedOrigins?: string[];
-  allAllOrigins?: boolean;
-  allowedMethods?: HttpMethod[];
-  allowedHeaders?: CommonHttpHeaders[];
-};
+import { Middleware, CORSOptions } from "utils/http-types";
 
 export const createCorsMiddleware = (
-  options?: Partial<CorsOptions>
+  options?: Partial<CORSOptions>
 ): Middleware => {
   // Default values
   const defaultMethods = ["GET", "POST", "PUT", "DELETE"];

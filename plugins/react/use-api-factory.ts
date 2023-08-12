@@ -1,10 +1,9 @@
 import {
-    createFetchFactory,
-    FetchFactoryType,
-    HTTPMethod,
+  createFetchFactory,
+  FetchFactoryType,
 } from "@u-tools/core/modules/fetch-factory/create-fetch-factory";
 import { useCallback, useMemo, useState } from "react";
-
+import { HttpMethod } from "utils/http-types";
 
 type RequestStatus = "idle" | "loading" | "success" | "error" | "no data";
 
@@ -45,7 +44,7 @@ export type EndpointConfig<
   K extends keyof DataTypeMap
 > = {
   endpoint: K;
-  method: HTTPMethod;
+  method: HttpMethod;
   body?: DataTypeMap[K]["body"];
   params?: DataTypeMap[K]["params"];
 };
@@ -76,21 +75,33 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
 
   const fetchData = useCallback(
     async (
-      method: HTTPMethod,
-      body?: DataType["body"],
-      params?: DataType["params"]
+      {
+        method,
+        body,
+        params,
+        headers
+      }: {
+        method: HttpMethod;
+        body?: DataType["body"];
+        params?: DataType["params"];
+        headers?: Record<string, string>;
+      } = {
+        method: "GET",
+        body: null,
+        params: null,
+      }
     ) => {
       setState((prevState) => ({ ...prevState, status: "loading" }));
       try {
         let result;
         switch (method) {
-          case "get":
+          case "GET":
             result = await fetchFactory.get(
               endpointConfig.endpoint as string,
               endpointConfig.params || params
             );
             break;
-          case "post":
+          case "POST":
             result = await fetchFactory.post({
               endpoint: endpointConfig.endpoint as string,
               postData: endpointConfig.body || body,
@@ -120,13 +131,13 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
   );
 
   const get = useCallback(
-    (params?: DataType["params"]) => fetchData("get", undefined, params),
+    (params?: DataType["params"]) => fetchData({ method: "GET", params }),
     [fetchData]
   );
 
   const post = useCallback(
     (data?: DataType["body"], params?: DataType["params"]) =>
-      fetchData("post", data, params),
+      fetchData({ method: "POST", body: data, params }),
     [fetchData]
   );
 

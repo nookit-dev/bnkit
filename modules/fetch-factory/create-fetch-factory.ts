@@ -146,7 +146,9 @@ export function createFetchFactory<
     >({
       endpoint,
       postData,
-      headers,
+      headers = {
+        "Content-Type": "application/json",
+      },
       params,
     }: {
       endpoint: string;
@@ -162,29 +164,6 @@ export function createFetchFactory<
         params,
       });
     },
-
-    postJson: <
-      ResponseData = DataType,
-      PostData = unknown,
-      ParamsType extends Record<string, string> = {}
-    >({
-      endpoint,
-      postData,
-      headers,
-      params,
-    }: {
-      endpoint: string;
-      postData?: PostData;
-      headers?: HeadersInit;
-      params?: ParamsType;
-    }) =>
-      baseFetcher<ResponseData>({
-        method: "post",
-        endpoint,
-        headers,
-        body: JSON.stringify(postData),
-        params,
-      }),
 
     postForm: (endpoint: string, formData: FormData) =>
       baseFetcher({
