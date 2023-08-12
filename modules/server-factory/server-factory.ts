@@ -1,4 +1,5 @@
 import { Server, WebSocketHandler } from "bun";
+import { bodyParser, getParsedBody } from "./body-parser-middleware";
 
 export type RouteHandler = (request: Request) => Response | Promise<Response>;
 
@@ -33,12 +34,24 @@ type BaseRouteRequestType = {
   headers: any;
 };
 
+// figure out a way to set cors up for local dev automatically.
+
 export function createServerFactory(
-  { wsPaths }: { wsPaths?: string[] } = { wsPaths: [] }
+  {
+    wsPaths,
+    enableBodyParser,
+  }: { wsPaths?: string[]; enableBodyParser: boolean } = {
+    wsPaths: [],
+    enableBodyParser: true,
+  }
 ) {
   const routes: RouteMap = {};
   let server: Server;
   let middlewares: Middleware[] = [];
+
+  if (enableBodyParser) {
+    middlewares.push(bodyParser);
+  }
 
   const use = (middleware: Middleware) => {
     middlewares.push(middleware);
@@ -98,9 +111,7 @@ export function createServerFactory(
     parseHeaders: <HeadersType = RouteRequestType["headers"]>(
       request: Request
     ) => HeadersType;
-    parseBody: <BodyType = RouteRequestType["body"]>(
-      request: Request
-    ) => BodyType;
+    getBody: (request: Request) => RouteRequestType["body"];
     createRes: (res: ResponseType) => Response;
   } => {
     const { errorMessage, onError } = options;
@@ -146,11 +157,8 @@ export function createServerFactory(
     };
 
     // TODO: maybe the onrequest returns these functions? that way you wouldnt even need to pass in the request
-    const parseBody = <BodyType = RouteRequestType["body"]>(
-      request: Request
-    ) => {
-      //  TODO: Add validation function as a optional second param
-      return request.body as BodyType;
+    const getBody = (request: Request): RouteRequestType["body"] => {
+      return getParsedBody<RouteRequestType["body"]>(request);
     };
 
     const createRes = (responseData: ResponseType) => {
@@ -163,7 +171,7 @@ export function createServerFactory(
       return new Response(responseData);
     };
 
-    return { onRequest, parseQueryParams, parseBody, parseHeaders, createRes };
+    return { onRequest, parseQueryParams, getBody, parseHeaders, createRes };
   };
 
   const fetch = (
