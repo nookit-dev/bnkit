@@ -192,6 +192,12 @@ export function createFetchFactory<
         body: formData,
         method: "post",
       }),
-    delete: (endpoint: string) => baseFetcher({ method: "delete", endpoint }),
+    delete: <ReponseData, ParamsType extends Record<string, string> = {}>({
+      endpoint,
+    }: {
+      endpoint: string;
+      params?: ParamsType;
+      headers?: HeadersInit;
+    }) => baseFetcher<ReponseData>({ method: "delete", endpoint }),
   };
 }
