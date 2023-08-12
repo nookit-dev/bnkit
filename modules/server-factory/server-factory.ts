@@ -7,6 +7,15 @@ import {
 
 export type RouteHandler = (request: Request) => Response | Promise<Response>;
 
+export type ResponseBodyTypes =
+  | ReadableStream
+  | BlobPart
+  | BlobPart[]
+  | FormData
+  | URLSearchParams
+  | object
+  | null;
+
 export type Middleware = (
   request: Request,
   next: MiddlewareNext
@@ -33,9 +42,13 @@ export interface RouteOptions {
 export type ErrorHandler = (error: any, request: Request) => Response;
 
 type BaseRouteRequestType = {
-  body: any;
-  params: any;
-  headers: any;
+  body?: any;
+  params?: object;
+  headers?: object;
+};
+
+export type JSONRequest = BaseRouteRequestType & {
+  body: object;
 };
 
 // figure out a way to set cors up for local dev automatically.
@@ -62,7 +75,7 @@ export function createServerFactory(
     middlewares.push(createCorsMiddleware(cors));
   }
 
-  const use = (middleware: Middleware) => {
+  const middle = (middleware: Middleware) => {
     middlewares.push(middleware);
   };
 
@@ -107,79 +120,87 @@ export function createServerFactory(
   };
 
   const route = <
-    RouteRequestType extends BaseRouteRequestType,
-    ResponseType extends URLSearchParams
+    RequestGeneric extends BaseRouteRequestType = BaseRouteRequestType,
+    ResponseGeneric extends ResponseBodyTypes = ResponseBodyTypes
   >(
     routePath: string,
     options: RouteOptions = {}
-  ): {
-    onRequest: (handler: RouteHandler) => void;
-    parseQueryParams: <ParamsType = RouteRequestType["params"]>(
-      request: Request
-    ) => ParamsType;
-    parseHeaders: <HeadersType = RouteRequestType["headers"]>(
-      request: Request
-    ) => HeadersType;
-    getBody: (request: Request) => RouteRequestType["body"];
-    createRes: (res: ResponseType) => Response;
-  } => {
+  ) => {
     const { errorMessage, onError } = options;
-
     const defaultErrorMessage = "Internal Server Error";
 
-    const onRequest = (handler: RouteHandler) => {
+    const onRequest = (
+      handler: (args: {
+        request: Request;
+        getBody: <
+          BodyType extends RequestGeneric["body"]
+        >() => Promise<BodyType>;
+        parseQueryParams: <ParamsType>() => ParamsType;
+        parseHeaders: <HeadersType>() => HeadersType;
+        // a function that allows you to pass in an object and it will stringify it if it's an object,
+        // otherwise it will return whatever else is passed in
+
+        JSONRes: <JSONBodyGeneric extends ResponseGeneric>(
+          body: JSONBodyGeneric,
+          options?: ResponseInit
+        ) => Response;
+      }) => Promise<Response>
+    ) => {
       routes[routePath] = compose(middlewares, async (request: Request) => {
         try {
-          return handler(request);
+          const parseQueryParams = <
+            ParamsType = RequestGeneric["params"]
+          >() => {
+            const url = new URL(request.url);
+            return url.searchParams as ParamsType;
+          };
+
+          const parseHeaders = <HeadersType = RequestGeneric["headers"]>() => {
+            return request.headers as HeadersType;
+          };
+
+          const getBody = async <BodyType = RequestGeneric["body"]>() => {
+            return await getParsedBody<BodyType>(request);
+          };
+
+          const createJsonRes = (
+            body: ResponseGeneric,
+            options?: ResponseInit
+          ): Response => {
+            if (typeof body === "object") {
+              return new Response(JSON.stringify(body), options);
+            }
+            return new Response(body, options);
+          };
+
+          return await handler({
+            request,
+            getBody,
+            parseQueryParams,
+            parseHeaders,
+            JSONRes: createJsonRes,
+          });
         } catch (error) {
           if (error instanceof Error) {
-            return handleError(error, defaultErrorMessage, onError, request);
+            return handleError(
+              error,
+              errorMessage || defaultErrorMessage,
+              onError,
+              request
+            );
           } else {
-            // Handle or log non-Error exceptions here
             console.error("Caught a non-Error exception:", error);
-            return new Response(defaultErrorMessage, { status: 500 });
+            return new Response(errorMessage || defaultErrorMessage, {
+              status: 500,
+            });
           }
         }
       });
     };
 
-    const parseQueryParams = <ParamsType = RouteRequestType["params"]>(
-      request: Request
-    ) => {
-      const url = new URL(request.url);
-      // parse params from url and return as casted type,
-      // or return null if there are no params
-      const params = url.searchParams;
-
-      // extract params as object
-
-      // TODO: Add validation function as a optional second param
-      return params as ParamsType;
+    return {
+      onRequest,
     };
-
-    const parseHeaders = <HeadersType = RouteRequestType["headers"]>(
-      request: Request
-    ) => {
-      //  TODO: Add validation function as a optional second param
-      return request.headers as HeadersType;
-    };
-
-    // TODO: maybe the onRequest returns these functions? that way you wouldnt even need to pass in the request
-    const getBody = (request: Request): RouteRequestType["body"] => {
-      return getParsedBody<RouteRequestType["body"]>(request);
-    };
-
-    const createRes = (responseData: ResponseType) => {
-      // if responseData is an object then we need to stringify it
-      if (typeof responseData === "object") {
-        return new Response(JSON.stringify(responseData));
-      }
-
-      // anything else needs to be just a string
-      return new Response(responseData);
-    };
-
-    return { onRequest, parseQueryParams, getBody, parseHeaders, createRes };
   };
 
   const fetch = (
@@ -246,7 +267,7 @@ export function createServerFactory(
   };
 
   return {
-    use,
+    middle,
     route,
     start,
   };
