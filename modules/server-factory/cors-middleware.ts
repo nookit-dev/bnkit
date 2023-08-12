@@ -24,7 +24,7 @@ type CommonHttpHeaders =
   | "X-HTTP-Method-Override"
   | string; // This allows for custom headers in addition to the common ones.
 
-type CorsOptions = {
+export type CorsOptions = {
   allowedOrigins?: string[];
   allAllOrigins?: boolean;
   allowedMethods?: HttpMethod[];

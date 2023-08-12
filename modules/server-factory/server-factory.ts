@@ -1,5 +1,9 @@
 import { Server, WebSocketHandler } from "bun";
 import { bodyParser, getParsedBody } from "./body-parser-middleware";
+import {
+  CorsOptions as CORSOptions,
+  createCorsMiddleware,
+} from "./cors-middleware";
 
 export type RouteHandler = (request: Request) => Response | Promise<Response>;
 
@@ -40,7 +44,8 @@ export function createServerFactory(
   {
     wsPaths,
     enableBodyParser,
-  }: { wsPaths?: string[]; enableBodyParser: boolean } = {
+    cors,
+  }: { wsPaths?: string[]; enableBodyParser?: boolean; cors?: CORSOptions } = {
     wsPaths: [],
     enableBodyParser: true,
   }
@@ -51,6 +56,10 @@ export function createServerFactory(
 
   if (enableBodyParser) {
     middlewares.push(bodyParser);
+  }
+
+  if (cors) {
+    middlewares.push(createCorsMiddleware(cors));
   }
 
   const use = (middleware: Middleware) => {
@@ -224,7 +233,6 @@ export function createServerFactory(
         },
       });
 
-      
       if (verbose)
         console.log(
           `Server started on port ${port}, press Ctrl+C to stop, http://${hostname}:${port}`
