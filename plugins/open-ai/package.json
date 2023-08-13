@@ -1,6 +1,6 @@
 {
   "name": "@u-tools/open-ai",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "index.ts",
   "devDependencies": {
     "bun-types": "^0.6.14"

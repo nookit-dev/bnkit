@@ -11,6 +11,7 @@
     "docs-gen": "bun run ./_apps/generator-cli-app/repo-docs-generator.ts",
     "unit-gen": "bun run ./_apps/generator-cli-app/repo-unit-test-gen.ts",
     "docs-server": "bun run ./_apps/docs-server/docs-server.ts",
-    "yeet": "npm version patch && npm publish --access public"
+    "yeet": "npm version patch && npm publish --access public",
+    "yeet-all": "npm version patch && npm publish --access public && cd plugins/react && npm run yeet && cd ../open-ai && npm run yeet"
   }
 }

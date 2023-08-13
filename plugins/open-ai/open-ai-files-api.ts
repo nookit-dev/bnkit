@@ -55,7 +55,15 @@ export const createOpenAIFiles = ({
       try {
         const formData = new FormData();
         const file = Bun.file(filePath);
-        const content = file.stream()
+        const content = file.stream();
+
+        console.log({
+          file,
+          formData,
+          content,
+        });
+
+        // 12 Aug left off here, file upload isn't working ,gettign 401 unauthorized
         formData.append("file", file);
         formData.append("purpose", purpose);
 
