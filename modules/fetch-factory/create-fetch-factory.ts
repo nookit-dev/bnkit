@@ -70,7 +70,7 @@ export function createFetchFactory<
     method: HTTPMethod;
     endpoint: string;
     headers?: HeadersInit;
-    body?: BodyInit | null;
+    body?: BodyInit;
     params?: ParamsType;
   }): Promise<{
     data: FetcherDataGeneric;
@@ -165,11 +165,23 @@ export function createFetchFactory<
       });
     },
 
-    postForm: (endpoint: string, formData: FormData) =>
+    postForm: ({
+      endpoint,
+      formData,
+      params,
+    }: {
+      endpoint: string;
+      formData: FormData;
+      params?: Record<string, string>;
+    }) =>
       baseFetcher({
         endpoint,
         body: formData,
         method: "post",
+        params,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }),
     delete: <ReponseData, ParamsType extends Record<string, string> = {}>({
       endpoint,

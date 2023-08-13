@@ -1,6 +1,5 @@
 import { createFetchFactory } from "@u-tools/core/modules/fetch-factory/create-fetch-factory";
-
-export type FileObject = {
+export type OpenAIFileObject = {
   id: string;
   object: string;
   bytes: number;
@@ -11,14 +10,21 @@ export type FileObject = {
 
 export type FilesListResponse = {
   object: string;
-  data: FileObject[];
+  data: OpenAIFileObject[];
 };
 
-export const createOpenAIFiles = ({ apiKey }: { apiKey: string }) => {
+export const createOpenAIFiles = ({
+  apiKey,
+  organizationId,
+}: {
+  apiKey: string;
+  organizationId: string;
+}) => {
   const baseUrl = "https://api.openai.com";
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${apiKey}`,
+    "OpenAI-Organization": organizationId,
   };
 
   const openAiAPI = createFetchFactory({
@@ -42,13 +48,26 @@ export const createOpenAIFiles = ({ apiKey }: { apiKey: string }) => {
       }
     },
 
-    async createFile(file: FileObject): Promise<FileObject> {
+    async createFile(
+      filePath: string,
+      purpose: string
+    ): Promise<OpenAIFileObject> {
       try {
-        const { data } = await openAiAPI.post<FileObject>({
+        const formData = new FormData();
+        const file = Bun.file(filePath);
+        const content = file.stream()
+        formData.append("file", file);
+        formData.append("purpose", purpose);
+
+        const { data } = await openAiAPI.postForm({
           endpoint: filesEndpoint,
-          headers,
-          postData: file,
+          formData,
+          headers: {
+            "OpenAI-Organization": organizationId,
+          },
         });
+
+        console.log({ data });
 
         return data;
       } catch (error) {
@@ -57,9 +76,9 @@ export const createOpenAIFiles = ({ apiKey }: { apiKey: string }) => {
       }
     },
 
-    async retrieveFile(fileId: string): Promise<FileObject> {
+    async retrieveFile(fileId: string): Promise<OpenAIFileObject> {
       try {
-        const { data } = await openAiAPI.get<FileObject>({
+        const { data } = await openAiAPI.get<OpenAIFileObject>({
           endpoint: `${filesEndpoint}/${fileId}`,
           headers,
         });

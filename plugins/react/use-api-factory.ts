@@ -69,6 +69,9 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
     status: "idle",
     error: null,
   });
+  console.log({
+    fetchFactory: "init",
+  });
 
   // TODO implement abort controller
   // const abortController = new AbortController();
@@ -79,7 +82,7 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
         method,
         body,
         params,
-        headers
+        headers,
       }: {
         method: HttpMethod;
         body?: DataType["body"];
@@ -93,6 +96,7 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
     ) => {
       setState((prevState) => ({ ...prevState, status: "loading" }));
       try {
+        console.log({ defaultHeaders, headers });
         let result;
         switch (method) {
           case "GET":
@@ -106,7 +110,13 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
               endpoint: endpointConfig.endpoint as string,
               postData: endpointConfig.body || body,
               params: endpointConfig.params || params,
-              headers: defaultHeaders,
+              headers: defaultHeaders
+                ? {
+                    "Content-Type": "application/json",
+                    ...defaultHeaders,
+                    ...headers,
+                  }
+                : headers,
             });
             break;
           default:

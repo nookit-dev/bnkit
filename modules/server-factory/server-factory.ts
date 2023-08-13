@@ -27,12 +27,13 @@ export function createServerFactory(
   let server: Server;
   let middlewares: Middleware[] = [];
 
-  if (enableBodyParser) {
-    middlewares.push(bodyParser);
-  }
-
+  // cors must come first in the middleware
   if (cors) {
     middlewares.push(createCorsMiddleware(cors));
+  }
+
+  if (enableBodyParser) {
+    middlewares.push(bodyParser);
   }
 
   const middle = (middleware: Middleware) => {

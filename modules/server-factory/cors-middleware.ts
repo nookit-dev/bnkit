@@ -1,4 +1,4 @@
-import { Middleware, CORSOptions } from "utils/http-types";
+import { CORSOptions, Middleware } from "utils/http-types";
 
 export const createCorsMiddleware = (
   options?: Partial<CORSOptions>
@@ -18,10 +18,48 @@ export const createCorsMiddleware = (
   const allowedHeaders = options?.allowedHeaders || defaultHeaders;
 
   return async (request, next) => {
-    const response = await next(); // Call the next middleware or handler
+    console.log("middleware running");
+    console.log({
+      headers: request.headers,
+      request,
+      options,
+      allowedOrigins,
+    });
+
+    if (request.method === "OPTIONS") {
+      // Create a new response object with no content
+      let response = new Response(null, { status: 204 }); // 204 No Content
+
+      // Attach the CORS headers
+      const requestOrigin = request.headers.get("Origin");
+      if (
+        requestOrigin &&
+        (allowedOrigins?.includes("*") ||
+          allowedOrigins?.includes(requestOrigin))
+      ) {
+        response.headers.set("Access-Control-Allow-Origin", requestOrigin);
+      }
+      response.headers.set(
+        "Access-Control-Allow-Methods",
+        allowedMethods.join(", ")
+      );
+      response.headers.set(
+        "Access-Control-Allow-Headers",
+        allowedHeaders.join(", ")
+      );
+
+      console.log(response);
+
+      return response; // Return the response immediately without calling next()
+    }
+
+    // For non-OPTIONS requests, process as usual
+
+    const response = await next();
 
     // Check if the request's origin is in the list of allowed origins
     const requestOrigin = request.headers.get("Origin");
+
     if (
       requestOrigin &&
       (allowedOrigins?.includes("*") || allowedOrigins?.includes(requestOrigin))
@@ -33,10 +71,13 @@ export const createCorsMiddleware = (
       "Access-Control-Allow-Methods",
       allowedMethods.join(", ")
     );
+
     response.headers.set(
       "Access-Control-Allow-Headers",
       allowedHeaders.join(", ")
     );
+
+    console.log(response);
 
     return response;
   };
