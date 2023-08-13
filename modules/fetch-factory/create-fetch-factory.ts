@@ -57,10 +57,7 @@ export function createFetchFactory<
   DataType,
   Error extends BaseError<DataType>
 >({ baseUrl, debug }: { baseUrl?: string; debug?: boolean }) {
-  const baseFetcher = async <
-    FetcherDataGeneric = DataType,
-    ParamsType extends Record<string, string> = {}
-  >({
+  const baseFetcher = async ({
     endpoint,
     method,
     body,
@@ -71,11 +68,8 @@ export function createFetchFactory<
     endpoint: string;
     headers?: HeadersInit;
     body?: BodyInit;
-    params?: ParamsType;
-  }): Promise<{
-    data: FetcherDataGeneric;
-    getRawResponse: () => Response;
-  }> => {
+    params?: Record<string, string>;
+  }): Promise<Response> => {
     let finalUrl = baseUrl + endpoint;
 
     // convert params object to url params string
@@ -108,39 +102,42 @@ export function createFetchFactory<
       throw new Error(JSON.stringify(response)); // adapt this to your needs
     }
 
-    const getResponse = () => {
-      return response;
-    };
-
-    return {
-      data: (await response.json()) as FetcherDataGeneric,
-      getRawResponse: getResponse,
-    };
+    return response;
   };
 
   return {
     // GetDataType gives the ability to override the return type of the get method,
     // or it can be set on the createFetchFactory (or not at all!)
-    get: <
+    get: async <
       GetDataType = DataType,
       ParamsType extends Record<string, string> = {}
     >({
       endpoint,
       params,
       headers,
-    }: {
+    }: // TODO: add optional data validator
+    // TODO: ADD optional params and headers validator
+    {
       endpoint: string;
       params?: ParamsType;
       headers?: HeadersInit;
-    }) =>
-      baseFetcher<GetDataType, ParamsType>({
+    }) => {
+      const response = await baseFetcher({
         method: "get",
         endpoint,
         params,
         headers,
-      }),
-    post: <
-      PostDataType = DataType,
+      });
+
+      const data = (await response.json()) as GetDataType;
+
+      return {
+        data,
+        getRawResponse: () => response,
+      };
+    },
+    post: async <
+      ResponseData = DataType,
       PostData = unknown,
       ParamsType extends Record<string, string> = {}
     >({
@@ -156,16 +153,24 @@ export function createFetchFactory<
       headers?: HeadersInit;
       params?: ParamsType;
     }) => {
-      return baseFetcher<PostDataType, ParamsType>({
+      const response = await baseFetcher({
         method: "post",
         endpoint,
         body: JSON.stringify(postData),
         headers,
         params,
       });
+
+      // add options for handling other formats?
+      const data = response.json() as ResponseData;
+
+      return {
+        data,
+        getRawResponse: () => response,
+      };
     },
 
-    postForm: ({
+    postForm: async ({
       endpoint,
       formData,
       params,
@@ -183,12 +188,24 @@ export function createFetchFactory<
           "Content-Type": "multipart/form-data",
         },
       }),
-    delete: <ReponseData, ParamsType extends Record<string, string> = {}>({
+    delete: async <
+      ReponseData,
+      ParamsType extends Record<string, string> = {}
+    >({
       endpoint,
     }: {
       endpoint: string;
       params?: ParamsType;
       headers?: HeadersInit;
-    }) => baseFetcher<ReponseData>({ method: "delete", endpoint }),
+    }) => {
+      const response = await baseFetcher({ method: "delete", endpoint });
+
+      const data = response.json() as ReponseData;
+
+      return {
+        data,
+        getRawResponse: () => response,
+      };
+    },
   };
 }

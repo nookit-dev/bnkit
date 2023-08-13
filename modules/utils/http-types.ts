@@ -24,6 +24,12 @@ export type CommonHttpHeaders =
   | "X-HTTP-Method-Override"
   | string; // This allows for custom headers in addition to the common ones.
 
+type PartialRecord<K extends keyof any, T> = {
+  [P in K]?: T;
+};
+
+export type UToolHTTPHeaders = PartialRecord<CommonHttpHeaders, string>;
+
 export type RouteHandler = (request: Request) => Response | Promise<Response>;
 
 export type ResponseBodyTypes =
@@ -71,8 +77,8 @@ export type JSONRequest = BaseRouteRequestType & {
 };
 
 export type CORSOptions = {
-    allowedOrigins?: string[];
-    allAllOrigins?: boolean;
-    allowedMethods?: HttpMethod[];
-    allowedHeaders?: CommonHttpHeaders[];
-  };
+  allowedOrigins?: string[];
+  allAllOrigins?: boolean;
+  allowedMethods?: HttpMethod[];
+  allowedHeaders?: CommonHttpHeaders[];
+};
