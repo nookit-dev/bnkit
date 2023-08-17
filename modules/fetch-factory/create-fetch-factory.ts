@@ -1,211 +1,158 @@
+import { HttpMethod } from "utils/http-types";
 import { type BaseError } from "../utils/base-error";
-
-export type HTTPMethod = "get" | "post" | "put" | "delete";
-
-export type FetchFactoryType<DataType> = {
-  get: <GetDataType = DataType, ParamsType extends Record<string, string> = {}>(
-    endpoint: string,
-    params: ParamsType
-  ) => Promise<{
-    data: GetDataType;
-    getRawResponse: () => Response;
-  }>;
-
-  post: <
-    PostDataType = DataType,
-    PostData = unknown,
-    ParamsType extends Record<string, string> = {}
-  >(config: {
-    endpoint: string;
-    postData?: PostData;
-    headers?: HeadersInit;
-    params?: ParamsType;
-  }) => Promise<{
-    data: PostDataType;
-    getRawResponse: () => Response;
-  }>;
-
-  postJson: <
-    ResponseData = DataType,
-    PostData = unknown,
-    ParamsType extends Record<string, string> = {}
-  >(config: {
-    endpoint: string;
-    postData?: PostData;
-    headers?: HeadersInit;
-    params?: ParamsType;
-  }) => Promise<{
-    data: ResponseData;
-    getRawResponse: () => Response;
-  }>;
-
-  postForm: (
-    endpoint: string,
-    formData: FormData
-  ) => Promise<{
-    data: DataType;
-    getRawResponse: () => Response;
-  }>;
-
-  delete: (endpoint: string) => Promise<{
-    data: DataType;
-    getRawResponse: () => Response;
-  }>;
+export type FetchConfig<
+  DataT = unknown,
+  ParamsT extends Record<string, string> = {}
+> = {
+  endpoint: string;
+  bodyData?: DataT;
+  headers?: HeadersInit;
+  params?: ParamsT;
 };
 
-export function createFetchFactory<
-  DataType,
-  Error extends BaseError<DataType>
->({ baseUrl, debug }: { baseUrl?: string; debug?: boolean }) {
-  const baseFetcher = async ({
-    endpoint,
-    method,
-    body,
-    headers,
-    params,
-  }: {
-    method: HTTPMethod;
-    endpoint: string;
-    headers?: HeadersInit;
-    body?: BodyInit;
-    params?: Record<string, string>;
-  }): Promise<Response> => {
-    let finalUrl = baseUrl + endpoint;
+type EventHandlerMap = {
+  [eventName: string]: (event: MessageEvent) => void;
+};
 
-    // convert params object to url params string
-    const urlWithParams = new URLSearchParams();
-    Object.entries(params || {}).forEach(([key, value]) => {
-      urlWithParams.append(key, value);
-    });
+type FormFetchConfig<DataT = unknown> = FetchConfig<DataT> & {
+  boundary?: string;
+};
 
-    // add final url to urlWithParams only if it's not empty
-    if (urlWithParams.toString()) {
-      finalUrl += "?" + urlWithParams.toString();
-    }
+function appendURLParameters(
+  url: string,
+  params: Record<string, string> = {}
+): string {
+  const urlWithParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    urlWithParams.append(key, value);
+  });
+  return urlWithParams.toString() ? `${url}?${urlWithParams.toString()}` : url;
+}
 
-    console.log({
-      method,
-      headers,
-      body,
-    });
+async function handleResponse<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    throw new Error(JSON.stringify(response)); // adapt this to your needs
+  }
+  return await response.json();
+}
+
+export function createFetchFactory({
+  baseUrl = "",
+  debug = false,
+}: {
+  baseUrl?: string;
+  debug?: boolean;
+}) {
+  async function fetcher<ResponseType>(
+    config: FetchConfig,
+    method: HttpMethod
+  ): Promise<ResponseType> {
+    const finalUrl = appendURLParameters(
+      baseUrl + config.endpoint,
+      config.params
+    );
 
     const response = await fetch(finalUrl, {
-      method,
-      headers,
-      body,
+      method: method.toUpperCase() as HttpMethod,
+      headers: config.headers,
+      body: ["GET", "DELETE"].includes(method.toUpperCase())
+        ? undefined
+        : JSON.stringify(config.bodyData),
     });
 
-    // TODO find better way to handle this
-    if (!response.ok) {
-      console.log(response);
+    return handleResponse<ResponseType>(response);
+  }
 
-      throw new Error(JSON.stringify(response)); // adapt this to your needs
+  function createEventStream(
+    endpoint: string,
+    eventHandlers: EventHandlerMap
+  ): EventSource {
+    const url = baseUrl + endpoint;
+    const es = new EventSource(url);
+
+    es.onopen = (event) => {
+      console.log("Stream opened:", event);
+    };
+
+    es.onerror = (error) => {
+      console.error("Stream Error:", error);
+    };
+
+    for (const [event, handler] of Object.entries(eventHandlers)) {
+      es.addEventListener(event, handler);
     }
 
-    return response;
+    return es;
+  }
+
+  type FileDownloadConfig = {
+    endpoint: string;
+    headers?: HeadersInit;
+    filename?: string; // Optional desired filename for the downloaded file
+    params?: Record<string, string>; // Optional query parameters
   };
 
+  function fileDownload(config: FileDownloadConfig): void {
+    // this is a client side only function
+    if (typeof window === "undefined") return;
+    const finalUrl = new URL(baseUrl + config.endpoint);
+    if (config.params) {
+      Object.keys(config.params).forEach((key) => {
+        finalUrl.searchParams.append(key, config.params![key]);
+      });
+    }
+
+    const a = document.createElement("a");
+    a.href = finalUrl.toString();
+    a.download = config.filename || ""; // The 'download' attribute can be used to set a specific filename.
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
   return {
-    // GetDataType gives the ability to override the return type of the get method,
-    // or it can be set on the createFetchFactory (or not at all!)
-    get: async <
-      GetDataType = DataType,
-      ParamsType extends Record<string, string> = {}
-    >({
-      endpoint,
-      params,
-      headers,
-    }: // TODO: add optional data validator
-    // TODO: ADD optional params and headers validator
-    {
-      endpoint: string;
-      params?: ParamsType;
-      headers?: HeadersInit;
-    }) => {
-      const response = await baseFetcher({
-        method: "get",
-        endpoint,
-        params,
-        headers,
-      });
-
-      const data = (await response.json()) as GetDataType;
-
-      return {
-        data,
-        getRawResponse: () => response,
-      };
+    fetcher,
+    get: <GetDataT, ParamsT extends Record<string, string> = {}>(
+      config: FetchConfig<undefined, ParamsT>
+    ): Promise<GetDataT> => {
+      return fetcher<GetDataT>(config, "GET");
     },
-    post: async <
-      ResponseData = DataType,
+    post: <
+      PostDataT,
       PostData = unknown,
-      ParamsType extends Record<string, string> = {}
-    >({
-      endpoint,
-      postData,
-      headers = {
-        "Content-Type": "application/json",
-      },
-      params,
-    }: {
-      endpoint: string;
-      postData?: PostData;
-      headers?: HeadersInit;
-      params?: ParamsType;
-    }) => {
-      const response = await baseFetcher({
-        method: "post",
-        endpoint,
-        body: JSON.stringify(postData),
-        headers,
-        params,
-      });
-
-      // add options for handling other formats?
-      const data = response.json() as ResponseData;
-
-      return {
-        data,
-        getRawResponse: () => response,
-      };
-    },
-
-    postForm: async ({
-      endpoint,
-      formData,
-      params,
-    }: {
-      endpoint: string;
-      formData: FormData;
-      params?: Record<string, string>;
-    }) =>
-      baseFetcher({
-        endpoint,
-        body: formData,
-        method: "post",
-        params,
-        headers: {
-          "Content-Type": "multipart/form-data",
+      ParamsT extends Record<string, string> = {}
+    >(
+      config: FetchConfig<PostData, ParamsT>
+    ): Promise<PostDataT> => {
+      return fetcher<PostDataT>(
+        {
+          ...config,
+          headers: { ...config.headers, "Content-Type": "application/json" },
         },
-      }),
-    delete: async <
-      ReponseData,
-      ParamsType extends Record<string, string> = {}
-    >({
-      endpoint,
-    }: {
-      endpoint: string;
-      params?: ParamsType;
-      headers?: HeadersInit;
-    }) => {
-      const response = await baseFetcher({ method: "delete", endpoint });
-
-      const data = response.json() as ReponseData;
-
-      return {
-        data,
-        getRawResponse: () => response,
-      };
+        "POST"
+      );
     },
+    postForm: <FormDataT>(
+      config: FormFetchConfig<FormData>
+    ): Promise<FormDataT> => {
+      const defaultContentType = config.boundary
+        ? `multipart/form-data; boundary=${config.boundary}`
+        : "multipart/form-data";
+
+      const headers = {
+        "Content-Type": defaultContentType,
+        ...config.headers, // Overriding headers if any are provided in config
+      };
+
+      return fetcher<FormDataT>({ ...config, headers }, "POST");
+    },
+
+    delete: <DeleteDataT, ParamsT extends Record<string, string> = {}>(
+      config: FetchConfig<undefined, ParamsT>
+    ): Promise<DeleteDataT> => {
+      return fetcher<DeleteDataT>(config, "DELETE");
+    },
+    createEventStream,
+    fileDownload,
   };
 }

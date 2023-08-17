@@ -10,12 +10,16 @@ type RequestStatus = "idle" | "loading" | "success" | "error" | "no data";
 export type FetcherConfig<
   ResponseType,
   BodyType = undefined,
+  HeadersType = undefined,
   ParamsType = undefined
 > = {
   body?: BodyType;
   params?: ParamsType;
   response: ResponseType;
+  headers?: HeadersType;
 };
+
+type FetchDataConfigMap = Record<string, FetcherConfig<any, any, any>>;
 
 export type FetcherState<ResponseType> = {
   data: ResponseType | null;
@@ -33,25 +37,22 @@ export type FetcherReturnType<DataType extends FetcherConfig<any, any, any>> = {
   post: (data?: DataType["body"], params?: DataType["params"]) => Promise<void>;
 };
 
-export type Fetchers<
-  DataTypeMap extends Record<string, FetcherConfig<any, any, any>>
-> = {
+export type Fetchers<DataTypeMap extends FetchDataConfigMap> = {
   [K in keyof DataTypeMap]: () => FetcherReturnType<DataTypeMap[K]>;
 };
 
 export type EndpointConfig<
-  DataTypeMap extends Record<string, FetcherConfig<any, any, any>>,
+  DataTypeMap extends FetchDataConfigMap,
   K extends keyof DataTypeMap
 > = {
   endpoint: K;
   method: HttpMethod;
   body?: DataTypeMap[K]["body"];
   params?: DataTypeMap[K]["params"];
+  headers?: DataTypeMap[K]["headers"];
 };
 
-export type FetchFactoryConfig<
-  DataTypeMap extends Record<string, FetcherConfig<any, any, any>>
-> = {
+export type FetchFactoryConfig<DataTypeMap extends FetchDataConfigMap> = {
   baseUrl?: string;
   logMode?: boolean;
   endpoints: Array<EndpointConfig<DataTypeMap, keyof DataTypeMap>>;
@@ -73,9 +74,6 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
     fetchFactory: "init",
   });
 
-  // TODO implement abort controller
-  // const abortController = new AbortController();
-
   const fetchData = useCallback(
     async (
       {
@@ -91,7 +89,7 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
       } = {
         method: "GET",
         body: null,
-        params: null,
+        params: undefined,
       }
     ) => {
       setState((prevState) => ({ ...prevState, status: "loading" }));
@@ -158,9 +156,9 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
   });
 }
 
-export function useApiFactory<
-  DataTypeMap extends Record<string, FetcherConfig<any, any, any>>
->(config: FetchFactoryConfig<DataTypeMap>): Fetchers<DataTypeMap> {
+export function useApiFactory<DataTypeMap extends FetchDataConfigMap>(
+  config: FetchFactoryConfig<DataTypeMap>
+): Fetchers<DataTypeMap> {
   const fetchFactory = useMemo(() => createFetchFactory(config), [config]);
 
   const fetchers = useMemo(() => {

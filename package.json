@@ -1,6 +1,6 @@
 {
   "name": "@u-tools/core",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "main": "index.ts",
   "devDependencies": {
     "bun-types": "^0.6.14"
@@ -12,6 +12,8 @@
     "unit-gen": "bun run ./_apps/generator-cli-app/repo-unit-test-gen.ts",
     "docs-server": "bun run ./_apps/docs-server/docs-server.ts",
     "yeet": "npm version patch && npm publish --access public",
-    "yeet-all": "npm version patch && npm publish --access public && cd plugins/react && npm run yeet && cd ../open-ai && npm run yeet"
+    "yeet-all": "npm version patch && npm publish --access public && cd plugins/react && npm run yeet && cd ../open-ai && npm run yeet",
+    "test":"bun test",
+    "test:watch": "bun test --watch --coverage"
   }
 }
