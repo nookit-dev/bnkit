@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { Dispatchers } from "server-factory/create-web-socket-state-machine";
 import { createStateDispatchers } from "../../modules/server-factory/create-state-dispatchers";
-import type { Dispatchers } from "../../modules/server-factory/create-state-dispatchers";
 
 const getAppStateFromLocalStorage = <State extends object>(
   defaultState: State
@@ -131,7 +131,7 @@ export function useServerState<State extends object>({
   // }, {} as Dispatchers<State>);
 
   const control = createStateDispatchers<State>(
-    defaultState,
+    { ...defaultState, ...state },
     dispatch
   ) as Dispatchers<State>;
 

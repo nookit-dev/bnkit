@@ -15,22 +15,23 @@ function isNumberType(input: any): input is number {
 function createArrayDispatchers<Key, T>(
   key: Key,
   state: T[],
-  updateFunction: (key: Key, value: any) => void
+  updateFunction: (key: Key, value: () => T[]) => void
 ) {
   return {
-    set: (value: T[]) => updateFunction(key, value),
+    set: (value: T[]) => updateFunction(key, () => value),
     push: (value: T) => {
-      const newArr = [...state, value];
-      updateFunction(key, newArr);
+      const existingState = state || [];  // Use existing state, or initialize as an empty array if undefined.
+      const newArr = [...existingState, value];
+      updateFunction(key, () => newArr);
     },
     pop: () => {
       const newArr = state.slice(0, -1);
-      updateFunction(key, newArr);
+      updateFunction(key, () => newArr);
     },
     insert: (index: number, value: T) => {
       const newArr = [...state];
       newArr.splice(index, 0, value);
-      updateFunction(key, newArr);
+      updateFunction(key, () => newArr);
     },
   };
 }

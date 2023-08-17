@@ -34,6 +34,25 @@ export const createWSStateMachine = <State extends object>(
 
   let currentState: State = initialState;
 
+  const stateChangeCallbacks: {
+    [Key in keyof State]?: Array<(newValue: State[Key]) => void>;
+  } = {};
+
+  function onStateChange<Key extends keyof State>(
+    key: Key,
+    callback: (newValue: State[Key]) => void
+  ) {
+    console.log({
+      key,
+      callback,
+    });
+    if (!stateChangeCallbacks[key]) {
+      stateChangeCallbacks[key] = [];
+    }
+
+    stateChangeCallbacks?.[key]?.push(callback);
+  }
+
   // Adding WebSocket handlers to the server for state sync
   const websocketHandler: WebSocketHandler = {
     open: (ws) => {
@@ -47,26 +66,26 @@ export const createWSStateMachine = <State extends object>(
     message: (ws, msg) => {
       // Your message handling logic here
       // This part may be more complex based on your state shape and update requirements
+      // console.log({
+      //   msg,
+      // });
 
+      if (typeof msg !== "string") return;
       console.log({
         msg,
       });
 
-      if (typeof msg !== "string") return;
       const data: { key: keyof State; value: State[keyof State] } =
         JSON.parse(msg);
-
-      console.log({
-        data,
-      });
+      console.log({ data });
 
       if (data.key in currentState) {
-        console.log("Before update:", currentState[data.key]);
-
         // Ensure the key exists in the current state
         currentState[data.key] = data.value;
 
-        console.log("After update:", currentState[data.key]);
+        stateChangeCallbacks[data.key]?.forEach((callback) =>
+          callback(data.value)
+        );
 
         // Broadcast the updated state to all connected clients
         for (const client of connectedClients) {
@@ -79,10 +98,12 @@ export const createWSStateMachine = <State extends object>(
   // The updater function
   function updateStateAndDispatch(
     key: keyof State,
-    updater: (currentState: State[keyof State]) => State[keyof State]
+    updater: () => State[keyof State]
   ) {
-    const newValue = updater(currentState[key]);
+    const newValue = updater();
     currentState[key] = newValue;
+
+    stateChangeCallbacks[key]?.forEach((callback) => callback(newValue));
 
     // Broadcast the updated state to all connected clients
     for (const client of connectedClients) {
@@ -101,5 +122,6 @@ export const createWSStateMachine = <State extends object>(
     connectedClients,
     state: currentState,
     control: dispatchers,
+    onStateChange,
   };
 };
