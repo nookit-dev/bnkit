@@ -9,8 +9,9 @@ import {
   RouteOptions,
   StartServerOptions,
 } from "utils/http-types";
-import { bodyParser, getParsedBody } from "./body-parser-middleware";
-import { createCorsMiddleware } from "./cors-middleware";
+import { bodyParserMiddleware, getParsedBody } from "./body-parser-middleware";
+import { checkFileSizeMiddleware } from "./check-file-size-middleware";
+import { createCorsMiddleware } from "./create-cors-middleware";
 
 // TODO: figure out a way to set cors up for local dev automatically.
 export function createServerFactory(
@@ -18,7 +19,17 @@ export function createServerFactory(
     wsPaths,
     enableBodyParser,
     cors,
-  }: { wsPaths?: string[]; enableBodyParser?: boolean; cors?: CORSOptions } = {
+    maxFileSize,
+  }: {
+    wsPaths?: string[];
+    enableBodyParser?: boolean;
+    cors?: CORSOptions;
+    /*
+    max file size in bytes, if passed in then the check file middleware will be passed in
+    to validate file sizes
+    */
+    maxFileSize?: number;
+  } = {
     wsPaths: [],
     enableBodyParser: true,
   }
@@ -33,7 +44,11 @@ export function createServerFactory(
   }
 
   if (enableBodyParser) {
-    middlewares.push(bodyParser);
+    middlewares.push(bodyParserMiddleware);
+  }
+
+  if (maxFileSize) {
+    middlewares.push(checkFileSizeMiddleware(maxFileSize));
   }
 
   const middle = (middleware: Middleware) => {
@@ -101,10 +116,11 @@ export function createServerFactory(
         // a function that allows you to pass in an object and it will stringify it if it's an object,
         // otherwise it will return whatever else is passed in
 
-        JSONRes: <JSONBodyGeneric extends ResponseGeneric>(
+        jsonRes: <JSONBodyGeneric extends ResponseGeneric>(
           body: JSONBodyGeneric,
           options?: ResponseInit
         ) => Response;
+        htmlRes: (body: string, options?: ResponseInit) => Response;
       }) => Promise<Response>
     ) => {
       routes[routePath] = compose(middlewares, async (request: Request) => {
@@ -124,14 +140,29 @@ export function createServerFactory(
             return await getParsedBody<BodyType>(request);
           };
 
-          const createJsonRes = (
+          const jsonRes = (
             body: ResponseGeneric,
             options?: ResponseInit
           ): Response => {
             if (typeof body === "object") {
-              return new Response(JSON.stringify(body), options);
+              return new Response(JSON.stringify(body), {
+                headers: {
+                  "Content-Type": "application/json",
+                  ...options?.headers,
+                },
+                ...options,
+              });
             }
             return new Response(body, options);
+          };
+          const htmlRes = (body: string, options?: ResponseInit) => {
+            return new Response(body, {
+              headers: {
+                "Content-Type": "text/html",
+                ...options?.headers,
+              },
+              ...options,
+            });
           };
 
           return await handler({
@@ -139,7 +170,8 @@ export function createServerFactory(
             getBody,
             parseQueryParams,
             parseHeaders,
-            JSONRes: createJsonRes,
+            jsonRes,
+            htmlRes,
           });
         } catch (error) {
           if (error instanceof Error) {
@@ -195,7 +227,7 @@ export function createServerFactory(
       port: 3000,
       websocket: {
         message: () => {
-          console.log("msg");
+          console.log("websocket msg");
         },
       },
       verbose: false,
@@ -226,12 +258,6 @@ export function createServerFactory(
       throw error;
     }
   };
-
-  console.log({
-    middle,
-    route,
-    start,
-  });
 
   return {
     middle,
