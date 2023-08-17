@@ -15,23 +15,32 @@ function isNumberType(input: any): input is number {
 function createArrayDispatchers<Key, T>(
   key: Key,
   state: T[],
-  updateFunction: (key: Key, value: () => T[]) => void
+  updateFunction: (key: Key, value: T[]) => void
 ) {
   return {
-    set: (value: T[]) => updateFunction(key, () => value),
+    set: (value: T[]) => {
+      console.log({
+        set: "set",
+        key,
+        value,
+        updateFunction
+      });
+
+      updateFunction(key, value);
+    },
     push: (value: T) => {
-      const existingState = state || [];  // Use existing state, or initialize as an empty array if undefined.
+      const existingState = state || [];
       const newArr = [...existingState, value];
-      updateFunction(key, () => newArr);
+      updateFunction(key, newArr);
     },
     pop: () => {
       const newArr = state.slice(0, -1);
-      updateFunction(key, () => newArr);
+      updateFunction(key, newArr);
     },
     insert: (index: number, value: T) => {
       const newArr = [...state];
       newArr.splice(index, 0, value);
-      updateFunction(key, () => newArr);
+      updateFunction(key, newArr);
     },
   };
 }
@@ -75,13 +84,44 @@ function createDefaultDispatchers<Key, T>(
   };
 }
 
-export function createStateDispatchers<State extends object>(
-  state: State,
-  updateFunction: (key: keyof State, value: any) => void
-): Dispatchers<State> {
-  return (Object.keys(state) as (keyof State)[]).reduce((acc, key) => {
+function mergeWithDefault<State extends object>(
+  defaultState: State,
+  state: State
+): State {
+  const mergedState: Partial<State> = {};
+  const missingKeys: (keyof State)[] = [];
+
+  for (const key in defaultState) {
+    if (key in state) {
+      mergedState[key] = state[key];
+    } else {
+      mergedState[key] = defaultState[key];
+      missingKeys.push(key);
+    }
+  }
+
+  // Log missing keys
+  if (missingKeys.length > 0) {
+    console.info("Missing keys from state:", missingKeys.join(", "));
+  }
+
+  return mergedState as State;
+}
+
+export function createStateDispatchers<State extends object>({
+  defaultState,
+  state,
+  updateFunction,
+}: {
+  state: State;
+  defaultState: State;
+  updateFunction: (key: keyof State, value: any) => void;
+}): Dispatchers<State> {
+  const mergedState = mergeWithDefault(defaultState, state);
+
+  return (Object.keys(mergedState) as (keyof State)[]).reduce((acc, key) => {
     const k = key as keyof State;
-    const currentValue = state[k];
+    const currentValue = mergedState[k];
 
     if (isArrayType(currentValue)) {
       acc[k] = createArrayDispatchers(k, currentValue, updateFunction) as any;

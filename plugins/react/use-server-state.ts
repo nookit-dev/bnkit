@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Dispatchers } from "server-factory/create-web-socket-state-machine";
 import { createStateDispatchers } from "../../modules/server-factory/create-state-dispatchers";
+import { Dispatchers } from "../../modules/server-factory/create-web-socket-state-machine";
 
 const getAppStateFromLocalStorage = <State extends object>(
   defaultState: State
@@ -62,78 +62,20 @@ export function useServerState<State extends object>({
   }, [state]);
 
   const dispatch = (key: keyof State, value: State[keyof State]) => {
+    console.log({
+      key,
+      value,
+    });
     if (wsRef.current) {
       wsRef.current?.send(JSON.stringify({ key, value }));
     }
   };
 
-  // const createKeyDispatcher = <StateKey extends keyof State>(key: StateKey) => {
-  //   return (value: State[StateKey]) => {
-  //     dispatch(key, value)
-  //   };
-  // };
-
-  // const setters: Dispatchers<State> = (
-  //   Object.keys(defaultState) as (keyof State)[]
-  // ).reduce((acc, key) => {
-  //   const k = key as keyof State;
-  //   if (Array.isArray(state[k])) {
-  //     const currentArray = state[k] as any[];
-  //     acc[k] = {
-  //       set: (value: State[keyof State]) => dispatch({ key: k, value }),
-  //       push: (value: any) => {
-  //         dispatch({
-  //           key: k,
-  //           value: [...currentArray, value] as State[keyof State],
-  //         });
-  //       },
-  //       pop: () => {
-  //         const newArr = currentArray.slice(0, -1);
-  //         dispatch({ key: k, value: newArr as State[keyof State] });
-  //       },
-  //       insert: (index: number, value: any) => {
-  //         const newArr = [...currentArray];
-  //         newArr.splice(index, 0, value);
-  //         dispatch({ key: k, value: newArr as State[keyof State] });
-  //       },
-  //     } as Dispatchers<State>[keyof State];
-  //   } else if (typeof state[k] === "object" && state[k] !== null) {
-  //     acc[k] = {
-  //       set: (value: State[keyof State]) => dispatch({ key: k, value }),
-  //       update: (value: Partial<State[keyof State]>) => {
-  //         const newValue = { ...state[k], ...value };
-  //         dispatch({ key: k, value: newValue });
-  //       },
-  //     } as Dispatchers<State>[keyof State];
-  //   } else if (typeof state[k] === "number") {
-  //     const currentValue = state[k] as number;
-  //     acc[k] = {
-  //       set: (value: State[keyof State]) => dispatch({ key: k, value }),
-  //       increment: (amount: number = 1) => {
-  //         dispatch({
-  //           key: k,
-  //           value: (currentValue + amount) as State[keyof State],
-  //         });
-  //       },
-  //       decrement: (amount: number = 1) => {
-  //         dispatch({
-  //           key: k,
-  //           value: (currentValue - amount) as State[keyof State],
-  //         });
-  //       },
-  //     } as Dispatchers<State>[keyof State];
-  //   } else {
-  //     acc[k] = {
-  //       set: (value: State[keyof State]) => dispatch({ key: k, value }),
-  //     } as Dispatchers<State>[keyof State];
-  //   }
-  //   return acc;
-  // }, {} as Dispatchers<State>);
-
-  const control = createStateDispatchers<State>(
-    { ...defaultState, ...state },
-    dispatch
-  ) as Dispatchers<State>;
+  const control = createStateDispatchers<State>({
+    defaultState,
+    state,
+    updateFunction: dispatch,
+  });
 
   return {
     state,
@@ -145,10 +87,3 @@ export function useServerState<State extends object>({
     control: ReturnType<typeof createStateDispatchers<State>>;
   };
 }
-
-const test = createStateDispatchers<{ count: number }>(
-  {
-    count: 0,
-  },
-  (dispatch) => {}
-);

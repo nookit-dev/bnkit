@@ -63,7 +63,7 @@ export const createWSStateMachine = <State extends object>(
       // Remove the client from the set when they disconnect
       connectedClients.delete(ws);
     },
-    message: (ws, msg) => {
+    message: (_ws, msg) => {
       // Your message handling logic here
       // This part may be more complex based on your state shape and update requirements
       // console.log({
@@ -98,9 +98,16 @@ export const createWSStateMachine = <State extends object>(
   // The updater function
   function updateStateAndDispatch(
     key: keyof State,
-    updater: () => State[keyof State]
+    updater:
+      | ((currentState: State[keyof State]) => State[keyof State])
+      | State[keyof State]
   ) {
-    const newValue = updater();
+    const newValue =
+      typeof updater === "function"
+        ? (updater as (currentState: State[keyof State]) => State[keyof State])(
+            currentState[key]
+          )
+        : updater;
     currentState[key] = newValue;
 
     stateChangeCallbacks[key]?.forEach((callback) => callback(newValue));
@@ -112,8 +119,13 @@ export const createWSStateMachine = <State extends object>(
   }
 
   const dispatchers = createStateDispatchers(
-    initialState,
-    updateStateAndDispatch
+    {
+      defaultState: initialState,
+      state: currentState,
+      updateFunction: updateStateAndDispatch,
+    }
+    // initialState,
+    // updateStateAndDispatch
   );
 
   return {
