@@ -1,6 +1,6 @@
 {
   "name": "@u-tools/open-ai",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "index.ts",
   "devDependencies": {
     "bun-types": "^0.6.14"
@@ -9,7 +9,8 @@
   "license": "MIT",
   "scripts": {
     "init": "bun install",
-    "yeet": "npm version patch && npm publish --access public"
+    "yeet": "npm version patch && npm publish --access public",
+    "link": "bun link @u-tools/core"
   },
   "dependencies": {
     "@u-tools/core": "latest"

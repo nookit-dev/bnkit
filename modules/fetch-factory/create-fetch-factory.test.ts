@@ -23,7 +23,7 @@ describe("post method", () => {
       errorHandler: defaultErrorHandler(),
     });
     const postData = { key: "value" };
-    await fetchFactory.post({ endpoint: "/test", bodyData: postData });
+    await fetchFactory.post({ endpoint: "/test", body: postData });
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
     expect(fetchArgs.options.method).toBe("POST");
