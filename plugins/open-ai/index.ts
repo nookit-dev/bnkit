@@ -4,12 +4,10 @@ import {
 } from "@u-tools/core/modules/fetch-factory/create-fetch-factory";
 import type {
   CancelFineTuneParams,
-  ChatCompletionParams,
+  ChatCompletionParams as ChatCompletionBody,
   ChatCompletionResponse,
-  CompletionsResponse,
   CreateFileParams,
   DeleteFileParams,
-  FilesListResponse,
   FineTuneEvent,
   FineTuneResponse,
   FineTunesListResponse,
@@ -26,7 +24,8 @@ import type {
 type OpenAIEndpoints = {
   "/v1/chat/completions": APIConfig<
     ChatCompletionResponse,
-    ChatCompletionParams
+    {},
+    ChatCompletionBody
   >;
   "/v1/models": APIConfig<ModelsListResponse, ListModelsParams>;
   "/v1/models/:modelId": APIConfig<RetrieveModelResponse, RetrieveModelParams>;
@@ -115,10 +114,6 @@ export const createOpenAIApi = ({
     baseUrl: "https://api.openai.com",
     config: endpointConfig,
     defaultHeaders: headers,
-  });
-
-  api.get({
-    endpoint: "/v1/chat/completions",
   });
 
   return api;

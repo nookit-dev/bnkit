@@ -47,9 +47,6 @@ type FileDownloadConfig = {
   params?: Record<string, string>;
 };
 
-type FetchFunction<TMap extends TypeMap> = <Endpoint extends keyof TMap>(
-  fetchConfig: Omit<APIConfig, "response" | "method"> & { endpoint: Endpoint }
-) => Promise<TMap[Endpoint]["response"]>;
 
 export function createFetchFactory<TMap extends TypeMap>({
   baseUrl = "",

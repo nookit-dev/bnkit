@@ -64,8 +64,8 @@ export type CompletionChoice = {
   index: number;
   finish_reason: string;
 };
-
-export type CompletionsResponse = {
+/* legacy api */
+export type TraditionalCompletionsResponse = {
   id: string;
   object: string;
   created: number;
@@ -79,8 +79,6 @@ export type CompletionsResponse = {
 };
 
 export type CompletionsParams = {
-  numCompletions?: number;
-  maxTokens?: number;
   apiKey?: string;
   // ID of the model to use
   model?: string;
@@ -208,7 +206,6 @@ export type DeleteFileParams = {
 export type ChatCompletionParams = {
   model: string;
   messages: ChatMessage[];
-  // ... add other parameters as required
 };
 
 export type ListFineTunesParams = {};
