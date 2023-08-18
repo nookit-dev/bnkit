@@ -1,9 +1,8 @@
 import {
-  EndpointConfig,
+  APIConfig,
   createFetchFactory,
 } from "@u-tools/core/modules/fetch-factory/create-fetch-factory";
-import { FetchConfig } from "../..";
-import {
+import type {
   CancelFineTuneParams,
   ChatCompletionParams,
   ChatCompletionResponse,
@@ -25,40 +24,38 @@ import {
 } from "./open-ai-types";
 
 type OpenAIEndpoints = {
-  "/v1/chat/completions": EndpointConfig<
+  "/v1/chat/completions": APIConfig<
     ChatCompletionResponse,
     ChatCompletionParams
   >;
-  "/v1/models": EndpointConfig<ModelsListResponse, ListModelsParams>;
-  "/v1/models/:modelId": EndpointConfig<
-    RetrieveModelResponse,
-    RetrieveModelParams
-  >;
-  "/v1/files": EndpointConfig<OpenAIFileObject, null, CreateFileParams>;
-  "/v1/files/:fileId": EndpointConfig<void, DeleteFileParams>;
-  "/v1/fine-tunes": EndpointConfig<FineTunesListResponse, ListFineTunesParams>;
-  "/v1/fine-tunes/:fineTuneId": EndpointConfig<
+  "/v1/models": APIConfig<ModelsListResponse, ListModelsParams>;
+  "/v1/models/:modelId": APIConfig<RetrieveModelResponse, RetrieveModelParams>;
+  "/v1/files": APIConfig<OpenAIFileObject, CreateFileParams, null>;
+  "/v1/files/:fileId": APIConfig<void, DeleteFileParams>;
+  "/v1/fine-tunes": APIConfig<FineTunesListResponse, ListFineTunesParams>;
+  "/v1/fine-tunes/:fineTuneId": APIConfig<
     FineTuneResponse,
     RetrieveFineTuneParams
   >;
-  "/v1/fine-tunes/:fineTuneId/events": EndpointConfig<
+  "/v1/fine-tunes/:fineTuneId/events": APIConfig<
     FineTuneEvent,
     ListFineTuneEventsParams
   >;
-  "/v1/fine-tunes/:fineTuneId/cancel": EndpointConfig<
+  "/v1/fine-tunes/:fineTuneId/cancel": APIConfig<
     FineTuneResponse,
     CancelFineTuneParams
   >;
 };
 
-const APIConfigMap: Record<
-  keyof OpenAIEndpoints,
-  FetchConfig<
-    OpenAIEndpoints,
-    OpenAIEndpoints[keyof OpenAIEndpoints]["method"],
-    keyof OpenAIEndpoints
-  >
-> = {
+type APIEndpointsMap = {
+  [K in keyof OpenAIEndpoints]: APIConfig<
+    OpenAIEndpoints[K]["response"],
+    OpenAIEndpoints[K]["params"],
+    OpenAIEndpoints[K]["body"]
+  >;
+};
+
+const endpointConfig: APIEndpointsMap = {
   "/v1/chat/completions": {
     method: "POST",
     endpoint: "/v1/chat/completions",
@@ -116,7 +113,12 @@ export const createOpenAIApi = ({
   const headers = createHeaders(apiKey, organizationId);
   const api = createFetchFactory<OpenAIEndpoints>({
     baseUrl: "https://api.openai.com",
-    config: APIConfigMap,
+    config: endpointConfig,
+    defaultHeaders: headers,
+  });
+
+  api.get({
+    endpoint: "/v1/chat/completions",
   });
 
   return api;

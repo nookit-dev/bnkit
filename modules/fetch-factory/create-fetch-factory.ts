@@ -4,13 +4,14 @@ export type FactoryMethods = keyof ReturnType<typeof createFetchFactory>;
 
 type EventHandlerMap = { [event: string]: (ev: MessageEvent) => void };
 
-export type EndpointConfig<
+export type APIConfig<
   TRes = any,
   TParams = any,
   TBody = any,
   THeaders extends HeadersInit = HeadersInit
 > = {
   method: HttpMethod;
+  endpoint: string;
   response?: TRes;
   params?: TParams;
   body?: TBody;
@@ -18,25 +19,8 @@ export type EndpointConfig<
 };
 
 export type TypeMap = {
-  [endpoint: string | number]: EndpointConfig;
+  [endpoint: string | number]: APIConfig;
 };
-
-export type FetchConfig<
-  TMap extends TypeMap,
-  Method extends HttpMethod,
-  Endpoint extends keyof TMap
-> = {
-  method: Method;
-  endpoint: Endpoint;
-  headers?: HeadersInit;
-} & (Method extends "GET" | "DELETE"
-  ? {
-      params?: TMap[Endpoint]["params"];
-    }
-  : {
-      body?: TMap[Endpoint]["body"];
-      params?: TMap[Endpoint]["params"];
-    });
 
 function appendURLParameters(
   url: string,
@@ -56,40 +40,83 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return await response.json();
 }
 
+type FileDownloadConfig = {
+  endpoint: string;
+  headers?: HeadersInit;
+  filename?: string;
+  params?: Record<string, string>;
+};
+
+type FetchFunction<TMap extends TypeMap> = <Endpoint extends keyof TMap>(
+  fetchConfig: Omit<APIConfig, "response" | "method"> & { endpoint: Endpoint }
+) => Promise<TMap[Endpoint]["response"]>;
+
 export function createFetchFactory<TMap extends TypeMap>({
   baseUrl = "",
   config,
+  defaultHeaders,
   debug = false,
 }: {
   baseUrl?: string;
   debug?: boolean;
-  config: Record<
-    keyof TMap,
-    FetchConfig<TMap, TMap[keyof TMap]["method"], keyof TMap>
-  >;
+  config: Record<keyof TMap, APIConfig>;
+  defaultHeaders?: HeadersInit; // Headers can be strings or functions returning strings
 }) {
+  function computeHeaders(customHeaders?: HeadersInit): HeadersInit {
+    const resultHeaders = new Headers(defaultHeaders);
+
+    if (customHeaders instanceof Headers) {
+      for (const [key, value] of customHeaders.entries()) {
+        resultHeaders.set(key, value);
+      }
+    } else if (Array.isArray(customHeaders)) {
+      customHeaders.forEach(([key, value]) => {
+        resultHeaders.set(key, value);
+      });
+    } else {
+      for (const [key, value] of Object.entries(customHeaders || {})) {
+        resultHeaders.set(key, value as string);
+      }
+    }
+
+    return resultHeaders;
+  }
+
+  type FetchConfig<
+    Endpoint extends keyof TMap,
+    Method extends HttpMethod
+  > = Omit<
+    APIConfig<
+      TMap[Endpoint]["response"],
+      TMap[Endpoint]["params"],
+      TMap[Endpoint]["body"],
+      HeadersInit
+    >,
+    "response" | "method"
+  > & {
+    endpoint: Endpoint;
+    method?: Method;
+  };
+
   async function fetcher<Endpoint extends keyof TMap>(
-    fetcherConfig: Omit<
-      FetchConfig<TMap, TMap[Endpoint]["method"], Endpoint>,
-      "method" | "endpoint"
-    >
+    fetcherConfig: FetchConfig<Endpoint, HttpMethod>
   ): Promise<TMap[Endpoint]["response"]> {
     const endpointConfig = config[fetcherConfig.endpoint];
     const finalUrl = appendURLParameters(
-      baseUrl + (endpointConfig.endpoint as string),
+      baseUrl + endpointConfig.endpoint,
       fetcherConfig.params
     );
 
-    const method = endpointConfig.method || "GET";
+    const method = endpointConfig.method;
     let bodyData = "";
 
-    if ("body" in fetcherConfig && fetcherConfig.body) {
+    if (fetcherConfig.body) {
       bodyData = JSON.stringify(fetcherConfig.body);
     }
 
     const response = await fetch(finalUrl, {
       method: method.toUpperCase(),
-      headers: fetcherConfig.headers,
+      headers: computeHeaders(fetcherConfig.headers), // Use the new function here
       body: bodyData,
     });
 
@@ -118,13 +145,6 @@ export function createFetchFactory<TMap extends TypeMap>({
     return es;
   }
 
-  type FileDownloadConfig = {
-    endpoint: string;
-    headers?: HeadersInit;
-    filename?: string;
-    params?: Record<string, string>;
-  };
-
   function fileDownload(config: FileDownloadConfig): void {
     if (typeof window === "undefined") return;
     const finalUrl = new URL(baseUrl + config.endpoint);
@@ -145,41 +165,48 @@ export function createFetchFactory<TMap extends TypeMap>({
   return {
     fetcher,
     get: <Endpoint extends keyof TMap>(
-      config: Omit<FetchConfig<TMap, "GET", Endpoint>, "method">
+      config: FetchConfig<Endpoint, "GET">
     ): Promise<TMap[Endpoint]["response"]> => {
-      return fetcher(config);
+      return fetcher({ ...config, method: "GET" });
     },
     post: <Endpoint extends keyof TMap>(
-      config: Omit<FetchConfig<TMap, "POST", Endpoint>, "method">
+      fetchConfig: FetchConfig<Endpoint, "POST"> & {
+        endpoint: Endpoint;
+      }
     ): Promise<TMap[Endpoint]["response"]> => {
-      return fetcher(config);
+      return fetcher({ ...fetchConfig, method: "POST" }); // Add method
     },
+
     postForm: <Endpoint extends keyof TMap>(
-      endpoint: Endpoint,
-      config: Omit<FetchConfig<TMap, "POST", Endpoint>, "method" | "endpoint">
+      fetchConfig: FetchConfig<Endpoint, "POST"> & {
+        endpoint: Endpoint;
+        boundary?: string;
+      }
     ): Promise<TMap[Endpoint]["response"]> => {
-      const defaultContentType = config.boundary
-        ? `multipart/form-data; boundary=${config.boundary}`
+      const defaultContentType = fetchConfig.boundary
+        ? `multipart/form-data; boundary=${fetchConfig.boundary}`
         : "multipart/form-data";
 
       const headers = {
         "Content-Type": defaultContentType,
-        ...config.headers,
+        ...fetchConfig.headers,
       };
 
       return fetcher({
-        ...config,
-        endpoint,
-        method: "POST",
+        ...fetchConfig,
         headers,
+        method: "POST", // Add method
       });
     },
+
     delete: <Endpoint extends keyof TMap>(
-      endpoint: Endpoint,
-      config: FetchConfig<TMap, "DELETE", Endpoint>
+      fetchConfig: FetchConfig<Endpoint, "DELETE"> & {
+        endpoint: Endpoint;
+      }
     ): Promise<TMap[Endpoint]["response"]> => {
-      return fetcher({ ...config, method: "DELETE", endpoint });
+      return fetcher({ ...fetchConfig, method: "DELETE" }); // Add method
     },
+
     createEventStream,
     fileDownload,
   };
