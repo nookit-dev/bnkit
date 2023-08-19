@@ -1,27 +1,27 @@
 import { ServerWebSocket, WebSocketHandler } from "bun";
 import { createStateDispatchers } from "./create-state-dispatchers";
 
-export type Dispatchers<State extends object> = {
+export type Dispatchers<State extends object, Options extends Object = {}> = {
   [Key in keyof State]: State[Key] extends (infer T)[]
     ? {
-        set: (value: State[Key]) => void;
-        push: (value: T) => void;
-        pop: () => void;
-        insert: (index: number, value: T) => void;
+        set: (value: State[Key], options?: Options) => void;
+        push: (value: T, options?: Options) => void;
+        pop: (options?: Options) => void;
+        insert: (index: number, value: T, options?: Options) => void;
       }
     : State[Key] extends object
     ? {
-        set: (value: State[Key]) => void;
-        update: (value: Partial<State[Key]>) => void;
+        set: (value: State[Key], options?: Options) => void;
+        update: (value: Partial<State[Key]>, options?: Options) => void;
       }
     : State[Key] extends number
     ? {
-        set: (value: State[Key]) => void;
-        increment: (amount?: number) => void;
-        decrement: (amount?: number) => void;
+        set: (value: State[Key], options?: Options) => void;
+        increment: (amount?: number, options?: Options) => void;
+        decrement: (amount?: number, options?: Options) => void;
       }
     : {
-        set: (value: State[Key]) => void;
+        set: (value: State[Key], options?: Options) => void;
       };
 };
 
@@ -30,6 +30,11 @@ export type Dispatchers<State extends object> = {
 export const createWSStateMachine = <State extends object>(
   initialState: State
 ) => {
+  type UpdatedStateData<Key extends keyof State> = {
+    key: Key;
+    value: State[Key];
+  };
+
   const connectedClients = new Set<ServerWebSocket>();
 
   let currentState: State = initialState;
@@ -71,26 +76,13 @@ export const createWSStateMachine = <State extends object>(
       // });
 
       if (typeof msg !== "string") return;
-      console.log({
-        msg,
-      });
 
       const data: { key: keyof State; value: State[keyof State] } =
         JSON.parse(msg);
       console.log({ data });
 
       if (data.key in currentState) {
-        // Ensure the key exists in the current state
-        currentState[data.key] = data.value;
-
-        stateChangeCallbacks[data.key]?.forEach((callback) =>
-          callback(data.value)
-        );
-
-        // Broadcast the updated state to all connected clients
-        for (const client of connectedClients) {
-          client.send(JSON.stringify(currentState));
-        }
+        updateStateAndDispatch(data.key, data.value);
       }
     },
   };
@@ -112,9 +104,18 @@ export const createWSStateMachine = <State extends object>(
 
     stateChangeCallbacks[key]?.forEach((callback) => callback(newValue));
 
-    // Broadcast the updated state to all connected clients
+    const updatedStateData: UpdatedStateData<typeof key> = {
+      key: key,
+      value: newValue,
+    };
+
+    console.log({
+      newValue,
+      updatedStateData,
+    });
+
     for (const client of connectedClients) {
-      client.send(JSON.stringify(currentState));
+      client.send(JSON.stringify(updatedStateData));
     }
   }
 

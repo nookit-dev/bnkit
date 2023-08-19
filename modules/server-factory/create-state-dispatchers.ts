@@ -12,75 +12,74 @@ function isNumberType(input: any): input is number {
   return typeof input === "number";
 }
 
-function createArrayDispatchers<Key, T>(
+function createArrayDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   state: T[],
-  updateFunction: (key: Key, value: T[]) => void
+  updateFunction: (key: Key, value: T[], opts?: Options) => void
 ) {
   return {
-    set: (value: T[]) => {
-      console.log({
-        set: "set",
-        key,
-        value,
-        updateFunction
-      });
-
-      updateFunction(key, value);
+    set: (value: T[], opts?: Options) => {
+      updateFunction(key, value, opts);
     },
-    push: (value: T) => {
+    push: (value: T, opts?: Options) => {
       const existingState = state || [];
       const newArr = [...existingState, value];
-      updateFunction(key, newArr);
+      updateFunction(key, newArr, opts);
     },
-    pop: () => {
+    pop: (opts?: Options) => {
       const newArr = state.slice(0, -1);
-      updateFunction(key, newArr);
+      updateFunction(key, newArr, opts);
     },
-    insert: (index: number, value: T) => {
+    insert: (index: number, value: T, opts?: Options) => {
       const newArr = [...state];
       newArr.splice(index, 0, value);
-      updateFunction(key, newArr);
+      updateFunction(key, newArr, opts);
     },
   };
 }
 
-function createObjectDispatchers<Key, T>(
+function createObjectDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   state: T,
-  updateFunction: (key: Key, value: any) => void
+  updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
   return {
-    set: (value: T) => updateFunction(key, value),
-    update: (value: Partial<T>) => {
+    set: (value: T, opts?: Options) => {
+      updateFunction(key, value, opts);
+    },
+    update: (value: Partial<T>, opts?: Options) => {
       const newValue = { ...state, ...value };
-      updateFunction(key, newValue);
+      updateFunction(key, newValue, opts);
     },
   };
 }
 
-function createNumberDispatchers<Key>(
+function createNumberDispatchers<Key, Options extends object = {}>(
   key: Key,
   state: number,
-  updateFunction: (key: Key, value: any) => void
+  updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
   return {
-    set: (value: number) => updateFunction(key, value),
-    increment: (amount: number = 1) => {
-      updateFunction(key, state + amount);
+    set: (value: number, opts?: Options) => {
+      updateFunction(key, value, opts);
     },
-    decrement: (amount: number = 1) => {
-      updateFunction(key, state - amount);
+    increment: (amount: number = 1, opts?: Options) => {
+      updateFunction(key, state + amount, opts);
+    },
+    decrement: (amount: number = 1, opts?: Options) => {
+      updateFunction(key, state - amount, opts);
     },
   };
 }
 
-function createDefaultDispatchers<Key, T>(
+function createDefaultDispatchers<Key, T, Options extends object = {}>(
   key: Key,
-  updateFunction: (key: Key, value: any) => void
+  updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
   return {
-    set: (value: T) => updateFunction(key, value),
+    set: (value: T, opts?: Options) => {
+      updateFunction(key, value, opts);
+    },
   };
 }
 
@@ -108,15 +107,18 @@ function mergeWithDefault<State extends object>(
   return mergedState as State;
 }
 
-export function createStateDispatchers<State extends object>({
+export function createStateDispatchers<
+  State extends object,
+  UpdateFnOpts extends object = {}
+>({
   defaultState,
   state,
   updateFunction,
 }: {
   state: State;
   defaultState: State;
-  updateFunction: (key: keyof State, value: any) => void;
-}): Dispatchers<State> {
+  updateFunction: (key: keyof State, value: any, opts?: UpdateFnOpts) => void;
+}): Dispatchers<State, UpdateFnOpts> {
   const mergedState = mergeWithDefault(defaultState, state);
 
   return (Object.keys(mergedState) as (keyof State)[]).reduce((acc, key) => {

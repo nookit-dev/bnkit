@@ -6,7 +6,7 @@ import type {
   CancelFineTuneParams,
   ChatCompletionParams as ChatCompletionBody,
   ChatCompletionResponse,
-  CreateFileParams,
+  CreateFileBody,
   DeleteFileParams,
   FineTuneEvent,
   FineTuneResponse,
@@ -29,7 +29,7 @@ type OpenAIEndpoints = {
   >;
   "/v1/models": APIConfig<ModelsListResponse, ListModelsParams>;
   "/v1/models/:modelId": APIConfig<RetrieveModelResponse, RetrieveModelParams>;
-  "/v1/files": APIConfig<OpenAIFileObject, CreateFileParams, null>;
+  "/v1/files": APIConfig<OpenAIFileObject, {}, CreateFileBody>;
   "/v1/files/:fileId": APIConfig<void, DeleteFileParams>;
   "/v1/fine-tunes": APIConfig<FineTunesListResponse, ListFineTunesParams>;
   "/v1/fine-tunes/:fineTuneId": APIConfig<

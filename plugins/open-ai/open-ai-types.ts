@@ -191,8 +191,9 @@ export type RetrieveModelParams = {
 
 export type FilesParams = {};
 
-export type CreateFileParams = {
-  formData: FormData;
+export type CreateFileBody = {
+  file: string; // Name of the JSON Lines file to be uploaded.
+  purpose: string; // The intended purpose of the uploaded documents.
 };
 
 export type RetrieveFileParams = {

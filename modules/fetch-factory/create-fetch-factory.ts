@@ -47,6 +47,12 @@ type FileDownloadConfig = {
   params?: Record<string, string>;
 };
 
+type MappedApiConfig<TMap extends TypeMap> = APIConfig<
+  TMap[keyof TMap]["response"],
+  TMap[keyof TMap]["params"],
+  TMap[keyof TMap]["body"],
+  HeadersInit
+>;
 
 export function createFetchFactory<TMap extends TypeMap>({
   baseUrl = "",
@@ -56,7 +62,7 @@ export function createFetchFactory<TMap extends TypeMap>({
 }: {
   baseUrl?: string;
   debug?: boolean;
-  config: Record<keyof TMap, APIConfig>;
+  config: Record<keyof TMap, MappedApiConfig<TMap>>;
   defaultHeaders?: HeadersInit; // Headers can be strings or functions returning strings
 }) {
   function computeHeaders(customHeaders?: HeadersInit): HeadersInit {
@@ -82,15 +88,7 @@ export function createFetchFactory<TMap extends TypeMap>({
   type FetchConfig<
     Endpoint extends keyof TMap,
     Method extends HttpMethod
-  > = Omit<
-    APIConfig<
-      TMap[Endpoint]["response"],
-      TMap[Endpoint]["params"],
-      TMap[Endpoint]["body"],
-      HeadersInit
-    >,
-    "response" | "method"
-  > & {
+  > = Omit<MappedApiConfig<TMap>, "response" | "method"> & {
     endpoint: Endpoint;
     method?: Method;
   };
