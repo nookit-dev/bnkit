@@ -1,38 +1,39 @@
-import { createContext, useContext, useMemo, useState } from "react";
-import { FetchConfig, createFetchFactory } from "../..";
-import { FetchFactoryConfig } from "./use-api-factory";
-import { FetchDataConfigMap } from "./use-fetch-with-context";
+import {
+  TypeMap,
+  createFetchFactory,
+} from "@u-tools/core/modules/fetch-factory";
+import React, { ReactNode, createContext, useContext, useMemo, useState } from "react";
+// TODO: This hook needs some more work
+type FetchFactoryReturn<ConfigMap extends TypeMap = {}> = ReturnType<
+  typeof createFetchFactory<ConfigMap>
+>;
 
-const FetchContext = createContext<ReturnType<typeof createFetchFactory>>(
+const FetchContext = createContext<FetchFactoryReturn>(
   createFetchFactory({
     baseUrl: "",
+    config: {
+      "/test": {
+        endpoint: "/test",
+        method: "GET",
+      },
+    },
   })
 );
 
-export type FetcherConfig<
-  ResponseType,
-  BodyType = undefined,
-  HeadersType = undefined,
-  ParamsType = undefined
-> = {
-  request: {
-    body?: BodyType;
-    params?: ParamsType;
-    headers?: HeadersType;
-  };
-  response: {
-    data: ResponseType;
-  };
-};
-
-export const FetchProvider = ({
+export const FetchProvider = <FetchConfig extends TypeMap>({
   children,
   factoryConfig,
 }: {
-  children: React.ReactNode;
-  factoryConfig: FetchFactoryConfig<FetchDataConfigMap>;
+  children: ReactNode;
+  factoryConfig: FetchConfig;
 }) => {
-  const fetchFactory = useMemo(() => createFetchFactory(factoryConfig), []);
+  const fetchFactory = useMemo(
+    () =>
+      createFetchFactory({
+        config: factoryConfig,
+      }),
+    []
+  );
 
   return (
     <FetchContext.Provider value={fetchFactory}>
@@ -57,7 +58,7 @@ type FetchState<DataT> =
   | { stage: "resolved"; data: DataT; retries: number }
   | { stage: "rejected"; data: null; retries: number };
 
-export function createApiHook<ConfigMap extends FetchDataConfigMap>({
+export function createApiHook<ConfigMap extends TypeMap>({
   configMap,
   baseUrl,
 }: {
@@ -69,10 +70,14 @@ export function createApiHook<ConfigMap extends FetchDataConfigMap>({
     const endpointConfig = configMap[endpointKey];
 
     if (!endpointConfig) {
-      throw new Error(`No configuration found for endpoint: ${endpointKey}`);
+      throw new Error(
+        `No configuration found for endpoint: ${
+          configMap[typeof endpointKey].endpoint
+        }`
+      );
     }
 
-    const { request, response } = endpointConfig;
+    const { response } = endpointConfig;
     type DataT = typeof response.data;
 
     const [state, setState] = useState<FetchState<DataT>>({
@@ -81,9 +86,7 @@ export function createApiHook<ConfigMap extends FetchDataConfigMap>({
       retries: 0,
     });
 
-    const fetchWithStateMachine = (
-      config: ConfigMap[typeof endpointKey]["request"]
-    ) => {
+    const fetchWithStateMachine = (config: ConfigMap[typeof endpointKey]) => {
       switch (state.stage) {
         case "idle":
           setState((prev) => ({
@@ -122,12 +125,12 @@ export function createApiHook<ConfigMap extends FetchDataConfigMap>({
       }
     };
 
-    return {
-      get: (fetchConfig: FetchConfig<typeof request.params, {}>) =>
-        fetchWithStateMachine(fetchConfig),
-      data: state.data,
-      // Include other properties/methods as needed
-    };
+    // return {
+    //   get: (fetchConfig: APIConfig<typeof request.params, {}>) =>
+    //     fetchWithStateMachine(fetchConfig),
+    //   data: state.data,
+    //   // Include other properties/methods as needed
+    // };
   };
 }
 

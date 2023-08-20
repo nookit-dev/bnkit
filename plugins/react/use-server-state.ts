@@ -1,6 +1,6 @@
+import { createStateDispatchers } from "@u-tools/core/modules/server-factory/create-state-dispatchers";
+import { Dispatchers } from "@u-tools/core/modules/server-factory/create-web-socket-state-machine";
 import { useEffect, useRef, useState } from "react";
-import { createStateDispatchers } from "../../modules/server-factory/create-state-dispatchers";
-import { Dispatchers } from "../../modules/server-factory/create-web-socket-state-machine";
 
 const MAX_RETRIES = 5;
 
