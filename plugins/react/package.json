@@ -1,6 +1,6 @@
 {
   "name": "@u-tools/react",
-  "version": "0.0.24",
+  "version": "0.0.26",
   "module": "index.ts",
   "main": "index.ts",
   "scripts": {
@@ -26,6 +26,6 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@u-tools/core": "latest"
+    "@u-tools/core": "^0.0.48"
   }
 }

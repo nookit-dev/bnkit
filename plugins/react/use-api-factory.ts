@@ -70,9 +70,6 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
     status: "idle",
     error: null,
   });
-  console.log({
-    fetchFactory: "init",
-  });
 
   const fetchData = useCallback(
     async (
@@ -94,7 +91,6 @@ export function createFetcher<DataType extends FetcherConfig<any, any, any>>(
     ) => {
       setState((prevState) => ({ ...prevState, status: "loading" }));
       try {
-        console.log({ defaultHeaders, headers });
         let result;
         switch (method) {
           case "GET":
