@@ -8,13 +8,115 @@ export type FileDirInfo = {
   size: number;
   extension: string;
 };
+export type FileWithContent = FileDirInfo & {
+  content: string;
+  type: "file";
+};
 
-/**
- * The `saveResultToFile` function saves the given content to a file at the specified file path.
- * @param {string} filePath - A string representing the file path where the result will be saved.
- * @param {string} content - The `content` parameter is a string that represents the content that you
- * want to save to a file.
- */
+export const defaultDirIgnore = {
+  node_modules: true,
+  ".git": true,
+  ".vscode": true,
+  ".idea": true,
+  cache: true,
+};
+
+export const defaultExtIgnore = {
+  log: true,
+  localstorage: true,
+  DS_Store: true,
+};
+
+const recursiveFileSearch = async ({
+  directory,
+  searchString,
+  ignoreDirectories = {},
+  ignoreFileTypes = {},
+}: {
+  directory: string;
+  searchString: string;
+  ignoreDirectories?: Record<string, boolean>;
+  ignoreFileTypes?: Record<string, boolean>;
+}): Promise<FileDirInfo[]> => {
+  const results: FileDirInfo[] = [];
+  const entries = await fsPromise.readdir(directory, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(directory, entry.name);
+
+    if (entry.isDirectory() && !ignoreDirectories[entry.name]) {
+      const nestedResults = await recursiveFileSearch({
+        directory: fullPath,
+        searchString,
+        ignoreDirectories,
+        ignoreFileTypes,
+      });
+      results.push(...nestedResults);
+    } else if (entry.isFile()) {
+      const extension = path.extname(entry.name).slice(1);
+      if (entry.name.includes(searchString) && !ignoreFileTypes[extension]) {
+        const bunFileInfo = Bun.file(fullPath);
+        results.push({
+          type: "file",
+          name: entry.name,
+          fullPath,
+          size: bunFileInfo.size,
+          extension,
+        });
+      }
+    }
+  }
+
+  return results;
+};
+
+const recursiveFileContentSearch = async ({
+  directory,
+  searchString,
+  ignoreDirectories = {},
+  ignoreFileTypes = {},
+}: {
+  directory: string;
+  searchString: string;
+  ignoreDirectories?: Record<string, boolean>;
+  ignoreFileTypes?: Record<string, boolean>;
+}): Promise<FileWithContent[]> => {
+  const results: FileWithContent[] = [];
+  const entries = await fsPromise.readdir(directory, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(directory, entry.name);
+
+    if (entry.isDirectory() && !ignoreDirectories[entry.name]) {
+      const nestedResults = await recursiveFileContentSearch({
+        directory: fullPath,
+        searchString,
+        ignoreDirectories,
+        ignoreFileTypes,
+      });
+      results.push(...nestedResults);
+    } else if (entry.isFile()) {
+      const extension = path.extname(entry.name).slice(1);
+      if (!ignoreFileTypes[extension]) {
+        const content = await Bun.file(fullPath).text();
+        if (content.includes(searchString)) {
+          const bunFileInfo = Bun.file(fullPath);
+          results.push({
+            type: "file",
+            name: entry.name,
+            fullPath,
+            size: bunFileInfo.size,
+            extension,
+            content,
+          });
+        }
+      }
+    }
+  }
+
+  return results;
+};
+
 export const saveResultToFile = async (
   filePath: string,
   content: string
@@ -28,7 +130,6 @@ export const saveResultToFile = async (
   }
 };
 
-// Helper function to read content of a single file
 async function readFileContent(
   filePath: string
 ): Promise<{ path: string; content: string }> {
@@ -41,16 +142,6 @@ async function readFileContent(
   }
 }
 
-/**
- * The function `readFilesContents` reads the contents of multiple files specified by their file paths
- * and returns an array of objects containing the file path and its content.
- * @param {string[]} filePaths - An array of strings representing the paths of the files you want to
- * read.
- * @returns The function `readFilesContents` returns an array of objects, where each object has two
- * properties: `path` and `content`. The `path` property is a string representing the filename
- * extracted from the file path, and the `content` property is a string representing the contents of
- * the file. The function also has a return type of `{ path: string; content: string }[] | undefined
- */
 export const readFilesContents = async (
   filePaths: string[]
 ): Promise<{ path: string; content: string }[] | undefined> => {
@@ -77,15 +168,6 @@ type FileFactoryOptions = {
   baseDirectory: string;
 };
 
-/**
- * The `createFileFactory` function creates a file factory object that provides methods for
- * manipulating files, such as updating files, reading file contents, searching directories, checking
- * file existence, deleting files, reading JSON files, and writing JSON files.
- * @param {FileFactoryOptions}  - - `baseDirectory`: The base directory where the files will be created
- * or searched.
- * @returns The function `createFileFactory` returns an object with the following properties and
- * corresponding values:
- */
 export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
   const getFullPath = (filePath: string) => {
     try {
@@ -101,32 +183,19 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
     }
   };
 
-  /**
-   * Updates multiple files with the provided data.
-   *
-   * @param {string[]} filePaths - An array of file paths to update.
-   * @param {string} data - The data to write to the files.
-   * @return {Promise<void>} A promise that resolves when all files have been updated.
-   */
   const updateFiles = async (filePaths: string[], data: string) => {
     const promises = filePaths.map(async (filePath) => {
       const fullPath = getFullPath(filePath);
-      await fsPromise.writeFile(fullPath, data);
+      await Bun.write(fullPath, data);
     });
     return Promise.all(promises);
   };
 
-  /**
-   * Reads the raw text content of multiple files asynchronously.
-   *
-   * @param {string[]} filePaths - An array of file paths to read.
-   * @return {Promise<string[]>} A promise that resolves to an array of raw text content from the files.
-   */
   const readFilesRawText = async (filePaths: string[]) => {
     try {
       const promises = filePaths.map(async (filePath) => {
         const fullPath = getFullPath(filePath);
-        const data = await fsPromise.readFile(fullPath, "utf-8");
+        const data = await Bun.file(fullPath).text();
         return data;
       });
 
@@ -135,13 +204,6 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
       throw error;
     }
   };
-
-  /**
-   * Searches for a file in the specified directory.
-   *
-   * @param {string} fileName - The name of the file to search for.
-   * @return {Promise<boolean>} A promise that resolves to true if the file is found, and false otherwise.
-   */
 
   const searchDirectory = async (fileName: string) => {
     async function searchDir(dir: string): Promise<boolean> {
@@ -164,19 +226,13 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
   const fileExists = async (filePath: string) => {
     const fullPath = getFullPath(filePath);
     try {
-      await fsPromise.access(fullPath, fsPromise.constants.F_OK);
+      await Bun.file(fullPath).text(); // Trying to read the file to check its existence.
       return true;
     } catch (error) {
-      return false;
+      return false; // Assuming error occurs if file doesn't exist.
     }
   };
 
-  /**
-   * Deletes a file at the specified file path.
-   *
-   * @param {string} filePath - The path of the file to be deleted.
-   * @return {Promise<void>} A promise that resolves when the file is successfully deleted.
-   */
   const deleteFile = async (filePath: string) => {
     try {
       const fullPath = getFullPath(filePath);
@@ -189,7 +245,7 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
 
   const readJson = async (filePath: string) => {
     try {
-      const rawText = await fsPromise.readFile(filePath, "utf8");
+      const rawText = await Bun.file(filePath).text();
       return JSON.parse(rawText);
     } catch (error) {
       console.error(`Error reading JSON file: ${error}`);
@@ -197,21 +253,11 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
     }
   };
 
-  /**
-   * Writes JSON data to a file.
-   *
-   * @param {string} filePath - The path of the file to write the JSON data to.
-   * @param {any} data - The JSON data to write to the file.
-   * @return {Promise<void>} - A Promise that resolves when the file has been written.
-   */
   const writeJson = async (filePath: string, data: any) => {
     try {
       const jsonString = JSON.stringify(data, null, 2);
-      const dir = path.dirname(filePath);
-
-      console.log({ dir, filePath });
-      await fsPromise.mkdir(dir, { recursive: true });
-      await updateFiles([filePath], jsonString);
+      await Bun.write(filePath, jsonString);
+      return jsonString;
     } catch (error: any) {
       throw error;
     }
@@ -244,13 +290,6 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
     await fsPromise.writeFile(fullPath, content);
   };
 
-  /**
-   * Retrieves a list of files and folders in the specified directory path.
-   *
-   * @param {string} dirPath - The path of the directory to retrieve the files and folders from.
-   * @return {Array<Object>} An array of objects containing information about each file and folder in the directory.
-   * Each object has the properties: type (file, directory, other), name (the name of the file or folder), and fullPath (the full path of the file or folder).
-   */
   const listFilesAndFolderInPath = async (
     dirPath: string
   ): Promise<FileDirInfo[]> => {
@@ -307,5 +346,7 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
     directoryExists,
     createFileWithContent,
     listFilesAndFolderInPath,
+    recursiveFileSearch,
+    recursiveFileContentSearch,
   };
 }
