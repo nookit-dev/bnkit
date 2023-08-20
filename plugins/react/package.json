@@ -26,6 +26,6 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@u-tools/core": "^0.0.48"
+    "@u-tools/core": "0.0.49"
   }
 }
