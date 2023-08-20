@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  DispatcherOpts,
-  createStateDispatchers,
-} from "../../modules/server-factory/create-state-dispatchers";
+import { createStateDispatchers } from "../../modules/server-factory/create-state-dispatchers";
 import { Dispatchers } from "../../modules/server-factory/create-web-socket-state-machine";
+
+const MAX_RETRIES = 5;
 
 const getAppStateFromLocalStorage = <State extends object>(
   defaultState: State
@@ -11,7 +10,10 @@ const getAppStateFromLocalStorage = <State extends object>(
   const appStateString = localStorage.getItem("appState");
 
   try {
-    return appStateString ? JSON.parse(appStateString) : defaultState;
+    const storedState = appStateString ? JSON.parse(appStateString) : {};
+    // Merge the default state with the stored state.
+    // This will ensure that missing keys in storedState will be taken from defaultState.
+    return { ...defaultState, ...storedState };
   } catch (error) {
     return defaultState;
   }
@@ -19,25 +21,29 @@ const getAppStateFromLocalStorage = <State extends object>(
 
 type OptimisticMap<State> = Partial<Record<keyof State, boolean>>;
 
-export function useServerState<State extends object>({
+export type DefaultOptions = {
+  optimistic?: boolean;
+};
+
+export function useServerState<
+  State extends object,
+  Options extends DefaultOptions = {}
+>({
   defaultState,
   url,
-  debounceMap,
   optimisticMap,
 }: {
   url: string;
   defaultState: State;
-  debounceMap?: Partial<Record<keyof State, number>>; // A map of state keys to debounce durations
   optimisticMap?: OptimisticMap<State>;
 }): {
   state: State;
-  control: Dispatchers<
-    State,
-    {
-      debounce: number;
-      optimistic: boolean;
-    }
-  >;
+  control: Dispatchers<State, Options>;
+  dispatch: (
+    key: keyof State,
+    value: State[keyof State],
+    opts?: Options
+  ) => void;
 } {
   const [state, setState] = useState<State>(() =>
     getAppStateFromLocalStorage(defaultState)
@@ -45,23 +51,52 @@ export function useServerState<State extends object>({
   const wsRef = useRef<WebSocket | null>(null);
   const initialized = useRef(false);
   const prevStateRef = useRef<State | null>(null);
+  const retryCount = useRef(0);
 
   useEffect(() => {
-    const websocket = new WebSocket(url);
-    wsRef.current = websocket;
+    const connectToServer = () => {
+      const websocket = new WebSocket(url);
+      wsRef.current = websocket;
 
-    websocket.onmessage = (event) => {
-      if (typeof event.data !== "string") return;
-      const { status } = JSON.parse(event.data);
+      websocket.onopen = () => {
+        retryCount.current = 0;
+      };
 
-      // If the server returns a failure status, revert the state.
-      if (status === "failure" && prevStateRef.current) {
-        setState(prevStateRef.current);
-      }
+      websocket.onmessage = (event) => {
+        if (typeof event.data !== "string") return;
+        const receivedData = JSON.parse(event.data);
+
+        if (receivedData.status === "failure" && prevStateRef.current) {
+          setState(prevStateRef.current);
+        } else if (receivedData.key && "value" in receivedData) {
+          setState((prevState) => ({
+            ...prevState,
+            [receivedData.key]: receivedData.value,
+          }));
+        }
+      };
+
+      websocket.onclose = (event) => {
+        // Check if the WebSocket was closed unexpectedly and we haven't exceeded max retries
+        if (event.code !== 1000 && retryCount.current < MAX_RETRIES) {
+          retryCount.current += 1;
+          const delay = Math.min(1000 * retryCount.current, 30000);
+          setTimeout(connectToServer, delay);
+        } else {
+          retryCount.current = 0; // Reset retry count if we've reached max retries or if closure was normal
+        }
+      };
+
+      return () => {
+        websocket?.close?.();
+      };
     };
 
+    connectToServer();
+
+    // Clean up function
     return () => {
-      websocket.close();
+      wsRef.current?.close();
     };
   }, [url]);
 
@@ -82,40 +117,27 @@ export function useServerState<State extends object>({
   }, [state]);
 
   const sendToServer = (key: keyof State, value: State[keyof State]) => {
-    if (wsRef.current) {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({ key, value }));
-    }
-  };
-
-  const debounceSendToServer = (
-    key: keyof State,
-    value: State[keyof State]
-  ) => {
-    const debounceDuration = debounceMap?.[key];
-    if (debounceDuration) {
-      debounce(sendToServer, debounceDuration)(key, value);
-    } else {
-      sendToServer(key, value);
     }
   };
 
   const dispatch = (
     key: keyof State,
     value: State[keyof State],
-    opts?: DispatcherOpts
+    opts?: Options
   ) => {
-    const isOptimistic =
-      opts?.optimisticUpdate ?? optimisticMap?.[key] !== false;
+    const isOptimistic = opts?.optimistic ?? optimisticMap?.[key] !== false;
 
     if (isOptimistic) {
       prevStateRef.current = state;
       setState((prev) => ({ ...prev, [key]: value }));
     }
 
-    debounceSendToServer(key, value);
+    sendToServer(key, value);
   };
 
-  const control = createStateDispatchers<State>({
+  const control = createStateDispatchers<State, Options>({
     defaultState,
     state,
     updateFunction: dispatch,
@@ -124,5 +146,6 @@ export function useServerState<State extends object>({
   return {
     state,
     control,
+    dispatch,
   };
 }

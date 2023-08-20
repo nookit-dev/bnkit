@@ -38,6 +38,25 @@ function createArrayDispatchers<Key, T, Options extends object = {}>(
   };
 }
 
+function isBooleanType(input: any): input is boolean {
+  return typeof input === "boolean";
+}
+
+function createBooleanDispatchers<Key, Options extends object = {}>(
+  key: Key,
+  state: boolean,
+  updateFunction: (key: Key, value: any, opts?: Options) => void
+) {
+  return {
+    set: (value: boolean, opts?: Options) => {
+      updateFunction(key, value, opts);
+    },
+    toggle: (opts?: Options) => {
+      updateFunction(key, !state, opts);
+    },
+  };
+}
+
 function createObjectDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   state: T,
@@ -131,6 +150,8 @@ export function createStateDispatchers<
       acc[k] = createObjectDispatchers(k, currentValue, updateFunction) as any;
     } else if (isNumberType(currentValue)) {
       acc[k] = createNumberDispatchers(k, currentValue, updateFunction) as any;
+    } else if (isBooleanType(currentValue)) {
+      acc[k] = createBooleanDispatchers(k, currentValue, updateFunction) as any;
     } else {
       acc[k] = createDefaultDispatchers(k, updateFunction) as any;
     }
