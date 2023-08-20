@@ -7,7 +7,7 @@ export async function handleFileUpload({
 }): Promise<string> {
   const file = Bun.file(path);
   if ((await file?.exists()) === true) {
-    console.log("file already exists");
+    console.error("file already exists");
     return path;
   }
 

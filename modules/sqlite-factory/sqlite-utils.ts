@@ -35,7 +35,7 @@ export function createTableQuery<
   foreignKeys?: ForeignKeysType<Schema>;
 }): string {
   if (debug) {
-    console.log({ schema, tableName });
+    console.info({ schema, tableName });
   }
 
   const fields = formatSchema(schema);
@@ -48,7 +48,7 @@ export function createTableQuery<
   }
 
   if (debug) {
-    console.log({ query, fields, schema, tableName });
+    console.info({ query, fields, schema, tableName });
   }
 
   return query;

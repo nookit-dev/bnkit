@@ -62,8 +62,6 @@ describe("createSqliteFactory", () => {
 
     const updatedNotes = await notesTable.read();
 
-    console.log({ updatedNotes });
-
     expect(updatedNotes).toEqual([{ id: 1, text: "some text updated" }]);
   });
   it("should create and read a note in  sqlite and delete it", async () => {
@@ -87,8 +85,6 @@ describe("createSqliteFactory", () => {
     await notesTable.deleteById(1);
 
     const updatedNotes = await notesTable.read();
-
-    console.log({ updatedNotes });
 
     expect(updatedNotes).toEqual([]);
   });

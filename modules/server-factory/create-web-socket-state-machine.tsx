@@ -47,10 +47,6 @@ export const createWSStateMachine = <State extends object>(
     key: Key,
     callback: (newValue: State[Key]) => void
   ) {
-    console.log({
-      key,
-      callback,
-    });
     if (!stateChangeCallbacks[key]) {
       stateChangeCallbacks[key] = [];
     }
@@ -69,17 +65,10 @@ export const createWSStateMachine = <State extends object>(
       connectedClients.delete(ws);
     },
     message: (_ws, msg) => {
-      // Your message handling logic here
-      // This part may be more complex based on your state shape and update requirements
-      // console.log({
-      //   msg,
-      // });
-
       if (typeof msg !== "string") return;
 
       const data: { key: keyof State; value: State[keyof State] } =
         JSON.parse(msg);
-      console.log({ data });
 
       if (data.key in currentState) {
         updateStateAndDispatch(data.key, data.value);
@@ -108,11 +97,6 @@ export const createWSStateMachine = <State extends object>(
       key: key,
       value: newValue,
     };
-
-    console.log({
-      newValue,
-      updatedStateData,
-    });
 
     for (const client of connectedClients) {
       client.send(JSON.stringify(updatedStateData));

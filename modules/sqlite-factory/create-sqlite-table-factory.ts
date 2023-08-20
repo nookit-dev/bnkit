@@ -33,7 +33,7 @@ export function createSqliteTableFactory<Schema extends SchemaType>(
 ) {
   const log = (...args: any) => {
     if (debug) {
-      console.log(...args);
+      console.info(...args);
     }
   };
 

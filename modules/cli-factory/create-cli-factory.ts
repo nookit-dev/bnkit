@@ -4,6 +4,10 @@ import { BaseError } from "utils/base-error";
 import { createFileFactory } from "../..";
 import { defaultLogger } from "../logger-factory";
 
+const cliLog = (...args: any[]) => {
+  console.info(...args);
+};
+
 // Get user input asynchronously
 export async function getUserInput(): Promise<string> {
   const proc = Bun.spawn([]);
@@ -40,7 +44,7 @@ export function getOptionValue(
     const type = optionDef.types.find(
       (type) => type === typeof nextArg || type === typeof value
     );
-    console.log("Type found: ", type); // Debug log
+    cliLog("Type found: ", type); // Debug log
     if (type === "boolean") {
       if (nextArg.toLowerCase() === "true") {
         value = true;
@@ -54,7 +58,7 @@ export function getOptionValue(
     value = true;
   }
 
-  console.log("Returned value: ", value); // Debug log
+  cliLog("Returned value: ", value); // Debug log
   return value;
 }
 
@@ -125,10 +129,10 @@ export const getAdditionalPrompt = () =>
 export const chooseActions = async (
   actionsConfig: Record<string, any>
 ): Promise<Array<keyof typeof actionsConfig>> => {
-  console.log("\nChoose actions (separated by commas):");
+  cliLog("\nChoose actions (separated by commas):");
   const actions = Object.keys(actionsConfig);
   actions.forEach((action, index) => {
-    console.log(`${index + 1}. ${action}`);
+    cliLog(`${index + 1}. ${action}`);
   });
 
   const rl = readline.createInterface({
@@ -159,7 +163,7 @@ export const chooseActions = async (
       (index) => actions[index] as keyof typeof actionsConfig
     );
   } else {
-    console.log("Invalid input, please try again.");
+    cliLog("Invalid input, please try again.");
     return chooseActions(actionsConfig);
   }
 };

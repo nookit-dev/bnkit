@@ -4,7 +4,6 @@ const parsedBodies = new WeakMap<Request, any>();
 
 export const bodyParserMiddleware: Middleware = async (request, next) => {
   const contentType = request.headers.get("Content-Type");
-  console.log({ contentType });
 
   if (contentType && contentType.includes("application/json")) {
     const rawBody = await request.text();

@@ -18,14 +18,6 @@ export const createCorsMiddleware = (
   const allowedHeaders = options?.allowedHeaders || defaultHeaders;
 
   return async (request, next) => {
-    console.log("middleware running");
-    console.log({
-      headers: request.headers,
-      request,
-      options,
-      allowedOrigins,
-    });
-
     const requestOrigin = request.headers.get("Origin");
 
     if (!requestOrigin) {
@@ -72,8 +64,6 @@ export const createCorsMiddleware = (
         allowedHeaders.join(", ")
       );
 
-      console.log(response);
-
       return response;
     }
 
@@ -89,8 +79,6 @@ export const createCorsMiddleware = (
       "Access-Control-Allow-Headers",
       allowedHeaders.join(", ")
     );
-
-    console.log(response);
 
     return response;
   };

@@ -126,7 +126,7 @@ export function createFetchFactory<TMap extends TypeMap>({
     const es = new EventSource(url);
 
     es.onopen = (event) => {
-      console.log("Stream opened:", event);
+      console.info("Stream opened:", event);
     };
 
     es.onerror = (error) => {

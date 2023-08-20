@@ -227,14 +227,14 @@ export function createServerFactory(
       port: 3000,
       websocket: {
         message: () => {
-          console.log("websocket msg");
+          console.info("websocket msg");
         },
       },
       verbose: false,
     }
   ) => {
     try {
-      if (verbose) console.log(`Starting server on port ${port}...`);
+      if (verbose) console.info(`Starting server on port ${port}...`);
 
       server = Bun.serve({
         fetch,
@@ -242,13 +242,13 @@ export function createServerFactory(
         hostname,
         websocket: websocket || {
           message: () => {
-            console.log("msg");
+            console.info("msg");
           },
         },
       });
 
       if (verbose)
-        console.log(
+        console.info(
           `Server started on port ${port}, press Ctrl+C to stop, http://${hostname}:${port}`
         );
 
