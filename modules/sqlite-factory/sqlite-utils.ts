@@ -1,4 +1,4 @@
-import { TypeMapping } from "types";
+import { TypeMapping } from "../types";
 import { ForeignKeysType } from "./create-sqlite-table-factory";
 
 // Utility functions

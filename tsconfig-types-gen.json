@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/types", // Specify an output directory for type declarations
+    "declarationDir": "./dist/types",
+    "composite": true
+  },
+  "include": ["modules/**/*.ts"],
+  "exclude": ["modules/**/*.test.ts"]
+}

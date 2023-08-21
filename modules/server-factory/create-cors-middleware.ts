@@ -1,4 +1,4 @@
-import { CORSOptions, Middleware } from "utils/http-types";
+import { CORSOptions, Middleware } from "../utils/http-types";
 
 export const createCorsMiddleware = (
   options?: Partial<CORSOptions>

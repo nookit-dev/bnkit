@@ -1,3 +1,7 @@
+declare var document: {
+  cookie: any;
+};
+
 export function createClientCookieFactory() {
   const setCookie = (
     name: string,

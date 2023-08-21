@@ -138,7 +138,7 @@ export function createStateDispatchers<
   defaultState: State;
   updateFunction: (key: keyof State, value: any, opts?: UpdateFnOpts) => void;
 }): Dispatchers<State, UpdateFnOpts> {
-  const mergedState = mergeWithDefault(defaultState, state);
+  const mergedState =  mergeWithDefault(defaultState, state);
 
   return (Object.keys(mergedState) as (keyof State)[]).reduce((acc, key) => {
     const k = key as keyof State;

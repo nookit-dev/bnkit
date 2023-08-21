@@ -267,9 +267,9 @@ export function createFileFactory({ baseDirectory }: FileFactoryOptions) {
     try {
       // Try accessing the directory
       await fsPromise.access(directoryPath, fsPromise.constants.F_OK);
-    } catch (error) {
+    } catch (error: any) {
       // If access failed because the directory doesn't exist, create the directory
-      if (error.code === "ENOENT") {
+      if (error?.code === "ENOENT") {
         await fsPromise.mkdir(directoryPath, { recursive: true });
         console.info(`Created directory: ${directoryPath}`);
       } else {

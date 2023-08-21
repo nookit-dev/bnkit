@@ -3,12 +3,6 @@ interface ClassNameMap {
   [key: string]: boolean | null | undefined;
 }
 
-/**
- * Generates a string of CSS class names based on the input arguments.
- *
- * @param {...ClassName} args - The input arguments of type 'ClassName'.
- * @returns {string} - The generated string of CSS class names.
- */
 export function classy(...args: ClassName[]): string {
   const classes: string[] = [];
 

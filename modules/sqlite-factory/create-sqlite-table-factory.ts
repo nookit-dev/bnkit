@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { SchemaType, SchemaTypeInference } from "types";
+import { SchemaType, SchemaTypeInference } from "../types";
 import { createTableQuery } from "./sqlite-utils";
 
 export type ForeignKeysType<Schema> =

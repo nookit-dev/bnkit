@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, jest, test } from "bun:test";
 import { createClientCookieFactory } from "./create-client-side-cookie-factory";
 
+declare var document: {
+  cookie: any;
+};
 
 const mockDocument = {
   _cookie: "",

@@ -14,6 +14,10 @@ const defaultExtensionInfo: FileExtensionType = {
   encoding: "",
 };
 
+type ExtensionMap = {
+  [key: string]: FileExtensionType;
+};
+
 export const fileExtensionMap = {
   ts: {
     name: "TypeScript",
@@ -257,11 +261,11 @@ export const fileExtensionMap = {
     mime: "application/vnd.oasis.opendocument.presentation",
     encoding: "",
   },
-};
+} satisfies ExtensionMap;
 
-export const fullMimeForExtension = (
-  extension: keyof typeof fileExtensionMap | string
-) => {
+export type ExtensionMapKeys = keyof typeof fileExtensionMap;
+
+export const fullMimeForExtension = (extension: ExtensionMapKeys) => {
   let extensionType = fileExtensionMap[extension] ?? defaultExtensionInfo;
 
   // If there's no encoding specified, return just the MIME type.

@@ -50,9 +50,8 @@ export function handleError(
   }
 }
 
-export function createValidatorFactory<Schema extends object>(
-  schema: Schema
-) {
+export function createValidatorFactory<Schema extends Record<string, any>>(schema: Schema) {
+  type SchemaKeys = keyof Schema;
   function validateItem(item: any): Schema {
     if (typeof item !== "object" || item === null) {
       throw handleError(
@@ -63,8 +62,8 @@ export function createValidatorFactory<Schema extends object>(
 
     const validateSchema: Schema = {} as Schema;
 
-    const isValid = Object.keys(schema).every((key) => {
-      const typedKey = key as keyof Schema;
+    const isValid = Object.keys(schema as Schema).every((key) => {
+      const typedKey: SchemaKeys = key as SchemaKeys;
       const expectedType = schema[key];
       const actualType = typeof item[key];
 
@@ -72,9 +71,7 @@ export function createValidatorFactory<Schema extends object>(
         return false;
       }
 
-      validateSchema[typedKey] = item[
-        key
-      ] as Schema[keyof Schema];
+      validateSchema[typedKey] = item[key] as Schema[keyof Schema];
       return true;
     });
 

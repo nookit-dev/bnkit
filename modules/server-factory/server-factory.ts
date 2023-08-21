@@ -6,9 +6,9 @@ import {
   ResponseBodyTypes,
   RouteHandler,
   RouteMap,
-  RouteOptions,
+  RouteOptions, 
   StartServerOptions,
-} from "utils/http-types";
+} from "../utils/http-types";
 import { bodyParserMiddleware, getParsedBody } from "./body-parser-middleware";
 import { checkFileSizeMiddleware } from "./check-file-size-middleware";
 import { createCorsMiddleware } from "./create-cors-middleware";
@@ -242,7 +242,7 @@ export function createServerFactory(
         hostname,
         websocket: websocket || {
           message: () => {
-            console.info("msg");
+            console.error("Default websocket Handler");
           },
         },
       });

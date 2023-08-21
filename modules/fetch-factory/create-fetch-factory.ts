@@ -1,4 +1,12 @@
-import { HttpMethod } from "utils/http-types";
+declare var window: any;
+declare var document: {
+  createElement: any;
+  body: {
+    appendChild: any;
+    removeChild: any;
+  };
+};
+import { HttpMethod } from "../utils/http-types";
 
 export type FactoryMethods = keyof ReturnType<typeof createFetchFactory>;
 

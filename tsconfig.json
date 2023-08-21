@@ -14,12 +14,7 @@
     "types": [
       "bun-types" // add Bun global
     ],
-    "baseUrl": "./modules",
-    // type alias packages
-    "paths": {
-      "@plugins/*": ["plugins/*"],
-      "@react-fetcher": ["plugins/react-fetcher/react-fetcher.ts"],
-      "@apps/*": ["apps/*"]
-    }
-  }
+    "baseUrl": "."
+  },
+  "include": ["modules/**/*.ts", "apps/**/*.ts", "_examples/**/*.ts"]
 }

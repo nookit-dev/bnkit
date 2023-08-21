@@ -1,4 +1,4 @@
-import { Middleware } from "utils/http-types";
+import { Middleware } from "../utils/http-types";
 
 export function checkFileSizeMiddleware(maxSize: number): Middleware {
   return (request, next) => {

@@ -1,0 +1,25 @@
+name: Yeet All Action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  yeet-all:
+    name: Run yeet-all script
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run yeet-all script
+        run: bun run yeet-all
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

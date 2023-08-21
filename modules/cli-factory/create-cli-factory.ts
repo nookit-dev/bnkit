@@ -1,6 +1,6 @@
 import fsPromise from "fs/promises";
 import readline from "readline";
-import { BaseError } from "utils/base-error";
+import { BaseError } from "../utils/base-error";
 import { createFileFactory } from "../..";
 import { defaultLogger } from "../logger-factory";
 

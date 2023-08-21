@@ -1,0 +1,31 @@
+name: PR Build and Test Action
+
+on:
+  pull_request:
+    types: [synchronize, opened, reopened]
+
+jobs:
+  build-and-test:
+    name: Build and Test on PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bun test
+
+      - name: Build app
+        run: bun run build
+
+      # Assuming you have a script or command to create a beta package
+      # If not, this step should be modified accordingly
+      - name: Create alpha package with random hash version
+        run: | 
+            ./alpha-release.sh

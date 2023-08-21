@@ -8,7 +8,6 @@ import { createFileFactory, saveResultToFile } from "./files-folder";
 const getTestFactory = () => {
   return createFileFactory({
     baseDirectory: ".",
-    errorHandler: defaultErrorHandler(),
   });
 };
 
