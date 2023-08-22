@@ -25,6 +25,7 @@ export const defaultExtIgnore = {
   log: true,
   localstorage: true,
   DS_Store: true,
+  testing: true
 };
 
 const recursiveFileSearch = async ({
