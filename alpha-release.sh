@@ -2,7 +2,11 @@
 
 # Generate a random hash for the alpha version
 HASH=$(openssl rand -hex 8)
-ALPHA_VERSION="alpha-$HASH"
+CURRENT_VERSION=$(npm info "@u-tools/core" version)
+ALPHA_VERSION="$CURRENT_VERSION-alpha.$HASH"
+
+echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+echo "Starting to publish alpha version: $ALPHA_VERSION"
 
 # Update the npm version
 npm version --no-git-tag-version $ALPHA_VERSION

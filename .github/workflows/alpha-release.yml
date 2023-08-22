@@ -27,5 +27,6 @@ jobs:
       # Assuming you have a script or command to create a beta package
       # If not, this step should be modified accordingly
       - name: Create alpha package with random hash version
-        run: | 
-            ./alpha-release.sh
+        run: ./alpha-release.sh
+        env:
+            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
