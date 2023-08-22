@@ -1,6 +1,6 @@
 {
   "name": "@u-tools/open-ai",
-  "version": "0.0.60",
+  "version": "0.0.61",
   "main": "index.ts",
   "description": "U Tools is a simple zero-dependency, fast, and lightweight toolkit for Bun, u-tools openai api plugin using the core fetcher factory",
   "license": "MIT",
