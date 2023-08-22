@@ -37,4 +37,4 @@ jobs:
           git push origin HEAD:main
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GIT_HTTPS_URL: "https://${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}"
+          GIT_HTTPS_URL: "https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/${{ github.repository }}"
