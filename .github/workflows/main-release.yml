@@ -15,6 +15,13 @@ jobs:
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
 
+      - name: Set Git Credentials
+        run: |
+          git config --global credential.helper store
+          echo "https://$PERSONAL_ACCESS_TOKEN_GITHUB:x-oauth-basic@github.com" > ~/.git-credentials
+        env:
+          PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+
       - name: Install bun
         uses: oven-sh/setup-bun@v1
 
@@ -35,7 +42,7 @@ jobs:
         run: bun run yeet-all
 
       - name: Push version bump commit
-        run: git push "https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/${{ github.repository }}" HEAD:main
+        run: git push origin HEAD:main
 
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
