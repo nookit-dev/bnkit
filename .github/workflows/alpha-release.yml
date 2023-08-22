@@ -30,11 +30,8 @@ jobs:
       - name: Set up npm authentication
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      # - name: Run tests
-      #   run: bun test
-
-      # - name: Build app
-      #   run: bun run build
+      - name: Run tests
+        run: bun test
 
       - name: Create alpha package with random hash version
         run: ./alpha-release.sh
