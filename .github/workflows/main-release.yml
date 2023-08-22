@@ -19,7 +19,16 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+        # Set git user because the next step creates a commit
+      - name: Set git user
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
       - name: Run yeet-all script
         run: bun run yeet-all
+      - name: Push version bump commit
+        run: |
+          git push origin HEAD:main
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GIT_HTTPS_URL: "https://${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}"
