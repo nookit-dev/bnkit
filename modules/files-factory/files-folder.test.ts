@@ -2,7 +2,6 @@ import fsPromise from "fs/promises";
 
 import { afterEach, describe, expect, it, jest, spyOn } from "bun:test";
 import path from "path";
-import { defaultErrorHandler } from "../..";
 import { createFileFactory, saveResultToFile } from "./files-folder";
 
 const getTestFactory = () => {
@@ -181,14 +180,18 @@ describe("createFileFactory", async () => {
 
     expect(result).toEqual([
       {
+        extension: "txt",
         type: "file",
         name: "some-file.txt",
         fullPath: path.join("path/to", "some-file.txt"),
+        size: 0,
       },
       {
         type: "directory",
+        extension: "folder",
         name: "some-dir",
         fullPath: path.join("path/to", "some-dir"),
+        size: 0,
       },
     ]);
   });
