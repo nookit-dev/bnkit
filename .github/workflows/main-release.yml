@@ -24,8 +24,14 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+
+        # Set up npm authentication
+      - name: Set up npm authentication
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Run yeet-all script
         run: bun run yeet-all
+
       - name: Push version bump commit
         run: |
           git push origin HEAD:main
