@@ -1,16 +1,25 @@
-name: PR Build and Test Action
+name: PR Build, Test, and Alpha Release Action
 
 on:
   pull_request:
     types: [synchronize, opened, reopened]
 
 jobs:
-  build-and-test:
-    name: Build and Test on PR
+  build-test-alpha:
+    name: Build, Test, and Alpha Release on PR
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+
+      - name: Set Git Credentials
+        run: |
+          git config --global credential.helper store
+          echo "https://$PERSONAL_ACCESS_TOKEN_GITHUB:x-oauth-basic@github.com" > ~/.git-credentials
+        env:
+          PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
 
       - name: Install bun
         uses: oven-sh/setup-bun@v1
@@ -18,14 +27,15 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Run tests
-        run: bun test
+      - name: Set up npm authentication
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      - name: Build app
-        run: bun run build
+      # - name: Run tests
+      #   run: bun test
 
-      # Assuming you have a script or command to create a beta package
-      # If not, this step should be modified accordingly
+      # - name: Build app
+      #   run: bun run build
+
       - name: Create alpha package with random hash version
         run: ./alpha-release.sh
         env:

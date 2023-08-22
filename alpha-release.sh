@@ -5,7 +5,6 @@ HASH=$(openssl rand -hex 8)
 CURRENT_VERSION=$(npm info "@u-tools/core" version)
 ALPHA_VERSION="$CURRENT_VERSION-alpha.$HASH"
 
-echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
 echo "Starting to publish alpha version: $ALPHA_VERSION"
 
 # Update the npm version
