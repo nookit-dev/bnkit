@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
 
       - name: Install bun
         uses: oven-sh/setup-bun@v1
