@@ -33,8 +33,8 @@ jobs:
         run: bun run yeet-all
 
       - name: Push version bump commit
-        run: |
-          git push origin HEAD:main
+        run: git push "https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/${{ github.repository }}" HEAD:main
+
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GIT_HTTPS_URL: "https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/${{ github.repository }}"
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PERSONAL_ACCESS_TOKEN_GITHUB: "https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/${{ github.repository }}"
