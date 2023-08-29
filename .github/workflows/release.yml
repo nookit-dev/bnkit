@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        plugin: [., plugins/open-ai, plugins/react]
+        plugin: [., plugins/react]
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3

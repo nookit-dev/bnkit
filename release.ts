@@ -24,7 +24,11 @@ const commitAndPush = async () => {
   await Bun.spawn(["git", "push", "origin", "HEAD:main"]);
 };
 
-const isAlpha = Bun.env.GITHUB_EVENT_NAME === "pull_request";
+const isLocalRun = process.env.LOCAL_RUN === "true";
+
+const isAlpha = isLocalRun
+  ? false
+  : Bun.env.GITHUB_EVENT_NAME === "pull_request";
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
 const pluginReactPath = path.resolve(
@@ -37,4 +41,6 @@ const pluginReactPath = path.resolve(
 await updatePackageVersion(corePackagePath, isAlpha);
 await updatePackageVersion(pluginReactPath, isAlpha);
 
-await commitAndPush();
+if (!isLocalRun) {
+  await commitAndPush();
+}

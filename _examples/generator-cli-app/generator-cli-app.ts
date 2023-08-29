@@ -7,9 +7,11 @@ import readline from "readline";
 //   readFilesContents,
 //   saveResultToFile,
 // } from "../../files-folder";
-import { chooseActions, directoryExists } from "../../modules/cli-factory/create-cli-factory";
+import {
+  chooseActions,
+  directoryExists,
+} from "../../modules/cli-factory/create-cli-factory";
 // import createOpenAICompletions from "../../networking";
-import createOpenAICompletions from "../../plugins/open-ai/open-ai-completions-api";
 import type { ActionsConfig } from "./repo-docs-generator";
 
 const API_KEY = Bun.env.OPENAI_API_KEY || "";

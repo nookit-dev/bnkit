@@ -11,12 +11,11 @@
     "docs-gen": "bun run ./_apps/generator-cli-app/repo-docs-generator.ts",
     "unit-gen": "bun run ./_apps/generator-cli-app/repo-unit-test-gen.ts",
     "docs-server": "bun run ./_apps/docs-server/docs-server.ts",
-    "yeet": "npm version patch && npm publish --access public",
-    "yeet-all": "npm version patch -m \"Version bump to %s [skip ci]\" && npm publish --access public && cd plugins/react && npm run yeet && cd ../open-ai && npm run yeet",
-    "yeet-all-alpha": "npm version patch && npm publish --access public && cd plugins/react && npm run yeet && cd ../open-ai && npm run yeet",
     "test": "bun test",
     "test:watch": "bun test --watch --coverage",
-    "generate-types": "tsc -p tsconfig-types-gen.json"
+    "generate-types": "tsc -p tsconfig-types-gen.json",
+    "release": "sh ./release.sh",
+    "local-release": "LOCAL_RUN=true sh ./release.sh"
   },
   "dependencies": {
     "typescript": "latest"
