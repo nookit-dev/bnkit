@@ -10,9 +10,6 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        plugin: [., plugins/react]
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -22,20 +19,5 @@ jobs:
     - name: Set up npm authentication
       run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-    - name: Generate version (Alpha Release)
-      if: github.event_name == 'pull_request'
-      run: echo "VERSION=$(npm info "@u-tools/core" version)-alpha.$(openssl rand -hex 8)" >> $GITHUB_ENV
-
-    - name: Generate version (Normal Release)
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: |
-        # Your logic for bumping the version for a normal release.
-        # For instance:
-        npm version patch
-        echo "VERSION=$(npm info "@u-tools/core" version)" >> $GITHUB_ENV
-
-    - name: Navigate to package and publish
-      run: |
-        cd ${{ matrix.plugin }}
-        npm version --no-git-tag-version $VERSION
-        npm publish --access public
+    - name: Run Release Script
+      run: bun release.ts
