@@ -28,7 +28,7 @@ const commitAndPush = async () => {
     await Bun.spawn(["git", "push", "origin", "HEAD:main"]);
   } catch (error) {
     console.error(error);
-    exit(0);
+    exit(1);
   }
 };
 
