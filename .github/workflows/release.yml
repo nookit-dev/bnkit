@@ -11,26 +11,23 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure no git lock
+        run: rm -f .git/index.lock
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
 
-      # If you want to specify a version of Bun:
-      # - name: Set up Bun with specific version
-      #   uses: oven-sh/setup-bun@v1
-      #   with:
-      #     version: 0.7.0
-
       - name: Set up npm authentication
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       # Set git identity (assuming you still need this step for your release script)
-      - name: Set Git identity
+      - name: Set up Git for pushing
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/brandon-schabel/u-tools.git
 
       - name: Run Release Script
         run: bun release.ts
