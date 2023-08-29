@@ -3,7 +3,7 @@
   "version": "0.0.63",
   "main": "index.ts",
   "devDependencies": {
-    "bun-types": "^0.6.14"
+    "bun-types": "latest"
   },
   "description": "U Tools is a simple zero-dependency, fast, and lightweight toolkit for Bun",
   "license": "MIT",

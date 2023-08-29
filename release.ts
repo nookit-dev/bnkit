@@ -24,15 +24,9 @@ const commitAndPush = async () => {
   await Bun.spawn(["git", "push", "origin", "HEAD:main"]);
 };
 
-// (async () => {
 const isAlpha = Bun.env.GITHUB_EVENT_NAME === "pull_request";
 const corePackagePath = path.resolve(process.cwd(), "package.json");
-const pluginOpenAIPath = path.resolve(
-  process.cwd(),
-  "plugins",
-  "open-ai",
-  "package.json"
-);
+
 const pluginReactPath = path.resolve(
   process.cwd(),
   "plugins",
@@ -41,8 +35,6 @@ const pluginReactPath = path.resolve(
 );
 
 await updatePackageVersion(corePackagePath, isAlpha);
-await updatePackageVersion(pluginOpenAIPath, isAlpha);
 await updatePackageVersion(pluginReactPath, isAlpha);
 
 await commitAndPush();
-// })();
