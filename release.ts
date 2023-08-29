@@ -1,5 +1,6 @@
 import Bun from "bun";
 import path from "path";
+import { exit } from "process";
 
 const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
   const [major, minor, patch] = currentVersion.split(".").map(Number);
@@ -12,6 +13,7 @@ const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
 };
 
 const updatePackageVersion = async (packagePath: string, isAlpha: boolean) => {
+  console.log(`Updating ${packagePath}`);
   const packageData = await Bun.file(packagePath).text();
   const parsedData = JSON.parse(packageData);
   parsedData.version = updateVersion(parsedData.version, isAlpha);
@@ -19,9 +21,15 @@ const updatePackageVersion = async (packagePath: string, isAlpha: boolean) => {
 };
 
 const commitAndPush = async () => {
-  await Bun.spawn(["git", "add", "-A"]);
-  await Bun.spawn(["git", "commit", "-m", "Bump versions"]);
-  await Bun.spawn(["git", "push", "origin", "HEAD:main"]);
+  try {
+    console.log("Running git commands");
+    await Bun.spawn(["git", "add", "-A"]);
+    await Bun.spawn(["git", "commit", "-m", "Bump versions"]);
+    await Bun.spawn(["git", "push", "origin", "HEAD:main"]);
+  } catch (error) {
+    console.error(error);
+    exit(0);
+  }
 };
 
 const isLocalRun = process.env.LOCAL_RUN === "true";
@@ -38,7 +46,9 @@ const pluginReactPath = path.resolve(
   "package.json"
 );
 
+console.log(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
 await updatePackageVersion(corePackagePath, isAlpha);
+
 await updatePackageVersion(pluginReactPath, isAlpha);
 
 if (!isLocalRun) {
