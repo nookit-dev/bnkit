@@ -22,9 +22,9 @@ jobs:
 
       - name: Set up Git for pushing
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/brandon-schabel/u-tools.git
+          git config user.name "brandon-schabel"
+          git config user.email "brandonschabel1995@gmail.com"
+          git remote set-url origin https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/brandon-schabel/u-tools.git
 
       - name: Ensure no git lock before release
         run: rm -f .git/index.lock

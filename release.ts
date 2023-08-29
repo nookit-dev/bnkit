@@ -20,14 +20,31 @@ const updatePackageVersion = async (packagePath: string, isAlpha: boolean) => {
   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
 };
 
+const gitCmd = async (command: string | string[]) => {
+  const commandArray = [
+    "git",
+    ...(typeof command === "string" ? [command] : command),
+  ];
+
+  try {
+    await Bun.spawn(commandArray);
+  } catch (error) {
+    console.error(`Failed to run command: ${commandArray}:`, error);
+    exit(1);
+  }
+};
+
 const commitAndPush = async () => {
   try {
-    console.log("Running git commands");
-    await Bun.spawn(["git", "add", "-A"]);
-    await Bun.spawn(["git", "commit", "-m", "Bump versions"]);
-    await Bun.spawn(["git", "push", "origin", "HEAD:main"]);
+    console.log("*** Running git commands ***");
+    await gitCmd("config --global user.name brandon-schabel");
+    await gitCmd("config --global user.email brandonschabel1995@gmail.com");
+
+    await gitCmd("add .");
+    await gitCmd('commit -m "Bump versions"');
+    await gitCmd("push origin HEAD:main");
   } catch (error) {
-    console.error(error);
+    console.error(error, "Failed ");
     exit(1);
   }
 };
