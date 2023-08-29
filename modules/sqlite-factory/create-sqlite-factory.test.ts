@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect } from "bun:test";
 import { SchemaType } from "types";
 import { createSqliteFactory } from "./create-sqlite-factory";
 
@@ -14,13 +14,13 @@ describe("createSqliteFactory", () => {
   beforeEach(() => {
     db = new Database(":memory:");
   });
-  it("It should create a db factory", () => {
+  test("It should create a db factory", () => {
     const { dbTableFactory } = createSqliteFactory({ db });
 
     expect(dbTableFactory).toBeDefined();
   });
 
-  it("should create and read a note in  sqlite", async () => {
+  test("should create and read a note in  sqlite", async () => {
     const { dbTableFactory } = createSqliteFactory({ db });
 
     const notesTable = dbTableFactory({
@@ -38,7 +38,7 @@ describe("createSqliteFactory", () => {
 
     expect(notes).toEqual([{ id: 1, text: "some text" }]);
   });
-  it("should create and read a note in  sqlite and update it", async () => {
+  test("should create and read a note in  sqlite and update it", async () => {
     const { dbTableFactory } = createSqliteFactory({ db, debug: true });
 
     const notesTable = dbTableFactory({
@@ -64,7 +64,7 @@ describe("createSqliteFactory", () => {
 
     expect(updatedNotes).toEqual([{ id: 1, text: "some text updated" }]);
   });
-  it("should create and read a note in  sqlite and delete it", async () => {
+  test("should create and read a note in  sqlite and delete it", async () => {
     const { dbTableFactory } = createSqliteFactory({ db, debug: true });
 
     const notesTable = dbTableFactory({

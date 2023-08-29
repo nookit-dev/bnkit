@@ -1,12 +1,12 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect,test} from "bun:test";
 import {
-  getOptionValue,
-  parseArgument,
-  OptionDefinition,
+    OptionDefinition,
+    getOptionValue,
+    parseArgument,
 } from "./create-cli-factory";
 
 describe("getOptionValue", () => {
-  it("should return correct value for boolean type", () => {
+  test("should return correct value for boolean type", () => {
     const arg = "--testArg";
     const nextArg = "true";
     const optionDef: OptionDefinition = {
@@ -18,7 +18,7 @@ describe("getOptionValue", () => {
     expect(value).toBe(true);
   });
 
-  it("should return default value if nextArg starts with '--'", () => {
+  test("should return default value if nextArg starts with '--'", () => {
     const arg = "--testArg";
     const nextArg = "--anotherArg";
     const optionDef: OptionDefinition = {
@@ -32,7 +32,7 @@ describe("getOptionValue", () => {
 });
 
 describe("parseArgument", () => {
-  it("should return correct key and value", () => {
+  test("should return correct key and value", () => {
     const arg = "--testArg";
     const nextArg = "true";
 
@@ -41,7 +41,7 @@ describe("parseArgument", () => {
     expect(value).toBe(true);
   });
 
-  it("should throw error if arg does not start with '--'", async () => {
+  test("should throw error if arg does not start with '--'", async () => {
     const arg = "testArg";
     const nextArg = "true";
 

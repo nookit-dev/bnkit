@@ -1,30 +1,30 @@
-import { expect, it } from "bun:test";
+import { expect, test } from "bun:test";
 import classy from "./classy";
-it("test single string argument", () => {
+test("test single string argument", () => {
   expect(classy("hello")).toBe("hello");
 });
 
-it("test multiple string arguments", () => {
+test("test multiple string arguments", () => {
   expect(classy("hello", "world")).toBe("hello world");
 });
 
-it("test single number argument", () => {
+test("test single number argument", () => {
   expect(classy(123)).toBe("123");
 });
 
 // Tests that passing a single boolean argument returns an empty string
-it("test single boolean argument", () => {
+test("test single boolean argument", () => {
   expect(classy(true)).toBe("");
 });
 
-it("test single null argument", () => {
+test("test single null argument", () => {
   expect(classy(null)).toBe("");
 });
 
-it("test single undefined argument", () => {
+test("test single undefined argument", () => {
   expect(classy(undefined)).toBe("");
 });
 
-it("test object classes", () => {
+test("test object classes", () => {
   expect(classy({ hello: true, world: false })).toBe("hello");
 });

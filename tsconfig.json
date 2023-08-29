@@ -16,5 +16,10 @@
     ],
     "baseUrl": "."
   },
-  "include": ["modules/**/*.ts", "apps/**/*.ts", "_examples/**/*.ts"]
+  "include": [
+    "modules/**/*.ts",
+    "apps/**/*.ts",
+    "_examples/**/*.ts",
+    "./release.ts"
+  ]
 }

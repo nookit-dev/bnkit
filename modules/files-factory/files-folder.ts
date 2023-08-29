@@ -28,7 +28,7 @@ export const defaultExtIgnore = {
   testing: true
 };
 
-const recursiveFileSearch = async ({
+export const recursiveFileSearch = async ({
   directory,
   searchString,
   ignoreDirectories = {},

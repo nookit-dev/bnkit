@@ -18,11 +18,6 @@ cd plugins/react
 npm version --no-git-tag-version $ALPHA_VERSION
 npm publish --tag alpha --access public
 
-# Navigate to plugins/open-ai and publish
-cd ../open-ai
-npm version --no-git-tag-version $ALPHA_VERSION
-npm publish --tag alpha --access public
-
 # Return to the root directory
 cd ../../
 
