@@ -42,9 +42,9 @@ const setupNpmAuth = () => {
 const npmPublish = async (packagePath: string, isAlpha: boolean) => {
   const dir = path.dirname(packagePath);
 
-  let publishedSuccessfully = false;
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    let hasError = false; // Flag to track if there's an error
 
-  for (let i = 0; i < MAX_RETRIES && !publishedSuccessfully; i++) {
     ulog(
       `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
     );
@@ -58,18 +58,20 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
         if (errorString?.includes("403 Forbidden")) {
           ulog(`Version conflict for ${dir}, trying next version...`);
           await updatePackageVersion(packagePath, isAlpha);
+          hasError = true; // Set the error flag
         } else if (exitCode !== 0) {
           console.error(`Failed to publish from ${dir}:`, errorString);
           exit(1);
-        } else {
-          publishedSuccessfully = true;
         }
       },
     });
 
-    // Since the onExit callback might be asynchronous, you may need to ensure that the process has completed
-    // before continuing the loop. This depends on the behavior of the Bun library.
     await proc.exited;
+
+    // If there's no error, break out of the loop
+    if (!hasError) {
+      break;
+    }
   }
 };
 
