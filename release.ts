@@ -4,6 +4,7 @@ import { exit } from "process";
 
 const GITHUB_PAT = Bun.env.PERSONAL_ACCESS_TOKEN_GITHUB || "";
 const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
+const GIT_USER = BUN;
 
 const ulog = (...args: any[]) => {
   const currentTime = Bun.nanoseconds() / 1e9; // Convert to seconds
@@ -67,7 +68,17 @@ const gitCmd = async (commands: string[], log = true) => {
   try {
     if (log) ulog(`Running command: ${commandArray.join(" ")}`);
 
-    await Bun.spawn(commandArray);
+    const proc = Bun.spawn(commandArray);
+
+    const stdout = await new Response(proc.stdout).text();
+    if (stdout.trim()) {
+      ulog(stdout.trim());
+    }
+
+    const stderr = await new Response(proc.stderr).text();
+    if (stderr.trim()) {
+      console.error(stderr.trim());
+    }
   } catch (error) {
     console.error(`Failed to run command: ${commandArray}:`, error);
     exit(1);
@@ -87,6 +98,7 @@ const commitAndPush = async () => {
 
   ulog("Configured GitHub User");
   await gitCmd(["config", "user.name"]);
+
   ulog("Configured GitHub Email");
   await gitCmd(["config", "user.email"]);
 
