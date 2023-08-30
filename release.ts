@@ -34,13 +34,30 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
     ulog(
       `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
     );
-    const proc = Bun.spawn(["npm", "publish"], { cwd: dir });
+    const proc = Bun.spawn(["npm", "publish"], {
+      cwd: dir,
+      onExit: (proc, exitCode, signalCode, error) => {
+        const errorString = proc.stderr?.toString();
+        ulog({ errorString });
+        if (errorString?.includes("403 Forbidden")) {
+          ulog(`Version conflict for ${dir}, trying next version...`);
+          updatePackageVersion(packagePath, isAlpha);
+        }
+        if (exitCode !== 0) {
+          console.error(`Process exited with code: ${exitCode}`);
+        }
+      },
+    });
 
-    const stderr = await new Response(proc.stderr).text();
-    const stdout = await new Response(proc.stdout).text();
+    // const stderr = await new Response(proc.stderr).text();
+    // const stdout = await new Response(proc.stdout).text();
 
-    console.log({ stderr });
-    console.log({ stdout });
+    const stderrReader = proc?.stderr;
+    // proc.
+    // let stderrData = "";
+
+    // console.log({ stderr });
+    // console.log({ stdout });
 
     if (stderr.includes("403 Forbidden")) {
       ulog(`Version conflict for ${dir}, trying next version...`);
@@ -81,6 +98,7 @@ const gitCmd = async (commands: string[], log = true) => {
     const proc = Bun.spawn(commandArray);
 
     const stdout = await new Response(proc.stdout).text();
+
     if (stdout.trim()) {
       ulog(stdout.trim());
     }
