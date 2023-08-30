@@ -65,11 +65,17 @@ const npmPublish = async ({
 
     const proc = Bun.spawn(["npm", "publish"], {
       cwd: dir,
-      onExit: async (proc, exitCode, signalCode, error,) => {
+      onExit: async (proc, exitCode, signalCode, error) => {
         const errorString = proc.stderr?.toString();
-        ulog({error})
+        ulog({ error });
         ulog({ errorString });
-       console.log({stdOut: proc.stdout?.toString()})
+        console.log({ stdOut: proc.stdout?.toString() });
+
+        if (proc.stdout && typeof proc.stdout !== "number") {
+          console.log({
+            stdOut2: Bun.readableStreamToText(proc.stdout),
+          });
+        }
 
         if (errorString?.includes("403 Forbidden")) {
           ulog(`Version conflict for ${dir}, trying next version...`);
