@@ -39,9 +39,9 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
     const stderr = await new Response(proc.stderr).text();
     const stdout = await new Response(proc.stdout).text();
 
-    console.log(stderr);
-    console.log(stdout);
-    
+    console.log({ stderr });
+    console.log({ stdout });
+
     if (stderr.includes("403 Forbidden")) {
       ulog(`Version conflict for ${dir}, trying next version...`);
       await updatePackageVersion(packagePath, isAlpha);
