@@ -65,33 +65,32 @@ const npmPublish = async ({
 
     const proc = Bun.spawn(["npm", "publish"], {
       cwd: dir,
-      onExit: async (proc, exitCode, signalCode, error) => {
-        const errorString = proc.stderr?.toString();
-        // ulog({ error });
-        // ulog({ errorString });
-        // console.log({ stdOut: proc.stdout?.toString() });
+      // onExit: async (proc, exitCode, signalCode, error) => {
+      // const errorString = proc.stderr?.tomtring();
+      // ulog({ error });
+      // ulog({ errorString });
+      // console.log({ stdOut: proc.stdout?.toString() });
 
-        // if (proc.stdout && typeof proc.stdout !== "number") {
-        console.log({
-          stdOut2: await Bun.readableStreamToText(proc.stdout),
-        });
-        // }
-
-        if (errorString?.includes("403 Forbidden")) {
-          ulog(`Version conflict for ${dir}, trying next version...`);
-
-          // Retrieve the current version, increment the patch version, and update the package.json
-          const currentVersion = await getCurrentVersion(packagePath);
-          const newVersion = updateVersion(currentVersion, false); // Always increment the patch version, regardless of alpha status
-          ulog(`Updating version from ${currentVersion} to ${newVersion}`);
-          await updatePackageVersion(packagePath, isAlpha, newVersion); // Modify the function to accept the new version
-
-          hasError = true; // Set the error flag
-        }
-      },
+      // if (proc.stdout && typeof proc.stdout !== "number") {
+      // console.log({
+      // stdOut2: await Bun.readableStreamToText(proc.stdout),
+      // });
+      // }
     });
 
-    await proc.exited;
+    const output = await Bun.readableStreamToText(proc.stdout);
+    ulog({ output });
+
+    // check if output contains 403 error
+    if (output.includes("403 Forbidden")) {
+      hasError = true;
+      ulog("403 Forbidden error. Retrying...");
+    } else {
+      success = true;
+      ulog("Successfully published!");
+    }
+
+    // await proc.exited;
 
     // If there's no error, break out of the loop
     if (!hasError || success) {
