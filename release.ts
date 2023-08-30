@@ -65,7 +65,7 @@ const gitCmd = async (commands: string[], log = true) => {
   const commandArray = ["git", ...commands];
 
   try {
-    if (log) ulog(`Running command: ${commandArray}`);
+    if (log) ulog(`Running command: ${commandArray.join(" ")}`);
 
     await Bun.spawn(commandArray);
   } catch (error) {
