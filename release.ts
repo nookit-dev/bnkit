@@ -78,13 +78,13 @@ const npmPublish = async ({
       // }
     });
 
-    console.log(await proc.stdout.values())
+    // console.log(await proc.stdout.values())
 
-    const output = await Bun.readableStreamToText(proc.stdout);
-    ulog({ output });
+    // const output = await Bun.readableStreamToText(proc.stdout);
+    // ulog({ output });
 
-    const readData = await proc.readable.getReader().read()
-    console.log({readData})
+    // const readData = await proc.readable.getReader().read()
+    // console.log({readData})
 
     const response = await new Response(proc.stdout).text()
 
