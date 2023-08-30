@@ -92,14 +92,14 @@ const npmPublish = async ({
 
 
 
-    // check if output contains 403 error
-    if (output.includes("403 Forbidden")) {
-      hasError = true;
-      ulog("403 Forbidden error. Retrying...");
-    } else {
-      success = true;
-      ulog("Successfully published!");
-    }
+    // // check if output contains 403 error
+    // if (output.includes("403 Forbidden")) {
+    //   hasError = true;
+    //   ulog("403 Forbidden error. Retrying...");
+    // } else {
+    //   success = true;
+    //   ulog("Successfully published!");
+    // }
 
     // await proc.exited;
 
