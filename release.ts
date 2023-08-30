@@ -23,6 +23,12 @@ ulog({
   runnerEnv: e?.RUNNNER_ENVIRONMENT,
 });
 
+const getCurrentVersion = async (packagePath: string): Promise<string> => {
+  const packageData = await Bun.file(packagePath).text();
+  const parsedData = JSON.parse(packageData);
+  return parsedData.version;
+};
+
 /* Helper Functions */
 const setupNpmAuth = () => {
   try {
@@ -39,7 +45,13 @@ const setupNpmAuth = () => {
   }
 };
 
-const npmPublish = async (packagePath: string, isAlpha: boolean) => {
+const npmPublish = async ({
+  isAlpha,
+  packagePath,
+}: {
+  packagePath: string;
+  isAlpha: boolean;
+}) => {
   const dir = path.dirname(packagePath);
 
   let success = false; // To track if publishing was successful
@@ -59,13 +71,14 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
 
         if (errorString?.includes("403 Forbidden")) {
           ulog(`Version conflict for ${dir}, trying next version...`);
-          await updatePackageVersion(packagePath, isAlpha);
+
+          // Retrieve the current version, increment the patch version, and update the package.json
+          const currentVersion = await getCurrentVersion(packagePath);
+          const newVersion = updateVersion(currentVersion, false); // Always increment the patch version, regardless of alpha status
+          ulog(`Updating version from ${currentVersion} to ${newVersion}`);
+          await updatePackageVersion(packagePath, isAlpha, newVersion); // Modify the function to accept the new version
+
           hasError = true; // Set the error flag
-        } else if (exitCode !== 0) {
-          console.error(`Failed to publish from ${dir}:`, errorString);
-          hasError = true;
-        } else {
-          success = true; // If there's no error and process exits with code 0
         }
       },
     });
@@ -94,11 +107,15 @@ const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
   }
 };
 
-const updatePackageVersion = async (packagePath: string, isAlpha: boolean) => {
+const updatePackageVersion = async (
+  packagePath: string,
+  isAlpha: boolean,
+  newVersion?: string
+) => {
   ulog(`Updating ${packagePath}`);
   const packageData = await Bun.file(packagePath).text();
   const parsedData = JSON.parse(packageData);
-  parsedData.version = updateVersion(parsedData.version, isAlpha);
+  parsedData.version = newVersion || updateVersion(parsedData.version, isAlpha); // Use the provided new version if available
   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
 };
 
@@ -185,10 +202,6 @@ const isLocalRun = process.env.LOCAL_RUN === "true";
 //   : Bun.env.GITHUB_EVENT_NAME === "pull_request";
 // FORCE Release
 const isAlpha = false;
-
-ulog({
-  env: Bun.env,
-});
 
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
