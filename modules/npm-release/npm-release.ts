@@ -51,7 +51,9 @@ export function npmReleaseFactory(options: NpmReleaseFactoryOptions) {
       const publishScript = ["npm", "publish"];
 
       if (isAlpha) {
-        publishScript.push("--tag", "alpha");
+        publishScript.push("--tag", "alpha", "--access", "public");
+      } else {
+        publishScript.push("--access", "public");
       }
 
       const proc = Bun.spawnSync(publishScript, {
