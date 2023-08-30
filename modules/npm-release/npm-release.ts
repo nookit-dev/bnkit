@@ -23,7 +23,7 @@ export function npmReleaseFactory(options: NpmReleaseFactoryOptions) {
       if (!options.npmToken) {
         console.error("NPM_TOKEN is not set in environment variables.");
         exit(1);
-      } 
+      }
       const npmrcContent = `//registry.npmjs.org/:_authToken=${npmToken}`;
       const npmrcPath = path.resolve(process.cwd(), ".npmrc");
       Bun.write(npmrcPath, npmrcContent);
@@ -48,7 +48,13 @@ export function npmReleaseFactory(options: NpmReleaseFactoryOptions) {
         `Publishing from directory: ${dir}, attempt ${i + 1} of ${maxRetries}`
       );
 
-      const proc = Bun.spawnSync(["npm", "publish"], {
+      const publishScript = ["npm", "publish"];
+
+      if (isAlpha) {
+        publishScript.push("--tag", "alpha");
+      }
+
+      const proc = Bun.spawnSync(publishScript, {
         cwd: dir,
       });
 
