@@ -170,7 +170,7 @@ const setupGitConfig = async () => {
 
   // Configure user name and email
   ulog("Configuring GitHub User");
-  await gitCmd(["config", "--global", "user.name", "brandon-schabel"]);
+  await gitCmd(["config", "--global", "user.name", "github-actions[bot]"]);
 
   ulog("Configured Git User: ", await gitCmd(["config", "user.name"]));
 
@@ -179,7 +179,7 @@ const setupGitConfig = async () => {
     "config",
     "--global",
     "user.email",
-    "brandonschabel1995@gmail.com",
+    "41898282+github-actions[bot]@users.noreply.github.com",
   ]);
 
   ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
