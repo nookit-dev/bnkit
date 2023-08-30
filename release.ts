@@ -21,12 +21,17 @@ const setupNpmAuth = () => {
   }
 };
 
-const npmPublish = async (packagePath: string) => {
+const npmPublish = async (packagePath: string, isAlpha: boolean) => {
   const dir = path.dirname(packagePath);
+  const npmArgs = ["npm", "publish"];
+
+  if (isAlpha) {
+    npmArgs.push("--tag", "alpha");
+  }
 
   try {
     console.log(`Publishing from directory: ${dir}`);
-    await Bun.spawn(["npm", "publish"], { cwd: dir });
+    await Bun.spawn(npmArgs, { cwd: dir });
   } catch (error) {
     console.error(`Failed to publish from ${dir}:`, error);
     exit(1);
@@ -105,10 +110,10 @@ if (!isLocalRun) {
 
 console.log(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
 await updatePackageVersion(corePackagePath, isAlpha);
-await npmPublish(corePackagePath);
+await npmPublish(corePackagePath, isAlpha);
 
 await updatePackageVersion(pluginReactPath, isAlpha);
-await npmPublish(pluginReactPath);
+await npmPublish(pluginReactPath, isAlpha);
 
 if (!isLocalRun && !isAlpha) {
   await commitAndPush();
