@@ -146,14 +146,13 @@ const gitCmd = async (commands: string[], log = true) => {
 const commitAndPush = async () => {
   ulog("*** Running git commands ***");
 
-  // Use the PAT to set the remote URL with authentication
+  // Use the SSH to set the remote URL with authentication
   await gitCmd([
     "remote",
     "set-url",
     "origin",
-    `https://${GITHUB_PAT}@github.com/brandon-schabel/u-tools.git`,
-  ]);
-
+    "git@github.com:brandon-schabel/u-tools.git"
+]);
   ulog("Configured GitHub User");
   await gitCmd(["config", "user.name"]);
 

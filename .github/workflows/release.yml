@@ -27,12 +27,6 @@ jobs:
       - name: Set up npm authentication
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      # - name: Set up Git for pushing
-        # run: |
-        #   git config --global user.name "brandon-schabel"
-        #   git config --global user.email "brandonschabel1995@gmail.com"
-        #   git remote set-url origin https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/brandon-schabel/u-tools.git
-
       - name: Ensure no git lock before release
         run: rm -f .git/index.lock
 
