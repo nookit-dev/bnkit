@@ -63,7 +63,7 @@ const npmPublish = async ({
       `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
     );
 
-    const proc = Bun.spawn(["npm", "publish"], {
+    const proc = Bun.spawnSync(["npm", "publish"], {
       cwd: dir,
       // onExit: async (proc, exitCode, signalCode, error) => {
       // const errorString = proc.stderr?.tomtring();
@@ -77,6 +77,8 @@ const npmPublish = async ({
       // });
       // }
     });
+
+    console.log(proc.stdout.toString())
 
     // console.log(await proc.stdout.values())
 
