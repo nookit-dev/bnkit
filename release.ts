@@ -2,6 +2,37 @@ import Bun from "bun";
 import path from "path";
 import { exit } from "process";
 
+const PERSONAL_ACCESS_TOKEN = Bun.env.PERSONAL_ACCESS_TOKEN_GITHUB || "";
+const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
+
+/* Helper Functions */
+const setupNpmAuth = () => {
+  try {
+    if (!NPM_TOKEN) {
+      console.error("NPM_TOKEN is not set in environment variables.");
+      exit(1);
+    }
+    const npmrcContent = `//registry.npmjs.org/:_authToken=${NPM_TOKEN}`;
+    const npmrcPath = path.resolve(process.cwd(), ".npmrc");
+    Bun.write(npmrcPath, npmrcContent);
+  } catch (error) {
+    console.error("Failed to set up npm authentication:", error);
+    exit(1);
+  }
+};
+
+const npmPublish = async (packagePath: string) => {
+  const dir = path.dirname(packagePath);
+
+  try {
+    console.log(`Publishing from directory: ${dir}`);
+    await Bun.spawn(["npm", "publish"], { cwd: dir });
+  } catch (error) {
+    console.error(`Failed to publish from ${dir}:`, error);
+    exit(1);
+  }
+};
+
 const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
   const [major, minor, patch] = currentVersion.split(".").map(Number);
   if (isAlpha) {
@@ -51,6 +82,7 @@ const isLocalRun = process.env.LOCAL_RUN === "true";
 const isAlpha = isLocalRun
   ? false
   : Bun.env.GITHUB_EVENT_NAME === "pull_request";
+
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
 const pluginReactPath = path.resolve(
@@ -60,10 +92,15 @@ const pluginReactPath = path.resolve(
   "package.json"
 );
 
+/* Script */
+setupNpmAuth();
+
 console.log(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
 await updatePackageVersion(corePackagePath, isAlpha);
+await npmPublish(corePackagePath);
 
 await updatePackageVersion(pluginReactPath, isAlpha);
+await npmPublish(pluginReactPath);
 
 if (!isLocalRun && !isAlpha) {
   await commitAndPush();
