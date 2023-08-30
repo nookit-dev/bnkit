@@ -72,9 +72,9 @@ const npmPublish = async ({
         // console.log({ stdOut: proc.stdout?.toString() });
 
         // if (proc.stdout && typeof proc.stdout !== "number") {
-          console.log({
-            stdOut2: await Bun.readableStreamToText(proc.stdout),
-          });
+        console.log({
+          stdOut2: await Bun.readableStreamToText(proc.stdout),
+        });
         // }
 
         if (errorString?.includes("403 Forbidden")) {
@@ -228,10 +228,10 @@ if (!isLocalRun) {
 
 ulog(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
 await updatePackageVersion(corePackagePath, isAlpha);
-await npmPublish(corePackagePath, isAlpha);
+await npmPublish({ packagePath: corePackagePath, isAlpha });
 
 await updatePackageVersion(pluginReactPath, isAlpha);
-await npmPublish(pluginReactPath, isAlpha);
+await npmPublish({ packagePath: pluginReactPath, isAlpha });
 
 if (!isLocalRun && !isAlpha) {
   await commitAndPush();
