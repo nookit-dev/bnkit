@@ -78,6 +78,8 @@ const npmPublish = async ({
       // }
     });
 
+    console.log(await proc.stdout.values())
+
     const output = await Bun.readableStreamToText(proc.stdout);
     ulog({ output });
 
