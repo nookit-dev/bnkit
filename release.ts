@@ -81,6 +81,11 @@ const npmPublish = async ({
     const output = await Bun.readableStreamToText(proc.stdout);
     ulog({ output });
 
+    const readData = await proc.readable.getReader().read()
+    console.log({})
+
+
+
     // check if output contains 403 error
     if (output.includes("403 Forbidden")) {
       hasError = true;
