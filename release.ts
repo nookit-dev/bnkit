@@ -117,6 +117,7 @@ const updatePackageVersion = async (
   const parsedData = JSON.parse(packageData);
   parsedData.version = newVersion || updateVersion(parsedData.version, isAlpha); // Use the provided new version if available
   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
+  return parsedData.version;
 };
 
 const gitCmd = async (commands: string[], log = true) => {
@@ -143,7 +144,7 @@ const gitCmd = async (commands: string[], log = true) => {
   }
 };
 
-const commitAndPush = async () => {
+const commitAndPush = async (commitMsg: string) => {
   ulog("*** Running git commands ***");
 
   // Use the SSH to set the remote URL with authentication
@@ -151,8 +152,8 @@ const commitAndPush = async () => {
     "remote",
     "set-url",
     "origin",
-    "git@github.com:brandon-schabel/u-tools.git"
-]);
+    "git@github.com:brandon-schabel/u-tools.git",
+  ]);
   ulog("Configured GitHub User");
   await gitCmd(["config", "user.name"]);
 
@@ -160,7 +161,7 @@ const commitAndPush = async () => {
   await gitCmd(["config", "user.email"]);
 
   await gitCmd(["add", "."]);
-  await gitCmd(["commit", "-m", "Bump versions"]);
+  await gitCmd(["commit", "-m", `[skip ci] ${commitMsg}`]);
   await gitCmd(["push", "origin", "HEAD:main"]);
 };
 
@@ -218,12 +219,12 @@ if (!isLocalRun) {
 }
 
 ulog(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
-await updatePackageVersion(corePackagePath, isAlpha);
+const newVersion = await updatePackageVersion(corePackagePath, isAlpha);
 await npmPublish({ packagePath: corePackagePath, isAlpha });
 
 await updatePackageVersion(pluginReactPath, isAlpha);
 await npmPublish({ packagePath: pluginReactPath, isAlpha });
 
 if (!isLocalRun && !isAlpha) {
-  await commitAndPush();
+  await commitAndPush(`Pushing version: ${newVersion}`);
 }
