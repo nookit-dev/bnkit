@@ -165,43 +165,31 @@ const commitAndPush = async (commitMsg: string) => {
   await gitCmd(["push", "origin", "HEAD:main"]);
 };
 
-const setupGitConfig = async () => {
-  ulog("*** Configuring Git ***");
+// const setupGitConfig = async () => {
+//   ulog("*** Configuring Git ***");
 
-  // Configure user name and email
-  ulog("Configuring GitHub User");
-  await gitCmd(["config", "--global", "user.name", "brandon-schabel"]);
+//   // Configure user name and email
+//   ulog("Configuring GitHub User");
+//   await gitCmd(["config", "--global", "user.name", "brandon-schabel"]);
 
-  ulog("Configured Git User: ", await gitCmd(["config", "user.name"]));
+//   ulog("Configured Git User: ", await gitCmd(["config", "user.name"]));
 
-  ulog("Configuring GitHub Email");
-  await gitCmd([
-    "config",
-    "--global",
-    "user.email",
-    "brandonschabel1995@gmail.com",
-  ]);
+//   ulog("Configuring GitHub Email");
+//   await gitCmd([
+//     "config",
+//     "--global",
+//     "user.email",
+//     "brandonschabel1995@gmail.com",
+//   ]);
 
-  ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
-
-  // Use the PAT to set the remote URL with authentication
-  // ulog("Setting up remote URL with PAT");
-
-  // await gitCmd([
-  //   "remote",
-  //   "set-url",
-  //   "origin",
-  //   `git@github.com:brandon-schabel/u-tools.git`,
-  // ]);
-};
+//   ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
+// };
 
 const isLocalRun = process.env.LOCAL_RUN === "true";
 
-// const isAlpha = isLocalRun
-//   ? false
-//   : Bun.env.GITHUB_EVENT_NAME === "pull_request";
-// FORCE Release
-const isAlpha = false;
+const isAlpha = isLocalRun
+  ? false
+  : Bun.env.GITHUB_EVENT_NAME === "pull_request";
 
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
@@ -215,7 +203,7 @@ const pluginReactPath = path.resolve(
 /* Script */
 if (!isLocalRun) {
   setupNpmAuth();
-  await setupGitConfig();
+  // await setupGitConfig();
 }
 
 ulog(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
