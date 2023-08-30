@@ -73,7 +73,7 @@ const npmPublish = async ({
 
         if (proc.stdout && typeof proc.stdout !== "number") {
           console.log({
-            stdOut2: Bun.readableStreamToText(proc.stdout),
+            stdOut2: await Bun.readableStreamToText(proc.stdout),
           });
         }
 
