@@ -37,6 +37,12 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
     const proc = Bun.spawn(["npm", "publish"], {
       cwd: dir,
       onExit: (proc, exitCode, signalCode, error) => {
+        console.log({
+          proc,
+          exitCode,
+          signalCode,
+          error,
+        });
         const errorString = proc.stderr?.toString();
         ulog({ errorString });
         if (errorString?.includes("403 Forbidden")) {
@@ -52,22 +58,22 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
     // const stderr = await new Response(proc.stderr).text();
     // const stdout = await new Response(proc.stdout).text();
 
-    const stderrReader = proc?.stderr;
-    // proc.
-    // let stderrData = "";
+    // const stderrReader = proc?.stderr;
+    // // proc.
+    // // let stderrData = "";
 
-    // console.log({ stderr });
-    // console.log({ stdout });
+    // // console.log({ stderr });
+    // // console.log({ stdout });
 
-    if (stderr.includes("403 Forbidden")) {
-      ulog(`Version conflict for ${dir}, trying next version...`);
-      await updatePackageVersion(packagePath, isAlpha);
-    } else if (stderr.trim()) {
-      console.error(`Failed to publish from ${dir}:`, stderr.trim());
-      exit(1);
-    } else {
-      break; // Exit the loop if no errors in stderr
-    }
+    // if (stderr.includes("403 Forbidden")) {
+    //   ulog(`Version conflict for ${dir}, trying next version...`);
+    //   await updatePackageVersion(packagePath, isAlpha);
+    // } else if (stderr.trim()) {
+    //   console.error(`Failed to publish from ${dir}:`, stderr.trim());
+    //   exit(1);
+    // } else {
+    //   break; // Exit the loop if no errors in stderr
+    // }
   }
 };
 
@@ -167,9 +173,14 @@ const setupGitConfig = async () => {
 
 const isLocalRun = process.env.LOCAL_RUN === "true";
 
-const isAlpha = isLocalRun
-  ? false
-  : Bun.env.GITHUB_EVENT_NAME === "pull_request";
+// const isAlpha = isLocalRun
+//   ? false
+//   : Bun.env.GITHUB_EVENT_NAME === "pull_request";
+const isAlpha = false;
+
+ulog({
+  env: Bun.env,
+});
 
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
