@@ -17,18 +17,15 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
 
       - name: Set up npm authentication
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
-      # - name: Set up Git for pushing
-        # run: |
-        #   git config --global user.name "brandon-schabel"
-        #   git config --global user.email "brandonschabel1995@gmail.com"
-        #   git remote set-url origin https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/brandon-schabel/u-tools.git
 
       - name: Ensure no git lock before release
         run: rm -f .git/index.lock

@@ -11,6 +11,24 @@ const ulog = (...args: any[]) => {
   console.log(`[${currentTime.toFixed(4)}s]`, args);
 };
 
+const e = Bun.env;
+
+ulog({
+  actor: e?.GITHUB_ACTOR,
+  job: e?.GITHUB_JOB,
+  refType: e?.GITHUB_REF_TYPE,
+  runner: e?.RUNNER_NAME,
+  gitHubAction: e.GITHUB_ACTION,
+  runNumber: e.GITHUB_RUN_NUMBER,
+  runnerEnv: e?.RUNNNER_ENVIRONMENT,
+});
+
+const getCurrentVersion = async (packagePath: string): Promise<string> => {
+  const packageData = await Bun.file(packagePath).text();
+  const parsedData = JSON.parse(packageData);
+  return parsedData.version;
+};
+
 /* Helper Functions */
 const setupNpmAuth = () => {
   try {
@@ -27,30 +45,55 @@ const setupNpmAuth = () => {
   }
 };
 
-const npmPublish = async (packagePath: string, isAlpha: boolean) => {
+const npmPublish = async ({
+  isAlpha,
+  packagePath,
+}: {
+  packagePath: string;
+  isAlpha: boolean;
+}) => {
   const dir = path.dirname(packagePath);
 
-  for (let i = 0; i < MAX_RETRIES; i++) {
+  let success = false;
+
+  for (let i = 0; i < MAX_RETRIES && !success; i++) {
     ulog(
       `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
     );
-    const proc = Bun.spawn(["npm", "publish"], { cwd: dir });
 
-    const stderr = await new Response(proc.stderr).text();
-    const stdout = await new Response(proc.stdout).text();
+    const proc = Bun.spawnSync(["npm", "publish"], {
+      cwd: dir,
+    });
 
-    console.log({ stderr });
-    console.log({ stdout });
+    const response = proc.stdout.toString();
+    console.log({ response });
 
-    if (stderr.includes("403 Forbidden")) {
+    const errorResponse = proc.stderr.toString();
+    console.log({ errorResponse });
+
+    // If there's a specific error indicating a version conflict
+    if (
+      errorResponse.includes(
+        "cannot publish over the previously published versions"
+      )
+    ) {
       ulog(`Version conflict for ${dir}, trying next version...`);
-      await updatePackageVersion(packagePath, isAlpha);
-    } else if (stderr.trim()) {
-      console.error(`Failed to publish from ${dir}:`, stderr.trim());
-      exit(1);
+
+      const currentVersion = await getCurrentVersion(packagePath);
+      const newVersion = updateVersion(currentVersion, false);
+      ulog(`Updating version from ${currentVersion} to ${newVersion}`);
+      await updatePackageVersion(packagePath, isAlpha, newVersion);
+
+      // Don't set success to true; let the loop continue to retry with the new version
     } else {
-      break; // Exit the loop if no errors in stderr
+      // If there's no specific version conflict error, assume success
+      success = true;
     }
+  }
+
+  if (!success) {
+    console.error(`Failed to publish after ${MAX_RETRIES} attempts.`);
+    exit(1);
   }
 };
 
@@ -64,12 +107,17 @@ const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
   }
 };
 
-const updatePackageVersion = async (packagePath: string, isAlpha: boolean) => {
+const updatePackageVersion = async (
+  packagePath: string,
+  isAlpha: boolean,
+  newVersion?: string
+) => {
   ulog(`Updating ${packagePath}`);
   const packageData = await Bun.file(packagePath).text();
   const parsedData = JSON.parse(packageData);
-  parsedData.version = updateVersion(parsedData.version, isAlpha);
+  parsedData.version = newVersion || updateVersion(parsedData.version, isAlpha); // Use the provided new version if available
   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
+  return parsedData.version;
 };
 
 const gitCmd = async (commands: string[], log = true) => {
@@ -81,6 +129,7 @@ const gitCmd = async (commands: string[], log = true) => {
     const proc = Bun.spawn(commandArray);
 
     const stdout = await new Response(proc.stdout).text();
+
     if (stdout.trim()) {
       ulog(stdout.trim());
     }
@@ -95,17 +144,16 @@ const gitCmd = async (commands: string[], log = true) => {
   }
 };
 
-const commitAndPush = async () => {
+const commitAndPush = async (commitMsg: string) => {
   ulog("*** Running git commands ***");
 
-  // Use the PAT to set the remote URL with authentication
+  // Use the SSH to set the remote URL with authentication
   await gitCmd([
     "remote",
     "set-url",
     "origin",
-    `https://${GITHUB_PAT}@github.com/brandon-schabel/u-tools.git`,
+    "git@github.com:brandon-schabel/u-tools.git",
   ]);
-
   ulog("Configured GitHub User");
   await gitCmd(["config", "user.name"]);
 
@@ -113,39 +161,29 @@ const commitAndPush = async () => {
   await gitCmd(["config", "user.email"]);
 
   await gitCmd(["add", "."]);
-  await gitCmd(["commit", "-m", "Bump versions"]);
+  await gitCmd(["commit", "-m", `[skip ci] ${commitMsg}`]);
   await gitCmd(["push", "origin", "HEAD:main"]);
 };
 
-const setupGitConfig = async () => {
-  ulog("*** Configuring Git ***");
+// const setupGitConfig = async () => {
+//   ulog("*** Configuring Git ***");
 
-  // Configure user name and email
-  ulog("Configuring GitHub User");
-  await gitCmd(["config", "--global", "user.name", "brandon-schabel"]);
+//   // Configure user name and email
+//   ulog("Configuring GitHub User");
+//   await gitCmd(["config", "--global", "user.name", "brandon-schabel"]);
 
-  ulog("Configured Git User: ", await gitCmd(["config", "user.name"]));
+//   ulog("Configured Git User: ", await gitCmd(["config", "user.name"]));
 
-  ulog("Configuring GitHub Email");
-  await gitCmd([
-    "config",
-    "--global",
-    "user.email",
-    "brandonschabel1995@gmail.com",
-  ]);
+//   ulog("Configuring GitHub Email");
+//   await gitCmd([
+//     "config",
+//     "--global",
+//     "user.email",
+//     "brandonschabel1995@gmail.com",
+//   ]);
 
-  ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
-
-  // Use the PAT to set the remote URL with authentication
-  ulog("Setting up remote URL with PAT");
-
-  await gitCmd([
-    "remote",
-    "set-url",
-    "origin",
-    `https://${GITHUB_PAT}@github.com/brandon-schabel/u-tools.git`,
-  ]);
-};
+//   ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
+// };
 
 const isLocalRun = process.env.LOCAL_RUN === "true";
 
@@ -165,16 +203,16 @@ const pluginReactPath = path.resolve(
 /* Script */
 if (!isLocalRun) {
   setupNpmAuth();
-  await setupGitConfig();
+  // await setupGitConfig();
 }
 
 ulog(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
-await updatePackageVersion(corePackagePath, isAlpha);
-await npmPublish(corePackagePath, isAlpha);
+const newVersion = await updatePackageVersion(corePackagePath, isAlpha);
+await npmPublish({ packagePath: corePackagePath, isAlpha });
 
 await updatePackageVersion(pluginReactPath, isAlpha);
-await npmPublish(pluginReactPath, isAlpha);
+await npmPublish({ packagePath: pluginReactPath, isAlpha });
 
 if (!isLocalRun && !isAlpha) {
-  await commitAndPush();
+  await commitAndPush(`Pushing version: ${newVersion}`);
 }
