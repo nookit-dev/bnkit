@@ -4,7 +4,7 @@ import { exit } from "process";
 
 const GITHUB_PAT = Bun.env.PERSONAL_ACCESS_TOKEN_GITHUB || "";
 const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
-
+const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max number of retries to prevent infinite loops
 
 const ulog = (...args: any[]) => {
   const currentTime = Bun.nanoseconds() / 1e9; // Convert to seconds
@@ -29,18 +29,21 @@ const setupNpmAuth = () => {
 
 const npmPublish = async (packagePath: string, isAlpha: boolean) => {
   const dir = path.dirname(packagePath);
-  const npmArgs = ["npm", "publish"];
 
-  if (isAlpha) {
-    npmArgs.push("--tag", "alpha");
-  }
-
-  try {
-    ulog(`Publishing from directory: ${dir}`);
-    await Bun.spawn(npmArgs, { cwd: dir });
-  } catch (error) {
-    console.error(`Failed to publish from ${dir}:`, error);
-    exit(1);
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    try {
+      ulog(`Publishing from directory: ${dir}`);
+      await Bun.spawn(["npm", "publish"], { cwd: dir });
+      break; // Exit the loop if publish is successful
+    } catch (error: any) {
+      if (error.message.includes("403 Forbidden")) {
+        ulog(`Version conflict for ${dir}, trying next version...`);
+        await updatePackageVersion(packagePath, isAlpha);
+      } else {
+        console.error(`Failed to publish from ${dir}:`, error);
+        exit(1);
+      }
+    }
   }
 };
 
