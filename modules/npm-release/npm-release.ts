@@ -23,7 +23,7 @@ export function npmReleaseFactory(options: NpmReleaseFactoryOptions) {
       if (!options.npmToken) {
         console.error("NPM_TOKEN is not set in environment variables.");
         exit(1);
-      }
+      } 
       const npmrcContent = `//registry.npmjs.org/:_authToken=${npmToken}`;
       const npmrcPath = path.resolve(process.cwd(), ".npmrc");
       Bun.write(npmrcPath, npmrcContent);

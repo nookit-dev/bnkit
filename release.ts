@@ -1,6 +1,6 @@
 import Bun from "bun";
 import { createGitHubActionsFactory } from "modules/github-actions";
-import { npmReleaseFactory } from "modules/npm-release/npm-release";
+import { npmReleaseFactory } from "modules/npm-release";
 import { ulog } from "modules/utils/ulog";
 import path from "path";
 
@@ -18,6 +18,21 @@ const { commitAndPush, setupGitConfig } = createGitHubActionsFactory({
   sshRepoUrl: "git@github.com:brandon-schabel/u-tools.git",
 });
 
+const isLocalRun = Bun.env.LOCAL_RUN === "true";
+
+const isAlpha = isLocalRun
+  ? false
+  : Bun.env.GITHUB_EVENT_NAME === "pull_request";
+
+const corePackagePath = path.resolve(process.cwd(), "package.json");
+
+const pluginReactPath = path.resolve(
+  process.cwd(),
+  "plugins",
+  "react",
+  "package.json"
+);
+
 ulog({
   actor: e?.GITHUB_ACTOR,
   job: e?.GITHUB_JOB,
@@ -27,6 +42,10 @@ ulog({
   runNumber: e.GITHUB_RUN_NUMBER,
   runnerEnv: e?.RUNNNER_ENVIRONMENT,
   eventName: e?.GITHUB_EVENT_NAME,
+  isLocalRun,
+  isAlpha,
+  corePackagePath,
+  pluginReactPath,
 });
 
 // const getCurrentVersion = async (packagePath: string): Promise<string> => {
@@ -190,21 +209,6 @@ ulog({
 
 //   ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
 // };
-
-const isLocalRun = Bun.env.LOCAL_RUN === "true";
-
-const isAlpha = isLocalRun
-  ? false
-  : Bun.env.GITHUB_EVENT_NAME === "pull_request";
-
-const corePackagePath = path.resolve(process.cwd(), "package.json");
-
-const pluginReactPath = path.resolve(
-  process.cwd(),
-  "plugins",
-  "react",
-  "package.json"
-);
 
 /* Script */
 if (!isLocalRun) {
