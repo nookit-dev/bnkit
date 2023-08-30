@@ -65,45 +65,15 @@ const npmPublish = async ({
 
     const proc = Bun.spawnSync(["npm", "publish"], {
       cwd: dir,
-      // onExit: async (proc, exitCode, signalCode, error) => {
-      // const errorString = proc.stderr?.tomtring();
-      // ulog({ error });
-      // ulog({ errorString });
-      // console.log({ stdOut: proc.stdout?.toString() });
-
-      // if (proc.stdout && typeof proc.stdout !== "number") {
-      // console.log({
-      // stdOut2: await Bun.readableStreamToText(proc.stdout),
-      // });
-      // }
     });
 
-    console.log(proc.stdout.toString())
+    const response = proc.stdout.toString();
+    console.log({ response });
 
-    // console.log(await proc.stdout.values())
-
-    // const output = await Bun.readableStreamToText(proc.stdout);
-    // ulog({ output });
-
-    // const readData = await proc.readable.getReader().read()
-    // console.log({readData})
-
-    const response = await new Response(proc.stdout).text()
-
-    console.log({response})
-
-
-
-    // // check if output contains 403 error
-    // if (output.includes("403 Forbidden")) {
-    //   hasError = true;
-    //   ulog("403 Forbidden error. Retrying...");
-    // } else {
-    //   success = true;
-    //   ulog("Successfully published!");
-    // }
-
-    // await proc.exited;
+    if (proc.stderr.length > 0) {
+      const errorResponse = proc.stderr.toString();
+      console.log({ errorResponse });
+    }
 
     // If there's no error, break out of the loop
     if (!hasError || success) {
