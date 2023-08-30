@@ -49,7 +49,7 @@ export function npmReleaseFactory(options: NpmReleaseFactoryOptions) {
       );
 
       const npmWhoIs = Bun.spawnSync(["npm", "whoami"]);
-      ulog({ npmWhoIs });
+      ulog({ npmWhoIs: npmWhoIs.stdout.toString() });
 
       const publishScript = ["npm", "publish"];
 
