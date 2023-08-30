@@ -82,7 +82,7 @@ const npmPublish = async ({
     ulog({ output });
 
     const readData = await proc.readable.getReader().read()
-    console.log({})
+    console.log({readData})
 
 
 
