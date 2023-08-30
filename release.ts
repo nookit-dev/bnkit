@@ -31,10 +31,17 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
   const dir = path.dirname(packagePath);
 
   for (let i = 0; i < MAX_RETRIES; i++) {
-    ulog(`Publishing from directory: ${dir}`);
+    ulog(
+      `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
+    );
     const proc = Bun.spawn(["npm", "publish"], { cwd: dir });
 
     const stderr = await new Response(proc.stderr).text();
+    const stdout = await new Response(proc.stdout).text();
+
+    console.log(stderr);
+    console.log(stdout);
+    
     if (stderr.includes("403 Forbidden")) {
       ulog(`Version conflict for ${dir}, trying next version...`);
       await updatePackageVersion(packagePath, isAlpha);
