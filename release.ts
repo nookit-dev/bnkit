@@ -86,6 +86,10 @@ const npmPublish = async ({
     const readData = await proc.readable.getReader().read()
     console.log({readData})
 
+    const response = await new Response(proc.stdout).text()
+
+    console.log({response})
+
 
 
     // check if output contains 403 error
