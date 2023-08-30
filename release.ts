@@ -185,7 +185,7 @@ const setupGitConfig = async () => {
   ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
 
   // Use the PAT to set the remote URL with authentication
-  ulog("Setting up remote URL with PAT");
+  // ulog("Setting up remote URL with PAT");
 
   // await gitCmd([
   //   "remote",
