@@ -20,11 +20,8 @@ const updatePackageVersion = async (packagePath: string, isAlpha: boolean) => {
   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
 };
 
-const gitCmd = async (command: string | string[]) => {
-  const commandArray = [
-    "git",
-    ...(typeof command === "string" ? [command] : command),
-  ];
+const gitCmd = async (commands: string[]) => {
+  const commandArray = ["git", ...commands];
 
   try {
     await Bun.spawn(commandArray);
@@ -35,18 +32,18 @@ const gitCmd = async (command: string | string[]) => {
 };
 
 const commitAndPush = async () => {
-  try {
-    console.log("*** Running git commands ***");
-    await gitCmd("config --global user.name brandon-schabel");
-    await gitCmd("config --global user.email brandonschabel1995@gmail.com");
+  console.log("*** Running git commands ***");
+  await gitCmd(["config", "--global", "user.name", "brandon-schabel"]);
+  await gitCmd([
+    "config",
+    "--global",
+    "user.email",
+    "brandonschabel1995@gmail.com",
+  ]);
 
-    await gitCmd("add .");
-    await gitCmd('commit -m "Bump versions"');
-    await gitCmd("push origin HEAD:main");
-  } catch (error) {
-    console.error(error, "Failed ");
-    exit(1);
-  }
+  await gitCmd(["add", "."]);
+  await gitCmd(["commit", "-m", "Bump versions"]);
+  await gitCmd(["push", "origin", "HEAD:main"]);
 };
 
 const isLocalRun = process.env.LOCAL_RUN === "true";
@@ -68,6 +65,6 @@ await updatePackageVersion(corePackagePath, isAlpha);
 
 await updatePackageVersion(pluginReactPath, isAlpha);
 
-if (!isLocalRun) {
+if (!isLocalRun && !isAlpha) {
   await commitAndPush();
 }
