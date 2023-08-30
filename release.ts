@@ -1,21 +1,22 @@
 import Bun from "bun";
+import { createGitHubActionsFactory } from "modules/github-actions";
+import { npmReleaseFactory } from "modules/npm-release";
 import { ulog } from "modules/utils/ulog";
 import path from "path";
-import { exit } from "process";
 
 const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
 const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max number of retries to prevent infinite loops
 
 const e = Bun.env;
 
-// const { npmPublish, setupNpmAuth, updatePackageVersion } = npmReleaseFactory({
-//   maxRetries: MAX_RETRIES,
-//   npmToken: NPM_TOKEN,
-// });
+const { npmPublish, setupNpmAuth, updatePackageVersion } = npmReleaseFactory({
+  maxRetries: MAX_RETRIES,
+  npmToken: NPM_TOKEN,
+});
 
-// const { commitAndPush, setupGitConfig } = createGitHubActionsFactory({
-//   sshRepoUrl: "git@github.com:brandon-schabel/u-tools.git",
-// });
+const { commitAndPush, setupGitConfig } = createGitHubActionsFactory({
+  sshRepoUrl: "git@github.com:brandon-schabel/u-tools.git",
+});
 
 const isLocalRun = Bun.env.LOCAL_RUN === "true";
 
@@ -47,175 +48,167 @@ ulog({
   pluginReactPath,
 });
 
-const getCurrentVersion = async (packagePath: string): Promise<string> => {
-  const packageData = await Bun.file(packagePath).text();
-  const parsedData = JSON.parse(packageData);
-  return parsedData.version;
-};
+// const getCurrentVersion = async (packagePath: string): Promise<string> => {
+//   const packageData = await Bun.file(packagePath).text();
+//   const parsedData = JSON.parse(packageData);
+//   return parsedData.version;
+// };
 
-/* Helper Functions */
-const setupNpmAuth = () => {
-  try {
-    if (!NPM_TOKEN) {
-      console.error("NPM_TOKEN is not set in environment variables.");
-      exit(1);
-    }
-    const npmrcContent = `//registry.npmjs.org/:_authToken=${NPM_TOKEN}`;
-    const npmrcPath = path.resolve(process.cwd(), ".npmrc");
-    Bun.write(npmrcPath, npmrcContent);
-  } catch (error) {
-    console.error("Failed to set up npm authentication:", error);
-    exit(1);
-  }
-};
+// /* Helper Functions */
+// const setupNpmAuth = () => {
+//   try {
+//     if (!NPM_TOKEN) {
+//       console.error("NPM_TOKEN is not set in environment variables.");
+//       exit(1);
+//     }
+//     const npmrcContent = `//registry.npmjs.org/:_authToken=${NPM_TOKEN}`;
+//     const npmrcPath = path.resolve(process.cwd(), ".npmrc");
+//     Bun.write(npmrcPath, npmrcContent);
+//   } catch (error) {
+//     console.error("Failed to set up npm authentication:", error);
+//     exit(1);
+//   }
+// };
 
-const npmPublish = async ({
-  isAlpha,
-  packagePath,
-}: {
-  packagePath: string;
-  isAlpha: boolean;
-}) => {
-  const dir = path.dirname(packagePath);
+// const npmPublish = async ({
+//   isAlpha,
+//   packagePath,
+// }: {
+//   packagePath: string;
+//   isAlpha: boolean;
+// }) => {
+//   const dir = path.dirname(packagePath);
 
-  let success = false;
+//   let success = false;
 
-  for (let i = 0; i < MAX_RETRIES && !success; i++) {
-    ulog(
-      `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
-    );
+//   for (let i = 0; i < MAX_RETRIES && !success; i++) {
+//     ulog(
+//       `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
+//     );
 
-    const releaseScript = ["npm", "publish"];
+//     const proc = Bun.spawnSync(["npm", "publish"], {
+//       cwd: dir,
+//     });
 
-    if (isAlpha) {
-      releaseScript.push("--tag", "alpha", "--access", "public");
-    } else {
-      releaseScript.push("--access", "public");
-    }
+//     const response = proc.stdout.toString();
+//     console.log({ response });
 
-    const proc = Bun.spawnSync(releaseScript, {
-      cwd: dir,
-    });
+//     const errorResponse = proc.stderr.toString();
+//     console.log({ errorResponse });
 
-    const response = proc.stdout.toString();
-    console.log({ response });
+//     // If there's a specific error indicating a version conflict
+//     if (
+//       errorResponse.includes(
+//         "cannot publish over the previously published versions"
+//       )
+//     ) {
+//       ulog(`Version conflict for ${dir}, trying next version...`);
 
-    const errorResponse = proc.stderr.toString();
-    console.log({ errorResponse });
+//       const currentVersion = await getCurrentVersion(packagePath);
+//       const newVersion = updateVersion(currentVersion, false);
+//       ulog(`Updating version from ${currentVersion} to ${newVersion}`);
+//       await updatePackageVersion(packagePath, isAlpha, newVersion);
 
-    // If there's a specific error indicating a version conflict
-    if (
-      errorResponse.includes(
-        "cannot publish over the previously published versions"
-      )
-    ) {
-      ulog(`Version conflict for ${dir}, trying next version...`);
+//       // Don't set success to true; let the loop continue to retry with the new version
+//     } else {
+//       // If there's no specific version conflict error, assume success
+//       success = true;
+//     }
+//   }
 
-      const currentVersion = await getCurrentVersion(packagePath);
-      const newVersion = updateVersion(currentVersion, false);
-      ulog(`Updating version from ${currentVersion} to ${newVersion}`);
-      await updatePackageVersion(packagePath, isAlpha, newVersion);
+//   if (!success) {
+//     console.error(`Failed to publish after ${MAX_RETRIES} attempts.`);
+//     exit(1);
+//   }
+// };
 
-      // Don't set success to true; let the loop continue to retry with the new version
-    } else {
-      // If there's no specific version conflict error, assume success
-      success = true;
-    }
-  }
+// const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
+//   const [major, minor, patch] = currentVersion.split(".").map(Number);
+//   if (isAlpha) {
+//     const alphaHash = Math.random().toString(36).substr(2, 8);
+//     return `${major}.${minor}.${patch}-alpha.${alphaHash}`;
+//   } else {
+//     return `${major}.${minor}.${patch + 1}`;
+//   }
+// };
 
-  if (!success) {
-    console.error(`Failed to publish after ${MAX_RETRIES} attempts.`);
-    exit(1);
-  }
-};
+// const updatePackageVersion = async (
+//   packagePath: string,
+//   isAlpha: boolean,
+//   newVersion?: string
+// ) => {
+//   ulog(`Updating ${packagePath}`);
+//   const packageData = await Bun.file(packagePath).text();
+//   const parsedData = JSON.parse(packageData);
+//   parsedData.version = newVersion || updateVersion(parsedData.version, isAlpha); // Use the provided new version if available
+//   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
+//   return parsedData.version;
+// };
 
-const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
-  const [major, minor, patch] = currentVersion.split(".").map(Number);
-  if (isAlpha) {
-    const alphaHash = Math.random().toString(36).substr(2, 8);
-    return `${major}.${minor}.${patch}-alpha.${alphaHash}`;
-  } else {
-    return `${major}.${minor}.${patch + 1}`;
-  }
-};
+// const gitCmd = async (commands: string[], log = true) => {
+//   const commandArray = ["git", ...commands];
 
-const updatePackageVersion = async (
-  packagePath: string,
-  isAlpha: boolean,
-  newVersion?: string
-) => {
-  ulog(`Updating ${packagePath}`);
-  const packageData = await Bun.file(packagePath).text();
-  const parsedData = JSON.parse(packageData);
-  parsedData.version = newVersion || updateVersion(parsedData.version, isAlpha); // Use the provided new version if available
-  await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
-  return parsedData.version;
-};
+//   try {
+//     if (log) ulog(`Running command: ${commandArray.join(" ")}`);
 
-const gitCmd = async (commands: string[], log = true) => {
-  const commandArray = ["git", ...commands];
+//     const proc = Bun.spawn(commandArray);
 
-  try {
-    if (log) ulog(`Running command: ${commandArray.join(" ")}`);
+//     const stdout = await new Response(proc.stdout).text();
 
-    const proc = Bun.spawn(commandArray);
+//     if (stdout.trim()) {
+//       ulog(stdout.trim());
+//     }
 
-    const stdout = await new Response(proc.stdout).text();
+//     const stderr = await new Response(proc.stderr).text();
+//     if (stderr.trim()) {
+//       console.error(stderr.trim());
+//     }
+//   } catch (error) {
+//     console.error(`Failed to run command: ${commandArray}:`, error);
+//     exit(1);
+//   }
+// };
 
-    if (stdout.trim()) {
-      ulog(stdout.trim());
-    }
+// const commitAndPush = async (commitMsg: string) => {
+//   ulog("*** Running git commands ***");
 
-    const stderr = await new Response(proc.stderr).text();
-    if (stderr.trim()) {
-      console.error(stderr.trim());
-    }
-  } catch (error) {
-    console.error(`Failed to run command: ${commandArray}:`, error);
-    exit(1);
-  }
-};
+//   // Use the SSH to set the remote URL with authentication
+//   await gitCmd([
+//     "remote",
+//     "set-url",
+//     "origin",
+//     "git@github.com:brandon-schabel/u-tools.git",
+//   ]);
+//   ulog("Configured GitHub User");
+//   await gitCmd(["config", "user.name"]);
 
-const commitAndPush = async (commitMsg: string) => {
-  ulog("*** Running git commands ***");
+//   ulog("Configured GitHub Email");
+//   await gitCmd(["config", "user.email"]);
 
-  // Use the SSH to set the remote URL with authentication
-  await gitCmd([
-    "remote",
-    "set-url",
-    "origin",
-    "git@github.com:brandon-schabel/u-tools.git",
-  ]);
-  ulog("Configured GitHub User");
-  await gitCmd(["config", "user.name"]);
+//   await gitCmd(["add", "."]);
+//   await gitCmd(["commit", "-m", `[skip ci] ${commitMsg}`]);
+//   await gitCmd(["push", "origin", "HEAD:main"]);
+// };
 
-  ulog("Configured GitHub Email");
-  await gitCmd(["config", "user.email"]);
+// const setupGitConfig = async () => {
+//   ulog("*** Configuring Git ***");
 
-  await gitCmd(["add", "."]);
-  await gitCmd(["commit", "-m", `[skip ci] ${commitMsg}`]);
-  await gitCmd(["push", "origin", "HEAD:main"]);
-};
+//   // Configure user name and email
+//   ulog("Configuring GitHub User");
+//   await gitCmd(["config", "--global", "user.name", "github-actions[bot]"]);
 
-const setupGitConfig = async () => {
-  ulog("*** Configuring Git ***");
+//   ulog("Configured Git User: ", await gitCmd(["config", "user.name"]));
 
-  // Configure user name and email
-  ulog("Configuring GitHub User");
-  await gitCmd(["config", "--global", "user.name", "github-actions[bot]"]);
+//   ulog("Configuring GitHub Email");
+//   await gitCmd([
+//     "config",
+//     "--global",
+//     "user.email",
+//     "41898282+github-actions[bot]@users.noreply.github.com",
+//   ]);
 
-  ulog("Configured Git User: ", await gitCmd(["config", "user.name"]));
-
-  ulog("Configuring GitHub Email");
-  await gitCmd([
-    "config",
-    "--global",
-    "user.email",
-    "41898282+github-actions[bot]@users.noreply.github.com",
-  ]);
-
-  ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
-};
+//   ulog("Configured Git Email: ", await gitCmd(["config", "user.email"]));
+// };
 
 /* Script */
 if (!isLocalRun) {
