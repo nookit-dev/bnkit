@@ -26,6 +26,7 @@ ulog({
   gitHubAction: e.GITHUB_ACTION,
   runNumber: e.GITHUB_RUN_NUMBER,
   runnerEnv: e?.RUNNNER_ENVIRONMENT,
+  eventName: e?.GITHUB_EVENT_NAME,
 });
 
 // const getCurrentVersion = async (packagePath: string): Promise<string> => {
