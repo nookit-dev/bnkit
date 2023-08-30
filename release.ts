@@ -4,7 +4,7 @@ import { exit } from "process";
 
 const GITHUB_PAT = Bun.env.PERSONAL_ACCESS_TOKEN_GITHUB || "";
 const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
-const GIT_USER = BUN;
+
 
 const ulog = (...args: any[]) => {
   const currentTime = Bun.nanoseconds() / 1e9; // Convert to seconds
