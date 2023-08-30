@@ -54,9 +54,9 @@ const npmPublish = async ({
 }) => {
   const dir = path.dirname(packagePath);
 
-  let success = false; // To track if publishing was successful
+  let success = false;
 
-  for (let i = 0; i < MAX_RETRIES; i++) {
+  for (let i = 0; i < MAX_RETRIES && !success; i++) {
     ulog(
       `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
     );
@@ -69,30 +69,25 @@ const npmPublish = async ({
     console.log({ response });
 
     const errorResponse = proc.stderr.toString();
-    if (errorResponse.length > 0) {
-      console.log({ errorResponse });
+    console.log({ errorResponse });
 
-      if (
-        errorResponse.includes(
-          "cannot publish over the previously published versions"
-        )
-      ) {
-        success = false;
-        ulog(`Version conflict for ${dir}, trying next version...`);
+    // If there's a specific error indicating a version conflict
+    if (
+      errorResponse.includes(
+        "cannot publish over the previously published versions"
+      )
+    ) {
+      ulog(`Version conflict for ${dir}, trying next version...`);
 
-        // Retrieve the current version, increment the patch version, and update the package.json
-        const currentVersion = await getCurrentVersion(packagePath);
-        const newVersion = updateVersion(currentVersion, false); // Always increment the patch version, regardless of alpha status
-        ulog(`Updating version from ${currentVersion} to ${newVersion}`);
-        await updatePackageVersion(packagePath, isAlpha, newVersion);
+      const currentVersion = await getCurrentVersion(packagePath);
+      const newVersion = updateVersion(currentVersion, false);
+      ulog(`Updating version from ${currentVersion} to ${newVersion}`);
+      await updatePackageVersion(packagePath, isAlpha, newVersion);
 
-        // Continue the loop to retry with the new version
-        continue;
-      }
+      // Don't set success to true; let the loop continue to retry with the new version
     } else {
-      // If there's no error, mark as success and break out of the loop
+      // If there's no specific version conflict error, assume success
       success = true;
-      break;
     }
   }
 
