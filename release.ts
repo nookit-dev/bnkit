@@ -11,6 +11,18 @@ const ulog = (...args: any[]) => {
   console.log(`[${currentTime.toFixed(4)}s]`, args);
 };
 
+const e = Bun.env;
+
+ulog({
+  actor: e?.GITHUB_ACTOR,
+  job: e?.GITHUB_JOB,
+  refType: e?.GITHUB_REF_TYPE,
+  runner: e?.RUNNER_NAME,
+  gitHubAction: e.GITHUB_ACTION,
+  runNumber: e.GITHUB_RUN_NUMBER,
+  runnerEnv: e?.RUNNNER_ENVIRONMENT,
+});
+
 /* Helper Functions */
 const setupNpmAuth = () => {
   try {
@@ -30,50 +42,34 @@ const setupNpmAuth = () => {
 const npmPublish = async (packagePath: string, isAlpha: boolean) => {
   const dir = path.dirname(packagePath);
 
-  for (let i = 0; i < MAX_RETRIES; i++) {
+  let publishedSuccessfully = false;
+
+  for (let i = 0; i < MAX_RETRIES && !publishedSuccessfully; i++) {
     ulog(
       `Publishing from directory: ${dir}, attempt ${i + 1} of ${MAX_RETRIES}`
     );
+
     const proc = Bun.spawn(["npm", "publish"], {
       cwd: dir,
-      onExit: (proc, exitCode, signalCode, error) => {
-        console.log({
-          proc,
-          exitCode,
-          signalCode,
-          error,
-        });
+      onExit: async (proc, exitCode, signalCode, error) => {
         const errorString = proc.stderr?.toString();
         ulog({ errorString });
+
         if (errorString?.includes("403 Forbidden")) {
           ulog(`Version conflict for ${dir}, trying next version...`);
-          updatePackageVersion(packagePath, isAlpha);
-        }
-        if (exitCode !== 0) {
-          console.error(`Process exited with code: ${exitCode}`);
+          await updatePackageVersion(packagePath, isAlpha);
+        } else if (exitCode !== 0) {
+          console.error(`Failed to publish from ${dir}:`, errorString);
+          exit(1);
+        } else {
+          publishedSuccessfully = true;
         }
       },
     });
 
-    // const stderr = await new Response(proc.stderr).text();
-    // const stdout = await new Response(proc.stdout).text();
-
-    // const stderrReader = proc?.stderr;
-    // // proc.
-    // // let stderrData = "";
-
-    // // console.log({ stderr });
-    // // console.log({ stdout });
-
-    // if (stderr.includes("403 Forbidden")) {
-    //   ulog(`Version conflict for ${dir}, trying next version...`);
-    //   await updatePackageVersion(packagePath, isAlpha);
-    // } else if (stderr.trim()) {
-    //   console.error(`Failed to publish from ${dir}:`, stderr.trim());
-    //   exit(1);
-    // } else {
-    //   break; // Exit the loop if no errors in stderr
-    // }
+    // Since the onExit callback might be asynchronous, you may need to ensure that the process has completed
+    // before continuing the loop. This depends on the behavior of the Bun library.
+    await proc.exited;
   }
 };
 
@@ -176,6 +172,7 @@ const isLocalRun = process.env.LOCAL_RUN === "true";
 // const isAlpha = isLocalRun
 //   ? false
 //   : Bun.env.GITHUB_EVENT_NAME === "pull_request";
+// FORCE Release
 const isAlpha = false;
 
 ulog({
