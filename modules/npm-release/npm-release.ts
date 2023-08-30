@@ -48,6 +48,9 @@ export function npmReleaseFactory(options: NpmReleaseFactoryOptions) {
         `Publishing from directory: ${dir}, attempt ${i + 1} of ${maxRetries}`
       );
 
+      const npmWhoIs = Bun.spawnSync(["npm", "whoami"]);
+      ulog({ npmWhoIs });
+
       const publishScript = ["npm", "publish"];
 
       if (isAlpha) {
