@@ -2,7 +2,7 @@ import Bun from "bun";
 import path from "path";
 import { exit } from "process";
 
-const PERSONAL_ACCESS_TOKEN = Bun.env.PERSONAL_ACCESS_TOKEN_GITHUB || "";
+const GITHUB_PAT = Bun.env.PERSONAL_ACCESS_TOKEN_GITHUB || "";
 const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
 
 /* Helper Functions */
@@ -64,13 +64,19 @@ const gitCmd = async (commands: string[]) => {
 
 const commitAndPush = async () => {
   console.log("*** Running git commands ***");
-  await gitCmd(["config", "--global", "user.name", "brandon-schabel"]);
+
+  // Use the PAT to set the remote URL with authentication
   await gitCmd([
-    "config",
-    "--global",
-    "user.email",
-    "brandonschabel1995@gmail.com",
+    "remote",
+    "set-url",
+    "origin",
+    `https://${GITHUB_PAT}@github.com/brandon-schabel/u-tools.git`,
   ]);
+
+  console.log("Configured GitHub User");
+  await gitCmd(["config", "user.name"]);
+  console.log("Configured GitHub Email");
+  await gitCmd(["config", "user.email"]);
 
   await gitCmd(["add", "."]);
   await gitCmd(["commit", "-m", "Bump versions"]);
@@ -93,7 +99,9 @@ const pluginReactPath = path.resolve(
 );
 
 /* Script */
-setupNpmAuth();
+if (!isLocalRun) {
+  setupNpmAuth();
+}
 
 console.log(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
 await updatePackageVersion(corePackagePath, isAlpha);
