@@ -31,18 +31,18 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
   const dir = path.dirname(packagePath);
 
   for (let i = 0; i < MAX_RETRIES; i++) {
-    try {
-      ulog(`Publishing from directory: ${dir}`);
-      await Bun.spawn(["npm", "publish"], { cwd: dir });
-      break; // Exit the loop if publish is successful
-    } catch (error: any) {
-      if (error.message.includes("403 Forbidden")) {
-        ulog(`Version conflict for ${dir}, trying next version...`);
-        await updatePackageVersion(packagePath, isAlpha);
-      } else {
-        console.error(`Failed to publish from ${dir}:`, error);
-        exit(1);
-      }
+    ulog(`Publishing from directory: ${dir}`);
+    const proc = Bun.spawn(["npm", "publish"], { cwd: dir });
+
+    const stderr = await new Response(proc.stderr).text();
+    if (stderr.includes("403 Forbidden")) {
+      ulog(`Version conflict for ${dir}, trying next version...`);
+      await updatePackageVersion(packagePath, isAlpha);
+    } else if (stderr.trim()) {
+      console.error(`Failed to publish from ${dir}:`, stderr.trim());
+      exit(1);
+    } else {
+      break; // Exit the loop if no errors in stderr
     }
   }
 };
