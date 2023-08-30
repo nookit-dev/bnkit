@@ -187,12 +187,12 @@ const setupGitConfig = async () => {
   // Use the PAT to set the remote URL with authentication
   ulog("Setting up remote URL with PAT");
 
-  await gitCmd([
-    "remote",
-    "set-url",
-    "origin",
-    `https://${GITHUB_PAT}@github.com/brandon-schabel/u-tools.git`,
-  ]);
+  // await gitCmd([
+  //   "remote",
+  //   "set-url",
+  //   "origin",
+  //   `git@github.com:brandon-schabel/u-tools.git`,
+  // ]);
 };
 
 const isLocalRun = process.env.LOCAL_RUN === "true";

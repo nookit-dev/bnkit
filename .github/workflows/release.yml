@@ -17,7 +17,10 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
 
