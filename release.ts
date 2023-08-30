@@ -69,8 +69,7 @@ const npmPublish = async ({
         const errorString = proc.stderr?.toString();
         ulog({error})
         ulog({ errorString });
-       console.log({stdOut: proc.stdout})
-
+       console.log({stdOut: proc.stdout?.toString()})
 
         if (errorString?.includes("403 Forbidden")) {
           ulog(`Version conflict for ${dir}, trying next version...`);
