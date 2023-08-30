@@ -7,7 +7,7 @@ const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
 
 const ulog = (...args: any[]) => {
   const currentTime = Bun.nanoseconds() / 1e9; // Convert to seconds
-  console.log(`[${currentTime.toFixed(3)}s]`, args);
+  console.log(`[${currentTime.toFixed(4)}s]`, args);
 };
 
 /* Helper Functions */
