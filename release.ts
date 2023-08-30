@@ -1,5 +1,42 @@
 import Bun from "bun";
 import path from "path";
+import { exit } from "process";
+
+const GITHUB_PAT = Bun.env.PERSONAL_ACCESS_TOKEN_GITHUB || "";
+const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
+
+/* Helper Functions */
+const setupNpmAuth = () => {
+  try {
+    if (!NPM_TOKEN) {
+      console.error("NPM_TOKEN is not set in environment variables.");
+      exit(1);
+    }
+    const npmrcContent = `//registry.npmjs.org/:_authToken=${NPM_TOKEN}`;
+    const npmrcPath = path.resolve(process.cwd(), ".npmrc");
+    Bun.write(npmrcPath, npmrcContent);
+  } catch (error) {
+    console.error("Failed to set up npm authentication:", error);
+    exit(1);
+  }
+};
+
+const npmPublish = async (packagePath: string, isAlpha: boolean) => {
+  const dir = path.dirname(packagePath);
+  const npmArgs = ["npm", "publish"];
+
+  if (isAlpha) {
+    npmArgs.push("--tag", "alpha");
+  }
+
+  try {
+    console.log(`Publishing from directory: ${dir}`);
+    await Bun.spawn(npmArgs, { cwd: dir });
+  } catch (error) {
+    console.error(`Failed to publish from ${dir}:`, error);
+    exit(1);
+  }
+};
 
 const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
   const [major, minor, patch] = currentVersion.split(".").map(Number);
@@ -12,16 +49,43 @@ const updateVersion = (currentVersion: string, isAlpha: boolean): string => {
 };
 
 const updatePackageVersion = async (packagePath: string, isAlpha: boolean) => {
+  console.log(`Updating ${packagePath}`);
   const packageData = await Bun.file(packagePath).text();
   const parsedData = JSON.parse(packageData);
   parsedData.version = updateVersion(parsedData.version, isAlpha);
   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
 };
 
+const gitCmd = async (commands: string[]) => {
+  const commandArray = ["git", ...commands];
+
+  try {
+    await Bun.spawn(commandArray);
+  } catch (error) {
+    console.error(`Failed to run command: ${commandArray}:`, error);
+    exit(1);
+  }
+};
+
 const commitAndPush = async () => {
-  await Bun.spawn(["git", "add", "-A"]);
-  await Bun.spawn(["git", "commit", "-m", "Bump versions"]);
-  await Bun.spawn(["git", "push", "origin", "HEAD:main"]);
+  console.log("*** Running git commands ***");
+
+  // Use the PAT to set the remote URL with authentication
+  await gitCmd([
+    "remote",
+    "set-url",
+    "origin",
+    `https://${GITHUB_PAT}@github.com/brandon-schabel/u-tools.git`,
+  ]);
+
+  console.log("Configured GitHub User");
+  await gitCmd(["config", "user.name"]);
+  console.log("Configured GitHub Email");
+  await gitCmd(["config", "user.email"]);
+
+  await gitCmd(["add", "."]);
+  await gitCmd(["commit", "-m", "Bump versions"]);
+  await gitCmd(["push", "origin", "HEAD:main"]);
 };
 
 const isLocalRun = process.env.LOCAL_RUN === "true";
@@ -29,6 +93,7 @@ const isLocalRun = process.env.LOCAL_RUN === "true";
 const isAlpha = isLocalRun
   ? false
   : Bun.env.GITHUB_EVENT_NAME === "pull_request";
+
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
 const pluginReactPath = path.resolve(
@@ -38,9 +103,18 @@ const pluginReactPath = path.resolve(
   "package.json"
 );
 
-await updatePackageVersion(corePackagePath, isAlpha);
-await updatePackageVersion(pluginReactPath, isAlpha);
-
+/* Script */
 if (!isLocalRun) {
+  setupNpmAuth();
+}
+
+console.log(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
+await updatePackageVersion(corePackagePath, isAlpha);
+await npmPublish(corePackagePath, isAlpha);
+
+await updatePackageVersion(pluginReactPath, isAlpha);
+await npmPublish(pluginReactPath, isAlpha);
+
+if (!isLocalRun && !isAlpha) {
   await commitAndPush();
 }

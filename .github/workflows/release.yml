@@ -10,32 +10,28 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        plugin: [., plugins/react]
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up npm authentication
-      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
 
-    - name: Generate version (Alpha Release)
-      if: github.event_name == 'pull_request'
-      run: echo "VERSION=$(npm info "@u-tools/core" version)-alpha.$(openssl rand -hex 8)" >> $GITHUB_ENV
+      - name: Set up npm authentication
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-    - name: Generate version (Normal Release)
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: |
-        # Your logic for bumping the version for a normal release.
-        # For instance:
-        npm version patch
-        echo "VERSION=$(npm info "@u-tools/core" version)" >> $GITHUB_ENV
+      - name: Set up Git for pushing
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}@github.com/brandon-schabel/u-tools.git
 
-    - name: Navigate to package and publish
-      run: |
-        cd ${{ matrix.plugin }}
-        npm version --no-git-tag-version $VERSION
-        npm publish --access public
+      - name: Ensure no git lock before release
+        run: rm -f .git/index.lock
+
+      - name: Run Release Script
+        run: bun release.ts
