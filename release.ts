@@ -42,6 +42,8 @@ const setupNpmAuth = () => {
 const npmPublish = async (packagePath: string, isAlpha: boolean) => {
   const dir = path.dirname(packagePath);
 
+  let success = false; // To track if publishing was successful
+
   for (let i = 0; i < MAX_RETRIES; i++) {
     let hasError = false; // Flag to track if there's an error
 
@@ -61,7 +63,9 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
           hasError = true; // Set the error flag
         } else if (exitCode !== 0) {
           console.error(`Failed to publish from ${dir}:`, errorString);
-          exit(1);
+          hasError = true;
+        } else {
+          success = true; // If there's no error and process exits with code 0
         }
       },
     });
@@ -69,9 +73,14 @@ const npmPublish = async (packagePath: string, isAlpha: boolean) => {
     await proc.exited;
 
     // If there's no error, break out of the loop
-    if (!hasError) {
+    if (!hasError || success) {
       break;
     }
+  }
+
+  if (!success) {
+    console.error(`Failed to publish after ${MAX_RETRIES} attempts.`);
+    exit(1);
   }
 };
 
