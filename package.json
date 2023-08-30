@@ -14,8 +14,7 @@
     "test": "bun test",
     "test:watch": "bun test --watch --coverage",
     "generate-types": "tsc -p tsconfig-types-gen.json",
-    "release": "sh ./release.sh",
-    "local-release": "LOCAL_RUN=true sh ./release.sh"
+    "release": "LOCAL_RUN=true bun ./release.ts"
   },
   "dependencies": {
     "typescript": "latest"
