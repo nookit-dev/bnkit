@@ -1,16 +1,5 @@
+import { isArray, isBool, isNum, isObj } from "../utils/value-checkers";
 import type { Dispatchers } from "./create-web-socket-state-machine";
-
-function isArrayType<T>(input: T | any[]): input is any[] {
-  return Array.isArray(input);
-}
-
-function isObjectType(input: any): input is object {
-  return typeof input === "object" && input !== null && !Array.isArray(input);
-}
-
-function isNumberType(input: any): input is number {
-  return typeof input === "number";
-}
 
 function createArrayDispatchers<Key, T, Options extends object = {}>(
   key: Key,
@@ -36,10 +25,6 @@ function createArrayDispatchers<Key, T, Options extends object = {}>(
       updateFunction(key, newArr, opts);
     },
   };
-}
-
-function isBooleanType(input: any): input is boolean {
-  return typeof input === "boolean";
 }
 
 function createBooleanDispatchers<Key, Options extends object = {}>(
@@ -138,19 +123,19 @@ export function createStateDispatchers<
   defaultState: State;
   updateFunction: (key: keyof State, value: any, opts?: UpdateFnOpts) => void;
 }): Dispatchers<State, UpdateFnOpts> {
-  const mergedState =  mergeWithDefault(defaultState, state);
+  const mergedState = mergeWithDefault(defaultState, state);
 
   return (Object.keys(mergedState) as (keyof State)[]).reduce((acc, key) => {
     const k = key as keyof State;
     const currentValue = mergedState[k];
 
-    if (isArrayType(currentValue)) {
+    if (isArray(currentValue)) {
       acc[k] = createArrayDispatchers(k, currentValue, updateFunction) as any;
-    } else if (isObjectType(currentValue)) {
+    } else if (isObj(currentValue)) {
       acc[k] = createObjectDispatchers(k, currentValue, updateFunction) as any;
-    } else if (isNumberType(currentValue)) {
+    } else if (isNum(currentValue)) {
       acc[k] = createNumberDispatchers(k, currentValue, updateFunction) as any;
-    } else if (isBooleanType(currentValue)) {
+    } else if (isBool(currentValue)) {
       acc[k] = createBooleanDispatchers(k, currentValue, updateFunction) as any;
     } else {
       acc[k] = createDefaultDispatchers(k, updateFunction) as any;
