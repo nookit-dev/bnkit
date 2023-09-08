@@ -20,9 +20,3 @@ export type ValidationResult<Schema extends object> = {
 
 export type SchemaType = Record<string, keyof TypeMapping>;
 
-export function infer<Schema extends SchemaType>(
-  schema: Schema,
-  data?: unknown
-): SchemaTypeInference<Schema> {
-  return data as SchemaTypeInference<Schema>;
-}

@@ -1,34 +1,38 @@
 import { ServerWebSocket, WebSocketHandler } from "bun";
 import { createStateDispatchers } from "./create-state-dispatchers";
+import { FilteredKeys } from "../type-utils";
 
-type AllowedStateKeys = boolean | string | number;
+export type AllowedStateKeys = boolean | string | number;
 
-type FilteredKeys<T, U> = {
-  [K in keyof T]: T[K] extends U ? K : never;
-}[keyof T];
+type DispatchOp<State> = {
+  set: (value: State) => void;
+};
 
-export type Dispatchers<State extends object, Options extends Object = {}> = {
-  [Key in keyof State]: State[Key] extends (infer T)[]
-    ? {
-        set: (value: State[Key], options?: Options) => void;
-        push: (value: T, options?: Options) => void;
-        pop: (options?: Options) => void;
-        insert: (index: number, value: T, options?: Options) => void;
-      }
-    : State[Key] extends object
-    ? {
-        set: (value: State[Key], options?: Options) => void;
-        update: (value: Partial<State[Key]>, options?: Options) => void;
-      }
-    : State[Key] extends number
-    ? {
-        set: (value: State[Key], options?: Options) => void;
-        increment: (amount?: number, options?: Options) => void;
-        decrement: (amount?: number, options?: Options) => void;
-      }
-    : {
-        set: (value: State[Key], options?: Options) => void;
-      };
+type ArrayOp<Value> = DispatchOp<Value[]> & {
+  push: (value: Value) => void;
+  pop: () => void;
+  insert: (index: number, value: Value) => void;
+};
+
+type ObjectOp<State> = DispatchOp<State> & {
+  update: (value: Partial<State>) => void;
+};
+
+type NumberOp = DispatchOp<number> & {
+  increment: (amount?: number) => void;
+  decrement: (amount?: number) => void;
+};
+
+type DispatcherItem<State> = State extends any[]
+  ? ArrayOp<Extract<State, any[]>[number]>
+  : State extends object
+  ? ObjectOp<State>
+  : State extends number
+  ? NumberOp
+  : DispatchOp<State>;
+
+export type Dispatchers<State> = {
+  [Key in keyof State]: DispatcherItem<State[Key]>;
 };
 
 // TODO: state updated at timestamps to make sure an old client doesn't corrupt
@@ -53,11 +57,7 @@ export const createWSStateMachine = <State extends object>(
     key: Key,
     callback: (newValue: State[Key]) => void
   ) {
-    if (!stateChangeCallbacks[key]) {
-      stateChangeCallbacks[key] = [];
-    }
-
-    stateChangeCallbacks?.[key]?.push(callback);
+    (stateChangeCallbacks[key] ??= []).push(callback);
   }
 
   const whenValueIs = <
@@ -68,27 +68,18 @@ export const createWSStateMachine = <State extends object>(
     expectedValue: ExpectedVal
   ) => {
     const value = currentState[key];
-
     return {
       then: (callback: () => void) => {
-        if (value === expectedValue) {
-          callback();
-        } else {
-          // If the current value isn't the expected value,
-          // add a listener to run the callback once the value becomes the expected value
-          onStateChange(
-            key,
-            (newValue: State[FilteredKeys<State, AllowedStateKeys>]) => {
-              if (newValue === expectedValue) {
-                callback();
-                // Optionally, remove this listener after the callback has been triggered
-                const index = stateChangeCallbacks?.[key]?.indexOf(callback);
-                if (index && index > -1) {
-                  stateChangeCallbacks?.[key]?.splice(index, 1);
-                }
-              }
+        if (value === expectedValue) callback();
+        else {
+          onStateChange(key, (newValue) => {
+            if (newValue === expectedValue) {
+              callback();
+              stateChangeCallbacks[key] = stateChangeCallbacks[key]?.filter(
+                (c) => c !== callback
+              );
             }
-          );
+          });
         }
       },
     };
@@ -143,13 +134,11 @@ export const createWSStateMachine = <State extends object>(
     }
   }
 
-  const dispatchers = createStateDispatchers(
-    {
-      defaultState: initialState,
-      state: currentState,
-      updateFunction: updateStateAndDispatch,
-    }
-  );
+  const dispatchers = createStateDispatchers({
+    defaultState: initialState,
+    state: currentState,
+    updateFunction: updateStateAndDispatch,
+  });
 
   return {
     updateStateAndDispatch,
