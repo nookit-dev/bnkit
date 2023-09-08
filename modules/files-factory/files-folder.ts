@@ -25,14 +25,15 @@ export const defaultExtIgnore = {
   log: true,
   localstorage: true,
   DS_Store: true,
-  testing: true
+  testing: true,
 };
 
+let count = 0;
 export const recursiveFileSearch = async ({
   directory,
   searchString,
-  ignoreDirectories = {},
-  ignoreFileTypes = {},
+  ignoreDirectories = defaultDirIgnore,
+  ignoreFileTypes = defaultExtIgnore,
 }: {
   directory: string;
   searchString: string;
@@ -41,6 +42,13 @@ export const recursiveFileSearch = async ({
 }): Promise<FileDirInfo[]> => {
   const results: FileDirInfo[] = [];
   const entries = await fsPromise.readdir(directory, { withFileTypes: true });
+
+  while (count < 10) {
+    console.log({ directory, count });
+    count++;
+  }
+
+  // ignoreDirectories, ignoreFileTypes });
 
   for (const entry of entries) {
     const fullPath = path.join(directory, entry.name);

@@ -1,6 +1,12 @@
 import { ServerWebSocket, WebSocketHandler } from "bun";
 import { createStateDispatchers } from "./create-state-dispatchers";
 
+type AllowedStateKeys = boolean | string | number;
+
+type FilteredKeys<T, U> = {
+  [K in keyof T]: T[K] extends U ? K : never;
+}[keyof T];
+
 export type Dispatchers<State extends object, Options extends Object = {}> = {
   [Key in keyof State]: State[Key] extends (infer T)[]
     ? {
@@ -53,6 +59,40 @@ export const createWSStateMachine = <State extends object>(
 
     stateChangeCallbacks?.[key]?.push(callback);
   }
+
+  const whenValueIs = <
+    Key extends keyof State = FilteredKeys<State, AllowedStateKeys>,
+    ExpectedVal extends State[Key] = State[Key]
+  >(
+    key: Key,
+    expectedValue: ExpectedVal
+  ) => {
+    const value = currentState[key];
+
+    return {
+      then: (callback: () => void) => {
+        if (value === expectedValue) {
+          callback();
+        } else {
+          // If the current value isn't the expected value,
+          // add a listener to run the callback once the value becomes the expected value
+          onStateChange(
+            key,
+            (newValue: State[FilteredKeys<State, AllowedStateKeys>]) => {
+              if (newValue === expectedValue) {
+                callback();
+                // Optionally, remove this listener after the callback has been triggered
+                const index = stateChangeCallbacks?.[key]?.indexOf(callback);
+                if (index && index > -1) {
+                  stateChangeCallbacks?.[key]?.splice(index, 1);
+                }
+              }
+            }
+          );
+        }
+      },
+    };
+  };
 
   // Adding WebSocket handlers to the server for state sync
   const websocketHandler: WebSocketHandler = {
@@ -109,8 +149,6 @@ export const createWSStateMachine = <State extends object>(
       state: currentState,
       updateFunction: updateStateAndDispatch,
     }
-    // initialState,
-    // updateStateAndDispatch
   );
 
   return {
@@ -120,5 +158,6 @@ export const createWSStateMachine = <State extends object>(
     state: currentState,
     control: dispatchers,
     onStateChange,
+    whenValueIs,
   };
 };
