@@ -1,7 +1,7 @@
+import { Dispatchers } from "../types";
 import { isArray, isBool, isNum, isObj } from "../utils/value-checkers";
-import type { Dispatchers } from "./create-web-socket-state-machine";
 
-function createArrayDispatchers<Key, T, Options extends object = {}>(
+export function createArrayDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   state: T[],
   updateFunction: (key: Key, value: T[], opts?: Options) => void
@@ -27,7 +27,7 @@ function createArrayDispatchers<Key, T, Options extends object = {}>(
   };
 }
 
-function createBooleanDispatchers<Key, Options extends object = {}>(
+export function createBooleanDispatchers<Key, Options extends object = {}>(
   key: Key,
   state: boolean,
   updateFunction: (key: Key, value: any, opts?: Options) => void
@@ -42,7 +42,7 @@ function createBooleanDispatchers<Key, Options extends object = {}>(
   };
 }
 
-function createObjectDispatchers<Key, T, Options extends object = {}>(
+export function createObjectDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   state: T,
   updateFunction: (key: Key, value: any, opts?: Options) => void
@@ -58,7 +58,7 @@ function createObjectDispatchers<Key, T, Options extends object = {}>(
   };
 }
 
-function createNumberDispatchers<Key, Options extends object = {}>(
+export function createNumberDispatchers<Key, Options extends object = {}>(
   key: Key,
   state: number,
   updateFunction: (key: Key, value: any, opts?: Options) => void
@@ -76,7 +76,7 @@ function createNumberDispatchers<Key, Options extends object = {}>(
   };
 }
 
-function createDefaultDispatchers<Key, T, Options extends object = {}>(
+export function createDefaultDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
@@ -87,7 +87,7 @@ function createDefaultDispatchers<Key, T, Options extends object = {}>(
   };
 }
 
-function mergeWithDefault<State extends object>(
+export function mergeWithDefault<State extends object>(
   defaultState: State,
   state: State
 ): State {
@@ -122,7 +122,7 @@ export function createStateDispatchers<
   state: State;
   defaultState: State;
   updateFunction: (key: keyof State, value: any, opts?: UpdateFnOpts) => void;
-}): Dispatchers<State, UpdateFnOpts> {
+}): Dispatchers<State> {
   const mergedState = mergeWithDefault(defaultState, state);
 
   return (Object.keys(mergedState) as (keyof State)[]).reduce((acc, key) => {
