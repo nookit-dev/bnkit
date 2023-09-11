@@ -3,7 +3,7 @@ import { isArray, isBool, isNum, isObj } from "../utils/value-checkers";
 
 export function createArrayDispatchers<Key, T, Options extends object = {}>(
   key: Key,
-  state: T[],
+  state: readonly T[], // mark it as readonly
   updateFunction: (key: Key, value: T[], opts?: Options) => void
 ) {
   return {
@@ -19,10 +19,27 @@ export function createArrayDispatchers<Key, T, Options extends object = {}>(
       const newArr = state.slice(0, -1);
       updateFunction(key, newArr, opts);
     },
-    insert: (index: number, value: T, opts?: Options) => {
+    insert: (index: number, value: T, overwrite = false, opts?: Options) => {
+      if (!state) state = [];
+
       const newArr = [...state];
-      newArr.splice(index, 0, value);
+
+      if (overwrite) {
+        newArr[index] = value;
+      } else {
+        newArr.splice(index, 0, value);
+      }
+
       updateFunction(key, newArr, opts);
+    },
+    replace: (index: number, value: T, opts?: Options) => {
+      if (!state) state = [];
+
+      const updatedState = [...state];
+
+      updatedState[index] = value;
+
+      updateFunction(key, updatedState, opts);
     },
   };
 }
@@ -88,8 +105,8 @@ export function createDefaultDispatchers<Key, T, Options extends object = {}>(
 }
 
 export function mergeWithDefault<State extends object>(
-  defaultState: State,
-  state: State
+  defaultState: Readonly<State>, // mark it as readonly
+  state: Readonly<State> // mark it as readonly
 ): State {
   const mergedState: Partial<State> = {};
   const missingKeys: (keyof State)[] = [];
@@ -123,7 +140,7 @@ export function createStateDispatchers<
   defaultState: State;
   updateFunction: (key: keyof State, value: any, opts?: UpdateFnOpts) => void;
 }): Dispatchers<State> {
-  const mergedState = mergeWithDefault(defaultState, state);
+  const mergedState = mergeWithDefault<State>(defaultState, state);
 
   return (Object.keys(mergedState) as (keyof State)[]).reduce((acc, key) => {
     const k = key as keyof State;

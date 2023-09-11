@@ -25,7 +25,7 @@ export function createNonSecureHashFactory() {
     data: string | ArrayBuffer | SharedArrayBuffer,
     seed?: number
   ) => {
-    return Bun.hash[algorithm](data, seed);
+    return Bun.hash[algorithm](data);
   };
 
   return {

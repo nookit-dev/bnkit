@@ -1,4 +1,4 @@
-import { FilteredKeys } from "modules/type-utils";
+import { FilteredKeys } from "../type-utils";
 import { createStateDispatchers } from "./create-state-dispatchers";
 
 export type AllowedStateKeys = boolean | string | number;
