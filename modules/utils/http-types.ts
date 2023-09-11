@@ -78,7 +78,7 @@ export type JSONRequest = BaseRouteRequestType & {
 
 export type CORSOptions = {
   allowedOrigins?: string[];
-  allAllOrigins?: boolean;
+  allowAllOrigins?: boolean;
   allowedMethods?: HttpMethod[];
   allowedHeaders?: CommonHttpHeaders[];
 };

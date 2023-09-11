@@ -43,13 +43,6 @@ export const recursiveFileSearch = async ({
   const results: FileDirInfo[] = [];
   const entries = await fsPromise.readdir(directory, { withFileTypes: true });
 
-  while (count < 10) {
-    console.log({ directory, count });
-    count++;
-  }
-
-  // ignoreDirectories, ignoreFileTypes });
-
   for (const entry of entries) {
     const fullPath = path.join(directory, entry.name);
 
