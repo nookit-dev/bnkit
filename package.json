@@ -1,6 +1,6 @@
 {
   "name": "@u-tools/core",
-  "version": "0.0.99",
+  "version": "0.0.81",
   "main": "index.ts",
   "devDependencies": {
     "bun-types": "latest"
