@@ -1,7 +1,6 @@
-import { createStateDispatchers } from "@u-tools/core/modules/server-factory/create-state-dispatchers";
-import { Dispatchers } from "@u-tools/core/modules/server-factory/create-web-socket-state-machine";
 import { useEffect, useRef, useState } from "react";
-
+import { createStateDispatchers } from "../../modules/state-factory/create-state-dispatchers";
+import { Dispatchers } from "../../modules/types";
 const MAX_RETRIES = 5;
 
 const getAppStateFromLocalStorage = <State extends object>(

@@ -1,8 +1,12 @@
 export const normalizeBytes = (bytes: number, decimals = 2) => {
-  if (bytes === 0) return "0 Bytes";
+  if (bytes === 0)
+    return {
+      value: 0,
+      unit: "Bytes",
+    };
 
   const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
+  const dm = Math.abs(decimals);
 
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB"];
 

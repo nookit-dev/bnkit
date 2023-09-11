@@ -95,6 +95,7 @@ export function createServerFactory(
     });
   };
 
+
   const route = <
     RequestGeneric extends BaseRouteRequestType = BaseRouteRequestType,
     ResponseGeneric extends ResponseBodyTypes = ResponseBodyTypes
