@@ -25,14 +25,15 @@ export const defaultExtIgnore = {
   log: true,
   localstorage: true,
   DS_Store: true,
-  testing: true
+  testing: true,
 };
 
+let count = 0;
 export const recursiveFileSearch = async ({
   directory,
   searchString,
-  ignoreDirectories = {},
-  ignoreFileTypes = {},
+  ignoreDirectories = defaultDirIgnore,
+  ignoreFileTypes = defaultExtIgnore,
 }: {
   directory: string;
   searchString: string;

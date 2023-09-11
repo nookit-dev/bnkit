@@ -6,10 +6,10 @@ import {
   ResponseBodyTypes,
   RouteHandler,
   RouteMap,
-  RouteOptions, 
+  RouteOptions,
   StartServerOptions,
 } from "../utils/http-types";
-import { bodyParserMiddleware, getParsedBody } from "./body-parser-middleware";
+import { bodyParser, getParsedBody } from "./body-parser-middleware";
 import { checkFileSizeMiddleware } from "./check-file-size-middleware";
 import { createCorsMiddleware } from "./create-cors-middleware";
 
@@ -44,7 +44,7 @@ export function createServerFactory(
   }
 
   if (enableBodyParser) {
-    middlewares.push(bodyParserMiddleware);
+    middlewares.push(bodyParser);
   }
 
   if (maxFileSize) {

@@ -1,8 +1,3 @@
-// ✗ createNonSecureHashFactory > hashWithAlgorithm generates different hash values with different seeds using 'crc32' algorithm [0.19ms]
-// ✗ createNonSecureHashFactory > hashWithAlgorithm generates different hash values with different seeds using 'adler32' algorithm [0.09ms]
-// ✗ createNonSecureHashFactory > hashWithAlgorithm generates different hash values with different seeds using 'cityHash32' algorithm [0.09ms]
-
-// seeding doesn't seem to be working correctly with the above algorithms
 export type NonSecureHashAlgorithm =
   | "wyhash"
   | "crc32"
@@ -22,10 +17,9 @@ export function createNonSecureHashFactory() {
 
   const hashWithAlgorithm = (
     algorithm: NonSecureHashAlgorithm,
-    data: string | ArrayBuffer | SharedArrayBuffer,
-    seed?: number
+    data: string | ArrayBuffer | SharedArrayBuffer
   ) => {
-    return Bun.hash[algorithm](data, seed);
+    return Bun.hash[algorithm](data);
   };
 
   return {

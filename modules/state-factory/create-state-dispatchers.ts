@@ -1,20 +1,9 @@
-import type { Dispatchers } from "./create-web-socket-state-machine";
+import { Dispatchers } from "../types";
+import { isArray, isBool, isNum, isObj } from "../utils/value-checkers";
 
-function isArrayType<T>(input: T | any[]): input is any[] {
-  return Array.isArray(input);
-}
-
-function isObjectType(input: any): input is object {
-  return typeof input === "object" && input !== null && !Array.isArray(input);
-}
-
-function isNumberType(input: any): input is number {
-  return typeof input === "number";
-}
-
-function createArrayDispatchers<Key, T, Options extends object = {}>(
+export function createArrayDispatchers<Key, T, Options extends object = {}>(
   key: Key,
-  state: T[],
+  state: readonly T[], // mark it as readonly
   updateFunction: (key: Key, value: T[], opts?: Options) => void
 ) {
   return {
@@ -30,19 +19,32 @@ function createArrayDispatchers<Key, T, Options extends object = {}>(
       const newArr = state.slice(0, -1);
       updateFunction(key, newArr, opts);
     },
-    insert: (index: number, value: T, opts?: Options) => {
+    insert: (index: number, value: T, overwrite = false, opts?: Options) => {
+      if (!state) state = [];
+
       const newArr = [...state];
-      newArr.splice(index, 0, value);
+
+      if (overwrite) {
+        newArr[index] = value;
+      } else {
+        newArr.splice(index, 0, value);
+      }
+
       updateFunction(key, newArr, opts);
+    },
+    replace: (index: number, value: T, opts?: Options) => {
+      if (!state) state = [];
+
+      const updatedState = [...state];
+
+      updatedState[index] = value;
+
+      updateFunction(key, updatedState, opts);
     },
   };
 }
 
-function isBooleanType(input: any): input is boolean {
-  return typeof input === "boolean";
-}
-
-function createBooleanDispatchers<Key, Options extends object = {}>(
+export function createBooleanDispatchers<Key, Options extends object = {}>(
   key: Key,
   state: boolean,
   updateFunction: (key: Key, value: any, opts?: Options) => void
@@ -57,7 +59,7 @@ function createBooleanDispatchers<Key, Options extends object = {}>(
   };
 }
 
-function createObjectDispatchers<Key, T, Options extends object = {}>(
+export function createObjectDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   state: T,
   updateFunction: (key: Key, value: any, opts?: Options) => void
@@ -73,7 +75,7 @@ function createObjectDispatchers<Key, T, Options extends object = {}>(
   };
 }
 
-function createNumberDispatchers<Key, Options extends object = {}>(
+export function createNumberDispatchers<Key, Options extends object = {}>(
   key: Key,
   state: number,
   updateFunction: (key: Key, value: any, opts?: Options) => void
@@ -91,7 +93,7 @@ function createNumberDispatchers<Key, Options extends object = {}>(
   };
 }
 
-function createDefaultDispatchers<Key, T, Options extends object = {}>(
+export function createDefaultDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
@@ -102,9 +104,9 @@ function createDefaultDispatchers<Key, T, Options extends object = {}>(
   };
 }
 
-function mergeWithDefault<State extends object>(
-  defaultState: State,
-  state: State
+export function mergeWithDefault<State extends object>(
+  defaultState: Readonly<State>, // mark it as readonly
+  state: Readonly<State> // mark it as readonly
 ): State {
   const mergedState: Partial<State> = {};
   const missingKeys: (keyof State)[] = [];
@@ -137,20 +139,20 @@ export function createStateDispatchers<
   state: State;
   defaultState: State;
   updateFunction: (key: keyof State, value: any, opts?: UpdateFnOpts) => void;
-}): Dispatchers<State, UpdateFnOpts> {
-  const mergedState =  mergeWithDefault(defaultState, state);
+}): Dispatchers<State> {
+  const mergedState = mergeWithDefault<State>(defaultState, state);
 
   return (Object.keys(mergedState) as (keyof State)[]).reduce((acc, key) => {
     const k = key as keyof State;
     const currentValue = mergedState[k];
 
-    if (isArrayType(currentValue)) {
+    if (isArray(currentValue)) {
       acc[k] = createArrayDispatchers(k, currentValue, updateFunction) as any;
-    } else if (isObjectType(currentValue)) {
+    } else if (isObj(currentValue)) {
       acc[k] = createObjectDispatchers(k, currentValue, updateFunction) as any;
-    } else if (isNumberType(currentValue)) {
+    } else if (isNum(currentValue)) {
       acc[k] = createNumberDispatchers(k, currentValue, updateFunction) as any;
-    } else if (isBooleanType(currentValue)) {
+    } else if (isBool(currentValue)) {
       acc[k] = createBooleanDispatchers(k, currentValue, updateFunction) as any;
     } else {
       acc[k] = createDefaultDispatchers(k, updateFunction) as any;
