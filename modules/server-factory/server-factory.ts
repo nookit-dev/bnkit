@@ -7,49 +7,37 @@ import {
   RouteHandler,
   RouteMap,
   RouteOptions,
-  StartServerOptions,
 } from "../utils/http-types";
-import { bodyParser, getParsedBody } from "./body-parser-middleware";
-import { checkFileSizeMiddleware } from "./check-file-size-middleware";
-import { createCorsMiddleware } from "./create-cors-middleware";
+import { getParsedBody } from "./body-parser-middleware";
+import { generateMiddlewares } from "./generate-middleware";
+import { processRequest } from "./request-handler";
+import { htmlRes, jsonRes } from "./request-helpers";
+import { StartServerOptions, startServer } from "./start-server";
 
+type CreateServerFactory = {
+  wsPaths?: string[];
+  enableBodyParser?: boolean;
+  cors?: CORSOptions;
+  // max file size in bytes, if passed in then the check file middleware will be passed in
+  // to validate file sizes
+  maxFileSize?: number;
+};
 // TODO: figure out a way to set cors up for local dev automatically.
 export function createServerFactory(
-  {
-    wsPaths,
-    enableBodyParser,
-    cors,
-    maxFileSize,
-  }: {
-    wsPaths?: string[];
-    enableBodyParser?: boolean;
-    cors?: CORSOptions;
-    /*
-    max file size in bytes, if passed in then the check file middleware will be passed in
-    to validate file sizes
-    */
-    maxFileSize?: number;
-  } = {
+  { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerFactory = {
     wsPaths: [],
     enableBodyParser: true,
   }
 ) {
   const routes: RouteMap = {};
   let server: Server;
-  let middlewares: Middleware[] = [];
 
   // cors must come first in the middleware
-  if (cors) {
-    middlewares.push(createCorsMiddleware(cors));
-  }
-
-  if (enableBodyParser) {
-    middlewares.push(bodyParser);
-  }
-
-  if (maxFileSize) {
-    middlewares.push(checkFileSizeMiddleware(maxFileSize));
-  }
+  let middlewares: Middleware[] = generateMiddlewares({
+    cors,
+    enableBodyParser,
+    maxFileSize,
+  });
 
   const middle = (middleware: Middleware) => {
     middlewares.push(middleware);
@@ -95,7 +83,6 @@ export function createServerFactory(
     });
   };
 
-
   const route = <
     RequestGeneric extends BaseRouteRequestType = BaseRouteRequestType,
     ResponseGeneric extends ResponseBodyTypes = ResponseBodyTypes
@@ -133,37 +120,11 @@ export function createServerFactory(
             return url.searchParams as ParamsType;
           };
 
-          const parseHeaders = <HeadersType = RequestGeneric["headers"]>() => {
-            return request.headers as HeadersType;
-          };
+          const parseHeaders = <HeadersType = RequestGeneric["headers"]>() =>
+            parseHeaders<HeadersType>();
 
           const getBody = async <BodyType = RequestGeneric["body"]>() => {
             return await getParsedBody<BodyType>(request);
-          };
-
-          const jsonRes = (
-            body: ResponseGeneric,
-            options?: ResponseInit
-          ): Response => {
-            if (typeof body === "object") {
-              return new Response(JSON.stringify(body), {
-                headers: {
-                  "Content-Type": "application/json",
-                  ...options?.headers,
-                },
-                ...options,
-              });
-            }
-            return new Response(body, options);
-          };
-          const htmlRes = (body: string, options?: ResponseInit) => {
-            return new Response(body, {
-              headers: {
-                "Content-Type": "text/html",
-                ...options?.headers,
-              },
-              ...options,
-            });
           };
 
           return await handler({
@@ -197,67 +158,17 @@ export function createServerFactory(
     };
   };
 
-  const fetch = (
-    request: Request
-  ): undefined | Response | Promise<Response> => {
-    const url = new URL(request.url);
-    if (wsPaths?.includes(url.pathname)) {
-      const success = server.upgrade(request);
-      return success
-        ? undefined
-        : new Response("WebSocket upgrade error", { status: 400 });
-    }
-
-    const handler = routes[url.pathname];
-
-    if (handler) {
-      try {
-        return handler(request);
-      } catch (error) {
-        console.error("Error processing request:", error);
-        return new Response("Internal Server Error", { status: 500 });
-      }
-    } else {
-      return new Response("404: Not Found", { status: 404 });
-    }
-  };
-
   const start = (
-    { port, hostname = "0.0.0.0", websocket, verbose }: StartServerOptions = {
+    options: StartServerOptions = {
       hostname: "0.0.0.0",
       port: 3000,
-      websocket: {
-        message: () => {
-          console.info("websocket msg");
-        },
-      },
+      websocket: { message: () => console.info("websocket msg") },
       verbose: false,
     }
   ) => {
-    try {
-      if (verbose) console.info(`Starting server on port ${port}...`);
-
-      server = Bun.serve({
-        fetch,
-        port,
-        hostname,
-        websocket: websocket || {
-          message: () => {
-            console.error("Default websocket Handler");
-          },
-        },
-      });
-
-      if (verbose)
-        console.info(
-          `Server started on port ${port}, press Ctrl+C to stop, http://${hostname}:${port}`
-        );
-
-      return server;
-    } catch (error) {
-      if (verbose) console.error("Error starting server:", error);
-      throw error;
-    }
+    return startServer(options, (request) =>
+      processRequest({ request, routes, wsPaths: wsPaths || [], server })
+    );
   };
 
   return {

@@ -1,5 +1,3 @@
-import { WebSocketHandler } from "bun";
-
 export type HttpMethod =
   | "GET"
   | "POST"
@@ -50,13 +48,6 @@ export type MiddlewareNext = () => Response | Promise<Response>;
 
 export interface RouteMap {
   [route: string]: RouteHandler;
-}
-
-export interface StartServerOptions {
-  port?: number;
-  hostname?: string;
-  websocket?: WebSocketHandler;
-  verbose?: boolean;
 }
 
 export interface RouteOptions {
