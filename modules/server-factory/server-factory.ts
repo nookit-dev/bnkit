@@ -22,6 +22,7 @@ type CreateServerFactory = {
   // to validate file sizes
   maxFileSize?: number;
 };
+
 // TODO: figure out a way to set cors up for local dev automatically.
 export function createServerFactory(
   { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerFactory = {
@@ -166,9 +167,11 @@ export function createServerFactory(
       verbose: false,
     }
   ) => {
-    return startServer(options, (request) =>
+    server = startServer(options, (request) =>
       processRequest({ request, routes, wsPaths: wsPaths || [], server })
     );
+
+    return server;
   };
 
   return {

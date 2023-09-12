@@ -21,7 +21,7 @@ export function startServer(
       websocket: {
         message: (options) => {
           if (options) {
-            console.info("websocket msg");
+            console.error("websocket msg");
           }
         },
       },

@@ -18,7 +18,7 @@ export function processRequest({
     const url = new URL(request.url);
 
     if (wsPaths?.includes(url.pathname)) {
-      const success = server.upgrade(request);
+      const success = server?.upgrade(request);
       return success
         ? undefined
         : new Response("WebSocket upgrade error", { status: 400 });
