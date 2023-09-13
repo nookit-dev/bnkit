@@ -7,7 +7,7 @@ import {
 } from "../utils/http-types";
 import { generateMiddlewares } from "./middleware-handlers";
 import { processRequest } from "./request-handler";
-import { CreateRouteArgs, createRoute } from "./route-handler";
+import { createRoute } from "./route-handler";
 import { StartServerOptions, startServer } from "./start-server";
 
 export type CreateServerFactoryRoute<
@@ -44,7 +44,7 @@ export function createServerFactory(
     routes: routeMap = routes,
   }: CreateServerFactoryRoute<typeof routes>) => {
     return createRoute({
-      routePath,
+      routePath: String(routePath),
       options,
       middlewares: routeMiddlewares,
       routes: routeMap,
