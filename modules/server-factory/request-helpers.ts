@@ -1,15 +1,15 @@
-import { ResponseBodyTypes } from "../utils/http-types";
+import { ResBodyT } from "../utils/http-types";
 
 export function parseQueryParams<ParamsType>(request: Request): ParamsType {
   const url = new URL(request.url);
   return url.searchParams as unknown as ParamsType;
 }
 
-export function parseHeaders<HeadersType>(request: Request): HeadersType {
+export function parseRequestHeaders<HeadersType>(request: Request): HeadersType {
   return request.headers as unknown as HeadersType;
 }
 
-export type JSONResType = <JSONBodyGeneric extends ResponseBodyTypes>(
+export type JSONResType = <JSONBodyGeneric extends ResBodyT>(
   body: JSONBodyGeneric,
   options?: ResponseInit
 ) => Response;

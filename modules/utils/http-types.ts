@@ -30,7 +30,7 @@ export type UToolHTTPHeaders = PartialRecord<CommonHttpHeaders, string>;
 
 export type RouteHandler = (request: Request) => Response | Promise<Response>;
 
-export type ResponseBodyTypes =
+export type ResBodyT =
   | ReadableStream
   | BlobPart
   | BlobPart[]
@@ -57,13 +57,13 @@ export interface RouteOptions {
 
 export type ErrorHandler = (error: any, request: Request) => Response;
 
-export type BaseRouteRequestType = {
+export type RouteReqT = {
   body?: any;
   params?: object;
   headers?: object;
 };
 
-export type JSONRequest = BaseRouteRequestType & {
+export type JSONRequest = RouteReqT & {
   body: object;
 };
 
@@ -73,3 +73,35 @@ export type CORSOptions = {
   allowedMethods?: HttpMethod[];
   allowedHeaders?: CommonHttpHeaders[];
 };
+
+export type CreateServerFactory = {
+  wsPaths?: string[];
+  enableBodyParser?: boolean;
+  cors?: CORSOptions;
+  // max file size in bytes, if passed in then the check file middleware will be passed in
+  // to validate file sizes
+  maxFileSize?: number;
+};
+
+export type CreateRouteGeneric<
+  ReqT extends RouteReqT,
+  ResT extends ResBodyT
+> = {
+  request: Request;
+  getBody: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
+  parseQueryParams: <ParamsType>() => ParamsType;
+  parseHeaders: <HeadersType>() => HeadersType;
+  jsonRes: <JSONBodyGeneric extends ResT>(
+    body: JSONBodyGeneric,
+    options?: ResponseInit
+  ) => Response;
+  htmlRes: (body: string, options?: ResponseInit) => Response;
+};
+
+export type OnRequestHandler<ReqT extends RouteReqT, ResT extends ResBodyT> = (
+  args: CreateRouteGeneric<ReqT, ResT>
+) => Promise<Response>;
+
+export type OnRequestType<ReqT extends RouteReqT, ResT extends ResBodyT> = (
+  handler: OnRequestHandler<ReqT, ResT>
+) => void;

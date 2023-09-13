@@ -1,5 +1,3 @@
-// server-startup.ts
-
 import { Server, WebSocketHandler } from "bun";
 
 export interface StartServerOptions {

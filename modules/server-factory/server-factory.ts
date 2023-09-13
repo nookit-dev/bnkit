@@ -1,26 +1,23 @@
 import { Server } from "bun";
 import {
-  BaseRouteRequestType,
-  CORSOptions,
+  CreateServerFactory,
   Middleware,
-  ResponseBodyTypes,
-  RouteHandler,
   RouteMap,
   RouteOptions,
 } from "../utils/http-types";
-import { getParsedBody } from "./body-parser-middleware";
-import { generateMiddlewares } from "./generate-middleware";
+import { generateMiddlewares } from "./middleware-handlers";
 import { processRequest } from "./request-handler";
-import { htmlRes, jsonRes } from "./request-helpers";
+import { CreateRouteArgs, createRoute } from "./route-handler";
 import { StartServerOptions, startServer } from "./start-server";
 
-type CreateServerFactory = {
-  wsPaths?: string[];
-  enableBodyParser?: boolean;
-  cors?: CORSOptions;
-  // max file size in bytes, if passed in then the check file middleware will be passed in
-  // to validate file sizes
-  maxFileSize?: number;
+export type CreateServerFactoryRoute<
+  ServerRouteMap extends RouteMap,
+  RouteKeys extends keyof ServerRouteMap = keyof ServerRouteMap
+> = {
+  routePath: RouteKeys;
+  middlewares?: Middleware[];
+  options?: RouteOptions;
+  routes?: ServerRouteMap;
 };
 
 // TODO: figure out a way to set cors up for local dev automatically.
@@ -40,123 +37,22 @@ export function createServerFactory(
     maxFileSize,
   });
 
-  const middle = (middleware: Middleware) => {
-    middlewares.push(middleware);
-  };
-
-  const compose = (
-    middlewares: Middleware[],
-    handler: RouteHandler
-  ): RouteHandler => {
-    return (request: Request) => {
-      const invokeHandler: Middleware = (req, next) => handler(req);
-
-      const finalMiddleware = middlewares.reduceRight(
-        (nextMiddleware: Middleware, currentMiddleware: Middleware) => {
-          return (currentRequest: Request) => {
-            return currentMiddleware(currentRequest, () =>
-              nextMiddleware(currentRequest, () => handler(request))
-            );
-          };
-        },
-        invokeHandler
-      );
-
-      return finalMiddleware(request, () => handler(request));
-    };
-  };
-
-  const handleError = (
-    err: Error,
-    errorMessage: string,
-    onErrorHandler?: (
-      error: Error,
-      request: Request
-    ) => Response | Promise<Response>,
-    request?: Request
-  ) => {
-    if (onErrorHandler) {
-      return onErrorHandler(err, request!);
-    }
-    console.error("Error processing request:", err);
-    return new Response(errorMessage || "Internal Server Error", {
-      status: 500,
+  const createServerRoute = ({
+    routePath,
+    options = {},
+    middlewares: routeMiddlewares = middlewares,
+    routes: routeMap = routes,
+  }: CreateServerFactoryRoute<typeof routes>) => {
+    return createRoute({
+      routePath,
+      options,
+      middlewares: routeMiddlewares,
+      routes: routeMap,
     });
   };
 
-  const route = <
-    RequestGeneric extends BaseRouteRequestType = BaseRouteRequestType,
-    ResponseGeneric extends ResponseBodyTypes = ResponseBodyTypes
-  >(
-    routePath: string,
-    options: RouteOptions = {}
-  ) => {
-    const { errorMessage, onError } = options;
-    const defaultErrorMessage = "Internal Server Error";
-
-    const onRequest = (
-      handler: (args: {
-        request: Request;
-        getBody: <
-          BodyType extends RequestGeneric["body"]
-        >() => Promise<BodyType>;
-        parseQueryParams: <ParamsType>() => ParamsType;
-        parseHeaders: <HeadersType>() => HeadersType;
-        // a function that allows you to pass in an object and it will stringify it if it's an object,
-        // otherwise it will return whatever else is passed in
-
-        jsonRes: <JSONBodyGeneric extends ResponseGeneric>(
-          body: JSONBodyGeneric,
-          options?: ResponseInit
-        ) => Response;
-        htmlRes: (body: string, options?: ResponseInit) => Response;
-      }) => Promise<Response>
-    ) => {
-      routes[routePath] = compose(middlewares, async (request: Request) => {
-        try {
-          const parseQueryParams = <
-            ParamsType = RequestGeneric["params"]
-          >() => {
-            const url = new URL(request.url);
-            return url.searchParams as ParamsType;
-          };
-
-          const parseHeaders = <HeadersType = RequestGeneric["headers"]>() =>
-            parseHeaders<HeadersType>();
-
-          const getBody = async <BodyType = RequestGeneric["body"]>() => {
-            return await getParsedBody<BodyType>(request);
-          };
-
-          return await handler({
-            request,
-            getBody,
-            parseQueryParams,
-            parseHeaders,
-            jsonRes,
-            htmlRes,
-          });
-        } catch (error) {
-          if (error instanceof Error) {
-            return handleError(
-              error,
-              errorMessage || defaultErrorMessage,
-              onError,
-              request
-            );
-          } else {
-            console.error("Caught a non-Error exception:", error);
-            return new Response(errorMessage || defaultErrorMessage, {
-              status: 500,
-            });
-          }
-        }
-      });
-    };
-
-    return {
-      onRequest,
-    };
+  const middle = (middleware: Middleware) => {
+    middlewares.push(middleware);
   };
 
   const start = (
@@ -176,7 +72,7 @@ export function createServerFactory(
 
   return {
     middle,
-    route,
+    route: createServerRoute,
     start,
   };
 }
