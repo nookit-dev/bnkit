@@ -1,11 +1,20 @@
 import { ResBodyT } from "../utils/http-types";
 
-export function parseQueryParams<ParamsType>(request: Request): ParamsType {
+export function parseQueryParams<ParamsType extends object = {}>(
+  request: Request
+): ParamsType {
   const url = new URL(request.url);
-  return url.searchParams as unknown as ParamsType;
+  const params: ParamsType = {} as ParamsType;
+
+  url.searchParams.forEach((value, key) => {
+    // @ts-ignore
+    params[key] = value as any;
+  });
 }
 
-export function parseRequestHeaders<HeadersType>(request: Request): HeadersType {
+export function parseRequestHeaders<HeadersType>(
+  request: Request
+): HeadersType {
   return request.headers as unknown as HeadersType;
 }
 
