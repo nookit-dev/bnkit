@@ -89,7 +89,7 @@ export function createRoute<
           request,
           onRequest: handler,
           errorMessage,
-          onError
+          onError,
         })
     );
   };

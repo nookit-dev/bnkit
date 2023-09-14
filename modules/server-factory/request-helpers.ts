@@ -1,5 +1,3 @@
-import { ResBodyT } from "../utils/http-types";
-
 export function parseQueryParams<ParamsType extends object = {}>(
   request: Request
 ): ParamsType {
@@ -10,38 +8,37 @@ export function parseQueryParams<ParamsType extends object = {}>(
     // @ts-ignore
     params[key] = value as any;
   });
+
+  return params;
 }
 
 export function parseRequestHeaders<HeadersType>(
   request: Request
 ): HeadersType {
-  return request.headers as unknown as HeadersType;
+  return request.headers.toJSON() as unknown as HeadersType;
 }
 
-export type JSONResType = <JSONBodyGeneric extends ResBodyT>(
+export type JSONResType = <JSONBodyGeneric extends object>(
   body: JSONBodyGeneric,
   options?: ResponseInit
 ) => Response;
 
 export const jsonRes: JSONResType = (body, options): Response => {
-  if (typeof body === "object") {
-    return new Response(JSON.stringify(body), {
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
-      ...options,
-    });
-  }
-  return new Response(body, options);
+  return new Response(JSON.stringify(body), {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options?.headers,
+    },
+  });
 };
 
 export function htmlRes(body: string, options?: ResponseInit): Response {
   return new Response(body, {
+    ...options,
     headers: {
       "Content-Type": "text/html",
       ...options?.headers,
     },
-    ...options,
   });
 }

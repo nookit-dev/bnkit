@@ -91,7 +91,7 @@ export type CreateRouteGeneric<
   getBody: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
   parseQueryParams: <ParamsType>() => ParamsType;
   parseHeaders: <HeadersType>() => HeadersType;
-  jsonRes: <JSONBodyGeneric extends ResT>(
+  jsonRes: <JSONBodyGeneric extends object>(
     body: JSONBodyGeneric,
     options?: ResponseInit
   ) => Response;
