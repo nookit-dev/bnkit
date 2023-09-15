@@ -7,6 +7,7 @@ import {
 } from "./names";
 import { randNum } from "./rand-num";
 import { getRandState } from "./states";
+
 type NumConfig = {
   type: "num";
   min?: number;
@@ -68,5 +69,4 @@ const dataGen = {
   age: { type: "num", min: 18, max: 65 }, // Explicitly type this as NumConfig
 } as const;
 
-const randomData = createRandomData(dataGen);
-console.log(randomData);
+

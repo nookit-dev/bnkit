@@ -22,8 +22,6 @@ export {
   createSqliteFactory,
   createTableQuery
 } from "./modules/sqlite-factory";
-export { createHTMLProcessor } from "./modules/text-processing/html-factory";
-export { createMarkdownProcessor } from "./modules/text-processing/markdown-factory";
 export { createValidatorFactory } from "./modules/validation-factory";
 
 // utility exports

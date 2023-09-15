@@ -1,8 +1,8 @@
 import fsPromise from "fs/promises";
 import readline from "readline";
-import { BaseError } from "../utils/base-error";
 import { createFileFactory } from "../..";
 import { defaultLogger } from "../logger-factory";
+import { BaseError } from "../utils/base-error";
 
 const cliLog = (...args: any[]) => {
   console.info(...args);
@@ -229,7 +229,7 @@ export function createCliFactory<DataType, E extends BaseError<DataType>>({
 
       fileFactory.directoryExists(filePath);
 
-      fileFactory.createFileWithContent(filePath, fileContent);
+      fileFactory.createFile(filePath, fileContent);
       // }
     } catch (error) {
       throw error;

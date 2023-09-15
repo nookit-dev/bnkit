@@ -2,7 +2,8 @@ import fsPromise from "fs/promises";
 
 import { afterEach, describe, expect, it, jest, spyOn } from "bun:test";
 import path from "path";
-import { createFileFactory, saveResultToFile } from "./files-folder";
+import { saveOrUpdateFile } from "./file-editing-utils";
+import { createFileFactory } from "./files-folder";
 
 const getTestFactory = () => {
   return createFileFactory({
@@ -14,7 +15,7 @@ const getTestFactory = () => {
 it("saves content to file", async () => {
   const filePath = "./test/test-files/test.txt";
   const content = "Hello, world!";
-  await saveResultToFile(filePath, content);
+  await saveOrUpdateFile({ filePath, content });
   const fileContent = await fsPromise.readFile(filePath, "utf-8");
   expect(fileContent).toEqual(content);
 
@@ -45,15 +46,18 @@ describe("createFileFactory", async () => {
   // Test that readFilesRawText reads the content of multiple files correctly
   it("reads multiple files", async () => {
     const factory = getTestFactory();
+
     const filePaths = [
-      "./test/test-files/test1.txt",
-      "./test/test-files/test2.txt",
+      "./modules/files-factory/test/test1.txt",
+      "./modules/files-factory/test/test2.txt",
     ];
+
     const contents = ["Hello, world!", "Goodbye, world!"];
+
     for (let i = 0; i < filePaths.length; i++) {
-      await saveResultToFile(filePaths[i], contents[i]);
+      await factory.createFile(contents[i], filePaths[i]);
     }
-    const fileContents = await factory.readFilesRawText(filePaths);
+    const fileContents = await factory.readTextFromMultipleFiles(filePaths);
     expect(fileContents).toEqual(contents);
     for (let filePath of filePaths) {
       await factory.deleteFile(filePath);
@@ -70,7 +74,10 @@ describe("createFileFactory", async () => {
     const initialContents = ["Hello, world!", "Goodbye, world!"];
     const newContents = "Updated content";
     for (let i = 0; i < filePaths.length; i++) {
-      await saveResultToFile(filePaths[i], initialContents[i]);
+      await saveOrUpdateFile({
+        filePath: filePaths[i],
+        content: initialContents[i],
+      });
     }
     await factory.updateFiles(filePaths, newContents);
     for (let filePath of filePaths) {
@@ -81,14 +88,14 @@ describe("createFileFactory", async () => {
   });
 
   // Test that searchDirectory can correctly find a file in the specified directory
-  it("searches directory for file", async () => {
+  it("recursively searches directory for file", async () => {
     const factory = getTestFactory();
     const fileName = "test.txt";
     const filePath = `./test/test-files/${fileName}`;
     const content = "Hello, world!";
-    await saveResultToFile(filePath, content);
-    const fileExists = await factory.searchDirectory(fileName);
-    expect(fileExists).toEqual(true);
+    await saveOrUpdateFile({ filePath, content });
+    const fileExists = await factory.searchDirForFile(fileName);
+    expect(fileExists).toEqual("test/test.txt");
     await factory.deleteFile(filePath);
   });
 
@@ -98,7 +105,7 @@ describe("createFileFactory", async () => {
     const fileName = "test.txt";
     const filePath = `./test/test-files/${fileName}`;
     const content = "Hello, world!";
-    await saveResultToFile(filePath, content);
+    await saveOrUpdateFile({ filePath, content });
     const fileExists = await factory.fileExists(filePath);
     expect(fileExists).toEqual(true);
     await factory.deleteFile(filePath);
@@ -110,7 +117,7 @@ describe("createFileFactory", async () => {
     const fileName = "test.txt";
     const filePath = `./test/test-files/${fileName}`;
     const content = "Hello, world!";
-    await saveResultToFile(filePath, content);
+    await saveOrUpdateFile({ filePath, content });
     await factory.deleteFile(filePath);
     const fileExistsAfterDeletion = await factory.fileExists(filePath);
     expect(fileExistsAfterDeletion).toEqual(false);
@@ -136,7 +143,7 @@ describe("createFileFactory", async () => {
 
     const jsonContent = { farewell: "Goodbye, world!" };
     try {
-      await factory.writeJson(filePath, jsonContent);
+      await factory.saveJson(jsonContent, filePath);
     } catch (error) {
       console.error(error);
     }
@@ -183,14 +190,14 @@ describe("createFileFactory", async () => {
         extension: "txt",
         type: "file",
         name: "some-file.txt",
-        fullPath: path.join("path/to", "some-file.txt"),
+        fullPath: path.resolve("path/to", "some-file.txt"),
         size: 0,
       },
       {
         type: "directory",
         extension: "folder",
         name: "some-dir",
-        fullPath: path.join("path/to", "some-dir"),
+        fullPath: path.resolve("path/to", "some-dir"),
         size: 0,
       },
     ]);
