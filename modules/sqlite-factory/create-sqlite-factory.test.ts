@@ -1,6 +1,6 @@
 import Database from "bun:sqlite";
-import { beforeEach, describe, expect } from "bun:test";
-import { SchemaType } from "types";
+import { beforeEach, describe, expect, test } from "bun:test";
+import { SchemaType } from "mod/types";
 import { createSqliteFactory } from "./create-sqlite-factory";
 
 let db = new Database(":memory:");
