@@ -51,7 +51,13 @@ describe("postForm method", () => {
   test("should make a POST request to the correct URL with FormData body", async () => {
     let fetchArgs: FetchArgs;
     global.fetch = async (url: string, options: RequestInit) => {
-      fetchArgs = { url, options };
+      fetchArgs = {
+        url,
+        options: {
+          ...options,
+          headers: new Headers(options.headers),
+        },
+      };
       return {
         ok: true,
         json: async () => ({ message: "Success" }),
@@ -73,7 +79,7 @@ describe("postForm method", () => {
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
     expect(fetchArgs.options.method).toBe("POST");
-    expect(fetchArgs.options.headers.get("Content-Type")).toContain(
+    expect(fetchArgs.options.headers.get(["content-type"])).toContain(
       "multipart/form-data"
     );
   });
