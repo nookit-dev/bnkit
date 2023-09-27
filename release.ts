@@ -4,6 +4,11 @@ import { npmReleaseFactory } from "modules/npm-release";
 import { ulog } from "modules/utils/ulog";
 import path from "path";
 
+// run bun test
+Bun.spawnSync({
+  cmd: ["bun", "test", "--coverage"],
+});
+
 const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
 const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max number of retries to prevent infinite loops
 
