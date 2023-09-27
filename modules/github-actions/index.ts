@@ -1,1 +1,1 @@
-export { createGitHubActionsFactory } from "./github-actions";
+export { createGitHubActionsFactory, logStdOutput } from "./github-actions";
