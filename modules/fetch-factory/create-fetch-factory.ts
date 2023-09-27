@@ -11,6 +11,7 @@ import {
   ExternalFetchConfig,
   MappedApiConfig,
   TypeMap,
+  computeHeaders,
   createEventStream,
   fetcher,
   fileDownload,
@@ -33,9 +34,15 @@ export function createFetchFactory<TMap extends TypeMap>({
     fetcher: <Endpoint extends keyof TMap>(
       fetcherConfig: ExternalFetchConfig<Endpoint, TMap, HttpMethod>
     ): Promise<TMap[Endpoint]["response"]> => {
+      const headers = computeHeaders(
+        defaultHeaders || {},
+        fetcherConfig.headers || {}
+      );
+
       return fetcher(
         {
           ...fetcherConfig,
+          headers,
           method: fetcherConfig.method || "GET",
         },
         config,
@@ -45,9 +52,15 @@ export function createFetchFactory<TMap extends TypeMap>({
     get: <Endpoint extends keyof TMap>(
       fetcherConfig: ExternalFetchConfig<Endpoint, TMap, "GET">
     ): Promise<TMap[Endpoint]["response"]> => {
+      const headers = computeHeaders(
+        defaultHeaders || {},
+        fetcherConfig.headers || {}
+      );
+
       return fetcher(
         {
           ...fetcherConfig,
+          headers,
           method: "GET",
         },
         config,
@@ -59,7 +72,16 @@ export function createFetchFactory<TMap extends TypeMap>({
         endpoint: Endpoint;
       }
     ): Promise<TMap[Endpoint]["response"]> => {
-      return fetcher({ ...fetchConfig, method: "POST" }, config, baseUrl); // Add method
+      const headers = computeHeaders(
+        defaultHeaders || {},
+        fetchConfig.headers || {}
+      );
+
+      return fetcher(
+        { ...fetchConfig, headers, method: "POST" },
+        config,
+        baseUrl
+      );
     },
 
     postForm: <Endpoint extends keyof TMap>(
@@ -72,16 +94,17 @@ export function createFetchFactory<TMap extends TypeMap>({
         ? `multipart/form-data; boundary=${fetchConfig.boundary}`
         : "multipart/form-data";
 
-      const headers = {
+      const formHeaders = {
         "Content-Type": defaultContentType,
         ...fetchConfig.headers,
       };
+      const headers = computeHeaders(defaultHeaders || {}, formHeaders || {});
 
       return fetcher(
         {
           ...fetchConfig,
           headers,
-          method: "POST", // Add method
+          method: "POST",
         },
         config,
         baseUrl
@@ -93,7 +116,15 @@ export function createFetchFactory<TMap extends TypeMap>({
         endpoint: Endpoint;
       }
     ): Promise<TMap[Endpoint]["response"]> => {
-      return fetcher({ ...fetchConfig, method: "DELETE" }, config, baseUrl); // Add method
+      const headers = computeHeaders(
+        defaultHeaders || {},
+        fetchConfig.headers || {}
+      );
+      return fetcher(
+        { ...fetchConfig, headers, method: "DELETE" },
+        config,
+        baseUrl
+      );
     },
     createEventStream,
     fileDownload,

@@ -61,7 +61,7 @@ export type ExternalFetchConfig<
   method?: Method;
 };
 
-function computeHeaders(
+export function computeHeaders(
   defaultHeaders: HeadersInit,
   customHeaders?: HeadersInit
 ): HeadersInit {
