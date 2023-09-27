@@ -1,15 +1,15 @@
 import { saveOrUpdateFile } from "./file-editing-utils";
 import { getFullPath } from "./file-path-utils";
 import {
-  listFilesAndFolderInPath,
-  readJson,
-  readTextFromMultipleFiles,
+    listFilesAndFolderInPath,
+    readJson,
+    readTextFromMultipleFiles,
 } from "./file-reading-utils";
-import { searchDirForFile } from "./file-search-utils";
+import { searchDirForFileName } from "./file-search-utils";
 import {
-  deletePath,
-  directoryExists,
-  fileExists,
+    deletePath,
+    directoryExists,
+    fileExists,
 } from "./file-validation-utils";
 
 export function createFileFactory({
@@ -47,7 +47,7 @@ export function createFileFactory({
         });
       }
 
-      return searchDirForFile(fullPath, fileName);
+      return searchDirForFileName(fullPath, fileName);
     },
     fileExists: (relativePath: string) => {
       const fullPath = getFullPath({

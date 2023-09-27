@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { saveOrUpdateFile } from "./file-editing-utils";
-import { recursiveDirSearch, searchDirForFile } from "./file-search-utils";
+import { recursiveDirSearch, searchDirForFileName } from "./file-search-utils";
 import { deletePath } from "./file-validation-utils";
 
 const testDir = process.env.PWD + "/modules/files-factory/test";
@@ -28,7 +28,7 @@ describe("Search Utilities", () => {
     expect(results.map((r) => r.fullPath)).toContain(testFile2);
 
     // Test searchDirForFile
-    const foundPath = await searchDirForFile(testDir, "test2.txt");
+    const foundPath = await searchDirForFileName(testDir, "test2.txt");
     expect(foundPath).toEqual(testFile2);
 
     // Cleanup

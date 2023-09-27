@@ -21,17 +21,31 @@ export const defaultExtIgnore = {
   testing: true,
 };
 
-export type FileSearchParams = {
-  directory: string;
-  searchString: string;
-  ignoreDirectories?: FileSearchConfig;
-  ignoreFileTypes?: FileSearchConfig;
-  searchContent?: boolean;
+export const readFileInfo = (filePath: string): FileDirInfo => {
+  const bunFileInfo = Bun.file(filePath);
+
+  const extension = path.extname(bunFileInfo?.name || "").slice(1);
+
+  return {
+    type: "file",
+    name: filePath.split("/").pop() || "",
+    fullPath: filePath,
+    size: bunFileInfo.size,
+    extension,
+  };
 };
 
-export const recursiveDirSearch = async (
-  params: FileSearchParams
-): Promise<(FileDirInfo | FileWithContent)[]> => {
+export type FileSearchParams<T extends boolean> = {
+  directory: string;
+  searchString: string;
+  ignoreDirectories?: object;
+  ignoreFileTypes?: object;
+  searchContent?: T;
+};
+
+export const recursiveDirSearch = async <T extends boolean>(
+  params: FileSearchParams<T>
+): Promise<T extends true ? FileWithContent[] : FileDirInfo[]> => {
   const {
     directory,
     searchString,
@@ -40,7 +54,7 @@ export const recursiveDirSearch = async (
     searchContent = false,
   } = params;
 
-  const results: (FileDirInfo | FileWithContent)[] = [];
+  const results = [];
   const entries = await fsPromise.readdir(directory, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -86,10 +100,10 @@ export const recursiveDirSearch = async (
     }
   }
 
-  return results;
+  return results as T extends true ? FileWithContent[] : FileDirInfo[];
 };
 
-export async function searchDirForFile(
+export async function searchDirForFileName(
   startingDir: string,
   fileName: string
 ): Promise<string | null> {
