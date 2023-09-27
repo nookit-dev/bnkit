@@ -1,5 +1,28 @@
+import { SyncSubprocess } from "bun";
 import { ulog } from "modules/utils/ulog";
 import { exit } from "process";
+
+export async function logStdOutput(proc: SyncSubprocess) {
+  try {
+    const stdout = await new Response(proc.stdout).text();
+    const stderr = proc?.stderr?.toString().trim();
+
+    if (stdout) {
+      ulog(stdout);
+    }
+
+    if (stderr) {
+      ulog(stderr);
+    }
+
+    return {
+      stdout,
+      stderr,
+    };
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 export function createGitHubActionsFactory({
   sshRepoUrl,
@@ -29,7 +52,7 @@ export function createGitHubActionsFactory({
       exit(1);
     }
   };
-  
+
   const commitAndPush = async (commitMsg: string) => {
     ulog("*** Running git commands ***");
 

@@ -1,13 +1,20 @@
 import Bun from "bun";
+import { logStdOutput } from "mod/github-actions/github-actions";
 import { createGitHubActionsFactory } from "modules/github-actions";
 import { npmReleaseFactory } from "modules/npm-release";
 import { ulog } from "modules/utils/ulog";
 import path from "path";
+import { exit } from "process";
 
 // run bun test
-Bun.spawnSync({
-  cmd: ["bun", "test", "--coverage"],
-});
+const testProc = Bun.spawnSync(["bun", "test", "--coverage"], {});
+
+const output = await logStdOutput(testProc);
+
+if (!output) {
+  ulog("No output");
+  exit(1);
+}
 
 const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
 const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max number of retries to prevent infinite loops
