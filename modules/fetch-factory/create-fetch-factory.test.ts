@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { createFetchFactory } from "./create-fetch-factory";
-// add type
 
 type FetchArgs = {
   url: string;

@@ -7,10 +7,8 @@ declare var document: {
   };
 };
 import { HttpMethod } from "../utils/http-types";
+import { ExternalFetchConfig, MappedApiConfig, TypeMap } from "./fetch-types";
 import {
-  ExternalFetchConfig,
-  MappedApiConfig,
-  TypeMap,
   computeHeaders,
   createEventStream,
   fetcher,

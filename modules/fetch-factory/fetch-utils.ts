@@ -1,24 +1,10 @@
-import { HttpMethod } from "mod/utils/http-types";
-
-type EventHandlerMap = { [event: string]: (ev: MessageEvent) => void };
-
-export type APIConfig<
-  TRes = any,
-  TParams = any,
-  TBody = any,
-  THeaders extends HeadersInit = HeadersInit
-> = {
-  method: HttpMethod;
-  endpoint: string;
-  response?: TRes;
-  params?: TParams;
-  body?: TBody;
-  headers?: THeaders;
-};
-
-export type TypeMap = {
-  [endpoint: string | number]: APIConfig;
-};
+import {
+  EventHandlerMap,
+  ExternalFetchConfig,
+  FileDownloadConfig,
+  MappedApiConfig,
+  TypeMap,
+} from "./fetch-types";
 
 export function appendURLParameters(
   url: string,
@@ -37,29 +23,6 @@ async function handleResponse<T>(response: Response): Promise<T> {
   }
   return await response.json();
 }
-
-export type FileDownloadConfig = {
-  endpoint: string;
-  headers?: HeadersInit;
-  filename?: string;
-  params?: Record<string, string>;
-};
-
-export type MappedApiConfig<TMap extends TypeMap> = APIConfig<
-  TMap[keyof TMap]["response"],
-  TMap[keyof TMap]["params"],
-  TMap[keyof TMap]["body"],
-  HeadersInit
->;
-
-export type ExternalFetchConfig<
-  Endpoint,
-  TMap extends TypeMap,
-  Method extends HttpMethod = HttpMethod
-> = Omit<MappedApiConfig<TMap>, "response" | "method"> & {
-  endpoint: Endpoint;
-  method?: Method;
-};
 
 export function computeHeaders(
   defaultHeaders: HeadersInit,
@@ -84,7 +47,10 @@ export function computeHeaders(
   return resultHeaders;
 }
 
-export async function fetcher<Endpoint extends keyof TMap, TMap extends TypeMap>(
+export async function fetcher<
+  Endpoint extends keyof TMap,
+  TMap extends TypeMap
+>(
   fetcherConfig: ExternalFetchConfig<Endpoint, TMap>,
   config: Record<keyof TMap, MappedApiConfig<TMap>>,
   baseUrl: string
@@ -112,7 +78,10 @@ export async function fetcher<Endpoint extends keyof TMap, TMap extends TypeMap>
   return handleResponse(response);
 }
 
-export function fileDownload(config: FileDownloadConfig, baseUrl: string): void {
+export function fileDownload(
+  config: FileDownloadConfig,
+  baseUrl: string
+): void {
   if (typeof window === "undefined") return;
   const finalUrl = new URL(baseUrl + config.endpoint);
   if (config.params) {
