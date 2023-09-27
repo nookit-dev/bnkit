@@ -19,21 +19,21 @@ export type ValidationResult<Schema extends object> = {
 
 export type SchemaType = Record<string, keyof TypeMapping>;
 
-type SetDispatch<Key, Options> = {
+export type SetDispatch<Key, Options> = {
   set: (value: Key, options?: Options) => void;
 };
 
-type ArrayDispatch<T, Options> = {
+export type ArrayDispatch<T, Options> = {
   push: (value: T, options?: Options) => void;
   pop: (options?: Options) => void;
   insert: (index: number, value: T, options?: Options) => void;
 };
 
-type ObjectDispatch<Key, Options> = {
+export type ObjectDispatch<Key, Options> = {
   update: (value: Partial<Key>, options?: Options) => void;
 };
 
-type NumberDispatch<Options> = {
+export type NumberDispatch<Options> = {
   increment: (amount?: number, options?: Options) => void;
   decrement: (amount?: number, options?: Options) => void;
 };

@@ -224,13 +224,9 @@ export function createCliFactory<DataType, E extends BaseError<DataType>>({
     fileContent: string;
   }) => {
     try {
-      // if (options.fileConfig) {
-      // const { filePath, fileContent } = options.fileConfig;
-
-      fileFactory.directoryExists(filePath);
+      fileFactory.directoryExists({ path: filePath });
 
       fileFactory.createFile(filePath, fileContent);
-      // }
     } catch (error) {
       throw error;
     }

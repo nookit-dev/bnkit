@@ -1,6 +1,12 @@
 import Database from "bun:sqlite";
 import { SchemaType, SchemaTypeInference } from "../types";
-import { createTableQuery } from "./sqlite-utils";
+import { createTableQuery } from "./sqlite-utils/create-table-query-string";
+import {
+  createItem,
+  deleteItemById,
+  readItems,
+  updateItem,
+} from "./sqlite-utils/crud-fn-utils";
 
 export type ForeignKeysType<Schema> =
   | { column: keyof Schema; references: string }[]
@@ -18,128 +24,41 @@ export type CreateSqliteTableOptions<Schema extends SchemaType> = {
   foreignKeys?: ForeignKeysType<Schema>;
 };
 
-export function createSqliteTableFactory<Schema extends SchemaType>(
-  {
-    db,
-    schema,
-    tableName,
-  }: // TODO add logger param factory
-  CreateSqliteTableFactoryParams<Schema>,
-  {
-    debug = false,
-    enableForeignKeys: foreignKeysConstraints = false,
-    foreignKeys = null,
-  }: CreateSqliteTableOptions<Schema> = {}
-) {
-  const log = (...args: any) => {
+// Logger utility
+function logger(debug: boolean) {
+  return (...args: any[]) => {
     if (debug) {
       console.info(...args);
     }
   };
+}
 
-  // const { validateAgainstArraySchema } = createValidatorFactory(schema);
+export function createSqliteTableFactory<Schema extends SchemaType>(
+  params: CreateSqliteTableFactoryParams<Schema>,
+  options: CreateSqliteTableOptions<Schema> = {}
+) {
+  const { db, schema, tableName } = params;
+  const { debug = false, foreignKeys = null } = options;
 
-  const createTable = db.query(
-    createTableQuery({ tableName, schema, foreignKeys, debug })
-  );
-  createTable.run();
+  const log = logger(debug);
 
+  db.query(createTableQuery({ tableName, schema, foreignKeys, debug })).run();
+
+  // Pass necessary context to external CRUD functions
   function create(item: SchemaTypeInference<Schema>) {
-    const valuesArray = Object.values(item);
-    const placeholders = valuesArray.map((value) => "?").join(", ");
-    const prepareQuery = `INSERT INTO ${tableName} VALUES (${placeholders})`;
-
-    const stmt = db.query(prepareQuery);
-
-    log({ prepareQuery, valuesArray, placeholders, stmt });
-
-    const insertQuery = stmt.run(...valuesArray);
-
-    log({ insertQuery });
-
-    return [];
+    return createItem(db, tableName, log, item);
   }
 
-  async function read(): Promise<Schema[]> {
-    const selectAllTableQuery = `SELECT * FROM ${tableName};`;
-    const selectQuery = db.query(selectAllTableQuery);
-    const data = selectQuery.all();
-
-    log({
-      selectAllTableQuery,
-      data,
-    });
-
-    // TODO add back validation, make validation option, i need to create a sqlite schema validator
-    // const { error, data: validatedData } = validateAgainstArraySchema(
-    //   schema,
-    //   data
-    // );
-
-    // if (error) {
-    //   throw new Error(`Error during read: ${error}`);
-    // }
-
-    // if (!validatedData) {
-    //   throw new Error(`Error during read, no data found: ${error}`);
-    // }
-
-    return data as Schema[];
+  function read(): Schema[] {
+    return readItems(db, tableName, log);
   }
 
-  const getDeleteQuery = (tableName: string) => {
-    const query = `DELETE FROM ${tableName} WHERE id = $id;`;
-
-    log(query);
-
-    return query;
-  };
-
-  const getUpdateQuery = <Schema extends SchemaType>(
-    tableName: string,
-    schema: Schema
-  ) => {
-    // Filter out the 'id' field
-    const updateFields = Object.keys(schema)
-      .filter((key) => key !== "id")
-      .map((key) => `${key} = $${key}`)
-      .join(", ");
-
-    const query = `UPDATE ${tableName} SET ${updateFields} WHERE id = $id;`;
-
-    log(query);
-
-    return query;
-  };
-
-  //  TODO: need to fix types on the update method
-  async function update(
-    // TODO: maybe this can be inferred from the schema, maybe make ID required?
-    id: string | number,
-    item: Partial<Omit<Schema, "id">>
-  ): Promise<void> {
-    const query = getUpdateQuery(tableName, schema);
-
-    log(query);
-
-    const updateQuery = db.query(query);
-
-    log({ item, id });
-
-    // Run the query with the item object and id
-    const params = Object.fromEntries(
-      Object.entries(item).map(([key, value]) => [`$${key}`, value])
-    );
-    updateQuery.run({ ...params, $id: id });
+  function update(id: string | number, item: Partial<Omit<Schema, "id">>) {
+    updateItem(db, tableName, log, id, item);
   }
 
-  async function deleteById(id: number): Promise<void> {
-    const query = getDeleteQuery(tableName);
-
-    log(query);
-
-    const deleteQuery = db.query(query);
-    deleteQuery.run({ $id: id });
+  function deleteById(id: number) {
+    deleteItemById(db, tableName, log, id);
   }
 
   return {

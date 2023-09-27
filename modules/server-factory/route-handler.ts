@@ -21,7 +21,7 @@ export type CreateRouteArgs = {
 
 const defaultErrorMessage = "Internal Server Error";
 
-const requestHandler = async <
+export const requestHandler = async <
   ReqT extends RouteReqT = RouteReqT,
   ResT extends ResBodyT = ResBodyT
 >({

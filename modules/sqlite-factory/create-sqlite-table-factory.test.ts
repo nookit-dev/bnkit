@@ -1,0 +1,69 @@
+import { Database } from "bun:sqlite";
+import { afterEach, describe, expect, test } from "bun:test";
+import { createSqliteTableFactory } from "./create-sqlite-table-factory";
+
+const mockDb = new Database(":memory:");
+const testSchema = {
+  id: "number",
+  name: "string",
+  age: "number",
+} as const;
+
+const factoryOptions = {
+  debug: true,
+};
+
+describe("createSqliteTableFactory", () => {
+  const factory = createSqliteTableFactory(
+    {
+      db: mockDb,
+      schema: testSchema,
+      tableName: "test",
+    },
+    factoryOptions
+  );
+
+  afterEach(() => {
+    // Clean up the database after each test (for isolation purposes)
+    mockDb.query("DELETE FROM test;").run();
+  });
+
+  test("should insert an item into the database using the factory", () => {
+    const item = { id: 1, name: "John", age: 30 };
+    factory.create(item);
+    const items = factory.read();
+    expect(items.length).toBe(1);
+    expect(items[0]).toEqual(item);
+  });
+
+  test("should read items from the database using the factory", () => {
+    const item = { id: 1, name: "Jane", age: 25 };
+    mockDb
+      .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
+      .run(item.id, item.name, item.age);
+    const items = factory.read();
+    expect(items.length).toBe(1);
+    expect(items[0]).toEqual(item);
+  });
+
+  test("should update an item in the database using the factory", () => {
+    const item = { id: 1, name: "Doe", age: 35 };
+    mockDb
+      .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
+      .run(item.id, item.name, item.age);
+    const updatedName = "John Doe";
+    factory.update(item.id, { name: updatedName });
+    const items = factory.read();
+    expect(items.length).toBe(1);
+    expect(items[0]).toEqual({ ...item, name: updatedName });
+  });
+  test("should delete an item from the database using the factory", () => {
+    const item = { id: 1, name: "Alice", age: 40 };
+    mockDb
+      .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
+      .run(item.id, item.name, item.age);
+    factory.deleteById(item.id);
+    const items = factory.read();
+    expect(items.length).toBe(0);
+  });
+});
