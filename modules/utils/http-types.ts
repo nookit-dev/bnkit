@@ -68,10 +68,9 @@ export type JSONRequest = RouteReqT & {
 };
 
 export type CORSOptions = {
-  allowedOrigins?: string[];
-  allowAllOrigins?: boolean;
-  allowedMethods?: HttpMethod[];
-  allowedHeaders?: CommonHttpHeaders[];
+  origins?: string[];
+  methods?: HttpMethod[];
+  headers?: CommonHttpHeaders[];
 };
 
 export type CreateServerFactory = {

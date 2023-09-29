@@ -1,4 +1,4 @@
-import { CORSOptions, Middleware } from "../utils/http-types";
+import { CORSOptions, HttpMethod, Middleware } from "../utils/http-types";
 
 export const isOriginAllowed = (
   allowedOrigins: string[],
@@ -14,26 +14,42 @@ export const isMethodAllowed = (
   return allowedMethods.includes(requestMethod);
 };
 
-export const createCorsMiddleware = (
-  options?: Partial<CORSOptions>
-): Middleware => {
-  // Default values
-  const defaultMethods = ["GET", "POST", "PUT", "DELETE"];
-  const defaultHeaders = ["Content-Type"];
-
-  // Merge default values with provided options
-  let allowedOrigins = options?.allowedOrigins;
-
-  if (options?.allowAllOrigins) {
-    allowedOrigins = ["*"];
+export const setCORSHeaders = (
+  response: Response,
+  options: Partial<CORSOptions>,
+  requestOrigin: string
+) => {
+  if (options.origins?.includes("*")) {
+    response.headers.set("Access-Control-Allow-Origin", "*");
+  } else {
+    response.headers.set("Access-Control-Allow-Origin", requestOrigin);
   }
+  if (options.methods) {
+    response.headers.set(
+      "Access-Control-Allow-Methods",
+      options.methods.join(", ")
+    );
+  }
+  if (options.headers) {
+    response.headers.set(
+      "Access-Control-Allow-Headers",
+      options.headers.join(", ")
+    );
+  }
+};
 
-  const allowedMethods = options?.allowedMethods || defaultMethods;
-  const allowedHeaders = options?.allowedHeaders || defaultHeaders;
+export const createCorsMiddleware = (
+  options: Partial<CORSOptions>
+): Middleware => {
+  const defaultMethods: HttpMethod[] = ["GET", "POST", "PUT", "DELETE"]; // Adjust type if HttpMethod[] is desired
+  const defaultHeaders = ["Content-Type"];
+  const allowedOrigins: CORSOptions["origins"] = options.origins || [];
+  const allowedMethods: HttpMethod[] = options.methods || defaultMethods;
+  const allowedHeaders: CORSOptions["headers"] =
+    options.headers || defaultHeaders;
 
   return async (request, next) => {
     const requestOrigin = request.headers.get("Origin");
-
     if (!requestOrigin) {
       console.error("Request does not have an Origin header.");
       return new Response("Bad Request: Missing Origin header.", {
@@ -41,22 +57,7 @@ export const createCorsMiddleware = (
       });
     }
 
-    if (request.method === "OPTIONS") {
-      const requestMethod = request.headers.get(
-        "Access-Control-Request-Method"
-      );
-      if (!isMethodAllowed(allowedMethods, requestMethod || "")) {
-        console.error(`Method ${requestMethod} is not allowed.`);
-        const response = new Response(
-          `CORS Error: Method ${requestMethod} is not allowed.`,
-          { status: 405 }
-        );
-        response.headers.set("Access-Control-Allow-Origin", requestOrigin);
-        return response;
-      }
-    }
-
-    if (!isOriginAllowed(allowedOrigins || [], requestOrigin)) {
+    if (!isOriginAllowed(allowedOrigins, requestOrigin)) {
       console.error(`Origin ${requestOrigin} is not allowed.`);
       return new Response(
         `CORS Error: Origin ${requestOrigin} is not allowed.`,
@@ -65,44 +66,64 @@ export const createCorsMiddleware = (
     }
 
     if (request.method === "OPTIONS") {
-      let response = new Response(null, { status: 204 }); // 204 No Content
+      const requestMethod = request.headers.get(
+        "Access-Control-Request-Method"
+      );
 
-      // Attach the CORS headers
-      if (options?.allowAllOrigins) {
-        response.headers.set("Access-Control-Allow-Origin", "*");
-      } else {
-        response.headers.set("Access-Control-Allow-Origin", requestOrigin);
+      const response = new Response(null, { status: 204 }); // Assuming allowed by default
+      setCORSHeaders(
+        response,
+        {
+          origins: allowedOrigins,
+          methods: allowedMethods,
+          headers: allowedHeaders,
+        },
+        requestOrigin
+      );
+
+      if (!isMethodAllowed(allowedMethods, requestMethod || "")) {
+        console.error(`Method ${requestMethod} is not allowed.`);
+
+        return new Response(
+          `CORS Error: Method ${requestMethod} is not allowed.`,
+          {
+            status: 405,
+            statusText: `CORS Error: Method ${requestMethod} is not allowed.`,
+          }
+        );
       }
-
-      response.headers.set(
-        "Access-Control-Allow-Methods",
-        allowedMethods.join(", ")
-      );
-      response.headers.set(
-        "Access-Control-Allow-Headers",
-        allowedHeaders.join(", ")
-      );
-
       return response;
     }
 
-    // For non-OPTIONS requests, process as usual
-    const response = await next();
-
-    if (options?.allowAllOrigins) {
-      response.headers.set("Access-Control-Allow-Origin", "*");
-    } else {
-      response.headers.set("Access-Control-Allow-Origin", requestOrigin);
+    if (!isMethodAllowed(allowedMethods, request.method)) {
+      console.error(`Method ${request.method} is not allowed.`);
+      return new Response(
+        `CORS Error: Method ${request.method} is not allowed.`,
+        {
+          status: 405,
+          statusText: `CORS Error: Method ${request.method} is not allowed.`,
+        }
+      );
     }
-    response.headers.set(
-      "Access-Control-Allow-Methods",
-      allowedMethods.join(", ")
-    );
-    response.headers.set(
-      "Access-Control-Allow-Headers",
-      allowedHeaders.join(", ")
+    const response = await next();
+    setCORSHeaders(
+      response,
+      {
+        origins: allowedOrigins,
+        methods: allowedMethods,
+        headers: allowedHeaders,
+      },
+      requestOrigin
     );
 
+    return response;
+  };
+};
+
+export const allowAllOriginsMiddleware = (): Middleware => {
+  return async (request, next) => {
+    const response = await next();
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   };
 };
