@@ -10,7 +10,6 @@ export {
   createNonSecureHashFactory,
   createSecureHashFactory
 } from "./modules/hash-factory";
-export { createHIDKeyboardFactory } from "./modules/hid-emulators/keyboard-hid-factory";
 export {
   jwtClientSideFactory,
   jwtServerSideFactory

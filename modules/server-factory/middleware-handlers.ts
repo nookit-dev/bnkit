@@ -1,4 +1,9 @@
-import { CORSOptions, Middleware, RouteHandler } from "../utils/http-types";
+import {
+  CORSOptions,
+  Middleware,
+  MiddlewareNext,
+  RouteHandler,
+} from "../utils/http-types";
 import { bodyParser } from "./body-parser-middleware";
 import { checkFileSizeMiddleware } from "./check-file-size-middleware";
 import { createCorsMiddleware } from "./create-cors-middleware";
@@ -27,24 +32,38 @@ export function generateMiddlewares({
   return middlewares;
 }
 
-export function composeMiddlewares(
-  middlewares: Middleware[],
+export function composeMiddlewares<TContext extends object>(
+  middlewares: Middleware<TContext>[],
   handler: RouteHandler
 ): RouteHandler {
   return (request: Request) => {
-    const invokeHandler: Middleware = (req, next) => handler(req);
+    const invokeNext: MiddlewareNext<TContext> = (context) => {
+      return handler(request);
+    };
 
-    const finalMiddleware = middlewares.reduceRight(
-      (nextMiddleware: Middleware, currentMiddleware: Middleware) => {
-        return (currentRequest: Request) => {
-          return currentMiddleware(currentRequest, () =>
-            nextMiddleware(currentRequest, () => handler(request))
-          );
+    const finalMiddleware = middlewares.reduceRight<Middleware<TContext>>(
+      (nextMiddleware, currentMiddleware) => {
+        return ({ request, context }) => {
+          return currentMiddleware({
+            request,
+            context,
+            next: (updatedContext = context) => {
+              return nextMiddleware({
+                request,
+                context: updatedContext,
+                next: invokeNext,
+              });
+            },
+          });
         };
       },
-      invokeHandler
+      ({ request, context }) => invokeNext(context)
     );
 
-    return finalMiddleware(request, () => handler(request));
+    return finalMiddleware({
+      request,
+      context: undefined,
+      next: invokeNext,
+    });
   };
 }

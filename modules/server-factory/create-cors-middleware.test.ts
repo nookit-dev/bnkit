@@ -90,7 +90,7 @@ describe("CORS Middleware", () => {
       return res;
     });
 
-    const response = await middleware(requester, next);
+    const response = await middleware({ request: requester, next });
 
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
       "GET, POST, PUT, DELETE"
@@ -104,7 +104,7 @@ describe("CORS Middleware", () => {
     const middleware = createCorsMiddleware({});
     const requester = new Request(defaultOrigin, { method: "GET" });
     const next = jest.fn(() => new Response());
-    const response = await middleware(requester, next);
+    const response = await middleware({ request: requester, next });
 
     expect(response.status).toBe(400);
   });
@@ -122,7 +122,7 @@ describe("CORS Middleware", () => {
       }),
     });
     const next = jest.fn(() => new Response());
-    const response = await middleware(requester, next);
+    const response = await middleware({ request: requester, next });
 
     expect(response.status).toBe(204);
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
@@ -142,7 +142,7 @@ describe("CORS Middleware", () => {
       }),
     });
     const next = jest.fn(() => new Response());
-    const response = await middleware(requester, next);
+    const response = await middleware({ request: requester, next });
 
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
@@ -160,7 +160,7 @@ describe("CORS Middleware", () => {
       },
     });
     const next = jest.fn(() => new Response());
-    const response = await middleware(request, next);
+    const response = await middleware({ request, next });
 
     expect(response.status).toBe(405);
   });
@@ -177,7 +177,7 @@ describe("CORS Middleware", () => {
       }),
     });
     const next = jest.fn(() => new Response());
-    const response = await middleware(requester, next);
+    const response = await middleware({ request: requester, next });
 
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
       defaultOrigin
@@ -198,10 +198,10 @@ describe("CORS Middleware", () => {
       headers: { Origin: "http://example.com" },
     });
 
-    const response = await middleware(
+    const response = await middleware({
       request,
-      async () => new Response("Hello, world!")
-    );
+      next: async () => new Response("Hello, world!"),
+    });
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
       "http://example.com"
     );
@@ -212,10 +212,10 @@ describe("CORS Middleware", () => {
     const request = new Request("http://example.com", {
       headers: { Origin: "http://example.com" },
     });
-    const response = await middleware(
+    const response = await middleware({
       request,
-      async () => new Response("Hello, world!")
-    );
+      next: async () => new Response("Hello, world!"),
+    });
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
 
@@ -228,10 +228,10 @@ describe("CORS Middleware", () => {
       headers: { Origin: "http://example.com" },
     });
 
-    const response = await middleware(
+    const response = await middleware({
       request,
-      async () => new Response("Hello, world!")
-    );
+      next: async () => new Response("Hello, world!"),
+    });
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
       "GET, POST"
     );
@@ -248,10 +248,10 @@ describe("CORS Middleware", () => {
         "Content-Type": "application/json",
       },
     });
-    const response = await middleware(
+    const response = await middleware({
       request,
-      async () => new Response("Hello, world!")
-    );
+      next: async () => new Response("Hello, world!"),
+    });
     expect(response.headers.get("Access-Control-Allow-Headers")).toBe(
       "Content-Type"
     );
@@ -260,12 +260,11 @@ describe("CORS Middleware", () => {
   test("should return 400 Bad Request if request does not have Origin header", async () => {
     const middleware = createCorsMiddleware({});
     const request = new Request("http://example.com");
-    const response = await middleware(
+    const response = await middleware({
       request,
-      async () => new Response("Hello, world!")
-    );
+      next: async () => new Response("Hello, world!"),
+    });
 
-    console.log(response);
     expect(response.status).toBe(400);
   });
 
@@ -276,10 +275,10 @@ describe("CORS Middleware", () => {
     const request = new Request("http://example.org", {
       headers: { Origin: "http://example.org" },
     });
-    const response = await middleware(
+    const response = await middleware({
       request,
-      async () => new Response("Hello, world!")
-    );
+      next: async () => new Response("Hello, world!"),
+    });
     expect(response.status).toBe(403);
   });
 
@@ -295,10 +294,10 @@ describe("CORS Middleware", () => {
         "Access-Control-Request-Method": "POST",
       },
     });
-    const response = await middleware(
+    const response = await middleware({
       request,
-      async () => new Response("Hello, world!")
-    );
+      next: async () => new Response("Hello, world!"),
+    });
     expect(response.status).toBe(405);
   });
 
@@ -314,10 +313,10 @@ describe("CORS Middleware", () => {
         "Access-Control-Request-Method": "GET",
       },
     });
-    const response = await middleware(
+    const response = await middleware({
       request,
-      async () => new Response("Hello, world!")
-    );
+      next: async () => new Response("Hello, world!"),
+    });
     expect(response.status).toBe(204);
   });
 });

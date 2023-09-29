@@ -10,7 +10,7 @@ describe("bodyParser middleware", () => {
       body: JSON.stringify({ test: "data" }),
     });
     const next = mock(() => {});
-    await bodyParser(request, next);
+    await bodyParser({ request, next });
     expect(getParsedBody(request)).toEqual({ test: "data" });
     expect(next.mock.calls.length).toBe(1);
   });
@@ -22,7 +22,7 @@ describe("bodyParser middleware", () => {
       body: "test data",
     });
     const next = mock(() => {});
-    await bodyParser(request, next);
+    await bodyParser({ request, next });
     expect(getParsedBody(request)).toBe("test data");
     expect(next.mock.calls.length).toBe(1);
   });
@@ -34,7 +34,7 @@ describe("bodyParser middleware", () => {
       body: "invalid json",
     });
     const next = mock(() => {});
-    await bodyParser(request, next);
+    await bodyParser({ request, next });
     expect(getParsedBody(request)).toBeUndefined();
     expect(next.mock.calls.length).toBe(1);
   });

@@ -48,7 +48,7 @@ export const createCorsMiddleware = (
   const allowedHeaders: CORSOptions["headers"] =
     options.headers || defaultHeaders;
 
-  return async (request, next) => {
+  return async ({ request, next }) => {
     const requestOrigin = request.headers.get("Origin");
     if (!requestOrigin) {
       console.error("Request does not have an Origin header.");
@@ -121,8 +121,9 @@ export const createCorsMiddleware = (
 };
 
 export const allowAllOriginsMiddleware = (): Middleware => {
-  return async (request, next) => {
+  return async ({ request, next }) => {
     const response = await next();
+
     response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   };
