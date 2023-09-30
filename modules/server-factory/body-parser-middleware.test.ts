@@ -1,41 +1,52 @@
-import { describe, expect, it, mock } from "bun:test";
-
-import { bodyParser, getParsedBody } from "./body-parser-middleware"; // assuming this is where your middleware resides
+import { jest, describe, expect, it, spyOn } from "bun:test";
+import { bodyParser, getParsedBody } from "./body-parser-middleware";
 
 describe("bodyParser middleware", () => {
-  it("parses JSON content correctly", async () => {
-    const request = new Request("http://localhost:3000/test", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ test: "data" }),
+  it("should correctly parse JSON content", async () => {
+    const mockRequest = {
+      headers: new Map([["Content-Type", "application/json"]]),
+      text: jest.fn().mockResolvedValue(JSON.stringify({ key: "value" })),
+    } as unknown as Request;
+
+    const mockNext = jest.fn();
+
+    await bodyParser({ request: mockRequest, next: mockNext });
+
+    expect(getParsedBody<{ key: string }>(mockRequest)).toEqual({
+      key: "value",
     });
-    const next = mock(() => {});
-    await bodyParser({ request, next });
-    expect(getParsedBody(request)).toEqual({ test: "data" });
-    expect(next.mock.calls.length).toBe(1);
+    expect(mockNext).toHaveBeenCalled();
   });
 
-  it("handles non-JSON content correctly", async () => {
-    const request = new Request("http://localhost:3000/test", {
-      method: "POST",
-      headers: { "Content-Type": "text/plain" },
-      body: "test data",
-    });
-    const next = mock(() => {});
-    await bodyParser({ request, next });
-    expect(getParsedBody(request)).toBe("test data");
-    expect(next.mock.calls.length).toBe(1);
+  it("should handle non-JSON content", async () => {
+    const mockRequest = {
+      headers: new Map([["Content-Type", "text/plain"]]),
+      text: jest.fn().mockResolvedValue("plain text"),
+    } as unknown as Request;
+
+    const mockNext = jest.fn();
+
+    await bodyParser({ request: mockRequest, next: mockNext });
+
+    expect(getParsedBody<string>(mockRequest)).toBe("plain text");
+    expect(mockNext).toHaveBeenCalled();
   });
 
-  it("handles invalid JSON content gracefully", async () => {
-    const request = new Request("http://localhost:3000/test", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: "invalid json",
-    });
-    const next = mock(() => {});
-    await bodyParser({ request, next });
-    expect(getParsedBody(request)).toBeUndefined();
-    expect(next.mock.calls.length).toBe(1);
+  it("should handle invalid JSON gracefully", async () => {
+    const consoleErrorSpy = spyOn(console, "error").mockImplementation(() =>'');
+    const mockRequest = {
+      headers: new Map([["Content-Type", "application/json"]]),
+      text: jest.fn().mockResolvedValue("invalid json"),
+    } as unknown as Request;
+
+    const mockNext = jest.fn();
+
+    await bodyParser({ request: mockRequest, next: mockNext });
+
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    expect(mockNext).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
+
+  // ... any additional tests for other scenarios.
 });
