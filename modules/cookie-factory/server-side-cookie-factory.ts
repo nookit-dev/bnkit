@@ -58,7 +58,7 @@ export function createServerCookieFactory() {
   };
 }
 
-type CookieOptions = {
+export type CookieOptions = {
   maxAge?: number;
   path?: string;
   domain?: string;
@@ -67,7 +67,7 @@ type CookieOptions = {
   sameSite?: "Strict" | "Lax" | "None";
 };
 
-function parseCookies(cookiesString: string) {
+export function parseCookies(cookiesString: string) {
   const cookies: { [name: string]: string } = {};
   const pairs = cookiesString.split(";");
 

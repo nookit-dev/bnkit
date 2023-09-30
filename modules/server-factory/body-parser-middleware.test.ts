@@ -48,5 +48,4 @@ describe("bodyParser middleware", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  // ... any additional tests for other scenarios.
 });
