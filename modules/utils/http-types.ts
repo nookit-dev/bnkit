@@ -39,12 +39,28 @@ export type ResBodyT =
   | object
   | null;
 
-export type Middleware = (
-  request: Request,
-  next: MiddlewareNext
-) => Response | Promise<Response>;
+// Give middleware ability to carry state context which cookie middlewares other other middlewares would have access to
+// make it typed of course, maybe change the middleware params to an object like so:
+// {
+//   request: Request;
+//   next: MiddlewareNext;
+//   context: T;
+//   // future stuff
+// }
+// for example we could create a middleware and react plugin that pass along state on each request
+export type Middleware<TContext extends object = object> = ({
+  request,
+  next,
+  context,
+}: {
+  request: Request;
+  next: MiddlewareNext<TContext>;
+  context?: TContext;
+}) => Response | Promise<Response>;
 
-export type MiddlewareNext = () => Response | Promise<Response>;
+export type MiddlewareNext<TContext extends object = object> = (
+  context?: TContext
+) => Response | Promise<Response>;
 
 export interface RouteMap {
   [route: string]: RouteHandler;
@@ -68,10 +84,9 @@ export type JSONRequest = RouteReqT & {
 };
 
 export type CORSOptions = {
-  allowedOrigins?: string[];
-  allowAllOrigins?: boolean;
-  allowedMethods?: HttpMethod[];
-  allowedHeaders?: CommonHttpHeaders[];
+  origins?: string[];
+  methods?: HttpMethod[];
+  headers?: CommonHttpHeaders[];
 };
 
 export type CreateServerFactory = {

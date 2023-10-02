@@ -117,10 +117,6 @@ Example Projects:
 
 [U Tools Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-u-tools-sqlite)
 
-## Contributing
-
-We welcome contributions to U Tools! If you've got a utility function or a module that could be a useful addition, feel free to submit a pull request. Bug reports, suggestions, and other feedback are equally appreciated.
-
 ## License
 
 U Tools is licensed under the MIT License. Enjoy the freedom to use, modify, and distribute the software under very permissive terms.
