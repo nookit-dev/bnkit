@@ -1,6 +1,6 @@
 {
   "name": "@u-tools/react",
-  "version": "0.0.87",
+  "version": "0.0.88",
   "module": "index.ts",
   "main": "index.ts",
   "scripts": {
