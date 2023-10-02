@@ -21,9 +21,9 @@ export function parseRequestHeaders<HeadersType>(
 export type JSONResType = <JSONBodyGeneric extends object>(
   body: JSONBodyGeneric,
   options?: ResponseInit
-) => Response;
+) => Response | Promise<Response>;
 
-export const jsonRes: JSONResType = (body, options): Response => {
+export const jsonRes: JSONResType = (body, options) => {
   return new Response(JSON.stringify(body), {
     ...options,
     headers: {
