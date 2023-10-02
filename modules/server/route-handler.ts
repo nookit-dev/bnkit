@@ -12,9 +12,9 @@ import { handleRequestError, onErrorHandler } from "./error-handler";
 import { composeMiddlewares } from "./middleware-handlers";
 import { htmlRes, jsonRes, parseRequestHeaders } from "./request-helpers";
 
-export type CreateRouteArgs = {
+export type CreateRouteArgs<MiddlewareDataCtx extends object = {}> = {
   routePath: string;
-  middlewares: Middleware[];
+  middlewares: Middleware<MiddlewareDataCtx>[];
   options: RouteOptions;
   routes: RouteMap;
 };
@@ -75,14 +75,20 @@ export const requestHandler = async <
 
 export function createRoute<
   ReqT extends RouteReqT = RouteReqT,
-  ResT extends ResBodyT = ResBodyT
->({ middlewares, options = {}, routePath, routes }: CreateRouteArgs) {
+  ResT extends ResBodyT = ResBodyT,
+  MiddlewareDataCtx extends object = {}
+>({
+  middlewares,
+  options = {},
+  routePath,
+  routes,
+}: CreateRouteArgs<MiddlewareDataCtx>) {
   const { errorMessage, onError } = options;
 
   const onRequest: OnRequestType<ReqT, ResT> = (
     handler: OnRequestHandler<ReqT, ResT>
   ) => {
-    routes[routePath] = composeMiddlewares(
+    routes[routePath] = composeMiddlewares<MiddlewareDataCtx>(
       middlewares,
       async (request: Request) =>
         requestHandler({

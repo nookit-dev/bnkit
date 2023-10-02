@@ -8,9 +8,9 @@ import readline from "readline";
 //   saveResultToFile,
 // } from "../../files-folder";
 import {
-  chooseActions,
-  directoryExists,
-} from "../../modules/cli-factory/create-cli-factory";
+    chooseActions,
+    directoryExists,
+} from "../../modules/cli/create-cli-factory";
 // import createOpenAICompletions from "../../networking";
 import type { ActionsConfig } from "./repo-docs-generator";
 

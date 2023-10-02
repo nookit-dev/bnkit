@@ -33,7 +33,9 @@ describe("bodyParser middleware", () => {
   });
 
   it("should handle invalid JSON gracefully", async () => {
-    const consoleErrorSpy = spyOn(console, "error").mockImplementation(() =>'');
+    const consoleErrorSpy = spyOn(console, "error").mockImplementation(
+      () => ""
+    );
     const mockRequest = {
       headers: new Map([["Content-Type", "application/json"]]),
       text: jest.fn().mockResolvedValue("invalid json"),
@@ -47,5 +49,4 @@ describe("bodyParser middleware", () => {
     expect(mockNext).toHaveBeenCalled();
     consoleErrorSpy.mockRestore();
   });
-
 });

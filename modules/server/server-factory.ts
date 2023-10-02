@@ -12,16 +12,16 @@ import { StartServerOptions, startServer } from "./start-server";
 
 export type CreateServerFactoryRoute<
   ServerRouteMap extends RouteMap,
-  RouteKeys extends keyof ServerRouteMap = keyof ServerRouteMap
+  RouteKeys extends keyof ServerRouteMap = keyof ServerRouteMap,
+  MiddlewareDataCtx extends object = {}
 > = {
   routePath: RouteKeys;
-  middlewares?: Middleware[];
+  middlewares?: Middleware<MiddlewareDataCtx>[];
   options?: RouteOptions;
   routes?: ServerRouteMap;
 };
 
-// TODO: figure out a way to set cors up for local dev automatically.
-export function createServerFactory(
+export function createServerFactory<MiddlewareDataCtx extends object = {}>(
   { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerFactory = {
     wsPaths: [],
     enableBodyParser: true,
@@ -31,7 +31,7 @@ export function createServerFactory(
   let server: Server;
 
   // cors must come first in the middleware
-  let middlewares: Middleware[] = generateMiddlewares({
+  let middlewares: Middleware<MiddlewareDataCtx>[] = generateMiddlewares({
     cors,
     enableBodyParser,
     maxFileSize,
@@ -42,7 +42,12 @@ export function createServerFactory(
     options = {},
     middlewares: routeMiddlewares = middlewares,
     routes: routeMap = routes,
-  }: CreateServerFactoryRoute<typeof routes>) => {
+  }: // }: CreateServerFactoryRoute<typeof routes, keyof typeof routes, CookieContext >) => {
+  CreateServerFactoryRoute<
+    typeof routes,
+    keyof typeof routes,
+    MiddlewareDataCtx
+  >) => {
     return createRoute({
       routePath: String(routePath),
       options,
@@ -51,7 +56,7 @@ export function createServerFactory(
     });
   };
 
-  const middle = (middleware: Middleware) => {
+  const middle = (middleware: Middleware<MiddlewareDataCtx>) => {
     middlewares.push(middleware);
   };
 

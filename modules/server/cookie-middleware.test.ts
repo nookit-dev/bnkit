@@ -1,7 +1,7 @@
-import { describe, jest, beforeEach, it, expect } from "bun:test";
-import { createCookieMiddleware } from "./cookie-middlware";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
+import { parseCookies } from "mod/cookies/server-side-cookie-factory";
 import { MiddlewareNext } from "mod/utils/http-types";
-import { parseCookies } from "mod/cookie-factory/server-side-cookie-factory";
+import { createCookieMiddleware } from "./cookie-middlware";
 
 describe("createCookieMiddleware", () => {
   let middleware: ReturnType<typeof createCookieMiddleware>, mockRequest: Request, mockResponse: Response, mockNext: MiddlewareNext;

@@ -1,5 +1,5 @@
-import { createServerCookieFactory } from "../cookie-factory";
-import { CookieOptions } from "../cookie-factory/server-side-cookie-factory";
+import { createServerCookieFactory } from "../cookies";
+import { CookieOptions } from "../cookies/server-side-cookie-factory";
 import { Middleware } from "../utils/http-types";
 
 export type CookieContext = {

@@ -67,6 +67,7 @@ export type CookieOptions = {
   sameSite?: "Strict" | "Lax" | "None";
 };
 
+// TODO update this to have have a type generic of the return object
 export function parseCookies(cookiesString: string) {
   const cookies: { [name: string]: string } = {};
   const pairs = cookiesString.split(";");

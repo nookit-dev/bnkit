@@ -1,8 +1,14 @@
-import { Middleware } from "../utils/http-types";
+import { MiddlewareNext } from "../utils/http-types";
 
 const parsedBodies = new WeakMap<Request, any>();
 
-export const bodyParser: Middleware = async ({ request, next }) => {
+export const bodyParser = async <MiddlewareDataCtx extends object = {}>({
+  request,
+  next,
+}: {
+  request: Request;
+  next: MiddlewareNext<MiddlewareDataCtx>;
+}) => {
   const contentType = request.headers.get("Content-Type");
 
   if (contentType && contentType.includes("application/json")) {

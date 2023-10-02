@@ -1,6 +1,6 @@
 import Bun from "bun";
-import { logStdOutput } from "mod/github-actions/github-actions";
-import { createGitHubActionsFactory } from "modules/github-actions";
+import { logStdOutput } from "mod/deploy/github-actions";
+import { createGitHubActionsFactory } from "mod/deploy";
 import { npmReleaseFactory } from "modules/npm-release";
 import { ulog } from "modules/utils/ulog";
 import path from "path";

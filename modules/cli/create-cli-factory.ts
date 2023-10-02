@@ -1,7 +1,7 @@
 import fsPromise from "fs/promises";
 import readline from "readline";
 import { createFileFactory } from "../..";
-import { defaultLogger } from "../logger-factory";
+import { defaultLogger } from "../logger";
 import { BaseError } from "../utils/base-error";
 
 const cliLog = (...args: any[]) => {
