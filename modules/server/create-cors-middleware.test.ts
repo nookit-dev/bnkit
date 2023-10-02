@@ -58,18 +58,30 @@ describe("setCORSHeaders", () => {
   });
 });
 
-describe("CORS Middleware", () => {
-  test("isOriginAllowed function", () => {
+describe("isOriginAllowed", () => {
+  test("allows catch all (*)", () => {
     expect(isOriginAllowed(["*"], defaultOrigin)).toBe(true);
+  });
+  test("allows specific origins", () => {
     expect(isOriginAllowed([defaultOrigin], defaultOrigin)).toBe(true);
+  });
+
+  test("disallows non-matching origins", () => {
     expect(isOriginAllowed(["http://example.org"], defaultOrigin)).toBe(false);
   });
+});
 
-  test("isMethodAllowed function", () => {
+describe("isMethodAllowed", () => {
+  test("allows allowed methods", () => {
     expect(isMethodAllowed(["GET", "POST"], "GET")).toBe(true);
-    expect(isMethodAllowed(["GET", "POST"], "DELETE")).toBe(false);
   });
 
+  test("disallows disallowed methods", () => {
+    expect(isMethodAllowed(["GET", "POST"], "DELETE")).toBe(false);
+  });
+});
+
+describe("CORS Middleware", () => {
   test("default values", async () => {
     const middleware = createCorsMiddleware({
       origins: [defaultOrigin],
@@ -318,5 +330,14 @@ describe("CORS Middleware", () => {
       next: async () => new Response("Hello, world!"),
     });
     expect(response.status).toBe(204);
+  });
+
+  test("should allow request if no origin is passed in and all origins are allowed", async () => {
+    const middleware = createCorsMiddleware({ origins: ["*"] });
+    const request = new Request("https://example.com");
+    const next = () => new Response("Hello, world!");
+    const response = await middleware({ request, next });
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
 });

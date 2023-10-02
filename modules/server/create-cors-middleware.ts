@@ -48,16 +48,23 @@ export const createCorsMiddleware = <MiddlewareDataCtx extends object = {}>(
   const allowedHeaders: CORSOptions["headers"] =
     options.headers || defaultHeaders;
 
+  const allOriginsAllowed = allowedOrigins.includes("*");
+
   return async ({ request, next }) => {
     const requestOrigin = request.headers.get("Origin");
-    if (!requestOrigin) {
+
+    if (!requestOrigin && !allOriginsAllowed) {
       console.error("Request does not have an Origin header.");
       return new Response("Bad Request: Missing Origin header.", {
         status: 400,
       });
     }
 
-    if (!isOriginAllowed(allowedOrigins, requestOrigin)) {
+    if (
+      !allOriginsAllowed &&
+      requestOrigin &&
+      !isOriginAllowed(allowedOrigins, requestOrigin)
+    ) {
       console.error(`Origin ${requestOrigin} is not allowed.`);
       return new Response(
         `CORS Error: Origin ${requestOrigin} is not allowed.`,
@@ -66,6 +73,13 @@ export const createCorsMiddleware = <MiddlewareDataCtx extends object = {}>(
     }
 
     if (request.method === "OPTIONS") {
+      if (requestOrigin === null) {
+        console.error("Request does not have an Origin header.");
+        return new Response("Bad Request: Missing Origin header.", {
+          status: 400,
+        });
+      }
+
       const requestMethod = request.headers.get(
         "Access-Control-Request-Method"
       );
@@ -106,15 +120,33 @@ export const createCorsMiddleware = <MiddlewareDataCtx extends object = {}>(
       );
     }
     const response = await next();
-    setCORSHeaders(
-      response,
-      {
-        origins: allowedOrigins,
-        methods: allowedMethods,
-        headers: allowedHeaders,
-      },
-      requestOrigin
-    );
+    // If all origins are allowed, then set the Access-Control-Allow-Origin header to "*"
+    // regardless of whether the request had an Origin header or not.
+    if (allOriginsAllowed) {
+      response.headers.set("Access-Control-Allow-Origin", "*");
+    } else if (requestOrigin !== null) {
+      setCORSHeaders(
+        response,
+        {
+          origins: allowedOrigins,
+          methods: allowedMethods,
+          headers: allowedHeaders,
+        },
+        requestOrigin
+      );
+    }
+
+    if (requestOrigin !== null) {
+      setCORSHeaders(
+        response,
+        {
+          origins: allowedOrigins,
+          methods: allowedMethods,
+          headers: allowedHeaders,
+        },
+        requestOrigin
+      );
+    }
 
     return response;
   };
