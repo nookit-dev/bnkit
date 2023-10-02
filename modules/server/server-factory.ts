@@ -1,9 +1,9 @@
 import { Server } from "bun";
 import {
-  CreateServerFactory,
   Middleware,
   RouteMap,
   RouteOptions,
+  ServerFactoryParams,
 } from "../utils/http-types";
 import { generateMiddlewares } from "./middleware-handlers";
 import { processRequest } from "./request-handler";
@@ -13,16 +13,16 @@ import { StartServerOptions, startServer } from "./start-server";
 export type CreateServerFactoryRoute<
   ServerRouteMap extends RouteMap,
   RouteKeys extends keyof ServerRouteMap = keyof ServerRouteMap,
-  MiddlewareDataCtx extends object = {}
+  MiddlewareCtx extends object = {}
 > = {
   routePath: RouteKeys;
-  middlewares?: Middleware<MiddlewareDataCtx>[];
+  middlewares?: Middleware<MiddlewareCtx>[];
   options?: RouteOptions;
   routes?: ServerRouteMap;
 };
 
-export function createServerFactory<MiddlewareDataCtx extends object = {}>(
-  { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerFactory = {
+export function createServerFactory<MiddlewareCtx extends object = {}>(
+  { wsPaths, enableBodyParser, cors, maxFileSize }: ServerFactoryParams = {
     wsPaths: [],
     enableBodyParser: true,
   }
@@ -31,7 +31,7 @@ export function createServerFactory<MiddlewareDataCtx extends object = {}>(
   let server: Server;
 
   // cors must come first in the middleware
-  let middlewares: Middleware<MiddlewareDataCtx>[] = generateMiddlewares({
+  let middlewares: Middleware<MiddlewareCtx>[] = generateMiddlewares({
     cors,
     enableBodyParser,
     maxFileSize,
@@ -46,7 +46,7 @@ export function createServerFactory<MiddlewareDataCtx extends object = {}>(
   CreateServerFactoryRoute<
     typeof routes,
     keyof typeof routes,
-    MiddlewareDataCtx
+    MiddlewareCtx
   >) => {
     return createRoute({
       routePath: String(routePath),
@@ -56,7 +56,7 @@ export function createServerFactory<MiddlewareDataCtx extends object = {}>(
     });
   };
 
-  const middle = (middleware: Middleware<MiddlewareDataCtx>) => {
+  const middle = (middleware: Middleware<MiddlewareCtx>) => {
     middlewares.push(middleware);
   };
 

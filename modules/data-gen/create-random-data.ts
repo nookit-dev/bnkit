@@ -15,12 +15,12 @@ type NumConfig = {
 };
 
 type OtherConfig = {
-  type: Exclude<keyof DataGeneratorsMap, "num">;
+  type: Exclude<keyof DataGenMap, "num">;
 };
 
-type OutputType<T extends DataConfigItem> = T extends { type: "num" }
+type OutputT<T extends DataConfigItem> = T extends { type: "num" }
   ? number
-  : ReturnType<DataGeneratorsMap[T["type"]]>;
+  : ReturnType<DataGenMap[T["type"]]>;
 
 type DataConfigItem = NumConfig | OtherConfig;
 
@@ -44,11 +44,11 @@ export type DataGeneratorMapConfig = {
   num: { min: number; max: number };
 };
 
-type DataGeneratorsMap = typeof dataGeneratorMap;
+type DataGenMap = typeof dataGeneratorMap;
 
 export function createRandomData<T extends Record<string, DataConfigItem>>(
   config: T
-): { [K in keyof T]: OutputType<T[K]> } {
+): { [K in keyof T]: OutputT<T[K]> } {
   const result: any = {};
 
   for (const key in config) {

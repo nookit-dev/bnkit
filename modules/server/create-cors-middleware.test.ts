@@ -81,7 +81,7 @@ describe("isMethodAllowed", () => {
   });
 });
 
-describe("CORS Middleware", () => {
+describe("createCorsMiddleware function", () => {
   test("default values", async () => {
     const middleware = createCorsMiddleware({
       origins: [defaultOrigin],

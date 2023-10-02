@@ -38,9 +38,9 @@ export const setCORSHeaders = (
   }
 };
 
-export const createCorsMiddleware = <MiddlewareDataCtx extends object = {}>(
+export const createCorsMiddleware = <MiddlewareCtx extends object = {}>(
   options: Partial<CORSOptions>
-): Middleware<MiddlewareDataCtx> => {
+): Middleware<MiddlewareCtx> => {
   const defaultMethods: HttpMethod[] = ["GET", "POST", "PUT", "DELETE"]; // Adjust type if HttpMethod[] is desired
   const defaultHeaders = ["Content-Type"];
   const allowedOrigins: CORSOptions["origins"] = options.origins || [];
@@ -153,8 +153,8 @@ export const createCorsMiddleware = <MiddlewareDataCtx extends object = {}>(
 };
 
 export const allowAllOriginsMiddleware = <
-  MiddlewareDataCtx extends object = {}
->(): Middleware<MiddlewareDataCtx> => {
+  MiddlewareCtx extends object = {}
+>(): Middleware<MiddlewareCtx> => {
   return async ({ request, next }) => {
     const response = await next();
 

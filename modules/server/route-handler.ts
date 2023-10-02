@@ -1,8 +1,8 @@
 import { getParsedBody } from ".";
 import {
   Middleware,
-  OnRequestHandler,
-  OnRequestType,
+  OnRequestT,
+  ReqHandler,
   ResBodyT,
   RouteMap,
   RouteOptions,
@@ -12,9 +12,9 @@ import { handleRequestError, onErrorHandler } from "./error-handler";
 import { composeMiddlewares } from "./middleware-handlers";
 import { htmlRes, jsonRes, parseRequestHeaders } from "./request-helpers";
 
-export type CreateRouteArgs<MiddlewareDataCtx extends object = {}> = {
+export type CreateRouteArgs<MiddlewareCtx extends object = {}> = {
   routePath: string;
-  middlewares: Middleware<MiddlewareDataCtx>[];
+  middlewares: Middleware<MiddlewareCtx>[];
   options: RouteOptions;
   routes: RouteMap;
 };
@@ -31,21 +31,21 @@ export const requestHandler = async <
   onError,
 }: {
   request: Request;
-  onRequest: OnRequestHandler<ReqT, ResT>;
+  onRequest: ReqHandler<ReqT, ResT>;
   errorMessage?: string;
   onError?: onErrorHandler;
 }) => {
   try {
-    const getQueryParams = <ParamsType = ReqT["params"]>() => {
+    const getQueryParams = <ParamsT = ReqT["params"]>() => {
       const url = new URL(request.url);
-      return url.searchParams as unknown as ParamsType;
+      return url.searchParams as unknown as ParamsT;
     };
 
-    const parseHeaders = <HeadersType = ReqT["headers"]>() =>
-      parseRequestHeaders<HeadersType>(request);
+    const parseHeaders = <HeadersT = ReqT["headers"]>() =>
+      parseRequestHeaders<HeadersT>(request);
 
-    const getBody = async <BodyType = ReqT["body"]>() => {
-      return await getParsedBody<BodyType>(request);
+    const getBody = async <BodyT = ReqT["body"]>() => {
+      return await getParsedBody<BodyT>(request);
     };
 
     return onRequest({
@@ -76,19 +76,19 @@ export const requestHandler = async <
 export function createRoute<
   ReqT extends RouteReqT = RouteReqT,
   ResT extends ResBodyT = ResBodyT,
-  MiddlewareDataCtx extends object = {}
+  MiddlewareCtx extends object = {}
 >({
   middlewares,
   options = {},
   routePath,
   routes,
-}: CreateRouteArgs<MiddlewareDataCtx>) {
+}: CreateRouteArgs<MiddlewareCtx>) {
   const { errorMessage, onError } = options;
 
-  const onRequest: OnRequestType<ReqT, ResT> = (
-    handler: OnRequestHandler<ReqT, ResT>
+  const onRequest: OnRequestT<ReqT, ResT> = (
+    handler: ReqHandler<ReqT, ResT>
   ) => {
-    routes[routePath] = composeMiddlewares<MiddlewareDataCtx>(
+    routes[routePath] = composeMiddlewares<MiddlewareCtx>(
       middlewares,
       async (request: Request) =>
         requestHandler({
@@ -101,6 +101,6 @@ export function createRoute<
   };
 
   return {
-    onRequest,
+    onReq: onRequest,
   };
 }

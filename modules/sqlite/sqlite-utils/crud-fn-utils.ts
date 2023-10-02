@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { SchemaType, SchemaTypeInference } from "mod/types";
+import { SchemaT, SchemaTInference } from "mod/types";
 import {
     deleteQueryString,
     insertQueryString,
@@ -7,11 +7,11 @@ import {
     updateQueryString,
 } from "./crud-string-utils";
 
-export function createItem<Schema extends SchemaType>(
+export function createItem<Schema extends SchemaT>(
   db: Database,
   tableName: string,
   log: (msg: any) => void,
-  item: SchemaTypeInference<Schema>
+  item: SchemaTInference<Schema>
 ) {
   const query = insertQueryString(tableName, item);
   const valuesArray = Object.values(item);
@@ -20,7 +20,7 @@ export function createItem<Schema extends SchemaType>(
   return [];
 }
 
-export function readItems<Schema extends SchemaType>(
+export function readItems<Schema extends SchemaT>(
   db: Database,
   tableName: string,
   log: (msg: any) => void
@@ -31,7 +31,7 @@ export function readItems<Schema extends SchemaType>(
   return data;
 }
 
-export function updateItem<Schema extends SchemaType>(
+export function updateItem<Schema extends SchemaT>(
   db: Database,
   tableName: string,
   log: (msg: any) => void,

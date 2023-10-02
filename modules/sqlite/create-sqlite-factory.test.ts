@@ -1,11 +1,11 @@
 import Database from "bun:sqlite";
 import { beforeEach, describe, expect, test } from "bun:test";
-import { SchemaType } from "mod/types";
+import { SchemaT } from "mod/types";
 import { createSqliteFactory } from "./create-sqlite-factory";
 
 let db = new Database(":memory:");
 
-const noteSchema: SchemaType = {
+const noteSchema: SchemaT = {
   id: "string",
   text: "string",
 };

@@ -1,8 +1,8 @@
-export function parseQueryParams<ParamsType extends object = {}>(
+export function parseQueryParams<ParamsT extends object = {}>(
   request: Request
-): ParamsType {
+): ParamsT {
   const url = new URL(request.url);
-  const params: ParamsType = {} as ParamsType;
+  const params: ParamsT = {} as ParamsT;
 
   url.searchParams.forEach((value, key) => {
     // @ts-ignore
@@ -12,10 +12,10 @@ export function parseQueryParams<ParamsType extends object = {}>(
   return params;
 }
 
-export function parseRequestHeaders<HeadersType>(
+export function parseRequestHeaders<HeadersT>(
   request: Request
-): HeadersType {
-  return request.headers.toJSON() as unknown as HeadersType;
+): HeadersT {
+  return request.headers.toJSON() as unknown as HeadersT;
 }
 
 export type JSONResType = <JSONBodyGeneric extends object>(

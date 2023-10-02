@@ -1,11 +1,9 @@
 import { ValidationResult } from "../types";
 
-// errorUtils.ts
-
-export type ErrorType = "ValidationError" | "APIError" | "JavaScriptError";
+export type ErrorT = "ValidationError" | "APIError" | "JavaScriptError";
 
 export type CustomError = {
-  type: ErrorType;
+  type: ErrorT;
   message: string;
 };
 
@@ -15,7 +13,7 @@ export const apiErrorMap = {
   JavaScriptError: "JavaScript Error",
 };
 
-function mapBuiltInErrorType(error: Error): ErrorType {
+function mapBuiltInErrorType(error: Error): ErrorT {
   if (error instanceof TypeError) {
     return "JavaScriptError";
   } else if (error instanceof ReferenceError) {
@@ -27,7 +25,7 @@ function mapBuiltInErrorType(error: Error): ErrorType {
   }
 }
 
-export const getErrorType = (error: Error | CustomError): ErrorType => {
+export const getErrorType = (error: Error | CustomError): ErrorT => {
   return "type" in error ? error.type : mapBuiltInErrorType(error);
 };
 
@@ -50,7 +48,9 @@ export function handleError(
   }
 }
 
-export function createValidatorFactory<Schema extends Record<string, any>>(schema: Schema) {
+export function createValidatorFactory<Schema extends Record<string, any>>(
+  schema: Schema
+) {
   type SchemaKeys = keyof Schema;
   function validateItem(item: any): Schema {
     if (typeof item !== "object" || item === null) {

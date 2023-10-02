@@ -2,14 +2,14 @@ import { createServerCookieFactory } from "../cookies";
 import { CookieOptions } from "../cookies/server-side-cookie-factory";
 import { Middleware } from "../utils/http-types";
 
-export type CookieContext = {
+export type CookieCtx = {
   getCookie: (name: string) => string | undefined;
   checkCookie: (name: string) => boolean;
   setCookie: (name: string, value: string, options?: CookieOptions) => void;
   deleteCookie: (name: string) => void;
 };
 
-export const createCookieMiddleware = (): Middleware<CookieContext> => {
+export const createCookieMiddleware = (): Middleware<CookieCtx> => {
   const cookieFactory = createServerCookieFactory();
 
   return async ({ request, next, context }) => {

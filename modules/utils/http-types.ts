@@ -48,14 +48,14 @@ export type ResBodyT =
 //   // future stuff
 // }
 // for example we could create a middleware and react plugin that pass along state on each request
-export type Middleware<TContext extends object = object> = ({
+export type Middleware<ContextT extends object = object> = ({
   request,
   next,
   context,
 }: {
   request: Request;
-  next: MiddlewareNext<TContext>;
-  context?: TContext;
+  next: MiddlewareNext<ContextT>;
+  context?: ContextT;
 }) => Response | Promise<Response>;
 
 export type MiddlewareNext<TContext extends object = object> = (
@@ -89,7 +89,7 @@ export type CORSOptions = {
   headers?: CommonHttpHeaders[];
 };
 
-export type CreateServerFactory = {
+export type ServerFactoryParams = {
   wsPaths?: string[];
   enableBodyParser?: boolean;
   cors?: CORSOptions;
@@ -103,20 +103,20 @@ export type CreateRouteGeneric<
   ResT extends ResBodyT
 > = {
   request: Request;
-  getBody: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
-  parseQueryParams: <ParamsType>() => ParamsType;
-  parseHeaders: <HeadersType>() => HeadersType;
-  jsonRes: <JSONBodyGeneric extends object>(
-    body: JSONBodyGeneric,
+  getBody: <BodyT extends ReqT["body"]>() => Promise<BodyT>;
+  parseQueryParams: <ParamsT>() => ParamsT;
+  parseHeaders: <HeadersT>() => HeadersT;
+  jsonRes: <JSONBodyT extends object>(
+    body: JSONBodyT,
     options?: ResponseInit
-  ) => Response;
+  ) => Response | Promise<Response>;
   htmlRes: (body: string, options?: ResponseInit) => Response;
 };
 
-export type OnRequestHandler<ReqT extends RouteReqT, ResT extends ResBodyT> = (
+export type ReqHandler<ReqT extends RouteReqT, ResT extends ResBodyT> = (
   args: CreateRouteGeneric<ReqT, ResT>
 ) => Promise<Response>;
 
-export type OnRequestType<ReqT extends RouteReqT, ResT extends ResBodyT> = (
-  handler: OnRequestHandler<ReqT, ResT>
+export type OnRequestT<ReqT extends RouteReqT, ResT extends ResBodyT> = (
+  handler: ReqHandler<ReqT, ResT>
 ) => void;

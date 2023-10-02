@@ -8,7 +8,7 @@ import { bodyParser } from "./body-parser-middleware";
 import { checkFileSizeMiddleware } from "./check-file-size-middleware";
 import { createCorsMiddleware } from "./create-cors-middleware";
 
-export function generateMiddlewares<MiddlewareDataCtx extends object = {}>({
+export function generateMiddlewares<MiddlewareCtx extends object = {}>({
   cors,
   enableBodyParser,
   maxFileSize,
@@ -16,8 +16,8 @@ export function generateMiddlewares<MiddlewareDataCtx extends object = {}>({
   cors?: CORSOptions;
   enableBodyParser?: boolean;
   maxFileSize?: number;
-}): Middleware<MiddlewareDataCtx>[] {
-  let middlewares: Middleware<MiddlewareDataCtx>[] = [];
+}): Middleware<MiddlewareCtx>[] {
+  let middlewares: Middleware<MiddlewareCtx>[] = [];
 
   if (cors) {
     middlewares.push(createCorsMiddleware(cors));

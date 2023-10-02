@@ -1,9 +1,9 @@
 import { TypeMapping } from "mod/types";
-import { ForeignKeysType } from "../create-sqlite-table-factory";
+import { ForeignKeysT } from "../create-sqlite-table-factory";
 
 export function formatForeignKeys<
   Schema extends Record<string, keyof TypeMapping>
->(foreignKeys: ForeignKeysType<Schema> | undefined): string {
+>(foreignKeys: ForeignKeysT<Schema> | undefined): string {
   if (!foreignKeys) return "";
   return foreignKeys
     .map(
