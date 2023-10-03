@@ -53,8 +53,6 @@ export const requestHandler = async <
       getBody,
       parseQueryParams: getQueryParams,
       parseHeaders,
-      jsonRes,
-      htmlRes,
     });
   } catch (error) {
     if (error instanceof Error) {

@@ -39,23 +39,14 @@ export type ResBodyT =
   | object
   | null;
 
-// Give middleware ability to carry state context which cookie middlewares other other middlewares would have access to
-// make it typed of course, maybe change the middleware params to an object like so:
-// {
-//   request: Request;
-//   next: MiddlewareNext;
-//   context: T;
-//   // future stuff
-// }
-// for example we could create a middleware and react plugin that pass along state on each request
-export type Middleware<ContextT extends object = object> = ({
+export type Middleware<TContext extends object = object> = ({
   request,
   next,
   context,
 }: {
   request: Request;
-  next: MiddlewareNext<ContextT>;
-  context?: ContextT;
+  next: MiddlewareNext<TContext>;
+  context?: TContext;
 }) => Response | Promise<Response>;
 
 export type MiddlewareNext<TContext extends object = object> = (
@@ -89,7 +80,7 @@ export type CORSOptions = {
   headers?: CommonHttpHeaders[];
 };
 
-export type ServerFactoryParams = {
+export type CreateServerParams = {
   wsPaths?: string[];
   enableBodyParser?: boolean;
   cors?: CORSOptions;
@@ -103,14 +94,9 @@ export type CreateRouteGeneric<
   ResT extends ResBodyT
 > = {
   request: Request;
-  getBody: <BodyT extends ReqT["body"]>() => Promise<BodyT>;
-  parseQueryParams: <ParamsT>() => ParamsT;
+  getBody: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
+  parseQueryParams: <ParamsType>() => ParamsType;
   parseHeaders: <HeadersT>() => HeadersT;
-  jsonRes: <JSONBodyT extends object>(
-    body: JSONBodyT,
-    options?: ResponseInit
-  ) => Response | Promise<Response>;
-  htmlRes: (body: string, options?: ResponseInit) => Response;
 };
 
 export type ReqHandler<ReqT extends RouteReqT, ResT extends ResBodyT> = (

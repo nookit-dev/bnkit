@@ -12,9 +12,7 @@ export function parseQueryParams<ParamsT extends object = {}>(
   return params;
 }
 
-export function parseRequestHeaders<HeadersT>(
-  request: Request
-): HeadersT {
+export function parseRequestHeaders<HeadersT>(request: Request): HeadersT {
   return request.headers.toJSON() as unknown as HeadersT;
 }
 

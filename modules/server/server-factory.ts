@@ -15,13 +15,12 @@ export type CreateServerFactoryRoute<
   RouteKeys extends keyof ServerRouteMap = keyof ServerRouteMap,
   MiddlewareCtx extends object = {}
 > = {
-  routePath: RouteKeys;
   middlewares?: Middleware<MiddlewareCtx>[];
   options?: RouteOptions;
   routes?: ServerRouteMap;
 };
 
-export function createServerFactory<MiddlewareCtx extends object = {}>(
+export function createServerFactory(
   { wsPaths, enableBodyParser, cors, maxFileSize }: ServerFactoryParams = {
     wsPaths: [],
     enableBodyParser: true,
@@ -31,23 +30,28 @@ export function createServerFactory<MiddlewareCtx extends object = {}>(
   let server: Server;
 
   // cors must come first in the middleware
-  let middlewares: Middleware<MiddlewareCtx>[] = generateMiddlewares({
+  let middlewares = generateMiddlewares({
     cors,
     enableBodyParser,
     maxFileSize,
   });
 
-  const createServerRoute = ({
-    routePath,
-    options = {},
-    middlewares: routeMiddlewares = middlewares,
-    routes: routeMap = routes,
-  }: // }: CreateServerFactoryRoute<typeof routes, keyof typeof routes, CookieContext >) => {
-  CreateServerFactoryRoute<
-    typeof routes,
-    keyof typeof routes,
-    MiddlewareCtx
-  >) => {
+  type MiddlewareCtx = typeof middlewares extends Middleware<infer Ctx>[]
+    ? Ctx
+    : never;
+
+  const createServerRoute = (
+    routePath: keyof typeof routes,
+    {
+      options = {},
+      middlewares: routeMiddlewares = middlewares,
+      routes: routeMap = routes,
+    }: CreateServerFactoryRoute<
+      typeof routes,
+      keyof typeof routes,
+      MiddlewareCtx
+    >
+  ) => {
     return createRoute({
       routePath: String(routePath),
       options,
@@ -75,9 +79,12 @@ export function createServerFactory<MiddlewareCtx extends object = {}>(
     return server;
   };
 
+  const getRoutes = () => routes;
+
   return {
     middle,
     route: createServerRoute,
     start,
+    getRoutes,
   };
 }
