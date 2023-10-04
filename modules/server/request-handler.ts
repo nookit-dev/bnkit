@@ -31,8 +31,17 @@ export function processRequest({
       return new Response("404: Not Found", { status: 404 });
     }
   } catch (error) {
+    if (error instanceof Error) {
+      return handleRequestError(
+        error,
+        "Internal Server Error",
+        undefined,
+        request
+      );
+    }
+
     return handleRequestError(
-      error,
+      new Error("Unknown error"),
       "Internal Server Error",
       undefined,
       request

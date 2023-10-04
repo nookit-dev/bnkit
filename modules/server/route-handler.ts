@@ -3,14 +3,13 @@ import {
   Middleware,
   OnRequestT,
   ReqHandler,
-  ResBodyT,
   RouteMap,
   RouteOptions,
   RouteReqT,
 } from "../utils/http-types";
 import { handleRequestError, onErrorHandler } from "./error-handler";
 import { composeMiddlewares } from "./middleware-handlers";
-import { htmlRes, jsonRes, parseRequestHeaders } from "./request-helpers";
+import { parseRequestHeaders } from "./request-helpers";
 
 export type CreateRouteArgs<MiddlewareCtx extends object = {}> = {
   routePath: string;
@@ -21,38 +20,38 @@ export type CreateRouteArgs<MiddlewareCtx extends object = {}> = {
 
 const defaultErrorMessage = "Internal Server Error";
 
-export const requestHandler = async <
-  ReqT extends RouteReqT = RouteReqT,
-  ResT extends ResBodyT = ResBodyT
->({
+export const composeRequest = async <RouteReq extends RouteReqT = RouteReqT>({
   request,
   onRequest,
   errorMessage,
   onError,
+  response,
 }: {
   request: Request;
-  onRequest: ReqHandler<ReqT, ResT>;
+  onRequest: ReqHandler<RouteReq>;
   errorMessage?: string;
   onError?: onErrorHandler;
+  response: Response;
 }) => {
   try {
-    const getQueryParams = <ParamsT = ReqT["params"]>() => {
+    const parseQueryParams = <ParamsT = RouteReq["params"]>() => {
       const url = new URL(request.url);
       return url.searchParams as unknown as ParamsT;
     };
 
-    const parseHeaders = <HeadersT = ReqT["headers"]>() =>
+    const parseHeaders = <HeadersT = RouteReq["headers"]>() =>
       parseRequestHeaders<HeadersT>(request);
 
-    const getBody = async <BodyT = ReqT["body"]>() => {
+    const parseBodyJson = async <BodyT = RouteReq["body"]>() => {
       return await getParsedBody<BodyT>(request);
     };
 
     return onRequest({
       request,
-      getBody,
-      parseQueryParams: getQueryParams,
+      parseBodyJson,
+      parseQueryParams,
       parseHeaders,
+      response,
     });
   } catch (error) {
     if (error instanceof Error) {
@@ -72,8 +71,7 @@ export const requestHandler = async <
 };
 
 export function createRoute<
-  ReqT extends RouteReqT = RouteReqT,
-  ResT extends ResBodyT = ResBodyT,
+  ReqT extends RouteReqT,
   MiddlewareCtx extends object = {}
 >({
   middlewares,
@@ -83,18 +81,20 @@ export function createRoute<
 }: CreateRouteArgs<MiddlewareCtx>) {
   const { errorMessage, onError } = options;
 
-  const onRequest: OnRequestT<ReqT, ResT> = (
-    handler: ReqHandler<ReqT, ResT>
-  ) => {
+  const onRequest: OnRequestT<ReqT> = (handler: ReqHandler<ReqT>) => {
+    const response = new Response();
     routes[routePath] = composeMiddlewares<MiddlewareCtx>(
       middlewares,
-      async (request: Request) =>
-        requestHandler({
+      async (request: Request) => {
+        return composeRequest<RouteReqT>({
           request,
           onRequest: handler,
           errorMessage,
           onError,
-        })
+          response,
+        });
+      },
+      response
     );
   };
 

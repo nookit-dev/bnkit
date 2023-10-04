@@ -1,9 +1,4 @@
-import {
-  CORSOptions,
-  Middleware,
-  MiddlewareNext,
-  RouteHandler,
-} from "../utils/http-types";
+import { CORSOptions, Middleware, RouteHandler } from "../utils/http-types";
 import { bodyParser } from "./body-parser-middleware";
 import { checkFileSizeMiddleware } from "./check-file-size-middleware";
 import { createCorsMiddleware } from "./create-cors-middleware";
@@ -32,38 +27,29 @@ export function generateMiddlewares<MiddlewareCtx extends object = {}>({
   return middlewares;
 }
 
-export function composeMiddlewares<TContext extends object = {}>(
-  middlewares: Middleware<TContext>[],
-  handler: RouteHandler
+export function composeMiddlewares<CtxT extends object = {}>(
+  middlewares: Middleware<CtxT>[],
+  handler: RouteHandler,
+  response: Response
 ): RouteHandler {
   return (request: Request) => {
-    const invokeNext: MiddlewareNext<TContext> = (context) => {
-      return handler(request);
+    let context: CtxT = {} as CtxT; // Default context
+
+    const invokeNext = async (index: number): Promise<Response> => {
+      if (index >= middlewares.length) {
+        return handler(request);
+      }
+      const middleware = middlewares[index];
+      return middleware({
+        request,
+        context,
+        response,
+        next: () => {
+          return invokeNext(index + 1);
+        },
+      });
     };
 
-    const finalMiddleware = middlewares.reduceRight<Middleware<TContext>>(
-      (nextMiddleware, currentMiddleware) => {
-        return ({ request, context }) => {
-          return currentMiddleware({
-            request,
-            context,
-            next: (updatedContext = context) => {
-              return nextMiddleware({
-                request,
-                context: updatedContext,
-                next: invokeNext,
-              });
-            },
-          });
-        };
-      },
-      ({ request, context }) => invokeNext(context)
-    );
-
-    return finalMiddleware({
-      request,
-      context: undefined,
-      next: invokeNext,
-    });
+    return invokeNext(0); // Start with the first middleware
   };
 }
