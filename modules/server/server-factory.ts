@@ -1,6 +1,6 @@
 import { Server } from "bun";
 import {
-  CreateServerFactory,
+  CORSOptions,
   Middleware,
   RouteMap,
   RouteOptions,
@@ -10,19 +10,23 @@ import { processRequest } from "./request-handler";
 import { createRoute } from "./route-handler";
 import { StartServerOptions, startServer } from "./start-server";
 
-export type CreateServerFactoryRoute<
-  ServerRouteMap extends RouteMap,
-  RouteKeys extends keyof ServerRouteMap = keyof ServerRouteMap,
-  MiddlewareDataCtx extends object = {}
-> = {
-  routePath: RouteKeys;
-  middlewares?: Middleware<MiddlewareDataCtx>[];
+export type CreateServerFactoryRoute = {
+  middlewares?: Middleware[];
   options?: RouteOptions;
-  routes?: ServerRouteMap;
+  bypassMiddlewares?: boolean;
 };
 
-export function createServerFactory<MiddlewareDataCtx extends object = {}>(
-  { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerFactory = {
+export type CreateServerParams = {
+  wsPaths?: string[];
+  enableBodyParser?: boolean;
+  cors?: CORSOptions;
+  // max file size in bytes, if passed in then the check file middleware will be passed in
+  // to validate file sizes
+  maxFileSize?: number;
+};
+
+export function createServerFactory(
+  { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerParams = {
     wsPaths: [],
     enableBodyParser: true,
   }
@@ -31,32 +35,33 @@ export function createServerFactory<MiddlewareDataCtx extends object = {}>(
   let server: Server;
 
   // cors must come first in the middleware
-  let middlewares: Middleware<MiddlewareDataCtx>[] = generateMiddlewares({
+  let middlewares = generateMiddlewares({
     cors,
     enableBodyParser,
     maxFileSize,
   });
 
-  const createServerRoute = ({
-    routePath,
-    options = {},
-    middlewares: routeMiddlewares = middlewares,
-    routes: routeMap = routes,
-  }: // }: CreateServerFactoryRoute<typeof routes, keyof typeof routes, CookieContext >) => {
-  CreateServerFactoryRoute<
-    typeof routes,
-    keyof typeof routes,
-    MiddlewareDataCtx
-  >) => {
+  const createServerRoute = (
+    routePath: string,
+    {
+      options = {},
+      middlewares: routeMiddlewares = [],
+      bypassMiddlewares: bypassServerMiddlewares = false,
+    }: CreateServerFactoryRoute
+  ) => {
+    if (!bypassServerMiddlewares) {
+      routeMiddlewares = [...middlewares, ...routeMiddlewares];
+    }
+
     return createRoute({
-      routePath: String(routePath),
+      routePath: routePath,
       options,
       middlewares: routeMiddlewares,
-      routes: routeMap,
+      routes: routes,
     });
   };
 
-  const middle = (middleware: Middleware<MiddlewareDataCtx>) => {
+  const middle = (middleware: Middleware) => {
     middlewares.push(middleware);
   };
 

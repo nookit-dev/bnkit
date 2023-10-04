@@ -1,60 +1,57 @@
 import { getParsedBody } from ".";
 import {
   Middleware,
-  OnRequestHandler,
-  OnRequestType,
-  ResBodyT,
+  OnRequestT,
+  ReqHandler,
   RouteMap,
   RouteOptions,
   RouteReqT,
 } from "../utils/http-types";
 import { handleRequestError, onErrorHandler } from "./error-handler";
 import { composeMiddlewares } from "./middleware-handlers";
-import { htmlRes, jsonRes, parseRequestHeaders } from "./request-helpers";
+import { parseRequestHeaders } from "./request-helpers";
 
-export type CreateRouteArgs<MiddlewareDataCtx extends object = {}> = {
+export type CreateRouteArgs<MiddlewareCtx extends object = {}> = {
   routePath: string;
-  middlewares: Middleware<MiddlewareDataCtx>[];
+  middlewares: Middleware<MiddlewareCtx>[];
   options: RouteOptions;
   routes: RouteMap;
 };
 
 const defaultErrorMessage = "Internal Server Error";
 
-export const requestHandler = async <
-  ReqT extends RouteReqT = RouteReqT,
-  ResT extends ResBodyT = ResBodyT
->({
+export const composeRequest = async <RouteReq extends RouteReqT = RouteReqT>({
   request,
   onRequest,
   errorMessage,
   onError,
+  response,
 }: {
   request: Request;
-  onRequest: OnRequestHandler<ReqT, ResT>;
+  onRequest: ReqHandler<RouteReq>;
   errorMessage?: string;
   onError?: onErrorHandler;
+  response: Response;
 }) => {
   try {
-    const getQueryParams = <ParamsType = ReqT["params"]>() => {
+    const parseQueryParams = <ParamsT = RouteReq["params"]>() => {
       const url = new URL(request.url);
-      return url.searchParams as unknown as ParamsType;
+      return url.searchParams as unknown as ParamsT;
     };
 
-    const parseHeaders = <HeadersType = ReqT["headers"]>() =>
-      parseRequestHeaders<HeadersType>(request);
+    const parseHeaders = <HeadersT = RouteReq["headers"]>() =>
+      parseRequestHeaders<HeadersT>(request);
 
-    const getBody = async <BodyType = ReqT["body"]>() => {
-      return await getParsedBody<BodyType>(request);
+    const parseBodyJson = async <BodyT = RouteReq["body"]>() => {
+      return await getParsedBody<BodyT>(request);
     };
 
     return onRequest({
       request,
-      getBody,
-      parseQueryParams: getQueryParams,
+      parseBodyJson,
+      parseQueryParams,
       parseHeaders,
-      jsonRes,
-      htmlRes,
+      response,
     });
   } catch (error) {
     if (error instanceof Error) {
@@ -74,33 +71,34 @@ export const requestHandler = async <
 };
 
 export function createRoute<
-  ReqT extends RouteReqT = RouteReqT,
-  ResT extends ResBodyT = ResBodyT,
-  MiddlewareDataCtx extends object = {}
+  ReqT extends RouteReqT,
+  MiddlewareCtx extends object = {}
 >({
   middlewares,
   options = {},
   routePath,
   routes,
-}: CreateRouteArgs<MiddlewareDataCtx>) {
+}: CreateRouteArgs<MiddlewareCtx>) {
   const { errorMessage, onError } = options;
 
-  const onRequest: OnRequestType<ReqT, ResT> = (
-    handler: OnRequestHandler<ReqT, ResT>
-  ) => {
-    routes[routePath] = composeMiddlewares<MiddlewareDataCtx>(
+  const onRequest: OnRequestT<ReqT> = (handler: ReqHandler<ReqT>) => {
+    const response = new Response();
+    routes[routePath] = composeMiddlewares<MiddlewareCtx>(
       middlewares,
-      async (request: Request) =>
-        requestHandler({
+      async (request: Request) => {
+        return composeRequest<RouteReqT>({
           request,
           onRequest: handler,
           errorMessage,
           onError,
-        })
+          response,
+        });
+      },
+      response
     );
   };
 
   return {
-    onRequest,
+    onReq: onRequest,
   };
 }

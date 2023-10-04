@@ -178,7 +178,7 @@ export type CLIOptions = {
   // };
 };
 
-export function createCliFactory<DataType, E extends BaseError<DataType>>({
+export function createCliFactory<DataT, E extends BaseError<DataT>>({
   inputPrompt = "Please input your command",
   actionsConfig = {},
 

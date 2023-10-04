@@ -1,3 +1,5 @@
+import { PartialRecord } from "mod/type-utils";
+
 export type HttpMethod =
   | "GET"
   | "POST"
@@ -22,65 +24,32 @@ export type CommonHttpHeaders =
   | "X-HTTP-Method-Override"
   | string; // This allows for custom headers in addition to the common ones.
 
-type PartialRecord<K extends keyof any, T> = {
-  [P in K]?: T;
-};
-
 export type UToolHTTPHeaders = PartialRecord<CommonHttpHeaders, string>;
 
 export type RouteHandler = (request: Request) => Response | Promise<Response>;
 
-export type ResBodyT =
-  | ReadableStream
-  | BlobPart
-  | BlobPart[]
-  | FormData
-  | URLSearchParams
-  | object
-  | null;
+export type MiddlwareParams<CtxT extends object = object> = {
+  request: Request;
+  next?: Middleware<CtxT>;
+  context?: CtxT;
+  response: Response;
+};
 
-// Give middleware ability to carry state context which cookie middlewares other other middlewares would have access to
-// make it typed of course, maybe change the middleware params to an object like so:
-// {
-//   request: Request;
-//   next: MiddlewareNext;
-//   context: T;
-//   // future stuff
-// }
-// for example we could create a middleware and react plugin that pass along state on each request
-export type Middleware<TContext extends object = object> = ({
+export type Middleware<CtxT extends object = object> = ({
   request,
   next,
   context,
-}: {
-  request: Request;
-  next: MiddlewareNext<TContext>;
-  context?: TContext;
-}) => Response | Promise<Response>;
+  response,
+}: MiddlwareParams<CtxT>) => Response | Promise<Response>;
 
-export type MiddlewareNext<TContext extends object = object> = (
-  context?: TContext
-) => Response | Promise<Response>;
-
-export interface RouteMap {
-  [route: string]: RouteHandler;
-}
-
-export interface RouteOptions {
-  errorMessage?: string;
-  onError?: (error: Error, request: Request) => Response | Promise<Response>;
-}
+export type RouteMap = Record<string, RouteHandler>;
 
 export type ErrorHandler = (error: any, request: Request) => Response;
 
 export type RouteReqT = {
-  body?: any;
+  body?: Request["body"];
   params?: object;
   headers?: object;
-};
-
-export type JSONRequest = RouteReqT & {
-  body: object;
 };
 
 export type CORSOptions = {
@@ -89,34 +58,23 @@ export type CORSOptions = {
   headers?: CommonHttpHeaders[];
 };
 
-export type CreateServerFactory = {
-  wsPaths?: string[];
-  enableBodyParser?: boolean;
-  cors?: CORSOptions;
-  // max file size in bytes, if passed in then the check file middleware will be passed in
-  // to validate file sizes
-  maxFileSize?: number;
-};
-
-export type CreateRouteGeneric<
-  ReqT extends RouteReqT,
-  ResT extends ResBodyT
-> = {
+export type CreateRouteGeneric<ReqT extends RouteReqT> = {
   request: Request;
-  getBody: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
+  parseBodyJson: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
   parseQueryParams: <ParamsType>() => ParamsType;
-  parseHeaders: <HeadersType>() => HeadersType;
-  jsonRes: <JSONBodyGeneric extends object>(
-    body: JSONBodyGeneric,
-    options?: ResponseInit
-  ) => Response;
-  htmlRes: (body: string, options?: ResponseInit) => Response;
+  parseHeaders: <HeadersT>() => HeadersT;
+  response: Response;
 };
 
-export type OnRequestHandler<ReqT extends RouteReqT, ResT extends ResBodyT> = (
-  args: CreateRouteGeneric<ReqT, ResT>
+export type ReqHandler<ReqT extends RouteReqT> = (
+  args: CreateRouteGeneric<ReqT>
 ) => Promise<Response>;
 
-export type OnRequestType<ReqT extends RouteReqT, ResT extends ResBodyT> = (
-  handler: OnRequestHandler<ReqT, ResT>
+export type OnRequestT<ReqT extends RouteReqT> = (
+  handler: ReqHandler<ReqT>
 ) => void;
+
+export interface RouteOptions {
+  errorMessage?: string;
+  onError?: (error: Error, request: Request) => Response | Promise<Response>;
+}

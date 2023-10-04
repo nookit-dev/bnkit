@@ -1,14 +1,13 @@
-import { MiddlewareNext } from "../utils/http-types";
+import { MiddlwareParams } from "../utils/http-types";
 
 const parsedBodies = new WeakMap<Request, any>();
 
-export const bodyParser = async <MiddlewareDataCtx extends object = {}>({
+export const bodyParser = async <MiddlewareCtx extends object = {}>({
   request,
   next,
-}: {
-  request: Request;
-  next: MiddlewareNext<MiddlewareDataCtx>;
-}) => {
+  context,
+  response,
+}: MiddlwareParams<MiddlewareCtx>) => {
   const contentType = request.headers.get("Content-Type");
 
   if (contentType && contentType.includes("application/json")) {
@@ -25,7 +24,9 @@ export const bodyParser = async <MiddlewareDataCtx extends object = {}>({
     parsedBodies.set(request, await request.text());
   }
 
-  return next();
+  if (!next) return response;
+
+  return next({ request, context, response });
 };
 
 export function getParsedBody<T>(request: Request): T {

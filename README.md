@@ -37,7 +37,7 @@ import { createFetchFactory } from '@u-tools/modules/fetch-factory'/core
 
 ```typescript
 //  if you know what the data looks like you can pass it in as a generic here.
-const fetcher = createFetchFactory<DataType>()
+const fetcher = createFetchFactory<DataT>()
 
 
 // however you can also pass it in on the request itsefl

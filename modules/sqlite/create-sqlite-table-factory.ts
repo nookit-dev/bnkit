@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { SchemaType, SchemaTypeInference } from "../types";
+import { SchemaT, SchemaTInference } from "../types";
 import { createTableQuery } from "./sqlite-utils/create-table-query-string";
 import {
   createItem,
@@ -8,20 +8,20 @@ import {
   updateItem,
 } from "./sqlite-utils/crud-fn-utils";
 
-export type ForeignKeysType<Schema> =
+export type ForeignKeysT<Schema> =
   | { column: keyof Schema; references: string }[]
   | null;
 
-export type CreateSqliteTableFactoryParams<Schema extends SchemaType> = {
+export type CreateSqliteTableFactoryParams<Schema extends SchemaT> = {
   db: Database;
   tableName: string;
   schema: Schema;
 };
 
-export type CreateSqliteTableOptions<Schema extends SchemaType> = {
+export type CreateSqliteTableOptions<Schema extends SchemaT> = {
   debug?: boolean;
   enableForeignKeys?: boolean;
-  foreignKeys?: ForeignKeysType<Schema>;
+  foreignKeys?: ForeignKeysT<Schema>;
 };
 
 // Logger utility
@@ -33,7 +33,7 @@ function logger(debug: boolean) {
   };
 }
 
-export function createSqliteTableFactory<Schema extends SchemaType>(
+export function createSqliteTableFactory<Schema extends SchemaT>(
   params: CreateSqliteTableFactoryParams<Schema>,
   options: CreateSqliteTableOptions<Schema> = {}
 ) {
@@ -45,7 +45,7 @@ export function createSqliteTableFactory<Schema extends SchemaType>(
   db.query(createTableQuery({ tableName, schema, foreignKeys, debug })).run();
 
   // Pass necessary context to external CRUD functions
-  function create(item: SchemaTypeInference<Schema>) {
+  function create(item: SchemaTInference<Schema>) {
     return createItem(db, tableName, log, item);
   }
 

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-export type UseClipboardReturnType = {
+export type UseClipboardRes = {
   clipboardData: string | null;
   setClipboard: (data: string) => Promise<void>;
   getClipboard: () => Promise<void>;
@@ -9,7 +9,7 @@ export type UseClipboardReturnType = {
 export function useClipboard(
   externalValue?: string,
   updater?: (value: string) => void
-): UseClipboardReturnType {
+): UseClipboardRes {
   const [internalClipboardData, setInternalClipboardData] = useState<
     string | null
   >(externalValue || null);

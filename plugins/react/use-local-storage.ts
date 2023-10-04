@@ -1,36 +1,36 @@
 import { Dispatch, useEffect, useState } from "react";
 
-export type LocalStorageConfig<DataType> = {
+export type LocalStoreConfig<DataT> = {
   key: string; // LocalStorage key
-  initialState: DataType; // Initial state if there's nothing in LocalStorage
+  initialState: DataT; // Initial state if there's nothing in LocalStorage
 };
 
-export type LocalStorageReturnType<DataType> = [
-  DataType,
-  React.Dispatch<React.SetStateAction<DataType>>
+export type LocalStoreReturnT<DataT> = [
+  DataT,
+  React.Dispatch<React.SetStateAction<DataT>>
 ];
 
 export type GetLSKeyOptions = {
   fallbackToInitialValOnError?: boolean;
 };
 
-export type GetLSKeyFn<DataType> = (
+export type GetLSKeyFn<DataT> = (
   options: GetLSKeyOptions,
-  onData?: (data: DataType) => void
-) => DataType | null;
-export type SetLSKeyFn<DataType> = (
-  val: DataType | ((prevState: DataType) => DataType) 
+  onData?: (data: DataT) => void
+) => DataT | null;
+export type SetLSKeyFn<DataT> = (
+  val: DataT | ((prevState: DataT) => DataT) 
 ) => void;
-export type SyncLSKeyFn<DataType> = (
+export type SyncLSKeyFn<DataT> = (
   fallbackToInitialVal: boolean
-) => ReturnType<GetLSKeyFn<DataType>>;
+) => ReturnType<GetLSKeyFn<DataT>>;
 
-export type UseLocalStorageReturn<DataType> = {
-  get: GetLSKeyFn<DataType>;
-  set: SetLSKeyFn<DataType>;
-  state: DataType;
-  setState: Dispatch<React.SetStateAction<DataType>>;
-  sync: SyncLSKeyFn<DataType>;
+export type UseLocalStorageReturn<DataT> = {
+  get: GetLSKeyFn<DataT>;
+  set: SetLSKeyFn<DataT>;
+  state: DataT;
+  setState: Dispatch<React.SetStateAction<DataT>>;
+  sync: SyncLSKeyFn<DataT>;
   startSyncInterval: (syncConfig: SyncIntervalConfig) => void;
   stopSyncInterval: (syncConfig: SyncIntervalConfig) => void;
 };
@@ -39,18 +39,18 @@ export type SyncIntervalConfig = {
   interval: number; // Time interval in milliseconds
 };
 
-export function useLocalStorage<DataType>(
-  config: LocalStorageConfig<DataType>
-): UseLocalStorageReturn<DataType> {
+export function useLocalStorage<DataT>(
+  config: LocalStoreConfig<DataT>
+): UseLocalStorageReturn<DataT> {
   // Initial state from local storage or fallback to initialState
-  const getLSKey: GetLSKeyFn<DataType> = (options, onData) => {
+  const getLSKey: GetLSKeyFn<DataT> = (options, onData) => {
     const { fallbackToInitialValOnError: fallbackToInitialValOnErrror = true } =
       options;
 
     const storedData = localStorage.getItem(config.key);
 
     try {
-      const parsedData = JSON.parse(storedData || "") as DataType;
+      const parsedData = JSON.parse(storedData || "") as DataT;
 
       if (onData) {
         onData(parsedData);
@@ -75,7 +75,7 @@ export function useLocalStorage<DataType>(
   };
 
   const getInitState = () => {
-    let data: DataType | null = null;
+    let data: DataT | null = null;
 
     getLSKey(
       {
@@ -89,7 +89,7 @@ export function useLocalStorage<DataType>(
     return data ?? config.initialState;
   };
 
-  const [lsKeyState, setLsKeyState] = useState<DataType>(getInitState());
+  const [lsKeyState, setLsKeyState] = useState<DataT>(getInitState());
   const [syncIntervalId, setSyncIntervalId] = useState<number | null>(null);
 
   const startSyncInterval = (syncConfig: SyncIntervalConfig) => {
@@ -121,7 +121,7 @@ export function useLocalStorage<DataType>(
   // syncs the state to local storage
   const syncLSKeyState = (
     fallbackToInitialVal: boolean = false
-  ): DataType | null => {
+  ): DataT | null => {
     return getLSKey(
       {
         fallbackToInitialValOnError: fallbackToInitialVal,
@@ -132,7 +132,7 @@ export function useLocalStorage<DataType>(
     );
   };
 
-  const setLSKey: SetLSKeyFn<DataType> = (value) => {
+  const setLSKey: SetLSKeyFn<DataT> = (value) => {
     let stringifiedVal = "";
 
     try {

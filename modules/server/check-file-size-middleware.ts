@@ -1,8 +1,8 @@
 import { Middleware } from "../utils/http-types";
 
-export function checkFileSizeMiddleware<MiddlewareDataCtx extends object = {}>(
+export function checkFileSizeMiddleware<MiddlewareCtx extends object = {}>(
   maxSize: number
-): Middleware<MiddlewareDataCtx> {
+): Middleware<MiddlewareCtx> {
   return ({ request, next }) => {
     if (Number(request.headers.get("Content-Length")) > maxSize) {
       return new Response("File too large", { status: 413 });
