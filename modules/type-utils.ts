@@ -16,10 +16,10 @@ export type UnboxArray<T extends Array<any>> = T extends Array<infer U>
   ? U
   : never;
 
-// type that takes an object, an input type and an output type,
-// and returns a type that has the same keys as the input type, but the values are of the output type,
-// for example if you have an object with string values, and you want to transform them to numbers,
-// you can use the transform type to do that
+// type that takes an object type, an input type and an output type,
+// and returns a type that has the same keys as the object type,
+// however if you have string values and you want to transform the values to numbers
+// you can easily do that with this type util, otherwise every other key is left untouched
 export type TransformValues<
   T extends object,
   FindT extends unknown,
