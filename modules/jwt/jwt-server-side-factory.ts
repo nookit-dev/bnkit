@@ -57,7 +57,7 @@ export const jwtServerSideFactory = (factorySecret: string) => {
 
   function validateRefreshToken(token: string): boolean {
     // Check if the token is blacklisted before validating it
-    if (isTokenBlacklisted(token)) {
+    if (isTokenInvalidated(token)) {
       return false;
     }
 
@@ -73,11 +73,11 @@ export const jwtServerSideFactory = (factorySecret: string) => {
     return true;
   }
 
-  function blacklistToken(token: string): void {
+  function invalidateToken(token: string): void {
     tokenBlacklist.push(token);
   }
 
-  function isTokenBlacklisted(token: string): boolean {
+  function isTokenInvalidated(token: string): boolean {
     return tokenBlacklist.includes(token);
   }
 
@@ -108,7 +108,7 @@ export const jwtServerSideFactory = (factorySecret: string) => {
     token: string,
     secret: string = factorySecret
   ): { header: JwtHeader; payload: JwtPayload } {
-    if (isTokenBlacklisted(token)) {
+    if (isTokenInvalidated(token)) {
       throw new Error("This token is blacklisted");
     }
 
@@ -142,6 +142,6 @@ export const jwtServerSideFactory = (factorySecret: string) => {
     verifyJwt,
     generateRefreshToken,
     validateRefreshToken,
-    blacklistToken,
+    blacklistToken: invalidateToken,
   };
 };
