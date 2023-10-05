@@ -32,7 +32,7 @@ bun add @u-tools/core
 Now, you can import U Tools into your module:
 
 ```typescript
-import { createFetchFactory } from '@u-tools/modules/fetch-factory'/core
+import { createFetchFactory } from '@u-tools/modules/fetcher'
 ```
 
 ```typescript
@@ -76,15 +76,39 @@ Remember, with U Tools, your toolkit can grow with your project. Start small, ad
 
 U Tools offers a wide array of utility modules including:
 
-- **Text Processing**: Convert markdown to HTML, handle strings, and more.
-- **CLI Factory**: Handle command-line input, parse arguments, and interact with $$the file system.
-- **Networking**: Create CRUD servers, handle HTTP requests, and work with the OpenAI API.
-- **Data Storage**: Work with SQLite databases and data validation.
-- **Type Utils**: Validate data against a schema and infer data types from objects.
-- **Security Utils**: Generate encryption keys, encrypt and decrypt data, and more.
-- **GPT Utils**: Generate debug prompts using OpenAI's GPT models.
-- **Error Handler and Validation Utils**: Handle and validate errors in a user-friendly way.
-- **Files and Folders Utils**: Work with files and directories, such as retrieving files from a specific directory or saving results to a file.
+Certainly! Here are more details about each of the U Tools modules:
+
+1. CLI: The CLI module aims to provide a simple way to build a basic command-line interface for tasks such as project scaffolding or generating configurations. It helps you handle command-line input, parse arguments, and interact with the file system.
+
+2. Cookie: The Cookie module provides utilities for handling cookies on both the client-side and server-side. It allows you to set, get, and delete cookies, as well as manage cookie options such as expiration and domain.
+
+3. Data Gen: The Data Gen module is a simple data generator that allows you to create mock data for testing purposes. While it may not replace more robust data generation tools, it provides a quick and easy way to generate sample data.
+
+4. Deploy: The Deploy module provides utilities for deployment, with a focus on GitHub Actions integration. It helps you automate the deployment process for your U Tools package.
+
+5. Fetcher: The Fetcher module enhances the standard fetch function provided by Bun. It allows you to configure an entire API and provides a TypeScript interface for easy integration with your project. The Fetcher module helps you make HTTP requests and handles data fetching and updating.
+
+6. Files Folder: The Files Folder module provides various utilities for working with files and folders. It includes functions for searching for files, validating file paths, and creating references to files. This module can be useful for tasks like building an in-browser file manager.
+
+7. Hash: The Hash module provides a simple abstraction to Bun's hashing functions. It allows you to hash data using common hashing algorithms for tasks such as password hashing or data integrity checks.
+
+8. JWT: The JWT module provides utilities for working with JSON Web Tokens. It allows you to encode and decode JWTs and provides features like token invalidation.
+
+9. Logger: The Logger module aims to provide a full-featured logging system for your application. While it is still under development and might be limited in functionality, it can be a useful tool for debugging and error tracking.
+
+10. NPM Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages.
+
+11. Server: The Server module is one of the most complex modules in U Tools. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
+
+12. SQLite: The SQLite module builds on top of Bun's SQLite implementation and provides utilities for working with SQLite databases. It includes functions for instantiating databases, creating type-safe schemas, and performing database operations.
+
+13. State Management: The State Management module provides an interface for building type-safe state managers. It offers an immutable state management approach and includes dispatcher functions for easy data manipulation. The module also provides a WebSocket state manager for syncing data between the client and server.
+
+14. Utils: The Utils module contains various utility functions that can be used across different modules. It includes functions like classy for generating class names, normalizeBytes for converting byte numbers to formatted text, and value checkers for inferring data types.
+
+15. Validation: The Validation module aims to provide a comprehensive suite of validation functions. It includes functions for checking the validity of API data and can be used to ensure data integrity and accuracy.
+
+16. WebRTC: The WebRTC module aims to provide an interface for setting up WebRTC connections between clients. While integration with the server module is planned, the module can currently be used for establishing peer-to-peer connections between clients.
 
 ## Architecture
 
@@ -92,25 +116,15 @@ U Tools is built upon a robust and flexible architecture using factory functions
 
 Our architecture is designed to ensure:
 
-- **Encapsulation**: Factory functions hide the complexities of object creation, providing a clear and understandable interface to consumers. You get the module you need without worrying about the intricacies of its construction.
+- **Encapsulation**: U Tools uses factory functions to simplify object creation. This approach hides the intricate object creation process and provides a user-friendly interface. It enables you to leverage the functionality of the module you need, without the need to understand the finer details of its construction.
 
-- **Flexibility**: Factory functions can return different types of objects based on input parameters. This provides a high degree of flexibility in object creation, ensuring U Tools can easily adapt to your project's requirements.
+- **Adaptability**: Our factory functions are designed to return diverse object types based on input parameters. This level of adaptability ensures that U Tools can be tailored to your project's specific requirements.
 
-- **Code Reuse**: Embracing the principles of functional programming, our factory functions facilitate code reuse and composability. This promotes efficient code management and rapid development across your application.
+- **Code Reusability**: By following the principles of functional programming, U Tools' factory functions ensure efficient code management and accelerate development by enabling code reusability and composability.
 
-- **Object Initialization**: U Tools handles complex object initialization within its factory functions. If a module requires specific properties or a certain state upon creation, U Tools takes care of it.
+- **Object Initialization**: Complex object initialization is handled within the factory functions of U Tools. If a module needs specific properties or a particular state at creation, U Tools manages these requirements.
 
-However, we are fully aware of the potential pitfalls of factory functions:
-
-- **Memory Usage**: We strive to optimize memory usage by managing how and when objects are created, ensuring the efficient operation of your application.
-
-- **Code Readability**: While factory functions can add a layer of complexity, we mitigate this by breaking down complex logic into isolated utility functions, making the code easier to understand and maintain.
-
-- **Debugging and Testing**: We prioritize testability in our architecture. By isolating complex logic into utility functions, we ensure that each piece can be tested independently, making debugging easier and more effective.
-
-- **Prototypal Inheritance**: We acknowledge that simulating traditional class-based inheritance can be challenging in JavaScript. However, we utilize best practices to make this process as intuitive as possible.
-
-By strategically leveraging the power of factory functions and mitigating their disadvantages, U Tools delivers a toolkit that is powerful, easy to use, and efficient, ready to be integrated into any project with ease.
+In addition to these, U Tools primarily utilizes factory functions to insert additional context where required. For instance, in the files folder module, a base path can be provided to ensure all operations relate to a designated directory. In the case of the fetcher - it allows you to provide a TypeSafe interface to the module which can then be utilized to make typesafe fetch requests anywhere in your project. More so, it gives an intellisense of the available functions in that module, improving the user experience and ease of use. While we do make heavy use of factory functions, nearly all functions used within the factory functions can be used directly
 
 Example Projects:
 [U Tools Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-u-tools)

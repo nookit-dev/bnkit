@@ -21,7 +21,7 @@ export {
     createSqliteFactory,
     createTableQuery
 } from "./modules/sqlite";
-export { createValidatorFactory } from "./modules/validation-factory";
+export { createValidatorFactory } from "./modules/validation";
 
 // utility exports
 export { classy } from "./modules/utils/classy";
