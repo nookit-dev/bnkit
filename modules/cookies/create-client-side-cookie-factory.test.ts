@@ -41,7 +41,7 @@ describe("createClientCookieFactory", () => {
   });
 
   test("setCookie sets a cookie", () => {
-    cookieFactory.setCookie("test", "value");
+    cookieFactory.setCookie("value");
     expect(document.cookie).toBe("test=value");
   });
 

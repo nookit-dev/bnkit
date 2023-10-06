@@ -1,3 +1,5 @@
+import { CookieOptions } from "./cookie-types";
+
 declare var document: {
   cookie: any;
 };
@@ -32,4 +34,36 @@ export const retrieveRawCookieValue = (name: string): string | null => {
   }
 
   return null;
+};
+
+export const setCookie = <T>(
+  cookieKey: string,
+  value: T,
+  options: CookieOptions
+) => {
+  let cookieString = `${encodeURIComponent(cookieKey)}=${encodeURIComponent(
+    typeof value === "string" ? value : JSON.stringify(value)
+  )}`;
+
+  if (options.maxAge) {
+    cookieString += `; max-age=${options.maxAge}`;
+  }
+
+  if (options.path) {
+    cookieString += `; path=${options.path}`;
+  }
+
+  if (options.domain) {
+    cookieString += `; domain=${options.domain}`;
+  }
+
+  if (options.secure) {
+    cookieString += `; secure`;
+  }
+
+  if (options.httpOnly) {
+    cookieString += `; httpOnly`;
+  }
+
+  document.cookie = cookieString;
 };

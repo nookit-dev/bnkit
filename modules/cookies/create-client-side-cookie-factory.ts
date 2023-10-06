@@ -1,5 +1,9 @@
 import { CookieOptions } from "./cookie-types";
-import { parseCookieData, retrieveRawCookieValue } from "./cookie-utils";
+import {
+  parseCookieData,
+  retrieveRawCookieValue,
+  setCookie,
+} from "./cookie-utils";
 
 declare var document: {
   cookie: any;
@@ -9,44 +13,20 @@ export function createClientCookieFactory<T = string>(
   cookieKey: string,
   options?: CookieOptions
 ) {
-  const setCookie = (
-    name: string = cookieKey,
+  const handleSetCookie = (
     value: T,
-    setOptions: CookieOptions = options || {}
+    options?: CookieOptions & {
+      cookieKey?: string; // optionally override cookie  key
+    }
   ) => {
-    let cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(
-      typeof value === "string" ? value : JSON.stringify(value)
-    )}`;
-
-    if (setOptions.maxAge) {
-      cookieString += `; max-age=${setOptions.maxAge}`;
-    }
-
-    if (setOptions.path) {
-      cookieString += `; path=${setOptions.path}`;
-    }
-
-    if (setOptions.domain) {
-      cookieString += `; domain=${setOptions.domain}`;
-    }
-
-    if (setOptions.secure) {
-      cookieString += `; secure`;
-    }
-
-    if (setOptions.httpOnly) {
-      cookieString += `; httpOnly`;
-    }
-
-    document.cookie = cookieString;
+    setCookie(cookieKey, value, options || {});
   };
-
   const getRawCookie = (name: string = cookieKey) => {
     return retrieveRawCookieValue(name);
   };
 
   const deleteCookie = (name: string = cookieKey) => {
-    setCookie(name, "" as T, { maxAge: -1 });
+    handleSetCookie("" as T, { maxAge: -1 });
   };
 
   const checkCookie = (name: string = cookieKey) => {
@@ -59,7 +39,7 @@ export function createClientCookieFactory<T = string>(
   };
 
   return {
-    setCookie,
+    setCookie: handleSetCookie,
     deleteCookie,
     checkCookie,
     getParsedCookie,

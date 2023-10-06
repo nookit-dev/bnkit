@@ -2,7 +2,7 @@ import { CookieOptions } from "@u-tools/core/modules/cookies/cookie-types";
 import { createClientCookieFactory } from "@u-tools/core/modules/cookies/create-client-side-cookie-factory";
 import { useEffect, useState } from "react";
 
-function useCookie<T = string>(cookieKey: string, options?: CookieOptions) {
+export function useCookie<T = string>(cookieKey: string, options?: CookieOptions) {
   const cookie = createClientCookieFactory(cookieKey);
 
   const [cookieData, setCookieData] = useState<{ value: T | null }>(() => {
