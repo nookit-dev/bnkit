@@ -18,9 +18,11 @@ export type GetLSKeyFn<DataT> = (
   options: GetLSKeyOptions,
   onData?: (data: DataT) => void
 ) => DataT | null;
+
 export type SetLSKeyFn<DataT> = (
   val: DataT | ((prevState: DataT) => DataT) 
 ) => void;
+
 export type SyncLSKeyFn<DataT> = (
   fallbackToInitialVal: boolean
 ) => ReturnType<GetLSKeyFn<DataT>>;
