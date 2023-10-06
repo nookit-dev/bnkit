@@ -1,73 +1,68 @@
+import { CookieOptions } from "./cookie-types";
+import { parseCookieData, retrieveRawCookieValue } from "./cookie-utils";
+
 declare var document: {
   cookie: any;
 };
 
-export function createClientCookieFactory() {
+export function createClientCookieFactory<T = string>(
+  cookieKey: string,
+  options?: CookieOptions
+) {
   const setCookie = (
-    name: string,
-    value: string,
-    options: CookieOptions = {}
+    name: string = cookieKey,
+    value: T,
+    setOptions: CookieOptions = options || {}
   ) => {
     let cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(
-      value
+      typeof value === "string" ? value : JSON.stringify(value)
     )}`;
 
-    if (options.maxAge) {
-      cookieString += `; max-age=${options.maxAge}`;
+    if (setOptions.maxAge) {
+      cookieString += `; max-age=${setOptions.maxAge}`;
     }
 
-    if (options.path) {
-      cookieString += `; path=${options.path}`;
+    if (setOptions.path) {
+      cookieString += `; path=${setOptions.path}`;
     }
 
-    if (options.domain) {
-      cookieString += `; domain=${options.domain}`;
+    if (setOptions.domain) {
+      cookieString += `; domain=${setOptions.domain}`;
     }
 
-    if (options.secure) {
+    if (setOptions.secure) {
       cookieString += `; secure`;
     }
 
-    if (options.httpOnly) {
+    if (setOptions.httpOnly) {
       cookieString += `; httpOnly`;
     }
 
     document.cookie = cookieString;
   };
 
-  const getCookie = (name: string) => {
-    const cookieArr = document.cookie.split("; ");
-
-    for (let i = 0; i < cookieArr.length; i++) {
-      const cookiePair = cookieArr[i].split("=");
-      if (name == decodeURIComponent(cookiePair[0])) {
-        return decodeURIComponent(cookiePair[1]);
-      }
-    }
-
-    return null;
+  const getRawCookie = (name: string = cookieKey) => {
+    return retrieveRawCookieValue(name);
   };
 
-  const deleteCookie = (name: string) => {
-    setCookie(name, "", { maxAge: -1 });
+  const deleteCookie = (name: string = cookieKey) => {
+    setCookie(name, "" as T, { maxAge: -1 });
   };
 
-  const checkCookie = (name: string) => {
-    return getCookie(name) !== null;
+  const checkCookie = (name: string = cookieKey) => {
+    return getRawCookie(name) !== null;
+  };
+
+  const getParsedCookie = <T = string>(name: string = cookieKey): T | null => {
+    const rawCookie = getRawCookie(name);
+    return parseCookieData<T>(rawCookie);
   };
 
   return {
     setCookie,
-    getCookie,
     deleteCookie,
     checkCookie,
+    getParsedCookie,
+    getRawCookie,
   };
 }
-
-type CookieOptions = {
-  maxAge?: number;
-  path?: string;
-  domain?: string;
-  secure?: boolean;
-  httpOnly?: boolean;
-};
