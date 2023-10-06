@@ -15,18 +15,18 @@ export function createClientCookieFactory<T = string>(
 ) {
   const handleSetCookie = (
     value: T,
-    options?: CookieOptions & {
+    cookieSetOptions: CookieOptions & {
       cookieKey?: string; // optionally override cookie  key
-    }
+    } = {}
   ) => {
-    setCookie(cookieKey, value, options || {});
+    setCookie(cookieKey, value, cookieSetOptions || options || {});
   };
   const getRawCookie = (name: string = cookieKey) => {
     return retrieveRawCookieValue(name);
   };
 
   const deleteCookie = (name: string = cookieKey) => {
-    handleSetCookie("" as T, { maxAge: -1 });
+    handleSetCookie("" as T, { maxAge: -1, cookieKey: name });
   };
 
   const checkCookie = (name: string = cookieKey) => {

@@ -36,11 +36,7 @@ export const retrieveRawCookieValue = (name: string): string | null => {
   return null;
 };
 
-export const setCookie = <T>(
-  cookieKey: string,
-  value: T,
-  options: CookieOptions
-) => {
+export const encodeCookie = <T>(cookieKey: string, value: T, options:CookieOptions): string => {
   let cookieString = `${encodeURIComponent(cookieKey)}=${encodeURIComponent(
     typeof value === "string" ? value : JSON.stringify(value)
   )}`;
@@ -65,5 +61,26 @@ export const setCookie = <T>(
     cookieString += `; httpOnly`;
   }
 
-  document.cookie = cookieString;
+  return cookieString;
+}
+
+
+export const setCookie = <T>(
+  cookieKey: string,
+  value: T,
+  options: CookieOptions
+) => {
+  document.cookie = encodeCookie(cookieKey, value, options);
 };
+
+export function parseCookies(cookiesString: string) {
+  const cookies: { [name: string]: string } = {};
+  const pairs = cookiesString.split(";");
+
+  pairs.forEach((pair) => {
+    const [name, ...rest] = pair.split("=");
+    cookies[name.trim()] = rest.join("=").trim();
+  });
+
+  return cookies;
+}
