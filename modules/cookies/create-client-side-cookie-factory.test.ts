@@ -22,7 +22,8 @@ Object.defineProperty(globalThis, "document", {
 });
 
 describe("createClientCookieFactory", () => {
-  const cookieFactory = createClientCookieFactory();
+  const cookieFactory = createClientCookieFactory("test");
+  
 
   // Mock document.cookie
   let mockCookie = "";
@@ -46,12 +47,13 @@ describe("createClientCookieFactory", () => {
 
   test("getCookie returns the value of a cookie", () => {
     document.cookie = "test=value";
-    const value = cookieFactory.getCookie("test");
+    const value = cookieFactory.getRawCookie("test");
     expect(value).toBe("value");
   });
 
   test("deleteCookie sets a cookie with Max-Age=-1", () => {
     cookieFactory.deleteCookie("test");
+    console.log(document.cookie)
     expect(document.cookie).toBe("test=; max-age=-1");
   });
 

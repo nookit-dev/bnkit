@@ -1,3 +1,5 @@
+import { CookieOptions } from "./cookie-types";
+
 export function createServerCookieFactory() {
   const setCookie = (
     res: Response,
@@ -57,15 +59,6 @@ export function createServerCookieFactory() {
     checkCookie,
   };
 }
-
-export type CookieOptions = {
-  maxAge?: number;
-  path?: string;
-  domain?: string;
-  secure?: boolean;
-  httpOnly?: boolean;
-  sameSite?: "Strict" | "Lax" | "None";
-};
 
 // TODO update this to have have a type generic of the return object
 export function parseCookies(cookiesString: string) {

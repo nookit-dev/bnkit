@@ -110,6 +110,9 @@ Certainly! Here are more details about each of the U Tools modules:
 
 16. WebRTC: The WebRTC module aims to provide an interface for setting up WebRTC connections between clients. While integration with the server module is planned, the module can currently be used for establishing peer-to-peer connections between clients.
 
+## Plugins
+Currently U Tools has a React plugin, as well as a hook called `useServerState` for connecting to a U Tools websocket server state, a `useLocalStorage` hook, and a `useClipboard` hook.
+
 ## Architecture
 
 U Tools is built upon a robust and flexible architecture using factory functions, taking full advantage of their benefits to offer a streamlined, efficient, and versatile toolkit for your development needs.
