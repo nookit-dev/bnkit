@@ -21,20 +21,20 @@ export function createClientCookieFactory<T = string>(
   ) => {
     setCookie(cookieKey, value, cookieSetOptions || options || {});
   };
-  const getRawCookie = (name: string = cookieKey) => {
-    return retrieveRawCookieValue(name);
+  const getRawCookie = () => {
+    return retrieveRawCookieValue(cookieKey);
   };
 
-  const deleteCookie = (name: string = cookieKey) => {
-    handleSetCookie("" as T, { maxAge: -1, cookieKey: name });
+  const deleteCookie = () => {
+    handleSetCookie("" as T, { maxAge: -1, cookieKey });
   };
 
-  const checkCookie = (name: string = cookieKey) => {
-    return getRawCookie(name) !== null;
+  const checkCookie = () => {
+    return getRawCookie() !== null;
   };
 
-  const getParsedCookie = <T = string>(name: string = cookieKey): T | null => {
-    const rawCookie = getRawCookie(name);
+  const getParsedCookie = <T = string>(): T | null => {
+    const rawCookie = getRawCookie();
     return parseCookieData<T>(rawCookie);
   };
 

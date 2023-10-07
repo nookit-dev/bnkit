@@ -6,6 +6,11 @@ import {
   stringifyCookieData,
 } from "./cookie-utils";
 
+type CookieReqParams = {
+  req?: Request;
+  key?: string;
+};
+
 export function createServerCookieFactory<
   T = string,
   FactoryRequest extends Request = Request,
@@ -24,19 +29,17 @@ export function createServerCookieFactory<
   const setCookie = (
     value: T,
     {
-      key = cookieKey,
       options = optionsCfg || {},
       res = response,
     }: {
       options?: CookieOptions;
       res?: Response | undefined;
-      key?: string;
     } = {}
   ) => {
     let cookieValue =
       typeof value === "string" ? value : stringifyCookieData(value);
 
-    const cookieString = encodeCookie(key, cookieValue, options);
+    const cookieString = encodeCookie(cookieKey, cookieValue, options);
 
     if (!res) {
       throw new Error("No response object provided");
@@ -45,9 +48,7 @@ export function createServerCookieFactory<
     res?.headers.append("Set-Cookie", cookieString);
   };
 
-  const getAllCookies = <T extends object>(
-    req: Request | undefined = request
-  ): T => {
+  const getAllCookies = <T extends object>(req = request): T => {
     const cookies = parseCookies(req?.headers.get("Cookie") || "");
     const parsedCookies: any = {};
     for (const [name, value] of Object.entries(cookies)) {
@@ -57,58 +58,35 @@ export function createServerCookieFactory<
     return parsedCookies as T;
   };
 
-  const getCookie = ({
-    key = cookieKey,
-    req = request,
-  }: {
-    req?: Request;
-    key?: string;
-  } = {}): T | null => {
-    if (!req) {
-      throw new Error("No request object provided");
+  const deleteCookie = (res = response) => {
+    if (!res) {
+      throw new Error("No response object provided");
     }
-    const cookies = parseCookies(req.headers.get("Cookie") || "");
-    return parseCookieData<T>(cookies[key]);
-  };
-
-  const deleteCookie = ({
-    key = cookieKey,
-    res = response,
-  }: {
-    res?: Response;
-    key?: string;
-    options?: CookieOptions;
-  } = {}) => {
-    setCookie("" as unknown as T, { options: { maxAge: -1 }, key, res });
-  };
-
-  const checkCookie = ({
-    key = cookieKey,
-    req = request,
-  }: {
-    req?: Request;
-    key?: string;
-  } = {}) => {
-    console.log({
-      fn: "checkCookie",
-      cookie: getCookie({ req, key }),
+    setCookie("" as unknown as T, {
+      options: { maxAge: -1 },
+      res,
     });
-    return getCookie({ req, key }) !== null;
   };
 
-  const getRawCookie = ({
-    key = cookieKey,
-    req = request,
-  }: {
-    req?: Request;
-    key?: string;
-  } = {}): string | null => {
+  const getCookie = (req = request): T | null => {
+    if (!req) {
+      throw new Error("No request object provided");
+    }
+    const cookies = parseCookies(req.headers.get("Cookie") || "");
+    return parseCookieData<T>(cookies[cookieKey]);
+  };
+
+  const checkCookie = (req = request) => {
+    return getCookie(req) !== null;
+  };
+
+  const getRawCookie = (req = request): string | null => {
     if (!req) {
       throw new Error("No request object provided");
     }
 
     const cookies = parseCookies(req.headers.get("Cookie") || "");
-    return cookies[key] || null;
+    return cookies[cookieKey] || null;
   };
 
   return {
