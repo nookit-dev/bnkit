@@ -14,8 +14,8 @@ export function useCookie<T = string>(
     };
   });
 
-  const getCookie = (name: string = cookieKey) => {
-    return cookie.getRawCookie(name);
+  const getCookie = () => {
+    return cookie.getRawCookie();
   };
 
   useEffect(() => {
@@ -38,8 +38,8 @@ export function useCookie<T = string>(
     setCookieData({ value: value });
   };
 
-  const removeCookie = (name: string = cookieKey) => {
-    cookie.deleteCookie(name);
+  const removeCookie = () => {
+    cookie.deleteCookie();
     setCookieData({ value: null });
   };
 
@@ -51,8 +51,8 @@ export function useCookie<T = string>(
     }
   };
 
-  const checkCookie = (name: string = cookieKey) => {
-    return cookie.checkCookie(name);
+  const checkCookie = () => {
+    return cookie.checkCookie();
   };
 
   return {
