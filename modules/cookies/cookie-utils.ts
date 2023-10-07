@@ -6,6 +6,7 @@ declare var document: {
 
 export const parseCookieData = <T = string>(data: string | null): T | null => {
   if (data === null) return null;
+  if (typeof data === "undefined") return null;
 
   try {
     return JSON.parse(data) as T;
@@ -36,7 +37,11 @@ export const retrieveRawCookieValue = (name: string): string | null => {
   return null;
 };
 
-export const encodeCookie = <T>(cookieKey: string, value: T, options:CookieOptions): string => {
+export const encodeCookie = <T>(
+  cookieKey: string,
+  value: T,
+  options: CookieOptions
+): string => {
   let cookieString = `${encodeURIComponent(cookieKey)}=${encodeURIComponent(
     typeof value === "string" ? value : JSON.stringify(value)
   )}`;
@@ -62,8 +67,7 @@ export const encodeCookie = <T>(cookieKey: string, value: T, options:CookieOptio
   }
 
   return cookieString;
-}
-
+};
 
 export const setCookie = <T>(
   cookieKey: string,

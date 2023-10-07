@@ -5,7 +5,6 @@ import {
   setCookie,
   stringifyCookieData,
 } from "./cookie-utils";
-import { CookieOptions } from "./cookie-types";
 
 describe("Cookie Helpers", () => {
   describe("parseCookieData", () => {
@@ -67,38 +66,6 @@ describe("retrieveRawCookieValue", () => {
     expect(retrieveRawCookieValue("emptyCookie")).toBe("");
   });
 });
-
-export const encodeCookie = <T>(
-  cookieKey: string,
-  value: T,
-  options: CookieOptions
-): string => {
-  let cookieString = `${encodeURIComponent(cookieKey)}=${encodeURIComponent(
-    typeof value === "string" ? value : JSON.stringify(value)
-  )}`;
-
-  if (options.maxAge) {
-    cookieString += `; max-age=${options.maxAge}`;
-  }
-
-  if (options.path) {
-    cookieString += `; path=${options.path}`;
-  }
-
-  if (options.domain) {
-    cookieString += `; domain=${options.domain}`;
-  }
-
-  if (options.secure) {
-    cookieString += `; secure`;
-  }
-
-  if (options.httpOnly) {
-    cookieString += `; httpOnly`;
-  }
-
-  return cookieString;
-};
 
 describe("setCookie", () => {
   it("should set a cookie with options", () => {

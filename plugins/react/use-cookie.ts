@@ -2,7 +2,10 @@ import { CookieOptions } from "@u-tools/core/modules/cookies/cookie-types";
 import { createClientCookieFactory } from "@u-tools/core/modules/cookies/create-client-side-cookie-factory";
 import { useEffect, useState } from "react";
 
-export function useCookie<T = string>(cookieKey: string, options?: CookieOptions) {
+export function useCookie<T = string>(
+  cookieKey: string,
+  options?: CookieOptions
+) {
   const cookie = createClientCookieFactory(cookieKey);
 
   const [cookieData, setCookieData] = useState<{ value: T | null }>(() => {
@@ -28,7 +31,10 @@ export function useCookie<T = string>(cookieKey: string, options?: CookieOptions
     } = options || {}
   ) => {
     const stringifiedValue = stringifyCookieData(value);
-    cookie.setCookie(cookieKey, stringifiedValue, updateOptions);
+    cookie.setCookie(stringifiedValue, {
+      ...options,
+      ...updateOptions,
+    });
     setCookieData({ value: value });
   };
 

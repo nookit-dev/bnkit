@@ -19,22 +19,24 @@ export function createServerCookieFactory<
   cookieKey: string;
   request?: FactoryRequest;
   response?: FactoryRes;
-  options: CookieOptions;
+  options?: CookieOptions;
 }) {
   const setCookie = (
     value: T,
     {
+      key = cookieKey,
       options = optionsCfg || {},
       res = response,
     }: {
       options?: CookieOptions;
       res?: Response | undefined;
+      key?: string;
     } = {}
   ) => {
     let cookieValue =
       typeof value === "string" ? value : stringifyCookieData(value);
 
-    const cookieString = encodeCookie(cookieKey, cookieValue, options);
+    const cookieString = encodeCookie(key, cookieValue, options);
 
     if (!res) {
       throw new Error("No response object provided");
@@ -69,8 +71,15 @@ export function createServerCookieFactory<
     return parseCookieData<T>(cookies[key]);
   };
 
-  const deleteCookie = (res: Response, name: string = cookieKey) => {
-    setCookie("" as unknown as T, { options: { maxAge: -1 } });
+  const deleteCookie = ({
+    key = cookieKey,
+    res = response,
+  }: {
+    res?: Response;
+    key?: string;
+    options?: CookieOptions;
+  } = {}) => {
+    setCookie("" as unknown as T, { options: { maxAge: -1 }, key, res });
   };
 
   const checkCookie = ({
@@ -80,11 +89,15 @@ export function createServerCookieFactory<
     req?: Request;
     key?: string;
   } = {}) => {
+    console.log({
+      fn: "checkCookie",
+      cookie: getCookie({ req, key }),
+    });
     return getCookie({ req, key }) !== null;
   };
 
   const getRawCookie = ({
-    key: key = cookieKey,
+    key = cookieKey,
     req = request,
   }: {
     req?: Request;
