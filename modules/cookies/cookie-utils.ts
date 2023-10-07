@@ -6,6 +6,7 @@ declare var document: {
 
 export const parseCookieData = <T = string>(data: string | null): T | null => {
   if (data === null) return null;
+  if (typeof data === "undefined") return null;
 
   try {
     return JSON.parse(data) as T;
@@ -36,11 +37,11 @@ export const retrieveRawCookieValue = (name: string): string | null => {
   return null;
 };
 
-export const setCookie = <T>(
+export const encodeCookie = <T>(
   cookieKey: string,
   value: T,
   options: CookieOptions
-) => {
+): string => {
   let cookieString = `${encodeURIComponent(cookieKey)}=${encodeURIComponent(
     typeof value === "string" ? value : JSON.stringify(value)
   )}`;
@@ -65,5 +66,25 @@ export const setCookie = <T>(
     cookieString += `; httpOnly`;
   }
 
-  document.cookie = cookieString;
+  return cookieString;
 };
+
+export const setCookie = <T>(
+  cookieKey: string,
+  value: T,
+  options: CookieOptions
+) => {
+  document.cookie = encodeCookie(cookieKey, value, options);
+};
+
+export function parseCookies(cookiesString: string) {
+  const cookies: { [name: string]: string } = {};
+  const pairs = cookiesString.split(";");
+
+  pairs.forEach((pair) => {
+    const [name, ...rest] = pair.split("=");
+    cookies[name.trim()] = rest.join("=").trim();
+  });
+
+  return cookies;
+}

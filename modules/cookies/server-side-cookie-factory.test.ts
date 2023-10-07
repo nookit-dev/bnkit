@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, jest, test } from "bun:test";
 import { createServerCookieFactory } from "./server-side-cookie-factory";
 
 describe("createServerCookieFactory", () => {
-  const cookieFactory = createServerCookieFactory();
+  const cookieFactory = createServerCookieFactory({ cookieKey: "test" });
 
   // Mock response and request objects
   let mockRes = { headers: { append: jest.fn() } };
@@ -15,7 +15,7 @@ describe("createServerCookieFactory", () => {
   });
 
   test("setCookie appends a Set-Cookie header", () => {
-    cookieFactory.setCookie(mockRes, "test", "value");
+    cookieFactory.setCookie("test", { res: mockRes as unknown as Response });
     // bun doesn't currently support toHaveBeenCalledWith
     // expect(mockRes.headers.append).toHaveBeenCalledWith(
     //   "Set-Cookie",
@@ -26,12 +26,12 @@ describe("createServerCookieFactory", () => {
 
   test("getCookie returns the value of a cookie", () => {
     mockReq.headers.get.mockReturnValue("test=value");
-    const value = cookieFactory.getCookie(mockReq, "test");
+    const value = cookieFactory.getCookie(mockReq as any as Request);
     expect(value).toBe("value");
   });
 
   test("deleteCookie sets a cookie with Max-Age=-1", () => {
-    cookieFactory.deleteCookie(mockRes, "test");
+    cookieFactory.deleteCookie(mockRes as any as Response);
     // expect(mockRes.headers.append).toHaveBeenCalledWith(
     //   "Set-Cookie",
     //   "test=; Max-Age=-1"
@@ -41,13 +41,13 @@ describe("createServerCookieFactory", () => {
 
   test("checkCookie returns true if a cookie exists", () => {
     mockReq.headers.get.mockReturnValue("test=value");
-    const exists = cookieFactory.checkCookie(mockReq, "test");
+    const exists = cookieFactory.checkCookie(mockReq as unknown as Request);
     expect(exists).toBe(true);
   });
 
   test("checkCookie returns false if a cookie does not exist", () => {
-    mockReq.headers.get.mockReturnValue("");
-    const exists = cookieFactory.checkCookie(mockReq, "test");
+    mockReq.headers.get.mockReturnValue();
+    const exists = cookieFactory.checkCookie(mockReq as unknown as Request);
     expect(exists).toBe(false);
   });
 });

@@ -1,55 +1,92 @@
 import { CookieOptions } from "./cookie-types";
+import {
+  encodeCookie,
+  parseCookieData,
+  parseCookies,
+  stringifyCookieData,
+} from "./cookie-utils";
 
-export function createServerCookieFactory() {
+type CookieReqParams = {
+  req?: Request;
+  key?: string;
+};
+
+export function createServerCookieFactory<
+  T = string,
+  FactoryRequest extends Request = Request,
+  FactoryRes extends Response = Response
+>({
+  cookieKey,
+  options: optionsCfg,
+  request,
+  response,
+}: {
+  cookieKey: string;
+  request?: FactoryRequest;
+  response?: FactoryRes;
+  options?: CookieOptions;
+}) {
   const setCookie = (
-    res: Response,
-    name: string,
-    value: string,
-    options: CookieOptions = {}
+    value: T,
+    {
+      options = optionsCfg || {},
+      res = response,
+    }: {
+      options?: CookieOptions;
+      res?: Response | undefined;
+    } = {}
   ) => {
-    let cookieString = `${encodeURIComponent(name)}=${encodeURIComponent(
-      value
-    )}`;
+    let cookieValue =
+      typeof value === "string" ? value : stringifyCookieData(value);
 
-    if (options.maxAge) {
-      cookieString += `; Max-Age=${options.maxAge}`;
+    const cookieString = encodeCookie(cookieKey, cookieValue, options);
+
+    if (!res) {
+      throw new Error("No response object provided");
     }
 
-    if (options.path) {
-      cookieString += `; Path=${options.path}`;
-    }
-
-    if (options.domain) {
-      cookieString += `; Domain=${options.domain}`;
-    }
-
-    if (options.secure) {
-      cookieString += `; Secure`;
-    }
-
-    if (options.httpOnly) {
-      cookieString += `; HttpOnly`;
-    }
-
-    if (options.sameSite) {
-      cookieString += `; SameSite=${options.sameSite}`;
-    }
-
-    // For HTTP/2, multiple Set-Cookie headers are allowed
-    res.headers.append("Set-Cookie", cookieString);
+    res?.headers.append("Set-Cookie", cookieString);
   };
 
-  const getCookie = (req: Request, name: string) => {
+  const getAllCookies = <T extends object>(req = request): T => {
+    const cookies = parseCookies(req?.headers.get("Cookie") || "");
+    const parsedCookies: any = {};
+    for (const [name, value] of Object.entries(cookies)) {
+      parsedCookies[name] = parseCookieData(value) as any;
+    }
+
+    return parsedCookies as T;
+  };
+
+  const deleteCookie = (res = response) => {
+    if (!res) {
+      throw new Error("No response object provided");
+    }
+    setCookie("" as unknown as T, {
+      options: { maxAge: -1 },
+      res,
+    });
+  };
+
+  const getCookie = (req = request): T | null => {
+    if (!req) {
+      throw new Error("No request object provided");
+    }
     const cookies = parseCookies(req.headers.get("Cookie") || "");
-    return cookies[name];
+    return parseCookieData<T>(cookies[cookieKey]);
   };
 
-  const deleteCookie = (res: Response, name: string) => {
-    setCookie(res, name, "", { maxAge: -1 });
+  const checkCookie = (req = request) => {
+    return getCookie(req) !== null;
   };
 
-  const checkCookie = (req: Request, name: string) => {
-    return getCookie(req, name) !== undefined;
+  const getRawCookie = (req = request): string | null => {
+    if (!req) {
+      throw new Error("No request object provided");
+    }
+
+    const cookies = parseCookies(req.headers.get("Cookie") || "");
+    return cookies[cookieKey] || null;
   };
 
   return {
@@ -57,18 +94,7 @@ export function createServerCookieFactory() {
     getCookie,
     deleteCookie,
     checkCookie,
+    getRawCookie,
+    getAllCookies,
   };
-}
-
-// TODO update this to have have a type generic of the return object
-export function parseCookies(cookiesString: string) {
-  const cookies: { [name: string]: string } = {};
-  const pairs = cookiesString.split(";");
-
-  pairs.forEach((pair) => {
-    const [name, ...rest] = pair.split("=");
-    cookies[name.trim()] = rest.join("=").trim();
-  });
-
-  return cookies;
 }
