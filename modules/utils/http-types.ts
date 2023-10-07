@@ -46,19 +46,44 @@ export type RouteMap = Record<string, RouteHandler>;
 
 export type ErrorHandler = (error: any, request: Request) => Response;
 
-export type RouteReqT = {
+export type RouteReqDataOpts = {
   body?: Request["body"];
   params?: object;
   headers?: object;
 };
 
+export type ClientCORSCredentialOpts = "omit" | "same-origin" | "include";
+
+/**
+ * Options for configuring Cross-Origin Resource Sharing (CORS) behavior.
+ */
 export type CORSOptions = {
+  /**
+   * An array of allowed origins. Requests from origins not in this array will be rejected.
+   * ["*"] will allow all origins.
+   */
   origins?: string[];
+  /**
+   * An array of allowed HTTP methods. Requests using methods not in this array will be rejected.
+   */
   methods?: HttpMethod[];
+  /**
+   * An array of allowed HTTP headers. Requests with headers not in this array will be rejected.
+   */
   headers?: CommonHttpHeaders[];
+  /**
+   * Whether or not to allow credentials to be sent with the request.
+   */
+  credentials?: boolean;
 };
 
-export type CreateRouteGeneric<ReqT extends RouteReqT> = {
+/**
+ * Type for a generic route handler that provides typed access to the request body, query params, and headers.
+ *
+ * The route handler receives an object with properties for accessing the raw request,
+ * as well as typed parsing methods for the request body, query params, and headers.
+ */
+export type CreateRouteGeneric<ReqT extends RouteReqDataOpts> = {
   request: Request;
   parseBodyJson: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
   parseQueryParams: <ParamsType>() => ParamsType;
@@ -66,11 +91,11 @@ export type CreateRouteGeneric<ReqT extends RouteReqT> = {
   response: Response;
 };
 
-export type ReqHandler<ReqT extends RouteReqT> = (
+export type ReqHandler<ReqT extends RouteReqDataOpts> = (
   args: CreateRouteGeneric<ReqT>
 ) => Promise<Response>;
 
-export type OnRequestT<ReqT extends RouteReqT> = (
+export type OnRequestT<ReqT extends RouteReqDataOpts> = (
   handler: ReqHandler<ReqT>
 ) => void;
 

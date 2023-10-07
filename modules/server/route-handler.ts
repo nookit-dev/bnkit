@@ -5,7 +5,7 @@ import {
   ReqHandler,
   RouteMap,
   RouteOptions,
-  RouteReqT,
+  RouteReqDataOpts,
 } from "../utils/http-types";
 import { handleRequestError, onErrorHandler } from "./error-handler";
 import { composeMiddlewares } from "./middleware-handlers";
@@ -20,7 +20,7 @@ export type CreateRouteArgs<MiddlewareCtx extends object = {}> = {
 
 const defaultErrorMessage = "Internal Server Error";
 
-export const composeRequest = async <RouteReq extends RouteReqT = RouteReqT>({
+export const composeRequest = async <RouteReq extends RouteReqDataOpts = RouteReqDataOpts>({
   request,
   onRequest,
   errorMessage,
@@ -71,7 +71,7 @@ export const composeRequest = async <RouteReq extends RouteReqT = RouteReqT>({
 };
 
 export function createRoute<
-  ReqT extends RouteReqT,
+  ReqT extends RouteReqDataOpts,
   MiddlewareCtx extends object = {}
 >({
   middlewares,
@@ -86,7 +86,7 @@ export function createRoute<
     routes[routePath] = composeMiddlewares<MiddlewareCtx>(
       middlewares,
       async (request: Request) => {
-        return composeRequest<RouteReqT>({
+        return composeRequest<RouteReqDataOpts>({
           request,
           onRequest: handler,
           errorMessage,
@@ -98,7 +98,5 @@ export function createRoute<
     );
   };
 
-  return {
-    onReq: onRequest,
-  };
+  return onRequest
 }

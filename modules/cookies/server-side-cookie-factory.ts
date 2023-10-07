@@ -6,26 +6,22 @@ import {
   stringifyCookieData,
 } from "./cookie-utils";
 
-type CookieReqParams = {
-  req?: Request;
-  key?: string;
-};
-
 export function createServerCookieFactory<
   T = string,
   FactoryRequest extends Request = Request,
   FactoryRes extends Response = Response
->({
-  cookieKey,
-  options: optionsCfg,
-  request,
-  response,
-}: {
-  cookieKey: string;
-  request?: FactoryRequest;
-  response?: FactoryRes;
-  options?: CookieOptions;
-}) {
+>(
+  cookieKey: string,
+  {
+    options: optionsCfg,
+    request,
+    response,
+  }: {
+    request?: FactoryRequest;
+    response?: FactoryRes;
+    options?: CookieOptions;
+  } = {}
+) {
   const setCookie = (
     value: T,
     {
@@ -46,16 +42,6 @@ export function createServerCookieFactory<
     }
 
     res?.headers.append("Set-Cookie", cookieString);
-  };
-
-  const getAllCookies = <T extends object>(req = request): T => {
-    const cookies = parseCookies(req?.headers.get("Cookie") || "");
-    const parsedCookies: any = {};
-    for (const [name, value] of Object.entries(cookies)) {
-      parsedCookies[name] = parseCookieData(value) as any;
-    }
-
-    return parsedCookies as T;
   };
 
   const deleteCookie = (res = response) => {
@@ -95,6 +81,5 @@ export function createServerCookieFactory<
     deleteCookie,
     checkCookie,
     getRawCookie,
-    getAllCookies,
   };
 }

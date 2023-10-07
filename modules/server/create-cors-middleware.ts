@@ -36,6 +36,10 @@ export const setCORSHeaders = (
       options.headers.join(", ")
     );
   }
+
+  if (options.credentials) {
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+  }
 };
 
 export const createCorsMiddleware = <MiddlewareCtx extends object = {}>(
@@ -47,6 +51,7 @@ export const createCorsMiddleware = <MiddlewareCtx extends object = {}>(
   const allowedMethods: HttpMethod[] = options.methods || defaultMethods;
   const allowedHeaders: CORSOptions["headers"] =
     options.headers || defaultHeaders;
+  const enableCredentials = options.credentials || false;
 
   const allOriginsAllowed = allowedOrigins.includes("*");
 
@@ -91,6 +96,7 @@ export const createCorsMiddleware = <MiddlewareCtx extends object = {}>(
           origins: allowedOrigins,
           methods: allowedMethods,
           headers: allowedHeaders,
+          credentials: enableCredentials,
         },
         requestOrigin
       );
@@ -119,6 +125,7 @@ export const createCorsMiddleware = <MiddlewareCtx extends object = {}>(
         }
       );
     }
+
     const response = await next();
     // If all origins are allowed, then set the Access-Control-Allow-Origin header to "*"
     // regardless of whether the request had an Origin header or not.
@@ -131,6 +138,7 @@ export const createCorsMiddleware = <MiddlewareCtx extends object = {}>(
           origins: allowedOrigins,
           methods: allowedMethods,
           headers: allowedHeaders,
+          credentials: enableCredentials,
         },
         requestOrigin
       );
@@ -143,6 +151,7 @@ export const createCorsMiddleware = <MiddlewareCtx extends object = {}>(
           origins: allowedOrigins,
           methods: allowedMethods,
           headers: allowedHeaders,
+          credentials: enableCredentials,
         },
         requestOrigin
       );

@@ -19,6 +19,9 @@ export function useCookie<T = string>(
   };
 
   useEffect(() => {
+    console.log({
+      parsedCookie: cookie.getParsedCookie(),
+    })
     setCookieData({
       value: cookie.getParsedCookie(),
     });

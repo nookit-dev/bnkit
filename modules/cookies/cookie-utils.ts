@@ -88,3 +88,13 @@ export function parseCookies(cookiesString: string) {
 
   return cookies;
 }
+
+export const getAllCookies = <T extends object>(req: Request): T => {
+  const cookies = parseCookies(req?.headers.get("Cookie") || "");
+  const parsedCookies: any = {};
+  for (const [name, value] of Object.entries(cookies)) {
+    parsedCookies[name] = parseCookieData(value) as any;
+  }
+
+  return parsedCookies as T;
+};
