@@ -4,6 +4,7 @@ import {
   Middleware,
   RouteMap,
   RouteOptions,
+  RouteReqDataOpts,
 } from "../utils/http-types";
 import { generateMiddlewares } from "./middleware-handlers";
 import { processRequest } from "./request-handler";
@@ -41,7 +42,7 @@ export function createServerFactory(
     maxFileSize,
   });
 
-  const createServerRoute = (
+  const createServerRoute = <ReqT extends RouteReqDataOpts = RouteReqDataOpts>(
     routePath: string,
     {
       options = {},
@@ -53,7 +54,7 @@ export function createServerFactory(
       routeMiddlewares = [...middlewares, ...routeMiddlewares];
     }
 
-    return createRoute({
+    return createRoute<ReqT>({
       routePath: routePath,
       options,
       middlewares: routeMiddlewares,
