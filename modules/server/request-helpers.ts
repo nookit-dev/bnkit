@@ -1,8 +1,8 @@
-export function parseQueryParams<ParamsT extends object = {}>(
+export function parseQueryParams<ParamsType extends object = {}>(
   request: Request
-): ParamsT {
+): ParamsType {
   const url = new URL(request.url);
-  const params: ParamsT = {} as ParamsT;
+  const params: ParamsType = {} as ParamsType;
 
   url.searchParams.forEach((value, key) => {
     // @ts-ignore
@@ -12,21 +12,33 @@ export function parseQueryParams<ParamsT extends object = {}>(
   return params;
 }
 
-export function parseRequestHeaders<HeadersT>(request: Request): HeadersT {
-  return request.headers.toJSON() as unknown as HeadersT;
+export function parseRequestHeaders<HeadersType>(
+  request: Request
+): HeadersType {
+  return request.headers.toJSON() as unknown as HeadersType;
 }
 
 export type JSONResType = <JSONBodyGeneric extends object>(
   body: JSONBodyGeneric,
-  options?: ResponseInit
-) => Response | Promise<Response>;
+  options?: ResponseInit,
+  response?: Response
+) => Response;
 
-export const jsonRes: JSONResType = (body, options) => {
+// json res creates it's own response object, but if one is passed in, it will copy headers
+export const jsonRes: JSONResType = (body, options = {}, response) => {
+  // handle if a response is passed in, we mostly want to copy cors/cookie headers
+  //combine options and  response  headers
+  const combinedHeaders: HeadersInit = {
+    ...options?.headers,
+    ...new Headers(response?.headers),
+  };
+
   return new Response(JSON.stringify(body), {
     ...options,
     headers: {
+      ...combinedHeaders,
+      // jsonRes should allows have json content type
       "Content-Type": "application/json",
-      ...options?.headers,
     },
   });
 };
