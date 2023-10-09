@@ -7,8 +7,7 @@ export type TypeMapping = {
 
 export type TypeMappingKeys = keyof TypeMapping;
 
-// Utility type to infer TypeScript types from the schema
-export type SchemaTypeInference<T extends Record<string, keyof TypeMapping>> = {
+export type SchemaTInference<T extends Record<string, keyof TypeMapping>> = {
   [K in keyof T]: TypeMapping[T[K]];
 };
 
@@ -17,23 +16,23 @@ export type ValidationResult<Schema extends object> = {
   data?: Schema[];
 };
 
-export type SchemaType = Record<string, keyof TypeMapping>;
+export type SchemaT = Record<string, keyof TypeMapping>;
 
-type SetDispatch<Key, Options> = {
+export type SetDispatch<Key, Options> = {
   set: (value: Key, options?: Options) => void;
 };
 
-type ArrayDispatch<T, Options> = {
+export type ArrayDispatch<T, Options> = {
   push: (value: T, options?: Options) => void;
   pop: (options?: Options) => void;
   insert: (index: number, value: T, options?: Options) => void;
 };
 
-type ObjectDispatch<Key, Options> = {
+export type ObjectDispatch<Key, Options> = {
   update: (value: Partial<Key>, options?: Options) => void;
 };
 
-type NumberDispatch<Options> = {
+export type NumberDispatch<Options> = {
   increment: (amount?: number, options?: Options) => void;
   decrement: (amount?: number, options?: Options) => void;
 };

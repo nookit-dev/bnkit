@@ -1,3 +1,5 @@
+import { PartialRecord } from "mod/type-utils";
+
 export type HttpMethod =
   | "GET"
   | "POST"
@@ -22,86 +24,82 @@ export type CommonHttpHeaders =
   | "X-HTTP-Method-Override"
   | string; // This allows for custom headers in addition to the common ones.
 
-type PartialRecord<K extends keyof any, T> = {
-  [P in K]?: T;
-};
-
 export type UToolHTTPHeaders = PartialRecord<CommonHttpHeaders, string>;
 
 export type RouteHandler = (request: Request) => Response | Promise<Response>;
 
-export type ResBodyT =
-  | ReadableStream
-  | BlobPart
-  | BlobPart[]
-  | FormData
-  | URLSearchParams
-  | object
-  | null;
+export type MiddlwareParams<CtxT extends object = object> = {
+  request: Request;
+  next?: Middleware<CtxT>;
+  context?: CtxT;
+  response: Response;
+};
 
-export type Middleware = (
-  request: Request,
-  next: MiddlewareNext
-) => Response | Promise<Response>;
+export type Middleware<CtxT extends object = object> = ({
+  request,
+  next,
+  context,
+  response,
+}: MiddlwareParams<CtxT>) => Response | Promise<Response>;
 
-export type MiddlewareNext = () => Response | Promise<Response>;
+export type RouteMap = Record<string, RouteHandler>;
 
-export interface RouteMap {
-  [route: string]: RouteHandler;
-}
+export type ErrorHandler = (error: any, request: Request) => Response;
+
+export type RouteReqDataOpts = {
+  body?: Request["body"];
+  params?: object;
+  headers?: object;
+};
+
+export type ClientCORSCredentialOpts = "omit" | "same-origin" | "include";
+
+/**
+ * Options for configuring Cross-Origin Resource Sharing (CORS) behavior.
+ */
+export type CORSOptions = {
+  /**
+   * An array of allowed origins. Requests from origins not in this array will be rejected.
+   * ["*"] will allow all origins.
+   */
+  origins?: string[];
+  /**
+   * An array of allowed HTTP methods. Requests using methods not in this array will be rejected.
+   */
+  methods?: HttpMethod[];
+  /**
+   * An array of allowed HTTP headers. Requests with headers not in this array will be rejected.
+   */
+  headers?: CommonHttpHeaders[];
+  /**
+   * Whether or not to allow credentials to be sent with the request.
+   */
+  credentials?: boolean;
+};
+
+/**
+ * Type for a generic route handler that provides typed access to the request body, query params, and headers.
+ *
+ * The route handler receives an object with properties for accessing the raw request,
+ * as well as typed parsing methods for the request body, query params, and headers.
+ */
+export type CreateRouteGeneric<ReqT extends RouteReqDataOpts> = {
+  request: Request;
+  parseBodyJson: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
+  parseQueryParams: <ParamsType>() => ParamsType;
+  parseHeaders: <HeadersT>() => HeadersT;
+  response: Response;
+};
+
+export type ReqHandler<ReqT extends RouteReqDataOpts> = (
+  args: CreateRouteGeneric<ReqT>
+) => Promise<Response>;
+
+export type OnRequestT<ReqT extends RouteReqDataOpts> = (
+  handler: ReqHandler<ReqT>
+) => void;
 
 export interface RouteOptions {
   errorMessage?: string;
   onError?: (error: Error, request: Request) => Response | Promise<Response>;
 }
-
-export type ErrorHandler = (error: any, request: Request) => Response;
-
-export type RouteReqT = {
-  body?: any;
-  params?: object;
-  headers?: object;
-};
-
-export type JSONRequest = RouteReqT & {
-  body: object;
-};
-
-export type CORSOptions = {
-  allowedOrigins?: string[];
-  allowAllOrigins?: boolean;
-  allowedMethods?: HttpMethod[];
-  allowedHeaders?: CommonHttpHeaders[];
-};
-
-export type CreateServerFactory = {
-  wsPaths?: string[];
-  enableBodyParser?: boolean;
-  cors?: CORSOptions;
-  // max file size in bytes, if passed in then the check file middleware will be passed in
-  // to validate file sizes
-  maxFileSize?: number;
-};
-
-export type CreateRouteGeneric<
-  ReqT extends RouteReqT,
-  ResT extends ResBodyT
-> = {
-  request: Request;
-  getBody: <BodyType extends ReqT["body"]>() => Promise<BodyType>;
-  parseQueryParams: <ParamsType>() => ParamsType;
-  parseHeaders: <HeadersType>() => HeadersType;
-  jsonRes: <JSONBodyGeneric extends object>(
-    body: JSONBodyGeneric,
-    options?: ResponseInit
-  ) => Response;
-  htmlRes: (body: string, options?: ResponseInit) => Response;
-};
-
-export type OnRequestHandler<ReqT extends RouteReqT, ResT extends ResBodyT> = (
-  args: CreateRouteGeneric<ReqT, ResT>
-) => Promise<Response>;
-
-export type OnRequestType<ReqT extends RouteReqT, ResT extends ResBodyT> = (
-  handler: OnRequestHandler<ReqT, ResT>
-) => void;

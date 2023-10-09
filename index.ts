@@ -1,30 +1,27 @@
-export { createCliFactory } from "./modules/cli-factory";
+export { createCliFactory } from "./modules/cli";
 export {
-  createClientCookieFactory,
-  createServerCookieFactory
-} from "./modules/cookie-factory";
-export { createFetchFactory } from "./modules/fetch-factory";
-export * from "./modules/fetch-factory/create-fetch-factory";
-export { createFileFactory } from "./modules/files-factory";
+    createClientCookieFactory,
+    createServerCookieFactory
+} from "./modules/cookies";
+export { createFetchFactory } from "./modules/fetcher";
+export * from "./modules/fetcher/create-fetch-factory";
+export { createFileFactory } from "./modules/files-folders";
 export {
-  createNonSecureHashFactory,
-  createSecureHashFactory
-} from "./modules/hash-factory";
-export { createHIDKeyboardFactory } from "./modules/hid-emulators/keyboard-hid-factory";
+    createNonSecureHashFactory,
+    createSecureHashFactory
+} from "./modules/hash";
 export {
-  jwtClientSideFactory,
-  jwtServerSideFactory
-} from "./modules/jwt-factory";
-export * from "./modules/logger-factory";
-export { createLoggerFactory } from "./modules/logger-factory/create-logger-factory";
-export { createServerFactory } from "./modules/server-factory";
+    jwtClientSideFactory,
+    jwtServerSideFactory
+} from "./modules/jwt";
+export * from "./modules/logger";
+export { createLoggerFactory } from "./modules/logger/create-logger-factory";
+export { createServerFactory } from "./modules/server";
 export {
-  createSqliteFactory,
-  createTableQuery
-} from "./modules/sqlite-factory";
-export { createHTMLProcessor } from "./modules/text-processing/html-factory";
-export { createMarkdownProcessor } from "./modules/text-processing/markdown-factory";
-export { createValidatorFactory } from "./modules/validation-factory";
+    createSqliteFactory,
+    createTableQuery
+} from "./modules/sqlite";
+export { createValidatorFactory } from "./modules/validation";
 
 // utility exports
 export { classy } from "./modules/utils/classy";

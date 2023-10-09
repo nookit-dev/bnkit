@@ -8,9 +8,9 @@ import readline from "readline";
 //   saveResultToFile,
 // } from "../../files-folder";
 import {
-  chooseActions,
-  directoryExists,
-} from "../../modules/cli-factory/create-cli-factory";
+    chooseActions,
+    directoryExists,
+} from "../../modules/cli/create-cli-factory";
 // import createOpenAICompletions from "../../networking";
 import type { ActionsConfig } from "./repo-docs-generator";
 
@@ -160,7 +160,7 @@ async function createConsolidatedFiles(
     "Do you want to exit the program or pass the consolidated files to another prompt? (exit/continue)",
     async (answer) => {
       if (answer === "exit") {
-        console.log("Exiting the program...");
+        console.info("Exiting the program...");
         process.exit(0);
       } else if (answer === "continue") {
         const newPrompt = await getUserInput(
@@ -168,7 +168,7 @@ async function createConsolidatedFiles(
         );
         await createConsolidatedFiles(actionsConfig, newPrompt);
       } else {
-        console.log("Invalid input. Exiting the program...");
+        console.info("Invalid input. Exiting the program...");
         process.exit(0);
       }
     }

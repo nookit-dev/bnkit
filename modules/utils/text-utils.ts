@@ -1,4 +1,4 @@
-function replaceMarkdown(
+export function replaceMarkdown(
   text: string,
   regex: RegExp,
   replacement: string
@@ -6,7 +6,7 @@ function replaceMarkdown(
   return text.replace(regex, replacement);
 }
 
-const parsers = {
+export const parsers = {
   headers(text: string): string {
     for (let i = 6; i > 0; i--) {
       const regex = new RegExp(`^(#{${i}}) (.*)`, "gm");
@@ -54,12 +54,10 @@ const parsers = {
   },
 };
 
-function convertMarkdownToHTML(markdownText: string): string {
+export function convertMarkdownToHTML(markdownText: string): string {
   let html = markdownText;
   for (const parser of Object.values(parsers)) {
     html = parser(html);
   }
   return html;
 }
-
-export { convertMarkdownToHTML, parsers, replaceMarkdown };
