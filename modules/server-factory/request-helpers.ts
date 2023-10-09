@@ -20,18 +20,29 @@ export function parseRequestHeaders<HeadersType>(
 
 export type JSONResType = <JSONBodyGeneric extends object>(
   body: JSONBodyGeneric,
-  options?: ResponseInit
+  options?: ResponseInit,
+  response?: Response
 ) => Response;
 
-export const jsonRes: JSONResType = (body, options): Response => {
+// json res creates it's own response object, but if one is passed in, it will copy headers
+export const jsonRes: JSONResType = (body, options = {}, response) => {
+  // handle if a response is passed in, we mostly want to copy cors/cookie headers
+  //combine options and  response  headers
+  const combinedHeaders: HeadersInit = {
+    ...options?.headers,
+    ...new Headers(response?.headers),
+  };
+  const headers = new Headers(combinedHeaders);
+
   return new Response(JSON.stringify(body), {
     ...options,
     headers: {
+      ...headers,
+      // jsonRes should allows have json content type
       "Content-Type": "application/json",
-      ...options?.headers,
     },
   });
-};
+}
 
 export function htmlRes(body: string, options?: ResponseInit): Response {
   return new Response(body, {

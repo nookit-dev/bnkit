@@ -1,28 +1,33 @@
 import { Server } from "bun";
 import {
-  CreateServerFactory,
+  CORSOptions,
   Middleware,
   RouteMap,
   RouteOptions,
+  RouteReqDataOpts,
 } from "../utils/http-types";
 import { generateMiddlewares } from "./middleware-handlers";
 import { processRequest } from "./request-handler";
 import { createRoute } from "./route-handler";
 import { StartServerOptions, startServer } from "./start-server";
 
-export type CreateServerFactoryRoute<
-  ServerRouteMap extends RouteMap,
-  RouteKeys extends keyof ServerRouteMap = keyof ServerRouteMap
-> = {
-  routePath: RouteKeys;
+export type CreateServerFactoryRoute = {
   middlewares?: Middleware[];
   options?: RouteOptions;
-  routes?: ServerRouteMap;
+  bypassMiddlewares?: boolean;
 };
 
-// TODO: figure out a way to set cors up for local dev automatically.
+export type CreateServerParams = {
+  wsPaths?: string[];
+  enableBodyParser?: boolean;
+  cors?: CORSOptions;
+  // max file size in bytes, if passed in then the check file middleware will be passed in
+  // to validate file sizes
+  maxFileSize?: number;
+};
+
 export function createServerFactory(
-  { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerFactory = {
+  { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerParams = {
     wsPaths: [],
     enableBodyParser: true,
   }
@@ -31,23 +36,29 @@ export function createServerFactory(
   let server: Server;
 
   // cors must come first in the middleware
-  let middlewares: Middleware[] = generateMiddlewares({
+  let middlewares = generateMiddlewares({
     cors,
     enableBodyParser,
     maxFileSize,
   });
 
-  const createServerRoute = ({
-    routePath,
-    options = {},
-    middlewares: routeMiddlewares = middlewares,
-    routes: routeMap = routes,
-  }: CreateServerFactoryRoute<typeof routes>) => {
-    return createRoute({
-      routePath: String(routePath),
+  const createServerRoute = <ReqT extends RouteReqDataOpts = RouteReqDataOpts>(
+    routePath: string,
+    {
+      options = {},
+      middlewares: routeMiddlewares = [],
+      bypassMiddlewares: bypassServerMiddlewares = false,
+    }: CreateServerFactoryRoute = {}
+  ) => {
+    if (!bypassServerMiddlewares) {
+      routeMiddlewares = [...middlewares, ...routeMiddlewares];
+    }
+
+    return createRoute<ReqT>({
+      routePath: routePath,
       options,
       middlewares: routeMiddlewares,
-      routes: routeMap,
+      routes: routes,
     });
   };
 
