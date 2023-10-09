@@ -72,8 +72,14 @@ export function generateUuidV7(
   timestamp?: number,
   randA?: bigint,
   randB?: bigint
-): string {
-  const unixTsMs = BigInt(timestamp ? timestamp : Date.now()) & 0xffffffffffffn; // Ensure 48 bits
+): {
+  uuid: string;
+  timestamp: Date;
+} {
+  const currentDt = new Date();
+
+  const unixTsMs =
+    BigInt(timestamp ? timestamp : currentDt.getTime()) & 0xffffffffffffn; // Ensure 48 bits
   const version = 0x7;
 
   randA = (randA ?? BigInt(randomBytes(2).readUInt16BE(0))) & 0xfffn; // Ensure 12 bits
@@ -91,13 +97,18 @@ export function generateUuidV7(
     unixTsMsBits | versionBits | randABits | varBits | randBBits;
   const uuidHex = uuidBigInt.toString(16).padStart(32, "0");
 
-  return [
+  const uuid = [
     uuidHex.slice(0, 8),
     uuidHex.slice(8, 12),
     uuidHex.slice(12, 16),
     uuidHex.slice(16, 20),
     uuidHex.slice(20),
   ].join("-");
+
+  return {
+    uuid,
+    timestamp: currentDt,
+  };
 }
 
 // expect a string of length 36 (32 hexadecimal characters + 4 dashes):
@@ -106,6 +117,12 @@ export function isValidUuid(uuid: string) {
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return uuidRegex.test(uuid);
 }
+
+export const getUuidV7Date = (uuid: string) => {
+  const extracted = extractTimestampFromUuidV7(uuid);
+  const date = new Date(Number(extracted.timestamp));
+  return date;
+};
 export function extractTimestampFromUuidV7(uuid: string): {
   timestamp: BigInt;
   version: BigInt;
@@ -222,17 +239,27 @@ export const uuidToDate = (uuid: string) => {
   return date;
 };
 
-export function generateUuid(
-  version: 6 | 7 | 8,
+type Version7Return = {
+  uuid: string;
+  timestamp: Date;
+};
+
+type UuidVersion = 6 | 7 | 8;
+export function generateUuid<Ver extends UuidVersion>(
+  version: Ver,
   customData?: bigint[]
-): string {
+): Ver extends 7 ? Version7Return : string {
   if (version === 6) {
-    return generateUuidV6();
+    return generateUuidV6() as Ver extends 7 ? Version7Return : string;
   } else if (version === 7) {
-    return generateUuidV7();
+    const { uuid, timestamp } = generateUuidV7();
+    return { uuid, timestamp } as Ver extends 7 ? Version7Return : string;
   } else if (version === 8) {
-    return generateUuidV8(customData);
+    return generateUuidV8(customData) as Ver extends 7
+      ? Version7Return
+      : string;
   } else {
     throw new Error("Invalid version or custom data for UUIDv8");
   }
 }
+

@@ -54,16 +54,17 @@ export function createServerCookieFactory<
     });
   };
 
-  const getCookie = (req = request): T | null => {
+  const getCookie = (uriDecode = false, req = request): T | null => {
     if (!req) {
       throw new Error("No request object provided");
     }
     const cookies = parseCookies(req.headers.get("Cookie") || "");
-    return parseCookieData<T>(cookies[cookieKey]);
+    const cookie = cookies[cookieKey];
+    return parseCookieData<T>(uriDecode ? decodeURIComponent(cookie) : cookie);
   };
 
   const checkCookie = (req = request) => {
-    return getCookie(req) !== null;
+    return getCookie(false, req) !== null;
   };
 
   const getRawCookie = (req = request): string | null => {
