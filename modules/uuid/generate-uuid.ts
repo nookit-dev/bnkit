@@ -67,17 +67,23 @@ export function generateUuidV6(): string {
     formatNode(node)
   );
 }
-export function generateUuidV7(timestamp?: number): string {
-  const unixTsMs = BigInt(timestamp ? timestamp : Date.now()); // Milliseconds since Unix epoch
-  const version = 0x7; // UUIDv7 version
-  const randA = BigInt(randomBytes(2).readUInt16BE(0));
-  const varField = BigInt(0x2); // UUID variant
-  const randB = BigInt(randomBytes(8).readBigUInt64BE(0));
+// unix epoch in seconds
+export function generateUuidV7(
+  timestamp?: number,
+  randA?: bigint,
+  randB?: bigint
+): string {
+  const unixTsMs = BigInt(timestamp ? timestamp : Date.now()) & 0xffffffffffffn; // Ensure 48 bits
+  const version = 0x7;
 
-  // Constructing UUID fields as per the UUIDv7 layout
-  const unixTsMsBits = unixTsMs << BigInt(76);
-  const versionBits = BigInt(version) << BigInt(72);
-  const randABits = randA << BigInt(60);
+  randA = (randA ?? BigInt(randomBytes(2).readUInt16BE(0))) & 0xfffn; // Ensure 12 bits
+  const varField = BigInt(0x2);
+  randB =
+    (randB ?? BigInt(randomBytes(8).readBigUInt64BE(0))) & 0x3fffffffffffffffn; // Ensure 62 bits
+
+  const unixTsMsBits = unixTsMs << BigInt(80);
+  const versionBits = BigInt(version) << BigInt(76);
+  const randABits = randA << BigInt(64);
   const varBits = varField << BigInt(62);
   const randBBits = randB;
 
@@ -85,7 +91,6 @@ export function generateUuidV7(timestamp?: number): string {
     unixTsMsBits | versionBits | randABits | varBits | randBBits;
   const uuidHex = uuidBigInt.toString(16).padStart(32, "0");
 
-  // Formatting UUID string
   return [
     uuidHex.slice(0, 8),
     uuidHex.slice(8, 12),
@@ -101,12 +106,23 @@ export function isValidUuid(uuid: string) {
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return uuidRegex.test(uuid);
 }
-export function extractTimestampFromUuidV7(uuid: string) {
-  const uuidWithoutHyphens = uuid.replace(/-/g, "");
+export function extractTimestampFromUuidV7(uuid: string): {
+  timestamp: BigInt;
+  version: BigInt;
+} {
+  const uuidHex = uuid.replace(/-/g, ""); // Remove hyphens
+  const uuidBigInt = BigInt(`0x${uuidHex}`);
 
-  const unixTsMs = BigInt(`0x${uuidWithoutHyphens.slice(0, 12)}`);
-  const ver = BigInt(`0x${uuidWithoutHyphens.charAt(3)}`);
-  return { timestamp: unixTsMs, version: ver };
+  // Extracting the timestamp: it is the most significant 48 bits, so we shift right by (128 - 48) = 80 bits.
+  const timestamp = uuidBigInt >> BigInt(80);
+
+  // Extracting the version: it's 4 bits after the timestamp. First, we mask off the timestamp bits by doing a bitwise AND with a mask that is 1 for the version bits and 0 elsewhere. Then, we shift right by (128 - 48 - 4) = 76 bits.
+  const versionMask = BigInt(
+    `0x${"0".repeat(12)}${"F".repeat(1)}${"0".repeat(19)}`
+  );
+  const version = (uuidBigInt & versionMask) >> BigInt(76);
+
+  return { timestamp, version };
 }
 
 export function extractRandomValuesFromUuidV7(uuid: string) {
@@ -191,6 +207,20 @@ export function generateUuidV8(customData: bigint[] = [0n, 0n, 0n]): string {
     uuidHex.slice(20),
   ].join("-");
 }
+
+export const uuidToDate = (uuid: string) => {
+  const validUuid = isValidUuid(uuid);
+  if (!validUuid) {
+    throw new Error("Invalid UUID: ");
+  }
+  const { timestamp, version } = extractTimestampFromUuidV7(uuid);
+  if (version !== 7n) {
+    console.error("Invalid UUID version", version);
+    throw new Error("Invalid UUID version");
+  }
+  const date = new Date(Number(timestamp));
+  return date;
+};
 
 export function generateUuid(
   version: 6 | 7 | 8,
