@@ -32,17 +32,16 @@ export const jsonRes: JSONResType = (body, options = {}, response) => {
     ...options?.headers,
     ...new Headers(response?.headers),
   };
-  const headers = new Headers(combinedHeaders);
 
   return new Response(JSON.stringify(body), {
     ...options,
     headers: {
-      ...headers,
+      ...combinedHeaders,
       // jsonRes should allows have json content type
       "Content-Type": "application/json",
     },
   });
-}
+};
 
 export function htmlRes(body: string, options?: ResponseInit): Response {
   return new Response(body, {

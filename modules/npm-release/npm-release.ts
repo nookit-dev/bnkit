@@ -36,7 +36,9 @@ export const updateVersion = (
 ): string => {
   const [major, minor, patch] = currentVersion.split(".").map(Number);
   if (isAlpha) {
+    console.log(Math.random())
     const alphaHash = Math.random().toString(36).substr(2, 8);
+    console.log({ alphaHash });
     return `${major}.${minor}.${patch}-alpha.${alphaHash}`;
   } else {
     return `${major}.${minor}.${patch + 1}`;

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, jest, test } from "bun:test";
 import { createServerCookieFactory } from "./server-side-cookie-factory";
 
 describe("createServerCookieFactory", () => {
-  const cookieFactory = createServerCookieFactory({ cookieKey: "test" });
+  const cookieFactory = createServerCookieFactory("test");
 
   // Mock response and request objects
   let mockRes = { headers: { append: jest.fn() } };
