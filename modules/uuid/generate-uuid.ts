@@ -103,10 +103,7 @@ export function isValidUuid(uuid: string) {
 }
 export function extractTimestampFromUuidV7(uuid: string) {
   const uuidWithoutHyphens = uuid.replace(/-/g, "");
-  console.log({
-    uuid,
-    uuidWithoutHyphens,
-  });
+
   const unixTsMs = BigInt(`0x${uuidWithoutHyphens.slice(0, 12)}`);
   const ver = BigInt(`0x${uuidWithoutHyphens.charAt(3)}`);
   return { timestamp: unixTsMs, version: ver };

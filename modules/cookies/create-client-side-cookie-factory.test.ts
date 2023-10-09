@@ -47,16 +47,11 @@ describe("createClientCookieFactory", () => {
   test("getCookie returns the value of a cookie", () => {
     document.cookie = "test=value";
     const value = cookieFactory.getRawCookie();
-    console.log({
-      document,
-      value,
-    });
     expect(value).toBe("value");
   });
 
   test("deleteCookie sets a cookie with Max-Age=-1", () => {
     cookieFactory.deleteCookie();
-    console.log(document.cookie);
     expect(document.cookie).toBe("test=; max-age=-1");
   });
 

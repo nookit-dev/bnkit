@@ -137,9 +137,6 @@ test("isValidUuid returns true for valid UUIDs", () => {
 
 test("UUIDv6 generation and extraction", () => {
   const uuidV6 = generateUuidV6();
-  console.log({
-    uuidV6,
-  });
   expect(isValidUuid(uuidV6)).toBeTruthy();
 
   const { timestamp, version } = extractTimestampFromUuidV6(uuidV6);
@@ -150,48 +147,9 @@ test("UUIDv6 generation and extraction", () => {
 // UUIDv7 Tests
 test("UUIDv7 generation and extraction", () => {
   const uuidV7 = generateUuidV7();
-  console.log({ uuidV7, uuidV7Len: uuidV7.length });
   expect(isValidUuid(uuidV7)).toBeTruthy();
 
   const { timestamp, version } = extractTimestampFromUuidV7(uuidV7);
   expect(timestamp).toBeDefined();
-  console.log(BigInt(version));
   expect(version).toBe(BigInt(7));
 });
-
-// failing
-// test("UUIDv8 generation and extraction", () => {
-//   // Your custom data
-//   let customData = [
-//     0x1234567890abcdefn,
-//     0x1234567890abcdefn,
-//     0x1234567890abcdefn,
-//   ];
-
-//   // Generate a UUID v8
-//   let uuid = generateUuidV8(customData);
-//   let uuid2 = generateUuidV8(customData);
-
-//   console.log(`UUID: ${uuid}`);
-//   console.log(`UUID2: ${uuid2}`);
-
-//   // Validate generated UUID
-//   //   if (!isValidUuid(uuid)) throw `Invalid UUID: ${uuid}`;
-//   expect(isValidUuid(uuid)).toBeTruthy();
-
-//   // Extract custom data
-//   let extractedData = extractCustomDataFromUuidV8(uuid);
-//   console.log(extractedData, customData);
-
-//   //   console.log(`Extracted data: ${JSON.stringify(extractedData)}`);
-
-//   // Compare extracted and original data
-//   expect(extractedData.customA).toBe(customData[0]);
-//   //   if (
-//   //     extractedData.customA !== customData[0] ||
-//   //     extractedData.customB !== customData[1] ||
-//   //     extractedData.customC !== customData[2]
-//   //   )
-//   //     throw `Data does not match`;
-
-// });
