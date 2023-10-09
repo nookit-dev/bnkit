@@ -26,7 +26,7 @@ describe("createServerCookieFactory", () => {
 
   test("getCookie returns the value of a cookie", () => {
     mockReq.headers.get.mockReturnValue("test=value");
-    const value = cookieFactory.getCookie(mockReq as any as Request);
+    const value = cookieFactory.getCookie(false, mockReq as any as Request);
     expect(value).toBe("value");
   });
 

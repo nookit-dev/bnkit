@@ -48,8 +48,12 @@ export function createServerFactory(
       options = {},
       middlewares: routeMiddlewares = [],
       bypassMiddlewares: bypassServerMiddlewares = false,
-    }: CreateServerFactoryRoute
+    }: CreateServerFactoryRoute = {}
   ) => {
+    if (!Array.isArray(middlewares) || !Array.isArray(routeMiddlewares)) {
+      throw new Error("middlewares and routeMiddlewares must be arrays");
+    }
+    
     if (!bypassServerMiddlewares) {
       routeMiddlewares = [...middlewares, ...routeMiddlewares];
     }

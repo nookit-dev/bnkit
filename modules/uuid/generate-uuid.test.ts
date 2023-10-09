@@ -1,23 +1,23 @@
 import { describe, expect, test } from "bun:test";
 import {
-    extractTimestampFromUuidV6,
-    extractTimestampFromUuidV7,
-    formatClockSeq,
-    formatNode,
-    formatTimeHighAndVersion,
-    formatTimeLow,
-    formatTimeMid,
-    generateUuid,
-    generateUuidV6,
-    generateUuidV7,
-    generateUuidV8,
-    getRandomClockSeq,
-    getRandomNode,
-    getRandomValues,
-    getTimestampForV6,
-    getTimestampForV7,
-    isValidUuid,
-    uuidToDate,
+  extractTimestampFromUuidV6,
+  extractTimestampFromUuidV7,
+  formatClockSeq,
+  formatNode,
+  formatTimeHighAndVersion,
+  formatTimeLow,
+  formatTimeMid,
+  generateUuid,
+  generateUuidV6,
+  generateUuidV7,
+  generateUuidV8,
+  getRandomClockSeq,
+  getRandomNode,
+  getRandomValues,
+  getTimestampForV6,
+  getTimestampForV7,
+  isValidUuid,
+  uuidToDate,
 } from "./generate-uuid"; // Update this with your actual file name
 const MOCK_TIMESTAMP = 1627524478387;
 
@@ -96,7 +96,7 @@ describe("UUID Generation Functions", () => {
   });
 
   test("generateUuidV7 returns a UUID string of length 36", () => {
-    expect(generateUuidV7()).toHaveLength(36);
+    expect(generateUuidV7().uuid).toHaveLength(36);
   });
 
   test("generateUuidV8 returns a UUID string of length 36", () => {
@@ -110,7 +110,7 @@ describe("UUID Generation Functions", () => {
 
   test("generateUuid returns a UUID string of length 36 for 6, 7, and 8", () => {
     expect(generateUuid(6)).toHaveLength(36);
-    expect(generateUuid(7)).toHaveLength(36);
+    expect(generateUuid(7).uuid).toHaveLength(36);
     expect(generateUuid(8)).toHaveLength(36);
   });
 
@@ -149,7 +149,7 @@ test("UUIDv6 generation and extraction", () => {
 
 describe("UUIDv7 generation", () => {
   test("UUIDv7 generation and extraction", () => {
-    const uuidV7 = generateUuidV7(MOCK_TIMESTAMP);
+    const { uuid: uuidV7 } = generateUuidV7(MOCK_TIMESTAMP);
     expect(isValidUuid(uuidV7)).toBeTruthy();
 
     const { timestamp, version } = extractTimestampFromUuidV7(uuidV7);
@@ -160,7 +160,7 @@ describe("UUIDv7 generation", () => {
   test("UUIDv7 can extract timestamp", () => {
     const expectedTimestampDate = new Date(MOCK_TIMESTAMP);
 
-    const uuidV7 = generateUuidV7(MOCK_TIMESTAMP);
+    const { uuid: uuidV7 } = generateUuidV7(MOCK_TIMESTAMP);
     expect(isValidUuid(uuidV7)).toBeTruthy();
 
     const { timestamp } = extractTimestampFromUuidV7(uuidV7);
@@ -182,7 +182,7 @@ describe("UUIDv7 generation", () => {
 describe("uuidToDate", () => {
   test("uuidToDate converts a valid UUIDv7 to the correct date", () => {
     const dateNow = new Date();
-    const uuid = generateUuidV7(dateNow.getTime());
+    const { uuid } = generateUuidV7(dateNow.getTime());
     expect(isValidUuid(uuid)).toBe(true);
 
     const date = uuidToDate(uuid);
