@@ -1,10 +1,7 @@
 export { getRandomCity } from "./cities";
 export { getRandomCountry } from "./countries";
-export {
-  DataGeneratorMapConfig,
-  createRandomData,
-  dataGeneratorMap,
-} from "./create-random-data";
+export { createRandomData, dataGeneratorMap } from "./create-random-data";
+export type { DataGeneratorMapConfig } from "./create-random-data";
 export {
   getRandomFirstName,
   getRandomFullName,

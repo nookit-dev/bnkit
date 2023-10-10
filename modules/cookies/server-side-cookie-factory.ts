@@ -6,7 +6,7 @@ import {
   stringifyCookieData,
 } from "./cookie-utils";
 
-export function createServerCookieFactory<
+export function serverCookieFactory<
   T = string,
   FactoryRequest extends Request = Request,
   FactoryRes extends Response = Response

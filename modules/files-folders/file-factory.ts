@@ -1,22 +1,18 @@
 import { saveOrUpdateFile } from "./file-editing-utils";
 import { getFullPath } from "./file-path-utils";
 import {
-    listFilesAndFolderInPath,
-    readJson,
-    readTextFromMultipleFiles,
+  listFilesAndFolderInPath,
+  readJson,
+  readTextFromMultipleFiles,
 } from "./file-reading-utils";
 import { searchDirForFileName } from "./file-search-utils";
 import {
-    deletePath,
-    directoryExists,
-    fileExists,
+  deletePath,
+  directoryExists,
+  fileExists,
 } from "./file-validation-utils";
 
-export function createFileFactory({
-  baseDirectory,
-}: {
-  baseDirectory: string;
-}) {
+export function fileFactory({ baseDirectory }: { baseDirectory: string }) {
   return {
     updateFiles: (relativePaths: string[], data: string) => {
       const promises = relativePaths.map(async (relativePath) => {

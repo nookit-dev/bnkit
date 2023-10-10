@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, jest, test } from "bun:test";
-import { createClientCookieFactory } from "./create-client-side-cookie-factory";
+import { clientCookieFactory } from "./create-client-side-cookie-factory";
 
 declare var document: {
   cookie: any;
@@ -22,7 +22,7 @@ Object.defineProperty(globalThis, "document", {
 });
 
 describe("createClientCookieFactory", () => {
-  const cookieFactory = createClientCookieFactory("test");
+  const cookieFactory = clientCookieFactory("test");
 
   // Mock document.cookie
   let mockCookie = "";

@@ -225,7 +225,7 @@ export function generateUuidV8(customData: bigint[] = [0n, 0n, 0n]): string {
   ].join("-");
 }
 
-export const uuidToDate = (uuid: string) => {
+export const uuidV7ToDate = (uuid: string) => {
   const validUuid = isValidUuid(uuid);
   if (!validUuid) {
     throw new Error("Invalid UUID: ");
