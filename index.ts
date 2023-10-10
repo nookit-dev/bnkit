@@ -3,7 +3,7 @@ import * as cookies from "./modules/cookies";
 import * as dataGen from "./modules/data-gen";
 import * as deploy from "./modules/deploy";
 import * as fetcher from "./modules/fetcher";
-// import * as filesFolders from "./modules/files-folders";
+import * as filesFolders from "./modules/files-folders";
 import * as hash from "./modules/hash";
 import * as jwt from "./modules/jwt";
 import * as logger from "./modules/logger";
@@ -24,7 +24,7 @@ export {
     dataGen,
     deploy,
     fetcher,
-    // filesFolders,
+    filesFolders,
     hash,
     jwt,
     logger,

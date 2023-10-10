@@ -17,7 +17,7 @@ import {
   getTimestampForV6,
   getTimestampForV7,
   isValidUuid,
-  uuidToDate,
+  uuidV7ToDate,
 } from "./generate-uuid"; // Update this with your actual file name
 const MOCK_TIMESTAMP = 1627524478387;
 
@@ -185,7 +185,7 @@ describe("uuidToDate", () => {
     const { uuid } = generateUuidV7(dateNow.getTime());
     expect(isValidUuid(uuid)).toBe(true);
 
-    const date = uuidToDate(uuid);
+    const date = uuidV7ToDate(uuid);
     console.log({
       uuid,
       date,
@@ -199,25 +199,25 @@ describe("uuidToDate", () => {
     expect(date).toEqual(dateNow);
   });
 
-  test("uuidToDate throws an error for an invalid UUID format", () => {
+  test("uuidV7ToDate throws an error for an invalid UUID format", () => {
     const invalidUuid = "12345";
 
     // Check if the function throws the correct error
     // expect(() => uuidToDate(invalidUuid)).toR("Invalid UUID");
     try {
-      uuidToDate(invalidUuid);
+      uuidV7ToDate(invalidUuid);
     } catch (e) {
       expect(e.message).toBe("Invalid UUID: ");
     }
   });
 
-  test("uuidToDate throws an error for a non-v7 UUID", () => {
+  test("uuidV7ToDate throws an error for a non-v7 UUID", () => {
     // Example of a v4 UUID. You should use a real UUIDv4 generator here.
     const nonV7Uuid = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
 
     // Check if the function throws the correct error
     try {
-      uuidToDate(nonV7Uuid);
+      uuidV7ToDate(nonV7Uuid);
     } catch (e) {
       //   expect(() => uuidToDate(nonV7Uuid)).toThrowError("Invalid UUID version");
       expect(e.message).toBe("Invalid UUID version");
