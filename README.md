@@ -32,22 +32,16 @@ bun add @u-tools/core
 Now, you can import U Tools into your module:
 
 ```typescript
-import { createFetchFactory } from '@u-tools/modules/fetcher'
-```
+import * as u from '@u-tools/core'
 
-```typescript
-//  if you know what the data looks like you can pass it in as a generic here.
-const fetcher = createFetchFactory<DataT>()
+const { start, route } = u.server.serverFactory({});
 
-
-// however you can also pass it in on the request itsefl
-const result = await fetcher.get<GetResponse>('http://example.com/)
-```
-
-You can also use a single module directly:
-
-```bash
-bun add https://github.com/brandon-schabel/u-tools/tree/main/modules/cli-factory
+// on base request to "/"
+const baseReq = route("/", () => {
+    return u.server.jsonRes({
+        message: "Hello world!"
+    })
+});
 ```
 
 ## Key Highlights
@@ -106,11 +100,22 @@ Certainly! Here are more details about each of the U Tools modules:
 
 14. Utils: This isn't really a module :) - it does contains various utility functions that can be used across different modules. It includes functions like classy for generating class names, normalizeBytes for converting byte numbers to formatted text, and value checkers for inferring data types.
 
-15. Validation: The Validation module aims to provide a comprehensive suite of validation functions. It includes functions for checking the validity of API data and can be used to ensure data integrity and accuracy.
+15. UUID: Generate timestamp encoded UUIDs with UUIDv7 spec implemented
 
-16. WebRTC: The WebRTC module aims to provide an interface for setting up WebRTC connections between clients. While integration with the server module is planned, the module can currently be used for establishing peer-to-peer connections between clients.
+```typescript
+import * as u from '@u-tools/core'
+
+const uuid = u.uuid.v7()
+
+console.log(uuid)
+```
+
+1. Validation: The Validation module aims to provide a comprehensive suite of validation functions. It includes functions for checking the validity of API data and can be used to ensure data integrity and accuracy.
+
+2. WebRTC: The WebRTC module aims to provide an interface for setting up WebRTC connections between clients. While integration with the server module is planned, the module can currently be used for establishing peer-to-peer connections between clients.
 
 ## Plugins
+
 Currently U Tools has a React plugin, as well as a hook called `useServerState` for connecting to a U Tools websocket server state, a `useLocalStorage` hook, and a `useClipboard` hook.
 
 ## Architecture

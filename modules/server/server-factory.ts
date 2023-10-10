@@ -26,7 +26,7 @@ export type CreateServerParams = {
   maxFileSize?: number;
 };
 
-export function createServerFactory(
+export function serverFactory(
   { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerParams = {
     wsPaths: [],
     enableBodyParser: true,
@@ -53,7 +53,7 @@ export function createServerFactory(
     if (!Array.isArray(middlewares) || !Array.isArray(routeMiddlewares)) {
       throw new Error("middlewares and routeMiddlewares must be arrays");
     }
-    
+
     if (!bypassServerMiddlewares) {
       routeMiddlewares = [...middlewares, ...routeMiddlewares];
     }

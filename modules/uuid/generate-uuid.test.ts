@@ -18,7 +18,8 @@ import {
   getTimestampForV7,
   isValidUuid,
   uuidV7ToDate,
-} from "./generate-uuid"; // Update this with your actual file name
+} from "./generate-uuid";
+
 const MOCK_TIMESTAMP = 1627524478387;
 
 // note dashes are seperators and not part of the uuid so the length is 36 including the dashes
@@ -96,7 +97,7 @@ describe("UUID Generation Functions", () => {
   });
 
   test("generateUuidV7 returns a UUID string of length 36", () => {
-    expect(generateUuidV7().uuid).toHaveLength(36);
+    expect(generateUuidV7()).toHaveLength(36);
   });
 
   test("generateUuidV8 returns a UUID string of length 36", () => {
@@ -110,7 +111,7 @@ describe("UUID Generation Functions", () => {
 
   test("generateUuid returns a UUID string of length 36 for 6, 7, and 8", () => {
     expect(generateUuid(6)).toHaveLength(36);
-    expect(generateUuid(7).uuid).toHaveLength(36);
+    expect(generateUuid(7)).toHaveLength(36);
     expect(generateUuid(8)).toHaveLength(36);
   });
 
@@ -149,7 +150,7 @@ test("UUIDv6 generation and extraction", () => {
 
 describe("UUIDv7 generation", () => {
   test("UUIDv7 generation and extraction", () => {
-    const { uuid: uuidV7 } = generateUuidV7(MOCK_TIMESTAMP);
+    const uuidV7 = generateUuidV7({ dateTime: new Date(MOCK_TIMESTAMP) });
     expect(isValidUuid(uuidV7)).toBeTruthy();
 
     const { timestamp, version } = extractTimestampFromUuidV7(uuidV7);
@@ -157,10 +158,21 @@ describe("UUIDv7 generation", () => {
     expect(version).toBe(BigInt(7));
   });
 
+  test("UUIDV7 returns timestamp", () => {
+    const { uuid, timestamp } = generateUuidV7({
+      dateTime: new Date(MOCK_TIMESTAMP),
+      returnTimestamp: true,
+    });
+
+    expect(isValidUuid(uuid)).toBeTruthy();
+
+    expect(timestamp).toEqual(new Date(MOCK_TIMESTAMP));
+  });
+
   test("UUIDv7 can extract timestamp", () => {
     const expectedTimestampDate = new Date(MOCK_TIMESTAMP);
 
-    const { uuid: uuidV7 } = generateUuidV7(MOCK_TIMESTAMP);
+    const uuidV7 = generateUuidV7({ dateTime: new Date(MOCK_TIMESTAMP) });
     expect(isValidUuid(uuidV7)).toBeTruthy();
 
     const { timestamp } = extractTimestampFromUuidV7(uuidV7);
@@ -182,19 +194,10 @@ describe("UUIDv7 generation", () => {
 describe("uuidToDate", () => {
   test("uuidToDate converts a valid UUIDv7 to the correct date", () => {
     const dateNow = new Date();
-    const { uuid } = generateUuidV7(dateNow.getTime());
-    expect(isValidUuid(uuid)).toBe(true);
+    const uuidV7 = generateUuidV7({ dateTime: dateNow });
+    expect(isValidUuid(uuidV7)).toBe(true);
 
-    const date = uuidV7ToDate(uuid);
-    console.log({
-      uuid,
-      date,
-      dateNow,
-    });
-
-    // Check if the UUID is valid
-
-    // Check if the converted date equals the original timestamp
+    const date = uuidV7ToDate(uuidV7);
 
     expect(date).toEqual(dateNow);
   });
