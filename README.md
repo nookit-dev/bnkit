@@ -34,7 +34,7 @@ Now, you can import U Tools into your module:
 ```typescript
 import * as u from '@u-tools/core'
 
-const { start, route } = u.server.createServerFactory({});
+const { start, route } = u.server.serverFactory({});
 
 // on base request to "/"
 const baseReq = route("/", () => {
