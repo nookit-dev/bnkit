@@ -67,25 +67,35 @@ export function generateUuidV6(): string {
     formatNode(node)
   );
 }
-// unix epoch in seconds
-export function generateUuidV7(
-  timestamp?: number,
-  randA?: bigint,
-  randB?: bigint
-): {
+
+type Version7Params<RetTS extends boolean> = {
+  dateTime?: Date;
+  randA?: bigint;
+  randB?: bigint;
+  returnTimestamp?: RetTS;
+};
+
+type Version7Return = {
   uuid: string;
   timestamp: Date;
-} {
-  const currentDt = new Date();
+};
 
-  const unixTsMs =
-    BigInt(timestamp ? timestamp : currentDt.getTime()) & 0xffffffffffffn; // Ensure 48 bits
+export function generateUuidV7<RetTS extends boolean = false>({
+  dateTime,
+  randA: inputRandA,
+  randB: inputRandB,
+  returnTimestamp,
+}: Version7Params<RetTS> = {}): RetTS extends true ? Version7Return : string {
+  const selectedDate = dateTime || new Date();
+
+  const unixTsMs = BigInt(selectedDate.getTime()) & 0xffffffffffffn; // Ensure 48 bits
   const version = 0x7;
 
-  randA = (randA ?? BigInt(randomBytes(2).readUInt16BE(0))) & 0xfffn; // Ensure 12 bits
+  const randA = (inputRandA ?? BigInt(randomBytes(2).readUInt16BE(0))) & 0xfffn; // Ensure 12 bits
   const varField = BigInt(0x2);
-  randB =
-    (randB ?? BigInt(randomBytes(8).readBigUInt64BE(0))) & 0x3fffffffffffffffn; // Ensure 62 bits
+  const randB =
+    (inputRandB ?? BigInt(randomBytes(8).readBigUInt64BE(0))) &
+    0x3fffffffffffffffn; // Ensure 62 bits
 
   const unixTsMsBits = unixTsMs << BigInt(80);
   const versionBits = BigInt(version) << BigInt(76);
@@ -105,10 +115,15 @@ export function generateUuidV7(
     uuidHex.slice(20),
   ].join("-");
 
-  return {
-    uuid,
-    timestamp: currentDt,
-  };
+  if (returnTimestamp) {
+    // Explicitly assert the type of the returned object
+    return { uuid, timestamp: selectedDate } as RetTS extends true
+      ? Version7Return
+      : string;
+  }
+
+  // Explicitly assert the type of the returned string
+  return uuid as RetTS extends true ? Version7Return : string;
 }
 
 // expect a string of length 36 (32 hexadecimal characters + 4 dashes):
@@ -239,27 +254,18 @@ export const uuidV7ToDate = (uuid: string) => {
   return date;
 };
 
-type Version7Return = {
-  uuid: string;
-  timestamp: Date;
-};
-
 type UuidVersion = 6 | 7 | 8;
-export function generateUuid<Ver extends UuidVersion>(
+export function generateUuid<Ver extends number | UuidVersion>(
   version: Ver,
   customData?: bigint[]
-): Ver extends 7 ? Version7Return : string {
+): string {
   if (version === 6) {
-    return generateUuidV6() as Ver extends 7 ? Version7Return : string;
+    return generateUuidV6();
   } else if (version === 7) {
-    const { uuid, timestamp } = generateUuidV7();
-    return { uuid, timestamp } as Ver extends 7 ? Version7Return : string;
+    return generateUuidV7();
   } else if (version === 8) {
-    return generateUuidV8(customData) as Ver extends 7
-      ? Version7Return
-      : string;
+    return generateUuidV8(customData);
   } else {
     throw new Error("Invalid version or custom data for UUIDv8");
   }
 }
-
