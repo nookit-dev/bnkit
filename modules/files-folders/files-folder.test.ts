@@ -3,10 +3,10 @@ import fsPromise from "fs/promises";
 import { afterEach, describe, expect, it, jest, spyOn } from "bun:test";
 import path from "path";
 import { saveOrUpdateFile } from "./file-editing-utils";
-import { createFileFactory } from "./files-folder";
+import { fileFactory } from "./file-factory";
 
 const getTestFactory = () => {
-  return createFileFactory({
+  return fileFactory({
     baseDirectory: ".",
   });
 };
@@ -38,7 +38,7 @@ it("saves content to file", async () => {
   }
 });
 
-describe("createFileFactory", async () => {
+describe("fileFactory", async () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -181,9 +181,9 @@ describe("createFileFactory", async () => {
       },
     ]);
 
-    const fileFactory = createFileFactory({ baseDirectory: "path/to" });
+    const factory = fileFactory({ baseDirectory: "path/to" });
 
-    const result = await fileFactory.listFilesAndFolderInPath("");
+    const result = await factory.listFilesAndFolderInPath("");
 
     expect(result).toEqual([
       {

@@ -1,27 +1,38 @@
-export { createCliFactory } from "./modules/cli";
-export {
-    createClientCookieFactory,
-    createServerCookieFactory
-} from "./modules/cookies";
-export { createFetchFactory } from "./modules/fetcher";
-export * from "./modules/fetcher/create-fetch-factory";
-export { createFileFactory } from "./modules/files-folders";
-export {
-    createNonSecureHashFactory,
-    createSecureHashFactory
-} from "./modules/hash";
-export {
-    jwtClientSideFactory,
-    jwtServerSideFactory
-} from "./modules/jwt";
-export * from "./modules/logger";
-export { createLoggerFactory } from "./modules/logger/create-logger-factory";
-export { createServerFactory } from "./modules/server";
-export {
-    createSqliteFactory,
-    createTableQuery
-} from "./modules/sqlite";
-export { createValidatorFactory } from "./modules/validation";
+import * as cli from "./modules/cli";
+import * as cookies from "./modules/cookies";
+import * as dataGen from "./modules/data-gen";
+import * as deploy from "./modules/deploy";
+import * as fetcher from "./modules/fetcher";
+// import * as filesFolders from "./modules/files-folders";
+import * as hash from "./modules/hash";
+import * as jwt from "./modules/jwt";
+import * as logger from "./modules/logger";
+import * as npm from "./modules/npm-release";
+import * as server from "./modules/server";
+import * as sqlite from "./modules/sqlite";
+import * as state from "./modules/state";
+import * as uuid from "./modules/uuid";
+import * as validation from "./modules/validation";
+import * as webrtc from "./modules/webrtc";
 
 // utility exports
-export { classy } from "./modules/utils/classy";
+import * as utils from "./modules/utils/classy";
+
+export {
+    cli,
+    cookies,
+    dataGen,
+    deploy,
+    fetcher,
+    // filesFolders,
+    hash,
+    jwt,
+    logger,
+    npm,
+    server,
+    sqlite,
+    state,
+    utils, uuid, validation,
+    webrtc
+};
+

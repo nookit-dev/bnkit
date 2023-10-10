@@ -9,14 +9,11 @@ declare var document: {
   cookie: any;
 };
 
-export function createClientCookieFactory<T = string>(
+export function clientCookieFactory<T = string>(
   cookieKey: string,
   options?: CookieOptions
 ) {
-  const handleSetCookie = (
-    value: T,
-    cookieSetOptions: CookieOptions = {}
-  ) => {
+  const handleSetCookie = (value: T, cookieSetOptions: CookieOptions = {}) => {
     setCookie(cookieKey, value, cookieSetOptions || options || {});
   };
 

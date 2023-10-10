@@ -1,8 +1,12 @@
-import fsPromise from "fs/promises";
-import readline from "readline";
-import { createFileFactory } from "../..";
+import { fileFactory } from "../files-folders";
 import { defaultLogger } from "../logger";
 import { BaseError } from "../utils/base-error";
+import {
+  chooseActions,
+  getAdditionalPrompt,
+  getUserInput,
+  parseCliArgs,
+} from "./cli-utils";
 
 export type CLIOptions = {
   inputPrompt?: string;
@@ -21,7 +25,7 @@ export function createCliFactory<DataT, E extends BaseError<DataT>>({
   logger,
 }: CLIOptions) {
   // const actionsConfig = options.actionsConfig ?? {};
-  const fileFactory = createFileFactory({
+  const factory = fileFactory({
     baseDirectory: ".", // Replace with actual path
   });
 
@@ -60,9 +64,9 @@ export function createCliFactory<DataT, E extends BaseError<DataT>>({
     fileContent: string;
   }) => {
     try {
-      fileFactory.directoryExists({ path: filePath });
+      factory.directoryExists({ path: filePath });
 
-      fileFactory.createFile(filePath, fileContent);
+      factory.createFile(filePath, fileContent);
     } catch (error) {
       throw error;
     }
