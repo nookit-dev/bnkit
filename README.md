@@ -34,12 +34,16 @@ const { start, route } = u.server.serverFactory({});
 
 // on base request to "/"
 const baseReq = route("/");
+const jsonReq = route("/json")
 
-baseReq(() => {
-  return new Response("Hello, world!");
-});
+baseReq(() => new Response("Hello, world!"));
 
-// default port 3000
+jsonReq(() => u.server.jsonRes({
+    message: "Hello world!"
+  })
+)
+
+// start on default port 3000
 start()
 ```
 
@@ -47,7 +51,8 @@ start()
 bun run index.ts
 ```
 
-Visit `http:localhost:3000` in your browser and you should see the JSON
+Visit `http://localhost:3000` in your browser and you should see Hello world and
+`http://localhost:3000/json` for the json
 
 ## Key Highlights
 
