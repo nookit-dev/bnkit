@@ -8,7 +8,7 @@ export interface StartServerOptions {
 }
 export function startServer(
   options: StartServerOptions,
-  fetchHandler: (request: Request) => Response | Promise<Response> | undefined
+  fetchHandler: (request: Request) => Response
 ): Server {
   try {
     if (options.verbose) {

@@ -2,12 +2,6 @@
 
 ![U Tools Logo](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
 
-Are you overwhelmed by countless options and dependencies? Embrace the simplicity of U Tools, your toolkit for creating indie hacker apps. Cast aside the cumbersome stacks of large companies and say hello to lightning-fast experiences in your apps. U Tools is built with hobbyists at heart and puts the excitement and joy back into programming.
-
-## Alpha Software
-
-Please use at your own risk, this is alpha software and is still very much in the early stages and the APIs are **guranteed** to change.
-
 ## Getting Started
 
 1. Install Bun:
@@ -29,40 +23,47 @@ bun init
 bun add @u-tools/core
 ```
 
-Now, you can import U Tools into your module:
+4. Use U Tools modules - server example with json response
+
+`index.ts`
 
 ```typescript
-import * as u from '@u-tools/core'
+import * as u from "@u-tools/core";
 
 const { start, route } = u.server.serverFactory({});
 
 // on base request to "/"
-const baseReq = route("/", () => {
-    return u.server.jsonRes({
-        message: "Hello world!"
-    })
+const baseReq = route("/");
+
+baseReq(() => {
+  return new Response("Hello, world!");
 });
+
+// default port 3000
+start()
 ```
+
+```bash
+bun run index.ts
+```
+
+Visit `http:localhost:3000` in your browser and you should see the JSON
 
 ## Key Highlights
 
 - **Zero Dependencies**
 - **Unit Tested**
-- **Vesatile** - for client side - import what you need, for server you have the option of loading the entire package.
-  
+- **Modular**
+
 ## U Tools Goals
 
-U Tools aims to provide a dynamic, scalable, and user-friendly toolkit suitable for various project complexities. Key objectives include:
+The ultimate goal is to provide a complete toolkit for quickly developing, configuring, and deploying full stack web apps with a single dependency.
 
-- **Scalability**: Designed to integrate seamlessly into any project, regardless of size or requirements, ensuring utility for individual developers and larger teams alike.
+- **Simple**: Designed to integrate seamlessly into any project, regardless of size or requirements, ensuring utility for individual developers and larger teams alike.
 
-- **Modularity for Efficiency**: Adopt a "use-what-you-need" philosophy with U Tools’ modular architecture. Each module operates independently, allowing selection based on project necessity, minimizing bloat and maximizing efficiency.
+- **Modularity**: Each module generallys operates independently - few modules have shared functionality, allowing selection based on project necessity, minimizing bloat and maximizing efficiency. For client side - import what you need, for server you have the option of loading the entire package.
 
-- **Simplicity for Empowerment**: U Tools embraces simplicity, facilitating easy usage for developers at all levels, thereby nurturing creativity and productivity.
-
-- **Direct Problem Solving**: U Tools' direct source code modules enhance problem-solving capabilities and reduce dependencies on heavy abstraction layers, offering greater code understanding and project control.
-
-With U Tools, allow your toolkit to evolve alongside your project. Begin with essentials, integrate modules as needed, and shape your project efficiently. Happy coding!
+- **Plugable**: Easily create wrappers for different use cases for example the React plugin uses the cookie module to handle cookies with React.
 
 ## Features
 
@@ -136,6 +137,10 @@ Example Projects:
 [U Tools Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-u-tools-sqlite)
 
 [U Tools Auth Server With React!]([githubb.com/brandon-schabel/](https://github.com/brandon-schabel/u-tools-auth-app))
+
+## Alpha Software
+
+Please use at your own risk, this is alpha software and is still very much in the early stages and the APIs are **guranteed** to change.
 
 ## License
 
