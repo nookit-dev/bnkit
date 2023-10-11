@@ -1,14 +1,11 @@
-export type onErrorHandler = (
-  error: Error,
-  request: Request
-) => Response | Promise<Response>;
+export type onErrorHandler = (error: Error, request: Request) => Response;
 
 export function handleRequestError(
   err: Error,
   errorMessage: string,
   onErrorHandler?: onErrorHandler,
   request?: Request
-): Response | Promise<Response> {
+): Response {
   if (onErrorHandler) {
     return onErrorHandler(err, request!);
   }

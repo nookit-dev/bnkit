@@ -1,15 +1,13 @@
 import Bun from "bun";
-import { logStdOutput } from "mod/deploy/github-actions";
-import { createGitHubActionsFactory } from "mod/deploy";
-import { npmReleaseFactory } from "modules/npm-release";
 import { ulog } from "modules/utils/ulog";
 import path from "path";
 import { exit } from "process";
+import * as u from "./";
 
 // run bun test
 const testProc = Bun.spawnSync(["bun", "test", "--coverage"], {});
 
-const output = await logStdOutput(testProc);
+const output = await u.deploy.logStdOutput(testProc);
 
 if (!output) {
   ulog("No output");
@@ -21,12 +19,13 @@ const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max num
 
 const e = Bun.env;
 
-const { npmPublish, setupNpmAuth, updatePackageVersion } = npmReleaseFactory({
-  maxRetries: MAX_RETRIES,
-  npmToken: NPM_TOKEN,
-});
+const { npmPublish, setupNpmAuth, updatePackageVersion } =
+  u.npm.npmReleaseFactory({
+    maxRetries: MAX_RETRIES,
+    npmToken: NPM_TOKEN,
+  });
 
-const { commitAndPush, setupGitConfig } = createGitHubActionsFactory({
+const { commitAndPush, setupGitConfig } = u.deploy.createGitHubActionsFactory({
   sshRepoUrl: "git@github.com:brandon-schabel/u-tools.git",
 });
 

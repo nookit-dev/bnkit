@@ -26,7 +26,7 @@ export type CommonHttpHeaders =
 
 export type UToolHTTPHeaders = PartialRecord<CommonHttpHeaders, string>;
 
-export type RouteHandler = (request: Request) => Response | Promise<Response>;
+export type RouteHandler = (request: Request) => Response;
 
 export type MiddlwareParams<CtxT extends object = object> = {
   request: Request;
@@ -40,7 +40,7 @@ export type Middleware<CtxT extends object = object> = ({
   next,
   context,
   response,
-}: MiddlwareParams<CtxT>) => Response | Promise<Response>;
+}: MiddlwareParams<CtxT>) => Response;
 
 export type RouteMap = Record<string, RouteHandler>;
 
@@ -93,7 +93,7 @@ export type CreateRouteGeneric<ReqT extends RouteReqDataOpts> = {
 
 export type ReqHandler<ReqT extends RouteReqDataOpts> = (
   args: CreateRouteGeneric<ReqT>
-) => Promise<Response>;
+) => Response;
 
 export type OnRequestT<ReqT extends RouteReqDataOpts> = (
   handler: ReqHandler<ReqT>
@@ -101,5 +101,5 @@ export type OnRequestT<ReqT extends RouteReqDataOpts> = (
 
 export interface RouteOptions {
   errorMessage?: string;
-  onError?: (error: Error, request: Request) => Response | Promise<Response>;
+  onError?: (error: Error, request: Request) => Response;
 }

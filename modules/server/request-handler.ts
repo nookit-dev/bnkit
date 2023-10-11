@@ -13,14 +13,14 @@ export function processRequest({
   // websocket paths
   wsPaths: string[];
   server: Server;
-}): Response | Promise<Response> | undefined {
+}): Response {
   try {
     const url = new URL(request.url);
 
     if (wsPaths?.includes(url.pathname)) {
       const success = server?.upgrade(request);
       return success
-        ? undefined
+        ? new Response("WebSocket upgrade successful", { status: 200 })
         : new Response("WebSocket upgrade error", { status: 400 });
     }
 
