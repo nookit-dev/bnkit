@@ -46,31 +46,27 @@ const baseReq = route("/", () => {
 
 ## Key Highlights
 
-- **Zero Dependencies**: Our goal is to build this toolkit with no extra dependencies so your apps stay lean and fast, relying solely on Bun itself.
-- **Versatile**: U Tools is a toolkit to develop servers, decentralized networks, developer tools, custom Raspberry Pi software, and real-time software. Leverage the tiny direct Bun source code modules to solve your problems.
-- **Modular and Efficient**: Dive into a world where every design choice fuels your creative endeavors. U Tools's modular approach helps you build efficient applications with minimal abstraction layers.
+- **Zero Dependencies**
+- **Unit Tested**
+- **Vesatile** - for client side - import what you need, for server you have the option of loading the entire package.
+  
+## U Tools Goals
 
-## Goals
+U Tools aims to provide a dynamic, scalable, and user-friendly toolkit suitable for various project complexities. Key objectives include:
 
-Our mission with U Tools is to create a dynamic, flexible, and user-friendly toolkit that can be integrated into any project, regardless of its complexity. Here are our key goals:
+- **Scalability**: Designed to integrate seamlessly into any project, regardless of size or requirements, ensuring utility for individual developers and larger teams alike.
 
-- **Adaptable and Scalable**: U Tools is designed to fit seamlessly into any project, irrespective of its size or requirements. Whether you are a hobbyist building a small project or a developer part of a larger team, you can use U Tools as little or as much as you like, thanks to its modular architecture.
+- **Modularity for Efficiency**: Adopt a "use-what-you-need" philosophy with U Tools’ modular architecture. Each module operates independently, allowing selection based on project necessity, minimizing bloat and maximizing efficiency.
 
-- **Efficiency through Modularity**: With the modular architecture of U Tools, we aim to promote a "use-what-you-need" philosophy. Each module in U Tools is a standalone feature, allowing you to choose only what you need for your project. This reduces bloat and keeps your projects lean and efficient.
+- **Simplicity for Empowerment**: U Tools embraces simplicity, facilitating easy usage for developers at all levels, thereby nurturing creativity and productivity.
 
-- **Empowering Through Simplicity**: We believe in the power of simplicity. U Tools is created with a user-friendly approach, allowing developers of all skill levels to quickly and effectively use it. This fosters a more creative and productive environment.
+- **Direct Problem Solving**: U Tools' direct source code modules enhance problem-solving capabilities and reduce dependencies on heavy abstraction layers, offering greater code understanding and project control.
 
-- **Evolving with Community**: We are committed to continuously improving and refining U Tools based on community feedback and contributions. Our goal is to create a toolkit that evolves with the needs of the community, ensuring its relevance and usefulness in the ever-evolving tech landscape.
-
-- **Promoting Direct Problem Solving**: With U Tools's direct source code modules, we aim to foster a problem-solving approach that reduces reliance on heavy abstraction layers. This promotes a better understanding of your code and more control over your project.
-
-Remember, with U Tools, your toolkit can grow with your project. Start small, add modules as you need them, and watch your project take shape with efficiency and ease. Happy coding!
+With U Tools, allow your toolkit to evolve alongside your project. Begin with essentials, integrate modules as needed, and shape your project efficiently. Happy coding!
 
 ## Features
 
 U Tools offers a wide array of utility modules including:
-
-Certainly! Here are more details about each of the U Tools modules:
 
 1. CLI: The CLI module aims to provide a simple way to build a basic command-line interface for tasks such as project scaffolding or generating configurations. It helps you handle command-line input, parse arguments, and interact with the file system.
 
@@ -122,22 +118,24 @@ Currently U Tools has a React plugin, as well as a hook called `useServerState` 
 
 U Tools is built upon a robust and flexible architecture using factory functions, taking full advantage of their benefits to offer a streamlined, efficient, and versatile toolkit for your development needs.
 
-Our architecture is designed to ensure:
+- **Encapsulation**: U Tools employs factory functions to streamline object creation, concealing the complexity of the process and offering a user-friendly interface. This enables you to utilize module functionalities without delving into the detailed construction logic.
 
-- **Encapsulation**: U Tools uses factory functions to simplify object creation. This approach hides the intricate object creation process and provides a user-friendly interface. It enables you to leverage the functionality of the module you need, without the need to understand the finer details of its construction.
+- **Adaptability**: Factory functions in U Tools are engineered to return varied object types, dependent on input parameters, ensuring the toolkit can be precisely adapted to meet your project's unique requirements.
 
-- **Adaptability**: Our factory functions are designed to return diverse object types based on input parameters. This level of adaptability ensures that U Tools can be tailored to your project's specific requirements.
+- **Code Reusability**: Adhering to functional programming principles, U Tools’ factory functions facilitate efficient code management and hasten development through enabling code reusability and composability.
 
-- **Code Reusability**: By following the principles of functional programming, U Tools' factory functions ensure efficient code management and accelerate development by enabling code reusability and composability.
+- **Object Initialization**: U Tools' factory functions manage complex object initialization, ensuring modules are instantiated with necessary properties or states.
 
-- **Object Initialization**: Complex object initialization is handled within the factory functions of U Tools. If a module needs specific properties or a particular state at creation, U Tools manages these requirements.
+Moreover, U Tools employs factory functions to inject additional context where needed. For example, in the files folder module, a base path can be specified to anchor all operations to a particular directory. In the fetcher’s case, it allows the provision of a TypeSafe interface to the module, enabling type-safe fetch requests throughout your project. It also enhances user experience and usability by providing intellisense for available functions in the module. Although U Tools heavily utilizes factory functions, almost all functions within them can also be used directly.
 
-In addition to these, U Tools primarily utilizes factory functions to insert additional context where required. For instance, in the files folder module, a base path can be provided to ensure all operations relate to a designated directory. In the case of the fetcher - it allows you to provide a TypeSafe interface to the module which can then be utilized to make typesafe fetch requests anywhere in your project. More so, it gives an intellisense of the available functions in that module, improving the user experience and ease of use. While we do make heavy use of factory functions, nearly all functions used within the factory functions can be used directly
-
+This version aims to maintain the original meaning while enhancing clarity and grammatical structure. Let me know if further modifications are needed!
 Example Projects:
+
 [U Tools Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-u-tools)
 
 [U Tools Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-u-tools-sqlite)
+
+[U Tools Auth Server With React!]([githubb.com/brandon-schabel/](https://github.com/brandon-schabel/u-tools-auth-app))
 
 ## License
 
