@@ -2,6 +2,8 @@ import { describe, expect, it, jest } from "bun:test";
 import { composeMiddlewares, generateMiddlewares } from "./middleware-handlers";
 
 
+
+
 describe("generateMiddlewares", () => {
   it("should return an empty array if no options are provided", () => {
     const middlewares = generateMiddlewares({});
@@ -9,8 +11,10 @@ describe("generateMiddlewares", () => {
   });
 
   it("should include cors middleware if cors options are provided", () => {
-    const corsOptions = { origin: "https://example.com" };
-    const middlewares = generateMiddlewares({ cors: corsOptions });
+    // const corsOptions = { origin: "https://example.com" };
+    const middlewares = generateMiddlewares({ cors: {
+      origins: ["https://example.com"],
+    } });
     expect(middlewares).toHaveLength(1);
     expect(middlewares[0]).toBeInstanceOf(Function);
   });
@@ -28,9 +32,10 @@ describe("generateMiddlewares", () => {
   });
 
   it("should include all middlewares if all options are provided", () => {
-    const corsOptions = { origin: "https://example.com" };
     const middlewares = generateMiddlewares({
-      cors: corsOptions,
+      cors: {
+        origins: ["https://example.com"],
+      },
       enableBodyParser: true,
       maxFileSize: 1024,
     });

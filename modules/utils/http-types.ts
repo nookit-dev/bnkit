@@ -21,12 +21,11 @@ export type CommonHttpHeaders =
   | "User-Agent"
   | "X-Requested-With"
   | "X-Forwarded-For"
-  | "X-HTTP-Method-Override"
-  | string; // This allows for custom headers in addition to the common ones.
+  | "X-HTTP-Method-Override";
 
 export type UToolHTTPHeaders = PartialRecord<CommonHttpHeaders, string>;
 
-export type RouteHandler = (request: Request) => Response;
+export type RouteHandler = (request: Request) => Response | Promise<Response>;
 
 export type MiddlwareParams<CtxT extends object = object> = {
   request: Request;
@@ -70,7 +69,7 @@ export type CORSOptions = {
   /**
    * An array of allowed HTTP headers. Requests with headers not in this array will be rejected.
    */
-  headers?: CommonHttpHeaders[];
+  headers?: CommonHttpHeaders[] | string[];
   /**
    * Whether or not to allow credentials to be sent with the request.
    */
@@ -93,10 +92,10 @@ export type CreateRouteGeneric<ReqT extends RouteReqDataOpts> = {
 
 export type ReqHandler<ReqT extends RouteReqDataOpts> = (
   args: CreateRouteGeneric<ReqT>
-) => Response;
+) => Response | Promise<Response>;
 
 export type OnRequestT<ReqT extends RouteReqDataOpts> = (
-  handler: ReqHandler<ReqT>
+  handler: ReqHandler<ReqT> | Promise<ReqHandler<ReqT>>
 ) => void;
 
 export interface RouteOptions {

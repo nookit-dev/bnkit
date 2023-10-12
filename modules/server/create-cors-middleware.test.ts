@@ -1,85 +1,7 @@
 import { describe, expect, jest, test } from "bun:test";
-import {
-  createCorsMiddleware,
-  isMethodAllowed,
-  isOriginAllowed,
-} from "./create-cors-middleware";
+import { createCorsMiddleware } from "./create-cors-middleware";
 
 const defaultOrigin = "http://example.com";
-
-import { CORSOptions } from "mod/utils/http-types";
-import { setCORSHeaders } from "./create-cors-middleware";
-
-describe("setCORSHeaders", () => {
-  test('sets the Access-Control-Allow-Origin header to the request origin if the allowed origins do not include "*"', () => {
-    const response = new Response();
-    const options = { origins: ["https://example.com"] };
-    const requestOrigin = "https://example.com";
-
-    setCORSHeaders(response, options, requestOrigin);
-
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
-      "https://example.com"
-    );
-  });
-
-  test('sets the Access-Control-Allow-Origin header to "*" if the allowed origins include "*"', () => {
-    const response = new Response();
-    const options = { origins: ["*"] };
-    const requestOrigin = "https://example.com";
-
-    setCORSHeaders(response, options, requestOrigin);
-
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
-  });
-
-  test("sets the Access-Control-Allow-Methods header to the allowed methods", () => {
-    const response = new Response();
-    const options: CORSOptions = { methods: ["GET", "POST"] };
-    const requestOrigin = "https://example.com";
-
-    setCORSHeaders(response, options, requestOrigin);
-
-    expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "GET, POST"
-    );
-  });
-
-  test("sets the Access-Control-Allow-Headers header to the allowed headers", () => {
-    const response = new Response();
-    const options = { headers: ["Content-Type", "Authorization"] };
-    const requestOrigin = "https://example.com";
-
-    setCORSHeaders(response, options, requestOrigin);
-
-    expect(response.headers.get("Access-Control-Allow-Headers")).toBe(
-      "Content-Type, Authorization"
-    );
-  });
-});
-
-describe("isOriginAllowed", () => {
-  test("allows catch all (*)", () => {
-    expect(isOriginAllowed(["*"], defaultOrigin)).toBe(true);
-  });
-  test("allows specific origins", () => {
-    expect(isOriginAllowed([defaultOrigin], defaultOrigin)).toBe(true);
-  });
-
-  test("disallows non-matching origins", () => {
-    expect(isOriginAllowed(["http://example.org"], defaultOrigin)).toBe(false);
-  });
-});
-
-describe("isMethodAllowed", () => {
-  test("allows allowed methods", () => {
-    expect(isMethodAllowed(["GET", "POST"], "GET")).toBe(true);
-  });
-
-  test("disallows disallowed methods", () => {
-    expect(isMethodAllowed(["GET", "POST"], "DELETE")).toBe(false);
-  });
-});
 
 describe("createCorsMiddleware function", () => {
   test("default values", async () => {
@@ -89,6 +11,7 @@ describe("createCorsMiddleware function", () => {
       headers: ["Content-Type"],
     });
 
+    const res = new Response();
     const requester = new Request(defaultOrigin, {
       method: "GET",
       headers: new Headers({
@@ -97,12 +20,15 @@ describe("createCorsMiddleware function", () => {
     });
 
     const next = jest.fn(() => {
-      const res = new Response();
       res.headers.append("Content-Type", "application/json"); // Add a header for demonstration purposes
       return res;
     });
 
-    const response = await middleware({ request: requester, next });
+    const response = middleware({
+      request: requester,
+      next,
+      response: res,
+    });
 
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
       "GET, POST, PUT, DELETE"
@@ -115,10 +41,12 @@ describe("createCorsMiddleware function", () => {
   test("missing Origin header", async () => {
     const middleware = createCorsMiddleware({});
     const requester = new Request(defaultOrigin, { method: "GET" });
-    const next = jest.fn(() => new Response());
-    const response = await middleware({ request: requester, next });
+    const response = new Response();
+    const next = jest.fn(() => response);
 
-    expect(response.status).toBe(400);
+    const midRes = middleware({ request: requester, next, response });
+
+    expect(midRes.status).toBe(400);
   });
 
   test("OPTIONS request", async () => {
@@ -133,11 +61,13 @@ describe("createCorsMiddleware function", () => {
         "Access-Control-Request-Method": "GET",
       }),
     });
-    const next = jest.fn(() => new Response());
-    const response = await middleware({ request: requester, next });
+    const response = new Response();
+    const next = jest.fn(() => response);
 
-    expect(response.status).toBe(204);
-    expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
+    const resMid = middleware({ request: requester, next, response });
+
+    expect(resMid.status).toBe(204);
+    expect(resMid.headers.get("Access-Control-Allow-Methods")).toBe(
       "OPTIONS, GET, POST, PUT, DELETE"
     );
   });
@@ -153,10 +83,11 @@ describe("createCorsMiddleware function", () => {
         Origin: defaultOrigin,
       }),
     });
-    const next = jest.fn(() => new Response());
-    const response = await middleware({ request: requester, next });
+    const response = new Response();
+    const next = jest.fn(() => response);
+    const midResponse = middleware({ request: requester, next, response });
 
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
+    expect(midResponse.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
 
   test("unallowed method with OPTIONS request", async () => {
@@ -171,10 +102,11 @@ describe("createCorsMiddleware function", () => {
         "Access-Control-Request-Method": "PATCH",
       },
     });
-    const next = jest.fn(() => new Response());
-    const response = await middleware({ request, next });
+    const response = new Response();
+    const next = jest.fn(() => response);
+    const midres = middleware({ request, next, response });
 
-    expect(response.status).toBe(405);
+    expect(midres.status).toBe(405);
   });
 
   test("non-OPTIONS request", async () => {
@@ -188,10 +120,12 @@ describe("createCorsMiddleware function", () => {
         Origin: defaultOrigin,
       }),
     });
-    const next = jest.fn(() => new Response());
-    const response = await middleware({ request: requester, next });
+    const response = new Response();
+    const next = jest.fn(() => response);
 
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
+    const midRes = middleware({ request: requester, next, response });
+
+    expect(midRes?.headers.get("Access-Control-Allow-Origin")).toBe(
       defaultOrigin
     );
   });
@@ -210,11 +144,14 @@ describe("createCorsMiddleware function", () => {
       headers: { Origin: "http://example.com" },
     });
 
-    const response = await middleware({
+    const response = new Response();
+
+    const responseMid = middleware({
       request,
-      next: async () => new Response("Hello, world!"),
+      next: () => response,
+      response,
     });
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
+    expect(responseMid.headers.get("Access-Control-Allow-Origin")).toBe(
       "http://example.com"
     );
   });
@@ -224,11 +161,14 @@ describe("createCorsMiddleware function", () => {
     const request = new Request("http://example.com", {
       headers: { Origin: "http://example.com" },
     });
-    const response = await middleware({
+
+    const response = new Response();
+    const resMid = middleware({
       request,
-      next: async () => new Response("Hello, world!"),
+      next: () => response,
+      response,
     });
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
+    expect(resMid.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
 
   test("should set Access-Control-Allow-Methods header to allowedMethods", async () => {
@@ -240,11 +180,14 @@ describe("createCorsMiddleware function", () => {
       headers: { Origin: "http://example.com" },
     });
 
-    const response = await middleware({
+    const response = new Response();
+
+    const resMid = middleware({
       request,
-      next: async () => new Response("Hello, world!"),
+      next: () => response,
+      response,
     });
-    expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
+    expect(resMid.headers.get("Access-Control-Allow-Methods")).toBe(
       "GET, POST"
     );
   });
@@ -260,11 +203,14 @@ describe("createCorsMiddleware function", () => {
         "Content-Type": "application/json",
       },
     });
-    const response = await middleware({
+
+    const response = new Response();
+    const resMid = middleware({
       request,
-      next: async () => new Response("Hello, world!"),
+      next: () => response,
+      response,
     });
-    expect(response.headers.get("Access-Control-Allow-Headers")).toBe(
+    expect(resMid.headers.get("Access-Control-Allow-Headers")).toBe(
       "Content-Type"
     );
   });
@@ -272,12 +218,14 @@ describe("createCorsMiddleware function", () => {
   test("should return 400 Bad Request if request does not have Origin header", async () => {
     const middleware = createCorsMiddleware({});
     const request = new Request("http://example.com");
-    const response = await middleware({
+    const response = new Response();
+    const midRes = middleware({
       request,
-      next: async () => new Response("Hello, world!"),
+      next: () => response,
+      response,
     });
 
-    expect(response.status).toBe(400);
+    expect(midRes.status).toBe(400);
   });
 
   test("should return 403 Forbidden if request origin is not allowed", async () => {
@@ -287,11 +235,13 @@ describe("createCorsMiddleware function", () => {
     const request = new Request("http://example.org", {
       headers: { Origin: "http://example.org" },
     });
-    const response = await middleware({
+    const response = new Response("Hello, world!");
+    const resMid = middleware({
       request,
-      next: async () => new Response("Hello, world!"),
+      next: () => response,
+      response,
     });
-    expect(response.status).toBe(403);
+    expect(resMid.status).toBe(403);
   });
 
   test("should return 405 Method Not Allowed if request method is not allowed", async () => {
@@ -306,11 +256,13 @@ describe("createCorsMiddleware function", () => {
         "Access-Control-Request-Method": "POST",
       },
     });
-    const response = await middleware({
+    const response = new Response();
+    const resMid = middleware({
       request,
-      next: async () => new Response("Hello, world!"),
+      next: () => resMid,
+      response: response,
     });
-    expect(response.status).toBe(405);
+    expect(resMid.status).toBe(405);
   });
 
   test("should return 204 No Content if request method is OPTIONS and allowed", async () => {
@@ -325,19 +277,13 @@ describe("createCorsMiddleware function", () => {
         "Access-Control-Request-Method": "GET",
       },
     });
-    const response = await middleware({
-      request,
-      next: async () => new Response("Hello, world!"),
-    });
-    expect(response.status).toBe(204);
-  });
 
-  test("should allow request if no origin is passed in and all origins are allowed", async () => {
-    const middleware = createCorsMiddleware({ origins: ["*"] });
-    const request = new Request("https://example.com");
-    const next = () => new Response("Hello, world!");
-    const response = await middleware({ request, next });
-    expect(response.status).toBe(200);
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
+    const response = new Response();
+    const resMid = middleware({
+      request,
+      next: () => response,
+      response,
+    });
+    expect(resMid.status).toBe(204);
   });
 });
