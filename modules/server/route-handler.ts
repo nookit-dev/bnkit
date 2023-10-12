@@ -1,7 +1,6 @@
 import { getParsedBody } from ".";
 import {
   Middleware,
-  OnRequestT,
   ReqHandler,
   RouteMap,
   RouteOptions,
@@ -20,7 +19,9 @@ export type CreateRouteArgs<MiddlewareCtx extends object = {}> = {
 
 const defaultErrorMessage = "Internal Server Error";
 
-export const composeRequest = async <RouteReq extends RouteReqDataOpts = RouteReqDataOpts>({
+export const composeRequest = <
+  RouteReq extends RouteReqDataOpts = RouteReqDataOpts
+>({
   request,
   onRequest,
   errorMessage,
@@ -81,11 +82,11 @@ export function createRoute<
 }: CreateRouteArgs<MiddlewareCtx>) {
   const { errorMessage, onError } = options;
 
-  const onRequest: OnRequestT<ReqT> = (handler: ReqHandler<ReqT>) => {
+  const onRequest = async (handler: ReqHandler<ReqT>) => {
     const response = new Response();
     routes[routePath] = composeMiddlewares<MiddlewareCtx>(
       middlewares,
-      async (request: Request) => {
+      (request: Request) => {
         return composeRequest<RouteReqDataOpts>({
           request,
           onRequest: handler,
@@ -96,7 +97,9 @@ export function createRoute<
       },
       response
     );
+
+    return response;
   };
 
-  return onRequest
+  return onRequest;
 }

@@ -1,4 +1,4 @@
-import { jest, describe, expect, it, spyOn } from "bun:test";
+import { describe, expect, it, jest, spyOn } from "bun:test";
 import { bodyParser, getParsedBody } from "./body-parser-middleware";
 
 describe("bodyParser middleware", () => {
@@ -10,7 +10,9 @@ describe("bodyParser middleware", () => {
 
     const mockNext = jest.fn();
 
-    await bodyParser({ request: mockRequest, next: mockNext });
+    const response = new Response();
+
+    await bodyParser({ request: mockRequest, next: mockNext, response });
 
     expect(getParsedBody<{ key: string }>(mockRequest)).toEqual({
       key: "value",
@@ -25,8 +27,9 @@ describe("bodyParser middleware", () => {
     } as unknown as Request;
 
     const mockNext = jest.fn();
+    const response = new Response();
 
-    await bodyParser({ request: mockRequest, next: mockNext });
+    await bodyParser({ request: mockRequest, next: mockNext, response });
 
     expect(getParsedBody<string>(mockRequest)).toBe("plain text");
     expect(mockNext).toHaveBeenCalled();
@@ -34,7 +37,7 @@ describe("bodyParser middleware", () => {
 
   it("should handle invalid JSON gracefully", async () => {
     const consoleErrorSpy = spyOn(console, "error").mockImplementation(
-      () => ""
+      () => ({})
     );
     const mockRequest = {
       headers: new Map([["Content-Type", "application/json"]]),
@@ -42,8 +45,9 @@ describe("bodyParser middleware", () => {
     } as unknown as Request;
 
     const mockNext = jest.fn();
+    const response = new Response();
 
-    await bodyParser({ request: mockRequest, next: mockNext });
+    await bodyParser({ request: mockRequest, next: mockNext, response });
 
     expect(consoleErrorSpy).toHaveBeenCalled();
     expect(mockNext).toHaveBeenCalled();

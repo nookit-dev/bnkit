@@ -7,6 +7,6 @@ export function checkFileSizeMiddleware<MiddlewareCtx extends object = {}>(
     if (Number(request.headers.get("Content-Length")) > maxSize) {
       return new Response("File too large", { status: 413 });
     }
-    return next();
+    return next?.({}) || new Response("Internal Server Error", { status: 500 });
   };
 }
