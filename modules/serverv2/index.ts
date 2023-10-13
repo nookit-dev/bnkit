@@ -1,114 +1,50 @@
 import Bun from "bun";
+import {
+  InferMiddlewareDataMap,
+  Middleware,
+  middlewareManager,
+} from "./middleware-manager";
+import { RouteOptions, Routes, routeManager } from "./route-manager";
+import { serverRequestHandler } from "./incoming-request-handler";
 
-type RouteHandler<M = {}> = (
-  request: Request,
-  middlewareData: M
-) => Response | Promise<Response>;
-
-type Middleware<T = any> = (request: Request) => T;
-
-interface Routes<M = {}> {
-  [path: string]: {
-    [method: string]: RouteHandler<M>;
-  };
-}
-type MiddlewareRegisterOptions = readonly {
-  id: string;
-  handler: Middleware;
-}[];
-
-type InferMiddlewareDataMap<T extends MiddlewareRegisterOptions> = {
-  [K in T[number]["id"]]: ReturnType<Extract<T[number], { id: K }>["handler"]>;
-};
-
-export const middlewareManager = <T extends MiddlewareRegisterOptions>(
-  middlewareOptions: T
-) => {
-  const middlewares: Middleware[] = middlewareOptions.map((m) => m.handler);
-
-  const executeMiddlewares = (req: Request) => {
-    return Promise.all(middlewares.map((mw) => mw(req)));
-  };
-
-  return { executeMiddlewares };
-};
-
-export const serverFactory = <M = {}>(
-  settings?: {},
+export const startServer = <M = {}>(
+  port: number,
+  routes: Routes<M>,
+  fetchHandler: typeof serverRequestHandler,
   executeMiddlewares?: (req: Request) => Promise<any[]>
 ) => {
-  const routes: Routes<M> = {};
-
-  const registerRoute = (
-    method: string,
-    path: string,
-    handler: RouteHandler<M>
-  ) => {
-    if (!routes[path]) routes[path] = {};
-    routes[path][method.toLowerCase()] = handler;
-  };
-
-  const start = (port: number = 3000) => {
-    Bun.serve({
-      port,
-      fetch(req) {
-        const url = new URL(req.url);
-        const pathRoutes = routes[url.pathname];
-        const methodHandler = pathRoutes
-          ? pathRoutes[req.method.toLowerCase()]
-          : null;
-
-        if (!methodHandler) return new Response("Not Found", { status: 404 });
-
-        const middlewareResponses = executeMiddlewares
-          ? executeMiddlewares(req)
-          : Promise.resolve({} as M);
-
-        return middlewareResponses
-          .then((resolvedMwResponses) =>
-            methodHandler(req, ...resolvedMwResponses)
-          )
-          .catch((err) => new Response(err.message, { status: 500 }));
-      },
-    });
-  };
-
-  return { start, registerRoute };
+  return Bun.serve({
+    port,
+    fetch: (req) => fetchHandler(req, routes, executeMiddlewares),
+  });
 };
 
+export const serverFactory = <M = {}>({
+  middlewareControl,
+  router,
+  settings,
+  fetchHandler,
+}: {
+  settings?: {};
+  middlewareControl: ReturnType<typeof middlewareManager>;
+  router: ReturnType<typeof routeManager<M>>;
+  fetchHandler?: (req: Request) => Promise<Response>; // Optional custom fetch handler
+}) => {
+  const { registerRoute, routes } = router;
+  const { executeMiddlewares } = middlewareControl;
+
+  const start = (port: number = 3000) => {
+    // Use the custom fetch handler if provided, otherwise default to handleFetchRequest
+    const fetch =
+      fetchHandler ||
+      ((req: Request) => serverRequestHandler(req, routes, executeMiddlewares));
+    return startServer(port, routes, fetch, executeMiddlewares);
+  };
+
+  return {
+    start,
+    registerRoute,
+  };
+};
 // ***************************** EXAMPLE USAGE ***************************** //
 
-const userMiddleware: Middleware<{ id: number; name: string }> = (request) => ({
-  id: 1,
-  name: "John Doe",
-});
-const timeMiddleware: Middleware<{ timestamp: number }> = (request) => ({
-  timestamp: Date.now(),
-});
-
-// Middleware Register Options
-const middlewareOptions = [
-  { id: "user", handler: userMiddleware },
-  { id: "time", handler: timeMiddleware },
-] as const;
-
-// Inferred Type Map
-type MappedMiddlewares = InferMiddlewareDataMap<typeof middlewareOptions>;
-
-// Create Middleware Manager and get middleware executor
-const { executeMiddlewares } = middlewareManager(middlewareOptions);
-
-// Create Server Factory with Middleware Types
-const { start, registerRoute } = serverFactory<MappedMiddlewares>(
-  {},
-  executeMiddlewares
-);
-
-// Register Routes with Type-Safe Middleware Data
-registerRoute("GET", "/", (req, { user, time }) => {
-  console.log(user.name, time.timestamp);
-  return new Response("Hello, world!");
-});
-
-// Start Server
-start(3000);
