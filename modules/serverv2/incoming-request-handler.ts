@@ -18,7 +18,10 @@ export const serverRequestHandler = <M = {}>(
     ? executeMiddlewares(req)
     : Promise.resolve({} as M);
 
-  return middlewareResponses
-    .then((resolvedMwResponses) => methodHandler(req, resolvedMwResponses))
-    .catch((err) => new Response(err.message, { status: 500 }));
+  return (
+    middlewareResponses
+      // @ts-expect-error
+      .then((resolvedMwResponses) => methodHandler(req, resolvedMwResponses))
+      .catch((err) => new Response(err.message, { status: 500 }))
+  );
 };

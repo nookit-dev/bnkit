@@ -1,11 +1,7 @@
 import Bun from "bun";
-import {
-  InferMiddlewareDataMap,
-  Middleware,
-  middlewareManager,
-} from "./middleware-manager";
-import { RouteOptions, Routes, routeManager } from "./route-manager";
 import { serverRequestHandler } from "./incoming-request-handler";
+import { middlewareManager } from "./middleware-manager";
+import { Routes, routeManager } from "./route-manager";
 
 export const startServer = <M = {}>(
   port: number,
@@ -46,5 +42,3 @@ export const serverFactory = <M = {}>({
     registerRoute,
   };
 };
-// ***************************** EXAMPLE USAGE ***************************** //
-

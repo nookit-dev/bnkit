@@ -1,5 +1,5 @@
 import { describe, expect, jest, test } from "bun:test";
-import { createCorsMiddleware } from "./create-cors-middleware";
+import { createCorsMiddleware } from "../server/create-cors-middleware";
 
 const defaultOrigin = "http://example.com";
 

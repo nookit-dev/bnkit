@@ -1,6 +1,4 @@
-// import { RouteHandler } from "./route-manager";
-
-export type Middleware<T = any> = (request: Request) => T;
+export type Middleware<Opts extends object = {}, Res extends any={}> = (request: Request, opts?: Opts) => Res
 
 export type HandlerFnInferOpt<Fn> = {
   id: string;

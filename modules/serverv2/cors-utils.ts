@@ -68,10 +68,15 @@ export const buildControlHeaders = ({
 export type SetCorsHeaders = {
   options: Partial<CORSOptions>;
   requestOrigin: string;
+  response: Response;
 };
 
-export const setCORSHeaders = ({ options, requestOrigin }: SetCorsHeaders) =>
-  buildControlHeaders({ options, requestOrigin });
+export const setCORSHeaders = ({
+  options,
+  requestOrigin,
+  response,
+}: SetCorsHeaders) =>
+  buildControlHeaders({ options, requestOrigin, headersRef: response.headers });
 
 export const setCORSHeadersAsync = async ({
   options,
@@ -99,10 +104,12 @@ export const createErrorResponse = (
 
 export function setCORSHeadersIfOriginPresent(
   options: Partial<CORSOptions>,
-  requestOrigin: string | null
+  requestOrigin: string | null,
+  response: Response
 ) {
   if (requestOrigin !== null) {
     setCORSHeaders({
+      response,
       options,
       requestOrigin,
     });
@@ -110,11 +117,12 @@ export function setCORSHeadersIfOriginPresent(
 }
 
 export function applyResponseHeaders(
+  response: Response,
   requestOrigin: Request,
   options: Partial<CORSOptions>
 ) {
   const origin = requestOrigin.headers.get("Origin");
-  setCORSHeadersIfOriginPresent(options, origin);
+  setCORSHeadersIfOriginPresent(options, origin, response);
 }
 
 export function checkMethodAllowed(
@@ -137,7 +145,7 @@ export function handleOptionsRequest(
   if (request.method === "OPTIONS") {
     const requestMethod = request.headers.get("Access-Control-Request-Method");
     const response = new Response(null, { status: 204 });
-    setCORSHeadersIfOriginPresent(options, requestOrigin);
+    setCORSHeadersIfOriginPresent(options, requestOrigin, response);
 
     if (!isMethodAllowed(allowedMethods, requestMethod || "")) {
       console.error(`Method ${requestMethod} is not allowed.`);

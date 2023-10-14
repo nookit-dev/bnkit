@@ -1,41 +1,41 @@
 import { serverFactory } from ".";
 import {
   InferMiddlewareDataMap,
-  middlewareManager
+  Middleware,
+  middlewareManager,
 } from "./middleware-manager";
 import { RouteOptions, routeManager } from "./route-manager";
 
-const userMiddleware = () => ({
-  id: 1,
-  name: "John Doe",
-});
+const timeMiddleware: Middleware<{ timestamp: Date }> = () => {
+  return {
+    timestamp: new Date(),
+  };
+};
 
-const timeMiddleware = () => ({
-  timestamp: Date.now(),
-});
+const corsHeaders: Middleware<{ cors: boolean }> = (request) => {
+  const responseHeaders = new Headers();
 
-// Middleware Register Options
-const middlewareOptions = [
-  { id: "user", handler: userMiddleware },
-  { id: "time", handler: timeMiddleware },
-] as const;
+  return {
+    requestHeaders: request.headers,
+  };
+};
 
-const routeDefinitions: RouteOptions<MidwareT>[] = [
-  {
-    method: "GET",
-    path: "/",
-    // middleware definitions are inferred from the middlewareOptions
-    handler: (req, { user, time }) => {
-      console.log(req, user.name, time.timestamp);
+const routeDefinitions: RouteOptions<MidwareT> = {
+  "/": {
+    GET: (req, { time }) => {
+      console.log(req, time.timestamp);
       return new Response("Hello, world!");
     },
   },
-];
+};
+
+// Middleware Register Options
+const middlewareOptions = [{ id: "time", handler: timeMiddleware }] as const;
 
 const router = routeManager(routeDefinitions);
 const middlewareControl = middlewareManager(middlewareOptions);
 
-// Inferred Type Map
+// Inferred Type Map(this should be done in middleware-manager.ts)
 type MidwareT = InferMiddlewareDataMap<typeof middlewareOptions>;
 
 // Create Server Factory with Middleware Types
