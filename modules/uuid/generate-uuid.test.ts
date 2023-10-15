@@ -177,14 +177,7 @@ describe("UUIDv7 generation", () => {
 
     const { timestamp } = extractTimestampFromUuidV7(uuidV7);
     const receivedTimestampAsDate = new Date(Number(timestamp));
-
-    console.log({
-      uuidV7,
-      expectedTimestampDate,
-      receivedTimestampAsDate,
-      timestamp,
-    });
-
+    
     expect(receivedTimestampAsDate).toEqual(expectedTimestampDate);
 
     expect(timestamp).toBeDefined();
