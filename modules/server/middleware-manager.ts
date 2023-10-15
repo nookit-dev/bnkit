@@ -1,15 +1,26 @@
 export type Middleware<Opts extends object, Res extends any> = (
   request: Request,
   opts?: Opts
-) => Res | Promise<Res>;
+) => Res;
 
 export type MiddlewareConfigMap = {
   [id: string]: Middleware<any, any>;
 };
 export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
 
+// export type IsFunction<T> = T extends (...args: any[]) => any ? true : false;
+
+// export type InferFunctionReturnType<T> = T extends (...args: any[]) => infer R ? R : T;
+
+// infer if the middleware returns a promise or not
+// export type InferMiddlewareDataMap<T extends MiddlewareConfigMap> = {
+//   [K in keyof T]: IsFunction<ReturnType<T[K]>> extends true
+//     ? InferFunctionReturnType<ReturnType<T[K]>>
+//     : ReturnType<T[K]>;
+// };
+
 export type InferMiddlewareDataMap<T extends MiddlewareConfigMap> = {
-  [K in keyof T]: UnwrapPromise<ReturnType<T[K]>>;
+  [K in keyof T]: ReturnType<T[K]>;
 };
 
 export type InferMiddlewareFactory<

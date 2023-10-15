@@ -30,7 +30,6 @@ export const corsMiddleware: Middleware<
     return obj;
   };
 
-  // return ({ request, next }) => {
   const requestOrigin = request.headers.get("Origin");
 
   let response =

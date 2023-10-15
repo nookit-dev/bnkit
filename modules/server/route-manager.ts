@@ -15,19 +15,9 @@ export type RouteHandler<M = {}> = (
   middlewareData: M
 ) => Response | Promise<Response>;
 
-export type RouteOption<
-  Path extends string,
-  Method extends HttpMethod,
-  MCtx = {}
-> = {
-  method: Method;
-  path: Path;
-  handler: RouteHandler<MCtx>;
-};
-
-export type RouteOptions<M = {}> = {
+export type RouteOptions<M = {}, HTTPMethods extends HttpMethod = HttpMethod> = {
   [path: string]: Partial<{
-    [K in HttpMethod]: RouteHandler<M>;
+    [K in HTTPMethods]: RouteHandler<M>;
   }>;
 };
 

@@ -1,9 +1,13 @@
-import { Routes } from "./route-manager";
+import { middlewareManagerFactory } from "./middleware-manager";
+import { RouteHandler, Routes } from "./route-manager";
 
-export const serverRequestHandler = <M = {}>(
+export const serverRequestHandler = <MidWare = {}>(
   req: Request,
-  routes: Routes<M>,
-  executeMiddlewares?: (req: Request) => Promise<any[]>
+  routes: Routes<MidWare>,
+  executeMiddlewares?: ReturnType<
+    typeof middlewareManagerFactory
+  >["executeMiddlewares"],
+  optionsHandler?: RouteHandler<MidWare>
 ): Promise<Response> => {
   const url = new URL(req.url);
   const pathRoutes = routes[url.pathname];
@@ -11,15 +15,23 @@ export const serverRequestHandler = <M = {}>(
     ? pathRoutes[req.method.toLowerCase()]
     : null;
 
-  if (!methodHandler)
+  if (!methodHandler && !optionsHandler)
     return Promise.resolve(new Response("Not Found", { status: 404 }));
 
   const middlewareResponses = executeMiddlewares
     ? executeMiddlewares(req)
-    : Promise.resolve({} as M);
+    : Promise.resolve({} as MidWare);
 
-  return middlewareResponses
   // @ts-expect-error
-    .then((resolvedMwResponses) => methodHandler(req, resolvedMwResponses ))
+  return middlewareResponses
+    .then((resolvedMwResponses) => {
+      if (req.method === "OPTIONS" && !methodHandler && optionsHandler) {
+        // @ts-expect-error
+        return optionsHandler(req, resolvedMwResponses);
+      }
+
+      // @ts-expect-error
+      return methodHandler?.(req, resolvedMwResponses);
+    })
     .catch((err) => new Response(err.message, { status: 500 }));
 };

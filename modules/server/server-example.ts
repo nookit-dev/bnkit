@@ -2,7 +2,7 @@ import { serverFactory } from ".";
 import {
   InferMiddlewareDataMap,
   MiddlewareConfigMap,
-  middlewareManagerFactory
+  middlewareManagerFactory,
 } from "./middleware-manager";
 import { RouteOptions, routeManager } from "./route-manager";
 
