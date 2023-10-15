@@ -1,10 +1,13 @@
-import { InferMiddlewareDataMap } from ".";
+import { InferMiddlewareDataMap, MiddlewareConfigMap } from ".";
 import { middlewareFactory } from "./middleware-manager";
-import { RouteHandler, Routes } from "./route-manager";
+import { RouteHandler, Routes } from "./routes";
 
 export const serverRequestHandler = <
-  MidControl extends ReturnType<typeof middlewareFactory>,
-  MiddlewareDataMap = InferMiddlewareDataMap<MidControl>
+  MiddlewareFactory extends ReturnType<typeof middlewareFactory>,
+  MiddlewareConfig extends MiddlewareConfigMap = Parameters<
+    typeof middlewareFactory
+  >[0],
+  MiddlewareDataMap extends InferMiddlewareDataMap<MiddlewareConfig> = InferMiddlewareDataMap<MiddlewareConfig>
 >({
   req,
   routes,
@@ -12,14 +15,14 @@ export const serverRequestHandler = <
   optionsHandler,
 }: {
   req: Request;
-  routes: Routes<MiddlewareDataMap>;
-  middlewareRet?: MidControl;
+  routes: Routes<MiddlewareConfig>;
+  middlewareRet?: MiddlewareFactory;
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
 }): Promise<Response> => {
   const url = new URL(req.url);
   const pathRoutes = routes[url.pathname];
   const methodHandler = pathRoutes
-    ? pathRoutes[req.method.toLowerCase()]
+    ? pathRoutes[req.method.toLowerCase() as keyof typeof pathRoutes]
     : null;
 
   if (!methodHandler && !optionsHandler)
@@ -38,7 +41,10 @@ export const serverRequestHandler = <
       }
 
       return methodHandler
-        ? methodHandler(req, resolvedMwResponses as MiddlewareDataMap)
+        ? methodHandler(
+            req,
+            resolvedMwResponses as InferMiddlewareDataMap<MiddlewareConfig>
+          )
         : new Response("Method Not Allowed", { status: 405 });
     })
     .catch((err) => new Response(err.message, { status: 500 }));

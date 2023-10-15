@@ -1,50 +1,35 @@
 import Bun from "bun";
 import { serverRequestHandler } from "./incoming-request-handler";
+import { middlewareFactory } from "./middleware-manager";
 import {
-  InferMiddlewareFromFactory,
-  middlewareFactory,
-} from "./middleware-manager";
-import { RouteHandler, Routes, routeManager } from "./route-manager";
-import { InferMiddlewareDataMap } from "./middleware-types";
-
-export const startServer = <
-  MidControl extends ReturnType<typeof middlewareFactory>,
-  MiddlewareDataMap = InferMiddlewareDataMap<MidControl>
->(
-  port: number,
-  routes: Routes<MiddlewareDataMap>,
-  fetchHandler: typeof serverRequestHandler,
-  middlewareControl: MidControl
-) => {
-  return Bun.serve({
-    port,
-    fetch: (req) =>
-      fetchHandler<MidControl, MiddlewareDataMap>({
-        req,
-        routes,
-        middlewareRet: middlewareControl,
-      }),
-  });
-};
+  InferMiddlewareDataMap,
+  MiddlewareConfigMap,
+} from "./middleware-types";
+import { RouteHandler, Routes } from "./routes";
 
 export const serverFactory = <
-  MidControl extends ReturnType<typeof middlewareFactory>,
-  MiddlewareDataMap = InferMiddlewareDataMap<MidControl>
+  MiddlewareFactory extends ReturnType<typeof middlewareFactory>,
+  MiddlewareConfig extends MiddlewareConfigMap = Parameters<
+    typeof middlewareFactory
+  >[0],
+  MiddlewareDataMap extends InferMiddlewareDataMap<MiddlewareConfig> = InferMiddlewareDataMap<MiddlewareConfig>
 >({
   middlewareControl,
-  router,
+  routes,
   settings,
   fetchHandler = serverRequestHandler,
   optionsHandler,
 }: {
   settings?: {};
-  middlewareControl?: MidControl;
-  router: ReturnType<typeof routeManager<MiddlewareDataMap>>;
-  fetchHandler?: typeof serverRequestHandler<MidControl, MiddlewareDataMap>;
+  middlewareControl?: MiddlewareFactory;
+  routes: Routes<MiddlewareConfig>;
+  fetchHandler?: typeof serverRequestHandler<
+    MiddlewareFactory,
+    MiddlewareConfig,
+    MiddlewareDataMap
+  >;
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
 }) => {
-  const { registerRoute, routes } = router;
-
   const start = (port: number = 3000) => {
     return Bun.serve({
       port,
@@ -60,6 +45,5 @@ export const serverFactory = <
 
   return {
     start,
-    registerRoute,
   };
 };
