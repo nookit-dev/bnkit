@@ -1,8 +1,7 @@
 import { HttpMethod } from "mod/utils/http-types";
-import {
-  InferMiddlewareFactory,
-  middlewareManagerFactory,
-} from "./middleware-manager";
+import { middlewareFactory } from "./middleware-manager";
+
+import type { InferMiddlewareDataMap } from "./middleware-types";
 
 export interface Routes<M = {}> {
   [path: string]: {
@@ -15,15 +14,18 @@ export type RouteHandler<M = {}> = (
   middlewareData: M
 ) => Response | Promise<Response>;
 
-export type RouteOptions<M = {}, HTTPMethods extends HttpMethod = HttpMethod> = {
+export type RouteOptions<
+  M = {},
+  HTTPMethods extends HttpMethod = HttpMethod
+> = {
   [path: string]: Partial<{
     [K in HTTPMethods]: RouteHandler<M>;
   }>;
 };
 
 export type RouteOptionsMiddlewareManger<
-  Factory extends ReturnType<typeof middlewareManagerFactory>,
-  M = InferMiddlewareFactory<Factory>
+  Factory extends ReturnType<typeof middlewareFactory>,
+  M = InferMiddlewareDataMap<Factory>
 > = {
   [path: string]: Partial<{
     [K in HttpMethod]: RouteHandler<M>;

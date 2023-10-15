@@ -13,7 +13,6 @@ import * as sqlite from "./modules/sqlite";
 import * as state from "./modules/state";
 import * as uuid from "./modules/uuid";
 import * as validation from "./modules/validation";
-import * as webrtc from "./modules/webrtc";
 
 // utility exports
 import * as utils from "./modules/utils/classy";
@@ -32,7 +31,8 @@ export {
     server,
     sqlite,
     state,
-    utils, uuid, validation,
-    webrtc
+    utils,
+    uuid,
+    validation
 };
 

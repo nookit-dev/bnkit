@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { createFetchFactory } from "./create-fetch-factory";
 
+declare var global: {
+  fetch: any;
+};
+
 type FetchArgs = {
   url: string;
   options: RequestInit;
@@ -8,7 +12,10 @@ type FetchArgs = {
 
 describe("post method", () => {
   test("should make a POST request to the correct URL with JSON body", async () => {
-    let fetchArgs: FetchArgs;
+    let fetchArgs: FetchArgs = {
+      url: "",
+      options: {},
+    };
     global.fetch = async (url: string, options: RequestInit) => {
       fetchArgs = { url, options };
       return {
@@ -17,11 +24,13 @@ describe("post method", () => {
       };
     };
 
+    const headers = new Headers();
+
+    headers.set("Authorization", "Bearer token");
+
     const fetchFactory = createFetchFactory({
       baseUrl: "https://api.example.com",
-      defaultHeaders: {
-        Authorization: "Bearer token", // new default header for demonstration
-      },
+      defaultHeaders: headers,
       config: {
         test: {
           endpoint: "/test",
@@ -48,7 +57,10 @@ describe("post method", () => {
 
 describe("postForm method", () => {
   test("should make a POST request to the correct URL with FormData body", async () => {
-    let fetchArgs: FetchArgs;
+    let fetchArgs: FetchArgs = {
+      url: "",
+      options: {},
+    };
     global.fetch = async (url: string, options: RequestInit) => {
       fetchArgs = {
         url,
@@ -74,11 +86,13 @@ describe("postForm method", () => {
     });
     const formData = new FormData();
     formData.append("key", "value");
+    // @ts-expect-error
     await fetchFactory.postForm({ endpoint: "test", bodyData: formData });
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
     expect(fetchArgs.options.method).toBe("POST");
-    expect(fetchArgs.options.headers.get(["content-type"])).toContain(
+    // @ts-expect-error
+    expect(fetchArgs?.options?.headers?.get(["content-type"])).toContain(
       "multipart/form-data"
     );
   });
@@ -86,7 +100,10 @@ describe("postForm method", () => {
 
 describe("delete method", () => {
   test("should make a DELETE request to the correct URL", async () => {
-    let fetchArgs: FetchArgs;
+    let fetchArgs: FetchArgs = {
+      url: "",
+      options: {},
+    };
     global.fetch = async (url: string, options: RequestInit) => {
       fetchArgs = { url, options };
       return {

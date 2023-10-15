@@ -1,8 +1,6 @@
-import { serverFactory } from ".";
+import { InferMiddlewareDataMap, MiddlewareConfigMap, serverFactory } from ".";
 import {
-  InferMiddlewareDataMap,
-  MiddlewareConfigMap,
-  middlewareManagerFactory,
+    middlewareFactory,
 } from "./middleware-manager";
 import { RouteOptions, routeManager } from "./route-manager";
 
@@ -46,7 +44,7 @@ const router = routeManager(routes);
 // router.registerRoute("/random", "GET", (req, { cors: { requestHeaders } }) => {
 //   return new Response(JSON.stringify(requestHeaders));
 // });
-const middlewareControl = middlewareManagerFactory({
+const middlewareControl = middlewareFactory({
   time: timeMiddleware,
   cors: corsHeaders,
 });

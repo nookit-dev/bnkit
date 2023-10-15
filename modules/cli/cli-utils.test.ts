@@ -45,7 +45,9 @@ describe("parseArgument", () => {
     try {
       parseArgument(arg, nextArg);
     } catch (e) {
-      error = e;
+      if (e instanceof Error) {
+        error = e;
+      }
     }
 
     expect(error).toBeDefined();
