@@ -1,4 +1,4 @@
-import { CORSOptions, Middleware } from "../utils/http-types";
+import { CORSOptions } from "../utils/http-types";
 import {
   checkMethodAllowed,
   handleMissingOrigin,
@@ -6,26 +6,45 @@ import {
   setCORSHeadersIfOriginPresent,
   validateOrigin,
 } from "./cors-utils";
+import { Middleware } from "./middleware-manager";
 
-export const createCorsMiddleware = <MiddlewareCtx extends object = {}>(
-  options: Partial<CORSOptions>
-): Middleware<MiddlewareCtx> => {
-  const origins = options.origins || [];
-  const methods = options.methods || [];
-  
-  return ({ request, next }) => {
-    const requestOrigin = request.headers.get("Origin");
+type CORSMidWareRet = {
+  // headers: Headers;
+  // headersToObj: (headers: Headers) => Record<string, string>;
+  response: Response;
+};
 
-    let response =
-      handleMissingOrigin(requestOrigin, origins) ||
-      validateOrigin(requestOrigin || "", origins) ||
-      handleOptionsRequest(request, methods, requestOrigin, options) ||
-      checkMethodAllowed(request.method, methods) ||
-      next?.({}) ||
-      new Response(null, { status: 204 });
+export const corsMiddleware: Middleware<
+  Partial<CORSOptions>,
+  CORSMidWareRet
+> = (request, options): CORSMidWareRet => {
+  const headers = new Headers();
+  const origins = options?.origins || [];
+  const methods = options?.methods || [];
 
-    setCORSHeadersIfOriginPresent(options, requestOrigin, response);
+  const headersToObj = (headers: Headers) => {
+    const obj: Record<string, string> = {};
+    headers.forEach((value, key) => {
+      obj[key] = value;
+    });
+    return obj;
+  };
 
-    return response;
+  // return ({ request, next }) => {
+  const requestOrigin = request.headers.get("Origin");
+
+  let response =
+    handleMissingOrigin(requestOrigin, origins) ||
+    validateOrigin(requestOrigin || "", origins) ||
+    handleOptionsRequest(request, methods, requestOrigin, options || {}) ||
+    checkMethodAllowed(request.method, methods) ||
+    new Response(null, { status: 204 });
+  // next?.({}) ||
+
+  setCORSHeadersIfOriginPresent(options || {}, requestOrigin, response);
+
+  return {
+    response,
+    // headers, headersToObj };
   };
 };

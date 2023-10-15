@@ -1,13 +1,12 @@
 import { describe, expect, jest, test } from "bun:test";
-import {
-  getCurrentVersion,
-  npmPublish,
-  updateVersion
-} from "./npm-release";
-
+import { isTestFile } from "mod/test-utils";
+import { getCurrentVersion, npmPublish, updateVersion } from "./npm-release";
 describe("getCurrentVersion", () => {
   test("returns the version from the package.json", async () => {
-    const packagePath = "./package.json";
+    const packagePath = isTestFile(import.meta)
+      ? import.meta.dir + "/mock-package.json"
+      : "./package.json";
+
     const version = await getCurrentVersion(packagePath);
     const hasThreeParts = version.split(".").length === 3;
 
