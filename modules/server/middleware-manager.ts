@@ -1,76 +1,59 @@
-export type Middleware<Opts extends object = {}, Res extends any = {}> = (
+export type Middleware<Opts extends object, Res extends any> = (
   request: Request,
   opts?: Opts
 ) => Res | Promise<Res>;
 
-export type MiddlewareOption<Data extends object> = {
-  handler: Middleware<Data>;
-  data?: Data;
+export type MiddlewareConfigMap = {
+  [id: string]: Middleware<any, any>;
+};
+export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
+export type InferMiddlewareDataMap<T extends MiddlewareConfigMap> = {
+  [K in keyof T]: UnwrapPromise<ReturnType<T[K]>>;
 };
 
-export type MiddlewareOptionsMap<M extends object = {}> = {
-  [id: string]: MiddlewareOption<M>;
-};
+export type InferMiddlewareFactory<
+  Factory extends ReturnType<typeof middlewareManagerFactory>
+> = Factory["inferTypes"];
 
-export type InferMiddlewareDataMap<T extends MiddlewareOptionsMap> = {
-  [K in keyof T]: ReturnType<T[K]["handler"]>;
-};
-
-export const middlewareManager = <T extends MiddlewareOptionsMap>(
+export const middlewareManagerFactory = <T extends MiddlewareConfigMap>(
   middlewareOptions: T
 ) => {
-  const middlewares: { [K in keyof T]: Middleware } = {} as any;
+  const middlewares: MiddlewareConfigMap = {
+    ...middlewareOptions,
+  };
 
-  Object.entries(middlewareOptions).forEach(([id, { handler, data }]) => {
-    middlewares[id as keyof T] = (req: Request) => handler(req, data);
-  });
+  const executeMiddlewares = async (req: Request) => {
+    const results: InferMiddlewareDataMap<T> = {} as InferMiddlewareDataMap<T>;
 
-  const executeMiddlewares = (req: Request): Promise<InferMiddlewareDataMap<T>> => {
-    const results: Partial<InferMiddlewareDataMap<T>> = {};
-    const promises: Promise<void>[] = [];
+    // An array to store promises which will resolve with [key, value] pairs
+    const promises: Promise<[string, any]>[] = [];
 
     Object.entries(middlewares).forEach(([id, mw]) => {
       const result = mw(req);
+
       if (result instanceof Promise) {
-        promises.push(result.then((res) => (results[id as keyof T] = res)));
+        // Push a promise which will resolve with [id, resolvedValue]
+        promises.push(result.then((resolvedValue) => [id, resolvedValue]));
       } else {
         results[id as keyof T] = result;
       }
     });
 
-    return Promise.all(promises).then(() => results as InferMiddlewareDataMap<T>);
+    // Wait for all promises to resolve
+    const resolvedPairs = await Promise.all(promises);
+
+    // Map the resolved [key, value] pairs to the results object
+    resolvedPairs.forEach(([key, value]) => {
+      results[key as keyof T] = value;
+    });
+
+    return results;
   };
 
-  return { executeMiddlewares };
+  const inferTypes = () => {
+    return middlewares as InferMiddlewareDataMap<T>;
+  };
+
+  return { executeMiddlewares, inferTypes };
 };
-
-// const middlewareOps = middlewareManager({
-//   'cors': {
-//     handler: (req) => ({ cors: true })
-//   },
-//   auth: {
-//     handler (req) {
-//       return { user: "John Doe" }
-//     }
-//   }
-// })
-
-// const { executeMiddlewares } = middlewareOps;
-
-// const result = await middlewareOps.executeMiddlewares(new Request("https://google.com"));
-
-
-
-// Example Usage
-// const middlewareOptions = {
-//   auth: {
-//     handler: (req) => ({ user: "John Doe" }),
-//   },
-//   logger: {
-//     handler: (req) => new Response()
-//   },
-// } satisfies MiddlewareOptionsMap
-
-// const { executeMiddlewares } = middlewareManager(middlewareOptions);
-
-// const midwares = await executeMiddlewares();

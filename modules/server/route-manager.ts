@@ -1,4 +1,8 @@
 import { HttpMethod } from "mod/utils/http-types";
+import {
+  InferMiddlewareFactory,
+  middlewareManagerFactory,
+} from "./middleware-manager";
 
 export interface Routes<M = {}> {
   [path: string]: {
@@ -22,6 +26,15 @@ export type RouteOption<
 };
 
 export type RouteOptions<M = {}> = {
+  [path: string]: Partial<{
+    [K in HttpMethod]: RouteHandler<M>;
+  }>;
+};
+
+export type RouteOptionsMiddlewareManger<
+  Factory extends ReturnType<typeof middlewareManagerFactory>,
+  M = InferMiddlewareFactory<Factory>
+> = {
   [path: string]: Partial<{
     [K in HttpMethod]: RouteHandler<M>;
   }>;
