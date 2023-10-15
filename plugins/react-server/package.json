@@ -1,0 +1,25 @@
+{
+  "name": "@u-tools/react-server",
+  "version": "0.1.5",
+  "module": "index.ts",
+  "main": "index.ts",
+  "scripts": {
+    "yeet": "npm version patch && npm publish --access public",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "bun-types": "latest",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@u-tools/core": "link:@u-tools/core"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@u-tools/core": "^0.1.5"
+  }
+}
