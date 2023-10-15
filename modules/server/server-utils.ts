@@ -1,6 +1,4 @@
-export function parseQueryParams<ParamsType extends object = {}>(
-  request: Request
-): ParamsType {
+export function parseQueryParams<ParamsType>(request: Request): ParamsType {
   const url = new URL(request.url);
   const params: ParamsType = {} as ParamsType;
 

@@ -1,93 +1,60 @@
-import { Server } from "bun";
+import Bun from "bun";
+import { serverRequestHandler } from "./incoming-request-handler";
 import {
-  CORSOptions,
-  Middleware,
-  RouteMap,
-  RouteOptions,
-  RouteReqDataOpts,
-} from "../utils/http-types";
-import { generateMiddlewares } from "./middleware-handlers";
-import { processRequest } from "./request-handler";
-import { createRoute } from "./route-handler";
-import { StartServerOptions, startServer } from "./start-server";
+  InferMiddlewareFactory,
+  middlewareManagerFactory,
+} from "./middleware-manager";
+import { RouteHandler, Routes, routeManager } from "./route-manager";
 
-export type CreateServerFactoryRoute = {
-  middlewares?: Middleware[];
-  options?: RouteOptions;
-  bypassMiddlewares?: boolean;
-};
-
-export type CreateServerParams = {
-  wsPaths?: string[];
-  enableBodyParser?: boolean;
-  cors?: CORSOptions;
-  // max file size in bytes, if passed in then the check file middleware will be passed in
-  // to validate file sizes
-  maxFileSize?: number;
-};
-
-export function serverFactory(
-  { wsPaths, enableBodyParser, cors, maxFileSize }: CreateServerParams = {
-    wsPaths: [],
-    enableBodyParser: true,
-  }
-) {
-  const routes: RouteMap = {};
-  let server: Server;
-
-  // cors must come first in the middleware
-  let middlewares = generateMiddlewares({
-    cors,
-    enableBodyParser,
-    maxFileSize,
+export const startServer = <
+  MidTypes = ReturnType<
+    // middleware manager returns a promise to execute all middlewares
+    // and returns an object with the middleware data
+    ReturnType<typeof middlewareManagerFactory>["inferTypes"]
+  >
+>(
+  port: number,
+  routes: Routes<MidTypes>,
+  fetchHandler: typeof serverRequestHandler,
+  middlewareControl: ReturnType<typeof middlewareManagerFactory>
+) => {
+  return Bun.serve({
+    port,
+    fetch: (req) =>
+      fetchHandler<MidTypes>(req, routes, middlewareControl.executeMiddlewares),
   });
+};
 
-  const createServerRoute = <ReqT extends RouteReqDataOpts = RouteReqDataOpts>(
-    routePath: string,
-    {
-      options = {},
-      middlewares: routeMiddlewares = [],
-      bypassMiddlewares: bypassServerMiddlewares = false,
-    }: CreateServerFactoryRoute = {}
-  ) => {
-    if (!Array.isArray(middlewares) || !Array.isArray(routeMiddlewares)) {
-      throw new Error("middlewares and routeMiddlewares must be arrays");
-    }
+export const serverFactory = <
+  MidFactoryRet extends ReturnType<typeof middlewareManagerFactory>,
+  MidData = InferMiddlewareFactory<MidFactoryRet>
+>({
+  middlewareControl,
+  router,
+  settings,
+  fetchHandler,
+  optionsHandler,
+}: {
+  settings?: {};
+  middlewareControl: MidFactoryRet;
+  router: ReturnType<typeof routeManager<MidData>>;
+  fetchHandler?: (req: Request) => Promise<Response>; // Optional custom fetch handler
+  optionsHandler?: RouteHandler<MidData>;
+}) => {
+  const { registerRoute, routes } = router;
+  const { executeMiddlewares } = middlewareControl;
 
-    if (!bypassServerMiddlewares) {
-      routeMiddlewares = [...middlewares, ...routeMiddlewares];
-    }
-
-    return createRoute<ReqT>({
-      routePath: routePath,
-      options,
-      middlewares: routeMiddlewares,
-      routes: routes,
-    });
-  };
-
-  const middle = (middleware: Middleware) => {
-    middlewares.push(middleware);
-  };
-
-  const start = (
-    options: StartServerOptions = {
-      hostname: "0.0.0.0",
-      port: 3000,
-      websocket: { message: () => console.info("websocket msg") },
-      verbose: false,
-    }
-  ) => {
-    server = startServer(options, (request) =>
-      processRequest({ request, routes, wsPaths: wsPaths || [], server })
-    );
-
-    return server;
+  const start = (port: number = 3000) => {
+    // Use the custom fetch handler if provided, otherwise default to handleFetchRequest
+    const fetch =
+      fetchHandler ||
+      ((req: Request) =>
+        serverRequestHandler(req, routes, executeMiddlewares, optionsHandler));
+    return startServer(port, routes, fetch, middlewareControl);
   };
 
   return {
-    middle,
-    route: createServerRoute,
     start,
+    registerRoute,
   };
-}
+};
