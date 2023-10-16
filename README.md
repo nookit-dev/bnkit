@@ -1,4 +1,4 @@
-# Bun Nook Kit
+# Bun Nook Kit (BNK)
 
 ![Bun Nook Kit Logo](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
 
