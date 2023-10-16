@@ -11,8 +11,8 @@ This module aids in creating SQLite tables, managing schemas, and handling CRUD 
 ## Importing the Dependencies:
 ```javascript
 import Database from "bun:sqlite";
-import type { SchemaType, SchemaTypeInference } from "@u-tools/core/modules/types";
-import { createTableQuery, createItem, deleteItemById, readItems, updateItem } from "@u-tools/core/sqlite-factory";
+import type { SchemaType, SchemaTypeInference } from "@bnk/core/modules/types";
+import { createTableQuery, createItem, deleteItemById, readItems, updateItem } from "@bnk/core/sqlite-factory";
 
 ```
 

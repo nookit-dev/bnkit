@@ -26,7 +26,7 @@ export function createFetchFactory<TMap extends TypeMap>({
   baseUrl?: string;
   debug?: boolean;
   config: Record<keyof TMap, MappedApiConfig<TMap>>;
-  defaultHeaders?: HeadersInit; // Headers can be strings or functions returning strings
+  defaultHeaders?: Headers; // Headers can be strings or functions returning strings
 }) {
   return {
     fetcher: <Endpoint extends keyof TMap>(

@@ -20,7 +20,9 @@ export const dataGenerators: DataGenerators = {
   number: (generator = () => Math.random() * 100) => generator(),
   boolean: (generator = () => Math.random() < 0.5) => generator(),
   date: (generator = () => new Date()) => generator(),
-  object: <T extends {}>(shape: T, generatorMap = {}) => {
+  object: <T extends Record<string, any>>(
+    shape: T,
+    generatorMap: Partial<Record<keyof T, DataGenerator<any>>> = {})=>{
     return () => {
       const result = {} as any;
       for (const key in shape) {
@@ -64,8 +66,8 @@ export const inferTypeAndGenerate = <Val>(value: Val): any => {
           () => inferredTypeGenerator,
           value.length
         )();
-      } else if (typeof value === "object") {
-        return dataGenerators.object(value)();
+      } else if (typeof value === "object" && value !== null) {
+        return dataGenerators.object(value as Record<string, any>)();
       }
   }
 

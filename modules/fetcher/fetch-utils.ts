@@ -6,6 +6,15 @@ import {
   TypeMap,
 } from "./fetch-types";
 
+declare var window: {
+  fetch: any;
+};
+
+declare var document: {
+  createElement: any;
+  body: any;
+};
+
 export function appendURLParameters(
   url: string,
   params: Record<string, string> = {}

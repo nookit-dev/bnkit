@@ -6,6 +6,11 @@ import {
   stringifyCookieData,
 } from "./cookie-utils";
 
+declare var document: {
+  cookie: any;
+};
+
+
 describe("Cookie Helpers", () => {
   describe("parseCookieData", () => {
     it("should parse JSON string to object", () => {

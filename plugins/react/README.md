@@ -1,15 +1,15 @@
-# U Tools Plugins
+# Bun Nook Kit Plugins
 
-This plugin library provides a collection of easy-to-use, modular plugins to enhance the functionality of U Tools applications. These plugins are not core modules but are built upon the core modules, adding extra features and flexibility to U Tools projects.
+This plugin library provides a collection of easy-to-use, modular plugins to enhance the functionality of Bun Nook Kit applications. These plugins are not core modules but are built upon the core modules, adding extra features and flexibility to Bun Nook Kit projects.
 
 ## Overview
 
-The main purpose of these plugins is to extend the functionality of U Tools applications and make it more versatile for developers. Some of the plugins available in this library include:
+The main purpose of these plugins is to extend the functionality of Bun Nook Kit applications and make it more versatile for developers. Some of the plugins available in this library include:
 
 ## React-Fetcher: A plugin that provides an easy-to-use fetcher with React hooks for client-side data fetching from APIs and keeping track of the request status. If you're using React, this single plugin will handle all your data fetching needs
 
 Getting Started
-To use a plugin in your U Tools project, simply install it as a dependency and import the relevant functions or components:
+To use a plugin in your Bun Nook Kit project, simply install it as a dependency and import the relevant functions or components:
 
 ## Installation
 
@@ -25,7 +25,7 @@ Usage example:
 
 js
 
-`import { useFetcher } from '@u-tools/react';`
+`import { useFetcher } from '@bnk/react';`
 
 `const fetch = useFetcher({ url: 'https://api.example.com' });`
 
@@ -40,6 +40,6 @@ js
 
 ## Contributing
 
-Contributions to the U Tools plugin library are welcome! If you have an idea for a plugin or would like to improve an existing one, please feel free to submit a pull request or open an issue for discussion.
+Contributions to the Bun Nook Kit plugin library are welcome! If you have an idea for a plugin or would like to improve an existing one, please feel free to submit a pull request or open an issue for discussion.
 
-This should give you a good starting point for your U Tools plugins README. Modify and expand it as needed to include additional plugins or details about their usage.
+This should give you a good starting point for your Bun Nook Kit plugins README. Modify and expand it as needed to include additional plugins or details about their usage.

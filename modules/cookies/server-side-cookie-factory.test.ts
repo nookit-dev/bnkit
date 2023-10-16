@@ -46,7 +46,7 @@ describe("createServerCookieFactory", () => {
   });
 
   test("checkCookie returns false if a cookie does not exist", () => {
-    mockReq.headers.get.mockReturnValue();
+    mockReq.headers.get.mockReturnValue('');
     const exists = cookieFactory.checkCookie(mockReq as unknown as Request);
     expect(exists).toBe(false);
   });

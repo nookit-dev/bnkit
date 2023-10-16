@@ -1,6 +1,6 @@
-# U Tools
+# Bun Nook Kit (BNK)
 
-![U Tools Logo](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
+![Bun Nook Kit Logo](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
 
 ## Getting Started
 
@@ -17,18 +17,18 @@ mkdir playground && cd playground
 bun init 
 ```
 
-3. Install U Tools:
+3. Install Bun Nook Kit:
 
 ```bash
-bun add @u-tools/core
+bun add @bnk/core
 ```
 
-4. Use U Tools modules - server example with json response
+4. Use Bun Nook Kit modules - server example with json response
 
 `index.ts`
 
 ```typescript
-import * as u from "@u-tools/core";
+import * as u from "@bnk/core";
 
 const { start, route } = u.server.serverFactory({});
 
@@ -60,7 +60,7 @@ Visit `http://localhost:3000` in your browser and you should see Hello world and
 - **Unit Tested**
 - **Modular**
 
-## U Tools Goals
+## Bun Nook Kit Goals
 
 The ultimate goal is to provide a complete toolkit for quickly developing, configuring, and deploying full stack web apps with a single dependency.
 
@@ -72,7 +72,7 @@ The ultimate goal is to provide a complete toolkit for quickly developing, confi
 
 ## Features
 
-U Tools offers a wide array of utility modules including:
+Bun Nook Kit offers a wide array of utility modules including:
 
 1. CLI: The CLI module aims to provide a simple way to build a basic command-line interface for tasks such as project scaffolding or generating configurations. It helps you handle command-line input, parse arguments, and interact with the file system.
 
@@ -80,7 +80,7 @@ U Tools offers a wide array of utility modules including:
 
 3. Data Gen: The Data Gen module is a simple data generator that allows you to create mock data for testing purposes. While it may not replace more robust data generation tools, it provides a quick and easy way to generate sample data.
 
-4. Deploy: The Deploy module provides utilities for deployment, with a focus on GitHub Actions integration. It helps you automate the deployment process for your U Tools package.
+4. Deploy: The Deploy module provides utilities for deployment, with a focus on GitHub Actions integration. It helps you automate the deployment process for your Bun Nook Kit package.
 
 5. Fetcher: The Fetcher module enhances the standard fetch function provided by Bun. It allows you to configure an entire API and provides a TypeScript interface for easy integration with your project. The Fetcher module helps you make HTTP requests and handles data fetching and updating.
 
@@ -94,7 +94,7 @@ U Tools offers a wide array of utility modules including:
 
 10. NPM Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages.
 
-11. Server: The Server module is one of the most complex modules in U Tools. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
+11. Server: The Server module is one of the most complex modules in Bun Nook Kit. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
 
 12. SQLite: The SQLite module builds on top of Bun's SQLite implementation and provides utilities for working with SQLite databases. It includes functions for instantiating databases, creating type-safe schemas, and performing database operations.
 
@@ -105,7 +105,7 @@ U Tools offers a wide array of utility modules including:
 15. UUID: Generate timestamp encoded UUIDs with UUIDv7 spec implemented
 
 ```typescript
-import * as u from '@u-tools/core'
+import * as u from '@bnk/core'
 
 const uuid = u.uuid.v7()
 
@@ -118,30 +118,30 @@ console.log(uuid)
 
 ## Plugins
 
-Currently U Tools has a React plugin, as well as a hook called `useServerState` for connecting to a U Tools websocket server state, a `useLocalStorage` hook, and a `useClipboard` hook.
+Currently Bun Nook Kit has a React plugin, as well as a hook called `useServerState` for connecting to a Bun Nook Kit websocket server state, a `useLocalStorage` hook, and a `useClipboard` hook.
 
 ## Architecture
 
-U Tools is built upon a robust and flexible architecture using factory functions, taking full advantage of their benefits to offer a streamlined, efficient, and versatile toolkit for your development needs.
+Bun Nook Kit is built upon a robust and flexible architecture using factory functions, taking full advantage of their benefits to offer a streamlined, efficient, and versatile toolkit for your development needs.
 
-- **Encapsulation**: U Tools employs factory functions to streamline object creation, concealing the complexity of the process and offering a user-friendly interface. This enables you to utilize module functionalities without delving into the detailed construction logic.
+- **Encapsulation**: Bun Nook Kit employs factory functions to streamline object creation, concealing the complexity of the process and offering a user-friendly interface. This enables you to utilize module functionalities without delving into the detailed construction logic.
 
-- **Adaptability**: Factory functions in U Tools are engineered to return varied object types, dependent on input parameters, ensuring the toolkit can be precisely adapted to meet your project's unique requirements.
+- **Adaptability**: Factory functions in Bun Nook Kit are engineered to return varied object types, dependent on input parameters, ensuring the toolkit can be precisely adapted to meet your project's unique requirements.
 
-- **Code Reusability**: Adhering to functional programming principles, U Tools’ factory functions facilitate efficient code management and hasten development through enabling code reusability and composability.
+- **Code Reusability**: Adhering to functional programming principles, Bun Nook Kit’ factory functions facilitate efficient code management and hasten development through enabling code reusability and composability.
 
-- **Object Initialization**: U Tools' factory functions manage complex object initialization, ensuring modules are instantiated with necessary properties or states.
+- **Object Initialization**: Bun Nook Kit' factory functions manage complex object initialization, ensuring modules are instantiated with necessary properties or states.
 
-Moreover, U Tools employs factory functions to inject additional context where needed. For example, in the files folder module, a base path can be specified to anchor all operations to a particular directory. In the fetcher’s case, it allows the provision of a TypeSafe interface to the module, enabling type-safe fetch requests throughout your project. It also enhances user experience and usability by providing intellisense for available functions in the module. Although U Tools heavily utilizes factory functions, almost all functions within them can also be used directly.
+Moreover, Bun Nook Kit employs factory functions to inject additional context where needed. For example, in the files folder module, a base path can be specified to anchor all operations to a particular directory. In the fetcher’s case, it allows the provision of a TypeSafe interface to the module, enabling type-safe fetch requests throughout your project. It also enhances user experience and usability by providing intellisense for available functions in the module. Although Bun Nook Kit heavily utilizes factory functions, almost all functions within them can also be used directly.
 
 This version aims to maintain the original meaning while enhancing clarity and grammatical structure. Let me know if further modifications are needed!
 Example Projects:
 
-[U Tools Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-u-tools)
+[Bun Nook Kit Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-u-tools)
 
-[U Tools Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-u-tools-sqlite)
+[Bun Nook Kit Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-u-tools-sqlite)
 
-[U Tools Auth Server With React!]([githubb.com/brandon-schabel/](https://github.com/brandon-schabel/u-tools-auth-app))
+[Bun Nook Kit Auth Server With React!]([githubb.com/brandon-schabel/](https://github.com/brandon-schabel/u-tools-auth-app))
 
 ## Alpha Software
 
@@ -149,6 +149,6 @@ Please use at your own risk, this is alpha software and is still very much in th
 
 ## License
 
-U Tools is licensed under the MIT License. Enjoy the freedom to use, modify, and distribute the software under very permissive terms.
+Bun Nook Kit is licensed under the MIT License. Enjoy the freedom to use, modify, and distribute the software under very permissive terms.
 
-Jumpstart your journey to revolutionary software development with U Tools!
+Jumpstart your journey to revolutionary software development with Bun Nook Kit!

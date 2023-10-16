@@ -1,60 +1,49 @@
 import Bun from "bun";
 import { serverRequestHandler } from "./incoming-request-handler";
+import { middlewareFactory } from "./middleware-manager";
 import {
-  InferMiddlewareFactory,
-  middlewareManagerFactory,
-} from "./middleware-manager";
-import { RouteHandler, Routes, routeManager } from "./route-manager";
-
-export const startServer = <
-  MidTypes = ReturnType<
-    // middleware manager returns a promise to execute all middlewares
-    // and returns an object with the middleware data
-    ReturnType<typeof middlewareManagerFactory>["inferTypes"]
-  >
->(
-  port: number,
-  routes: Routes<MidTypes>,
-  fetchHandler: typeof serverRequestHandler,
-  middlewareControl: ReturnType<typeof middlewareManagerFactory>
-) => {
-  return Bun.serve({
-    port,
-    fetch: (req) =>
-      fetchHandler<MidTypes>(req, routes, middlewareControl.executeMiddlewares),
-  });
-};
+  InferMiddlewareDataMap,
+  MiddlewareConfigMap,
+} from "./middleware-types";
+import { RouteHandler, Routes } from "./routes";
 
 export const serverFactory = <
-  MidFactoryRet extends ReturnType<typeof middlewareManagerFactory>,
-  MidData = InferMiddlewareFactory<MidFactoryRet>
+  MiddlewareFactory extends ReturnType<typeof middlewareFactory>,
+  MiddlewareConfig extends MiddlewareConfigMap = Parameters<
+    typeof middlewareFactory
+  >[0],
+  MiddlewareDataMap extends InferMiddlewareDataMap<MiddlewareConfig> = InferMiddlewareDataMap<MiddlewareConfig>
 >({
   middlewareControl,
-  router,
+  routes,
   settings,
-  fetchHandler,
+  fetchHandler = serverRequestHandler,
   optionsHandler,
 }: {
   settings?: {};
-  middlewareControl: MidFactoryRet;
-  router: ReturnType<typeof routeManager<MidData>>;
-  fetchHandler?: (req: Request) => Promise<Response>; // Optional custom fetch handler
-  optionsHandler?: RouteHandler<MidData>;
+  middlewareControl?: MiddlewareFactory;
+  routes: Routes<MiddlewareConfig>;
+  fetchHandler?: typeof serverRequestHandler<
+    MiddlewareFactory,
+    MiddlewareConfig,
+    MiddlewareDataMap
+  >;
+  optionsHandler?: RouteHandler<MiddlewareDataMap>;
 }) => {
-  const { registerRoute, routes } = router;
-  const { executeMiddlewares } = middlewareControl;
-
   const start = (port: number = 3000) => {
-    // Use the custom fetch handler if provided, otherwise default to handleFetchRequest
-    const fetch =
-      fetchHandler ||
-      ((req: Request) =>
-        serverRequestHandler(req, routes, executeMiddlewares, optionsHandler));
-    return startServer(port, routes, fetch, middlewareControl);
+    return Bun.serve({
+      port,
+      fetch: (req) =>
+        fetchHandler({
+          req,
+          routes,
+          middlewareRet: middlewareControl,
+          optionsHandler,
+        }),
+    });
   };
 
   return {
     start,
-    registerRoute,
   };
 };

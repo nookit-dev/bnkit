@@ -177,7 +177,7 @@ describe("UUIDv7 generation", () => {
 
     const { timestamp } = extractTimestampFromUuidV7(uuidV7);
     const receivedTimestampAsDate = new Date(Number(timestamp));
-    
+
     expect(receivedTimestampAsDate).toEqual(expectedTimestampDate);
 
     expect(timestamp).toBeDefined();
@@ -203,7 +203,9 @@ describe("uuidToDate", () => {
     try {
       uuidV7ToDate(invalidUuid);
     } catch (e) {
-      expect(e.message).toBe("Invalid UUID: ");
+      if (e instanceof Error) {
+        expect(e.message).toBe("Invalid UUID: ");
+      }
     }
   });
 
@@ -215,8 +217,9 @@ describe("uuidToDate", () => {
     try {
       uuidV7ToDate(nonV7Uuid);
     } catch (e) {
-      //   expect(() => uuidToDate(nonV7Uuid)).toThrowError("Invalid UUID version");
-      expect(e.message).toBe("Invalid UUID version");
+      if (e instanceof Error) {
+        expect(e.message).toBe("Invalid UUID version");
+      }
     }
   });
 });

@@ -1,20 +1,19 @@
-export { middlewareManagerFactory } from "./middleware-manager";
-export { serverFactory, startServer } from "./server-factory";
+export { middlewareFactory } from "./middleware-manager";
+export type { InferMiddlewareFromFactory } from "./middleware-manager";
+export { serverFactory } from "./server-factory";
 
 export type {
   InferMiddlewareDataMap,
-  InferMiddlewareFactory,
   Middleware,
-  MiddlewareConfigMap,
-} from "./middleware-manager";
+  MiddlewareConfigMap
+} from "./middleware-types";
 
 export type {
   RouteHandler,
-  RouteOptions,
   RouteOptionsMiddlewareManger,
-  Routes,
-} from "./route-manager";
-export { routeManager } from "./route-manager";
+  Routes
+} from "./routes";
 
 export { corsMiddleware } from "./create-cors-middleware";
 export { htmlRes, jsonRes } from "./server-utils";
+

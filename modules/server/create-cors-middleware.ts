@@ -6,7 +6,7 @@ import {
   setCORSHeadersIfOriginPresent,
   validateOrigin,
 } from "./cors-utils";
-import { Middleware } from "./middleware-manager";
+import { Middleware } from "./middleware-types";
 
 type CORSMidWareRet = {
   // headers: Headers;

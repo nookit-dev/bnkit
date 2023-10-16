@@ -1,20 +1,20 @@
 {
-  "name": "@u-tools/core",
+  "name": "@bnk/core",
   "version": "0.1.5",
   "main": "index.ts",
   "devDependencies": {
     "bun-types": "1.0.1"
   },
-  "description": "U Tools is a simple zero-dependency, fast, and lightweight toolkit for Bun",
+  "description": "Bun Nook Kit is a simple zero-dependency, fast, and lightweight toolkit for Bun",
   "license": "MIT",
   "scripts": {
-    "docs-gen": "bun run ./_apps/generator-cli-app/repo-docs-generator.ts",
-    "unit-gen": "bun run ./_apps/generator-cli-app/repo-unit-test-gen.ts",
-    "docs-server": "bun run ./_apps/docs-server/docs-server.ts",
     "test": "bun test",
     "test:watch": "bun test --watch --coverage",
     "generate-types": "tsc -p tsconfig-types-gen.json",
-    "release": "LOCAL_RUN=true bun ./release.ts"
+    "release": "LOCAL_RUN=true bun ./release.ts",
+    "tsc": "tsc --project tsconfig.json",
+    "tsc:noEmit": "tsc --noEmit --project tsconfig-noEmit.json",
+    "validate": "bun run tsc:noEmite && bun run test"
   },
   "dependencies": {
     "typescript": "latest"

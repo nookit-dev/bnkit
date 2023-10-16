@@ -1,10 +1,5 @@
-import { serverFactory } from ".";
-import {
-  InferMiddlewareDataMap,
-  MiddlewareConfigMap,
-  middlewareManagerFactory,
-} from "./middleware-manager";
-import { RouteOptions, routeManager } from "./route-manager";
+import { MiddlewareConfigMap, Routes, serverFactory } from ".";
+import { middlewareFactory } from "./middleware-manager";
 
 const timeMiddleware = (
   req: Request,
@@ -18,8 +13,6 @@ const timeMiddleware = (
 };
 
 const corsHeaders = (request: Request) => {
-  const responseHeaders = new Headers();
-
   return {
     requestHeaders: request.headers,
   };
@@ -30,8 +23,6 @@ const middleware = {
   cors: corsHeaders,
 } satisfies MiddlewareConfigMap;
 
-type MidwareT = InferMiddlewareDataMap<typeof middleware>;
-
 const routes = {
   "/": {
     GET: (req, mid) => {
@@ -39,41 +30,26 @@ const routes = {
       return new Response(`Hello World! ${mid?.time?.timestamp}`);
     },
   },
-} satisfies RouteOptions<MidwareT>;
+  "/random": {
+    GET: (req, mid) => {
+      console.log({ mid });
+      return new Response(`Hello World! ${mid?.time?.timestamp}`);
+    },
+  },
+  "/another-one": {
+    POST: (req, mid) => {
+      return new Response(`Hello World! ${mid?.time?.timestamp}`);
+    },
+  },
+} satisfies Routes<typeof middleware>;
 
-const router = routeManager(routes);
-
-// router.registerRoute("/random", "GET", (req, { cors: { requestHeaders } }) => {
-//   return new Response(JSON.stringify(requestHeaders));
-// });
-const middlewareControl = middlewareManagerFactory({
+const middlewareControl = middlewareFactory({
   time: timeMiddleware,
   cors: corsHeaders,
 });
 
-// type FactoryType = InferMiddlewareFactory<typeof middlewareControl>
-
 // Create Server Factory with Middleware Types
-const {
-  start,
-  registerRoute, // you can register more routes after the server is created
-} = await serverFactory({ middlewareControl, router });
+const { start } = await serverFactory({ middlewareControl, routes });
 
 // // Start Server
 start(3000);
-
-// very simple example mostly to show the type inference
-// const middlewares = {
-//   cors: () => ({ cors: true }),
-//   auth: () => ({
-//     user: "John Doe",
-//   }),
-// } satisfies MiddlewareConfigMap;
-
-// const middlewareOps = middlewareManager(middlewares);
-
-// const { executeMiddlewares } = await middlewareOps;
-
-// const result = await executeMiddlewares(new Request("https://google.com"));
-
-// result.auth.user
