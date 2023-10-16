@@ -6,26 +6,10 @@ import {
   middlewareFactory,
   serverFactory,
 } from "@bnk/core/modules/server";
-import { Base, SomeClientThingy } from "base";
 import Bun from "bun";
 import React from "react";
 import { renderToReadableStream } from "react-dom/server";
-// import { App } from "./src/app";
-
-function App() {
-  // const
-  // React.useEffect(() => {
-  //   setTimeout(() => {
-  //     console.log("Hello, React!");
-  //   }, 1000);
-  // }, []);
-
-  // console.log({
-  //   window: typeof window,
-  // });
-
-  return <SomeClientThingy />;
-}
+import { AppEntry, Base, appState, getAppState } from "./base";
 
 // ssr everything and use a server side state manager to handle all interactions
 const middlewareConfig = {
@@ -45,26 +29,9 @@ const builds = await Bun.build({
     whitespace: true,
   },
   outdir: "./build",
-  // publicPath: "./build",
 });
 
 const indexOutput = builds.outputs[0].path.split("/").pop() as string;
-
-// console.log(
-//   {
-//     indexOutput,
-//   },
-//   builds.outputs[0]
-// );
-
-// const indexContent = await Bun.write(
-//   "./src/index.html",
-//   htmlTemplate({
-//     entryFilePath: outFile,
-//   })
-// );
-
-// const buildFile =
 
 const isServer = () => {
   return typeof window === "undefined";
@@ -82,22 +49,13 @@ const useIsServer = () => {
 
 const RenderApp = () => {
   const isServer = useIsServer();
-  console.log({ isServer });
   return (
     <Base entryFilePath={"/build/base.js"}>
-      {/* <App /> */}
-      <SomeClientThingy />
+      <AppEntry defaultState={{ ...getAppState() }} />
+      {isServer}
     </Base>
   );
 };
-const test = "test"
-const test2 = "test22"
-
-
-// const htmlFile = await renderToString(<RenderApp />);
-
-// write base html file
-// await Bun.write("./build/index.html", htmlFile);
 
 const reactServerHandler: RouteHandler<
   InferMiddlewareDataMap<typeof middlewareConfig>
@@ -119,8 +77,39 @@ const routes: Routes<typeof middlewareConfig> = {
     GET: reactServerHandler,
   },
   "/state": {
-    POST: (req) => {
-      return jsonRes({});
+    POST: async (req) => {
+      let parsedJson: object = {};
+
+      try {
+        const stateUpdate = (await req.json()) as {
+          type: "partial" | "full";
+          // partial is one key/value pair
+          state: Partial<typeof appState>;
+        };
+
+        console.log({ stateUpdate, appState });
+
+        if (stateUpdate.type === "partial") {
+          const key = Object.keys(stateUpdate.state)[0];
+          const value = Object.values(stateUpdate.state)[0];
+
+          appState[key as keyof typeof appState] = value;
+        }
+
+        return jsonRes({
+          state: appState,
+          type: stateUpdate.type,
+          status: "success",
+        });
+      } catch (e) {
+        console.error(e);
+        return new Response("Invalid JSON", {
+          status: 400,
+        });
+      }
+    },
+    GET: (req) => {
+      return jsonRes(appState);
     },
   },
   "/build/base.js": {
@@ -132,15 +121,6 @@ const routes: Routes<typeof middlewareConfig> = {
       });
     },
   },
-  // "/app.js": {
-  //   GET: () => {
-  //     return new Response(Bun.file("./build/base.js").stream(), {
-  //       headers: {
-  //         "Content-Type": "application/javascript",
-  //       },
-  //     });
-  //   },
-  // },
 };
 
 const { start } = serverFactory({
@@ -148,20 +128,4 @@ const { start } = serverFactory({
   middlewareControl: middlewareFactory(middlewareConfig),
 });
 
-// };
-
-// const { filePaths } = await buildBundle();
-// const cssFiles = filePaths.cssFiles;
-
-// const pageBuilder = createPageBuilder({
-//   buildDir: BUILD_DIR,
-//   paths: {
-//     scriptPaths: [JS_ENTRY_FILE],
-//     stylePaths: cssFiles,
-//   },
-// });
-
-// pageBuilder.generateHtmlFile();
-
-// start();
 start();
