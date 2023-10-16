@@ -23,5 +23,4 @@ Primary components of the Server-Factory module include:
 
 With these, the Server-Factory module provides a neat abstraction over the server creation process, thereby improving code maintainability and readability. The rich functionality it offers makes the server initialization and configuration process a breeze. This module is very helpful for developers to not just easily start servers, but to also add customized functionalities via middlewares and configured routes.
 
-
-![image](https://github.com/brandon-schabel/bun-n/assets/18100375/23983b87-03b8-4257-bb8e-838fa7fe25b2)
+![image](https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/23983b87-03b8-4257-bb8e-838fa7fe25b2)
