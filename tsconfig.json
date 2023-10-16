@@ -17,15 +17,9 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "mod/*": ["modules/*"],
+      "mod/*": ["modules/*"]
     }
   },
-  "include": [
-    "./modules/**/*.ts",
-    "modules/**/*.ts",
-    "./release.ts"
-  ],
-  "exclude": [
-    "plugins/*"
-  ]
+  "include": ["./modules/**/*.ts", "modules/**/*.ts", "./release.ts"],
+  "exclude": ["plugins/*", "modules/**/*.test.ts"]
 }

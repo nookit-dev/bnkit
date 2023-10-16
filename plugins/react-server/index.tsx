@@ -6,10 +6,26 @@ import {
   middlewareFactory,
   serverFactory,
 } from "@bnk/core/modules/server";
-import { Base } from "base";
+import { Base, SomeClientThingy } from "base";
 import Bun from "bun";
+import React from "react";
 import { renderToReadableStream } from "react-dom/server";
-import { App } from "src/app";
+// import { App } from "./src/app";
+
+function App() {
+  // const
+  // React.useEffect(() => {
+  //   setTimeout(() => {
+  //     console.log("Hello, React!");
+  //   }, 1000);
+  // }, []);
+
+  // console.log({
+  //   window: typeof window,
+  // });
+
+  return <SomeClientThingy />;
+}
 
 // ssr everything and use a server side state manager to handle all interactions
 const middlewareConfig = {
@@ -20,18 +36,26 @@ const middlewareConfig = {
   },
 } as const;
 
-// const builds = await Bun.build({
-//   entrypoints: ["./src/app.tsx"],
-//   target: "browser",
-//   minify: {
-//     identifiers: true,
-//     syntax: true,
-//     whitespace: true,
-//   },
-//   outdir: "./build",
-// });
+const builds = await Bun.build({
+  entrypoints: ["./base.tsx"],
+  target: "browser",
+  minify: {
+    identifiers: true,
+    syntax: true,
+    whitespace: true,
+  },
+  outdir: "./build",
+  // publicPath: "./build",
+});
 
-// const outFile = builds.outputs[0].path.split("/").pop() as string;
+const indexOutput = builds.outputs[0].path.split("/").pop() as string;
+
+// console.log(
+//   {
+//     indexOutput,
+//   },
+//   builds.outputs[0]
+// );
 
 // const indexContent = await Bun.write(
 //   "./src/index.html",
@@ -42,36 +66,45 @@ const middlewareConfig = {
 
 // const buildFile =
 
+const isServer = () => {
+  return typeof window === "undefined";
+};
+
+const useIsServer = () => {
+  const [server, setServer] = React.useState(isServer());
+
+  React.useEffect(() => {
+    setServer(isServer());
+  }, []);
+
+  return server;
+};
+
 const RenderApp = () => {
+  const isServer = useIsServer();
+  console.log({ isServer });
   return (
-    <Base entryFilePath={"./app.js"}>
-      <App />
+    <Base entryFilePath={"/build/base.js"}>
+      {/* <App /> */}
+      <SomeClientThingy />
     </Base>
   );
 };
+const test = "test"
+const test2 = "test22"
 
-const res = new Response(await renderToReadableStream(<RenderApp />));
 
-const baseResponse = await res.text();
+// const htmlFile = await renderToString(<RenderApp />);
 
-const file = await Bun.write("./build/index.html", baseResponse);
-
-console.log({
-  res,
-  htmlText: baseResponse,
-  file,
-});
+// write base html file
+// await Bun.write("./build/index.html", htmlFile);
 
 const reactServerHandler: RouteHandler<
   InferMiddlewareDataMap<typeof middlewareConfig>
 > = async (req, { time }) => {
-  // write html file with react script (this shoudl eb done on server startup)
-  // });
-  // console.log({ builds });
-  const stream = await renderToReadableStream(<RenderApp />);
-  // ({
-  //   entryFilePath: "./base.tsx",
-  // })
+  const stream = await renderToReadableStream(<RenderApp />, {
+    bootstrapScripts: ["./build/base.js"],
+  });
 
   return new Response(stream, {
     headers: {
@@ -80,13 +113,6 @@ const reactServerHandler: RouteHandler<
     },
   });
 };
-
-// console.log({ outFile });
-
-// console.log({
-//   indexContent,
-//   buildFile,
-// });
 
 const routes: Routes<typeof middlewareConfig> = {
   "/": {
@@ -97,20 +123,23 @@ const routes: Routes<typeof middlewareConfig> = {
       return jsonRes({});
     },
   },
-    // "/app.js": {
+  "/build/base.js": {
+    GET: () => {
+      return new Response(Bun.file("./build/base.js").stream(), {
+        headers: {
+          "Content-Type": "application/javascript",
+        },
+      });
+    },
+  },
+  // "/app.js": {
   //   GET: () => {
-  //     return new Response(Bun.file("./build/app.js").stream(), {
+  //     return new Response(Bun.file("./build/base.js").stream(), {
   //       headers: {
   //         "Content-Type": "application/javascript",
   //       },
   //     });
   //   },
-  // },
-  // "/base.tsx": {
-  // GET: reactServerHandler,
-  // GET: async (req) => {
-
-  // }
   // },
 };
 
@@ -118,6 +147,7 @@ const { start } = serverFactory({
   routes,
   middlewareControl: middlewareFactory(middlewareConfig),
 });
+
 // };
 
 // const { filePaths } = await buildBundle();

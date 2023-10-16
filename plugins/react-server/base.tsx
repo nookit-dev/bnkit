@@ -16,10 +16,7 @@ export const Base = ({
         <link rel="icon" href="favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
-        <meta
-          name="description"
-          content="Web site created using U Toolkit"
-        />
+        <meta name="description" content="Web site created using U Toolkit" />
         <link rel="apple-touch-icon" href="/logo192.png" />
 
         <link rel="manifest" href="/manifest.json" />
@@ -33,6 +30,17 @@ export const Base = ({
         <div id="root">{children}</div>
       </body>
     </html>
+  );
+};
+
+export const SomeClientThingy = () => {
+  const [state, setState] = React.useState(0);
+
+  return (
+    <div>
+      <div>State: {state}</div>
+      <button onClick={() => setState(state + 1)}>Increment</button>
+    </div>
   );
 };
 
@@ -52,7 +60,7 @@ if (typeof window !== "undefined") {
   hydrateRoot(
     root,
     <React.StrictMode>
-      <Base entryFilePath="./app.js" />
+      <SomeClientThingy />
     </React.StrictMode>
   );
 }
