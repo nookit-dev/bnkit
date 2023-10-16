@@ -1,5 +1,5 @@
 {
-  "name": "@u-tools/react-server",
+  "name": "@bnk/react-server",
   "version": "0.1.5",
   "module": "index.ts",
   "main": "index.ts",
@@ -13,13 +13,13 @@
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "bun-types": "latest",
-    "react": "^18.2.0",
+    "react": "latest",
     "react-dom": "^18.2.0",
-    "@u-tools/core": "link:@u-tools/core"
+    "@bnk/core": "link:@bnk/core"
   },
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "@u-tools/core": "^0.1.5"
+    "@bnk/core": "^0.1.5"
   }
 }

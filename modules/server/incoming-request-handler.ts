@@ -20,9 +20,16 @@ export const serverRequestHandler = <
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
 }): Promise<Response> => {
   const url = new URL(req.url);
+  console.log({
+    req,
+    method: req.method,
+    url: req.url,
+    routes,
+    path: url.pathname,
+  });
   const pathRoutes = routes[url.pathname];
   const methodHandler = pathRoutes
-    ? pathRoutes[req.method.toLowerCase() as keyof typeof pathRoutes]
+    ? pathRoutes[req.method.toUpperCase() as keyof typeof pathRoutes]
     : null;
 
   if (!methodHandler && !optionsHandler)
@@ -30,6 +37,7 @@ export const serverRequestHandler = <
   const executeMiddlewares = middlewareRet?.executeMiddlewares;
 
   // Ensure that middleware execution is properly handled when it's not provided
+
   const middlewareResponses = executeMiddlewares
     ? executeMiddlewares(req)
     : Promise.resolve({} as MiddlewareDataMap);

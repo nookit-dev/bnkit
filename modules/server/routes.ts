@@ -12,8 +12,7 @@ export type RouteHandler<M = {}> = (
 ) => Response | Promise<Response>;
 
 export type Routes<
-// HTTPMethods extends HttpMethod = HttpMethod,
-MiddlewareConfig extends MiddlewareConfigMap,
+MiddlewareConfig extends MiddlewareConfigMap ={},
   InferredMiddlewareData = InferMiddlewareDataMap<MiddlewareConfig>
 > = {
   [path: string]: Partial<{
