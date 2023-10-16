@@ -26,7 +26,7 @@ const { npmPublish, setupNpmAuth, updatePackageVersion } =
   });
 
 const { commitAndPush, setupGitConfig } = u.deploy.createGitHubActionsFactory({
-  sshRepoUrl: "git@github.com:brandon-schabel/u-tools.git",
+  sshRepoUrl: "git@github.com:brandon-schabel/bun-nook-kit.git",
 });
 
 const isLocalRun = Bun.env.LOCAL_RUN === "true";
@@ -37,6 +37,7 @@ const isAlpha = isLocalRun
 
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
+// todo resolve all plugin paths
 const pluginReactPath = path.resolve(
   process.cwd(),
   "plugins",

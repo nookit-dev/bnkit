@@ -30,18 +30,24 @@ bun add @bnk/core
 ```typescript
 import * as u from "@bnk/core";
 
-const { start, route } = u.server.serverFactory({});
 
-// on base request to "/"
-const baseReq = route("/");
-const jsonReq = route("/json")
 
-baseReq(() => new Response("Hello, world!"));
+const routes = {
+  "/": {
+    // parse from request if neeeded
+    GET: (request) => new Response("Hello World!")
+  },
+  "/json": {
+    GET: request => u.server.jsonRes({
+      message: "Hello JSON Response!"
+    })
+  }
+} satisfies u.server.Routes
 
-jsonReq(() => u.server.jsonRes({
-    message: "Hello world!"
-  })
-)
+const { start, routes } = u.server.serverFactory({
+  routes
+});
+
 
 // start on default port 3000
 start()
@@ -53,6 +59,12 @@ bun run index.ts
 
 Visit `http://localhost:3000` in your browser and you should see Hello world and
 `http://localhost:3000/json` for the json
+
+Note:
+The keyword satisfies in TypeScript, gives us typesafety, if you have middleware it would even infer the response from those! Which can then be passed to the routes and used in the handlers. So instead of explicitly saying routes is a specific type, it just makes sure that type(Routes in this case) can be succesfully applied to that object/array/whatever(routes config in this case), since it doesn't specifically set the type, we can then infer all the types from the middleware and routes. Following this it makes it possible to make typesafe API
+requests.
+
+
 
 ## Key Highlights
 
