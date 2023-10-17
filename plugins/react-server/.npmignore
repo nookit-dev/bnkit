@@ -1,0 +1,6 @@
+bun.lockb
+node_modules
+app
+
+public
+render-app.tsx

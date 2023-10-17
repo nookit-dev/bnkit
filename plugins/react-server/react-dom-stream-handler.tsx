@@ -1,7 +1,5 @@
+import { RouteHandler } from "@bnk/core/modules/server";
 import { renderToReadableStream } from "react-dom/server";
-import {
-  RouteHandler,
-} from "../../modules/server";
 
 export const createReactStreamHandler = async ({
   renderNode,
