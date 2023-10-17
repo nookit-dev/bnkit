@@ -3,7 +3,7 @@
   "version": "0.1.5",
   "main": "index.ts",
   "devDependencies": {
-    "bun-types": "1.0.1"
+    "bun-types": "latest"
   },
   "description": "Bun Nook Kit is a simple zero-dependency, fast, and lightweight toolkit for Bun",
   "license": "MIT",

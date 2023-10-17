@@ -12,7 +12,8 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": false,
-    "baseUrl": "."
+    "baseUrl": ".", 
+    "types": ["bun-types"],
   },
   "include": ["./webrtc-factory.ts", "index.ts"]
 }
