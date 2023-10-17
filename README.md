@@ -64,23 +64,17 @@ Note:
 The keyword satisfies in TypeScript, gives us typesafety, if you have middleware it would even infer the response from those! Which can then be passed to the routes and used in the handlers. So instead of explicitly saying routes is a specific type, it just makes sure that type(Routes in this case) can be succesfully applied to that object/array/whatever(routes config in this case), since it doesn't specifically set the type, we can then infer all the types from the middleware and routes. Following this it makes it possible to make typesafe API
 requests.
 
-
-
 ## Key Highlights
 
-- **Zero Dependencies**
-- **Unit Tested**
-- **Modular**
+- **Zero Third Paty Dependencies** - BNK uses nothin' but Bun
+  
+- **Unit Tested** - To ensure BNK is reliable, changeable, and upgradeable.
 
-## Bun Nook Kit Goals
+- **TypeSafe with Strong TypeScript type Inferencing** - Strong types tell you where things are incorrect, strong type inferrence allows you to utilize the advantages of strong types and not having to deal with too much TypeScript.
 
-The ultimate goal is to provide a complete toolkit for quickly developing, configuring, and deploying full stack web apps with a single dependency.
+- **Modular** Everything is built with as little dependency other other modules in the repo, however they still work together. Soon I'll be working on a full stack auth package which will utilize everything from server routes, cookies, database(sqlite).
 
-- **Simple**: Designed to integrate seamlessly into any project, regardless of size or requirements, ensuring utility for individual developers and larger teams alike.
-
-- **Modularity**: Each module generallys operates independently - few modules have shared functionality, allowing selection based on project necessity, minimizing bloat and maximizing efficiency. For client side - import what you need, for server you have the option of loading the entire package.
-
-- **Plugable**: Easily create wrappers for different use cases for example the React plugin uses the cookie module to handle cookies with React.
+- **Builds on Web APIs** Bun itself is built on strong principles of sticking to Web APIs In order to maintain as much comptaibility across various packages, BNK sticks to the fundementals of the webplatform APIs.
 
 ## Features
 
@@ -147,13 +141,14 @@ Bun Nook Kit is built upon a robust and flexible architecture using factory func
 Moreover, Bun Nook Kit employs factory functions to inject additional context where needed. For example, in the files folder module, a base path can be specified to anchor all operations to a particular directory. In the fetcher’s case, it allows the provision of a TypeSafe interface to the module, enabling type-safe fetch requests throughout your project. It also enhances user experience and usability by providing intellisense for available functions in the module. Although Bun Nook Kit heavily utilizes factory functions, almost all functions within them can also be used directly.
 
 This version aims to maintain the original meaning while enhancing clarity and grammatical structure. Let me know if further modifications are needed!
-Example Projects:
 
-[Bun Nook Kit Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-u-tools)
+## Example Projects
 
-[Bun Nook Kit Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-u-tools-sqlite)
+[Bun Nook Kit Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-bun-nook-kit)
 
-[Bun Nook Kit Auth Server With React!]([githubb.com/brandon-schabel/](https://github.com/brandon-schabel/u-tools-auth-app))
+[Bun Nook Kit Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-bun-nook-kit-sqlite)
+
+[Bun Nook Kit Auth Server With React!]([githubb.com/brandon-schabel/](https://github.com/brandon-schabel/bun-nook-kit-auth-app))
 
 ## Alpha Software
 
