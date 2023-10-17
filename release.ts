@@ -45,6 +45,13 @@ const pluginReactPath = path.resolve(
   "package.json"
 );
 
+const pluginReactServerPath = path.resolve(
+  process.cwd(),
+  "plugins",
+  "react-server",
+  "package.json"
+);
+
 ulog({
   actor: e?.GITHUB_ACTOR,
   job: e?.GITHUB_JOB,
@@ -72,6 +79,9 @@ await npmPublish({ packagePath: corePackagePath, isAlpha });
 
 await updatePackageVersion(pluginReactPath, isAlpha);
 await npmPublish({ packagePath: pluginReactPath, isAlpha });
+
+await updatePackageVersion(pluginReactServerPath, isAlpha);
+await npmPublish({ packagePath: pluginReactServerPath, isAlpha });
 
 if (!isLocalRun && !isAlpha) {
   await commitAndPush(`Pushing version: ${newVersion}`);
