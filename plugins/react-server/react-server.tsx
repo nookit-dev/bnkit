@@ -1,7 +1,5 @@
-import Bun from "bun";
+import { MiddlewareConfigMap, serverFactory } from "@bnk/core/modules/server";
 import { createReactServerRoutes } from "./create-react-server-routes";
-import { MiddlewareConfigMap, serverFactory } from "../../modules/server";
-
 
 export const reactServer = async <AppStateT extends object = {}>({
   Entry,

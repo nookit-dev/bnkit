@@ -1,6 +1,4 @@
-import { MiddlewareConfigMap } from "../../modules/server/middleware-types";
-import { Routes } from "../../modules/server/routes";
-import { jsonRes } from "../../modules/server/server-utils";
+import { MiddlewareConfigMap, Routes, jsonRes } from "@bnk/core/modules/server";
 import { createReactStreamHandler } from "./react-dom-stream-handler";
 
 export const createReactServerRoutes = async <
@@ -17,8 +15,6 @@ export const createReactServerRoutes = async <
   appState?: State;
   buildEntry?: string;
 }) => {
-
-
   // change ./ to just / for buildEntry
   const cleanedBuildEntry = buildEntry.replace("./", "/");
 
@@ -27,7 +23,7 @@ export const createReactServerRoutes = async <
     middlewareConfig,
     appState,
     buildEntry,
-  })
+  });
   const routes: Routes<MiddlewareConfig> = {
     "/": {
       GET: await createReactStreamHandler({
