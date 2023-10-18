@@ -17,6 +17,7 @@
     "validate": "bun run tsc:noEmite && bun run test"
   },
   "dependencies": {
+    "tsd": "^0.29.0",
     "typescript": "latest"
   }
 }
