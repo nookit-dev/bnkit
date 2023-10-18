@@ -1,9 +1,10 @@
 {
   "name": "@bnk/core",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "main": "index.ts",
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "^1.0.6",
+    "tsd": "^0.29.0"
   },
   "description": "Bun Nook Kit is a simple zero-dependency, fast, and lightweight toolkit for Bun",
   "license": "MIT",
@@ -15,9 +16,5 @@
     "tsc": "tsc --project tsconfig.json",
     "tsc:noEmit": "tsc --noEmit --project tsconfig-noEmit.json",
     "validate": "bun run tsc:noEmite && bun run test"
-  },
-  "dependencies": {
-    "tsd": "^0.29.0",
-    "typescript": "latest"
   }
 }
