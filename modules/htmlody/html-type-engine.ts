@@ -1,6 +1,6 @@
-type Attributes = Record<string, string>;
+export type Attributes = Record<string, string>;
 
-type JsonTagElNode = {
+export type JsonTagElNode = {
   content?: string;
   children?: JsonHtmlNodeMap;
   attributes?: Attributes;
@@ -10,18 +10,9 @@ export type JsonHtmlNodeMap = {
   [tag: string]: JsonTagElNode;
 };
 
-type GenericNode<Node extends JsonTagElNode> = {
-  content?: Node["content"];
-  children?: Node["children"];
-  attributes?: Node["attributes"];
-};
-
 export type GenericNodeMap<T extends JsonHtmlNodeMap = JsonHtmlNodeMap> = {
   [tag in keyof T]: T[tag];
 };
-
-type SafeExtractNodeKey<Node extends GenericNode<Node>> =
-  Node extends GenericNode<infer Key> ? Key : never;
 
 type ConvertAttributesToHtmlString<Attrs extends Attributes> = {
   [Key in keyof Attrs]: `${Key}="${Attrs[Key]}"`;
@@ -45,7 +36,7 @@ type OpenTag<
 
 type CloseTag<TagKey extends string> = `</${TagKey}>`;
 
-type TagContent<
+export type TagContent<
   ParentNode extends JsonHtmlNodeMap,
   TagKey extends keyof ParentNode
 > = ParentNode[TagKey]["children"] extends JsonHtmlNodeMap
@@ -55,7 +46,7 @@ type TagContent<
     >
   : ParentNode[TagKey]["content"];
 
-type ConstructHtmlTag<
+export type ConstructHtmlTag<
   ParentNode extends JsonHtmlNodeMap,
   TagKey extends keyof ParentNode = keyof ParentNode
 > = `${OpenTag<ParentNode, TagKey>}${TagContent<
@@ -65,4 +56,22 @@ type ConstructHtmlTag<
 
 export type RecursiveConstructHtmlTag<HtmlInput extends JsonHtmlNodeMap> = {
   [TagKey in keyof HtmlInput]: ConstructHtmlTag<HtmlInput, TagKey>;
+};
+
+export type JsonHtmlHead = {
+  title: string;
+};
+
+export type FullJsonHtmlDocStructure<
+  Head extends JsonHtmlHead,
+  Body extends JsonHtmlNodeMap
+> = {
+  html: {
+    head: Head;
+    body: Body;
+  };
+};
+
+export type FunctionMap = {
+  [key: string]: () => string;
 };
