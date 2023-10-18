@@ -19,6 +19,7 @@ export const serverFactory = <
   settings,
   fetchHandler = serverRequestHandler,
   optionsHandler,
+  serve,
 }: {
   settings?: {};
   middlewareControl?: MiddlewareFactory;
@@ -29,9 +30,10 @@ export const serverFactory = <
     MiddlewareDataMap
   >;
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
+  serve: typeof Bun.serve;
 }) => {
   const start = (port: number = 3000) => {
-    return Bun.serve({
+    return serve({
       port,
       fetch: (req) =>
         fetchHandler({
