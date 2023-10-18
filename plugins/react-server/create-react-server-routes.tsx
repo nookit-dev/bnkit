@@ -9,11 +9,13 @@ export const createReactServerRoutes = async <
   appState,
   middlewareConfig,
   buildEntry = "./build/app.js",
+  fileBuildName = "app.js",
 }: {
   Component: React.ReactNode;
   middlewareConfig?: MiddlewareConfig;
   appState?: State;
   buildEntry?: string;
+  fileBuildName?: string;
 }) => {
   // change ./ to just / for buildEntry
   const cleanedBuildEntry = buildEntry.replace("./", "/");
@@ -62,6 +64,15 @@ export const createReactServerRoutes = async <
       GET: (req) => {
         if (!appState) new Response("No state", { status: 400 });
         return jsonRes(appState || {});
+      },
+    },
+    ["/" + fileBuildName]: {
+      GET: () => {
+        return new Response(Bun.file(buildEntry).stream(), {
+          headers: {
+            "Content-Type": "application/javascript",
+          },
+        });
       },
     },
     [cleanedBuildEntry]: {

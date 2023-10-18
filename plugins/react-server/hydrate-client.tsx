@@ -11,6 +11,7 @@ export const hydrateClient = ({ AppEntry }: { AppEntry: React.ReactNode }) => {
       throw new Error("Root node not found");
     }
 
+    console.log("Hydrate!")
     hydrateRoot(root, <React.StrictMode>{AppEntry}</React.StrictMode>);
   }
 };
