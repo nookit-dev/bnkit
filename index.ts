@@ -5,6 +5,7 @@ import * as deploy from "./modules/deploy";
 import * as fetcher from "./modules/fetcher";
 import * as filesFolders from "./modules/files-folders";
 import * as hash from "./modules/hash";
+import * as htmlody from "./modules/htmlody";
 import * as jwt from "./modules/jwt";
 import * as logger from "./modules/logger";
 import * as npm from "./modules/npm-release";
@@ -25,6 +26,7 @@ export {
     fetcher,
     filesFolders,
     hash,
+    htmlody,
     jwt,
     logger,
     npm,
