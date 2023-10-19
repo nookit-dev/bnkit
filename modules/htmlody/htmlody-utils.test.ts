@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { Attributes, JsonHtmlNodeMap } from "./html-type-engine";
+import { Attributes, JsonHtmlNodeMap, JsonTagElNode } from "./html-type-engine";
 import {
     extractTagName,
     formatAttributes,
@@ -8,12 +8,12 @@ import {
     renderHtmlTag,
 } from "./htmlody-utils";
 describe("extractTagName", () => {
-  it("should extract the first key as tag name", () => {
+  it("should extract the tag from the node", () => {
     const randomTagName = `tag${Math.floor(Math.random() * 1000)}`;
-    const nodeMap: JsonHtmlNodeMap = {
-      [randomTagName]: {},
+    const node: JsonTagElNode = {
+      tag: randomTagName,
     };
-    expect(extractTagName(nodeMap)).toBe(randomTagName);
+    expect(extractTagName(node)).toBe(randomTagName);
   });
 });
 
@@ -32,12 +32,13 @@ describe("formatAttributes", () => {
 describe("renderChildren", () => {
   it("should render children recursively", () => {
     const children: JsonHtmlNodeMap = {
-      div: {
+      div_id: {
+        tag: "div",
         content: `content-${Math.floor(Math.random() * 1000)}`,
       },
     };
     const rendered = renderChildren(children);
-    expect(rendered).toContain(children.div.content);
+    expect(rendered).toContain(children.div_id.content);
   });
 });
 
@@ -64,14 +65,16 @@ describe("renderHtmlTag", () => {
 describe("jsonToHtml", () => {
   it("should render entire HTML structure from node map", () => {
     const nodeMap: JsonHtmlNodeMap = {
-      div: {
+      div_id1: {
+        tag: "div",
         content: "Sample Content",
         attributes: {
           id: "sample-id",
           class: "sample-class",
         },
         children: {
-          span: {
+          span_id1: {
+            tag: "span",
             content: "Child Content",
           },
         },
@@ -79,9 +82,9 @@ describe("jsonToHtml", () => {
     };
 
     const rendered = jsonToHtml(nodeMap);
-    expect(rendered).toContain(nodeMap.div.content);
-    expect(rendered).toContain(nodeMap.div.attributes!.id);
-    expect(rendered).toContain(nodeMap.div.attributes!.class);
-    expect(rendered).toContain(nodeMap.div.children!.span.content);
+    expect(rendered).toContain(nodeMap.div_id1.content);
+    expect(rendered).toContain(nodeMap.div_id1.attributes!.id);
+    expect(rendered).toContain(nodeMap.div_id1.attributes!.class);
+    expect(rendered).toContain(nodeMap.div_id1.children!.span_id1.content);
   });
 });

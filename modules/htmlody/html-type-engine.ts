@@ -4,10 +4,11 @@ export type JsonTagElNode = {
   content?: string;
   children?: JsonHtmlNodeMap;
   attributes?: Attributes;
+  tag: string;
 };
 
 export type JsonHtmlNodeMap = {
-  [tag: string]: JsonTagElNode;
+  [id: string]: JsonTagElNode;
 };
 
 export type GenericNodeMap<T extends JsonHtmlNodeMap = JsonHtmlNodeMap> = {
