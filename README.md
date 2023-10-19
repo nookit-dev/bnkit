@@ -64,6 +64,10 @@ Note:
 The keyword satisfies in TypeScript, gives us typesafety, if you have middleware it would even infer the response from those! Which can then be passed to the routes and used in the handlers. So instead of explicitly saying routes is a specific type, it just makes sure that type(Routes in this case) can be succesfully applied to that object/array/whatever(routes config in this case), since it doesn't specifically set the type, we can then infer all the types from the middleware and routes. Following this it makes it possible to make typesafe API
 requests.
 
+## Discord Server
+
+Join our [Discord Server]("https://discord.gg/rQyWN7V6"), drop in and ask questions, give feedback or just for a chat!
+
 ## Key Highlights
 
 - **Zero Third Paty Dependencies** - BNK uses nothin' but Bun
