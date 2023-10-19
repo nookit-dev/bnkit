@@ -43,7 +43,7 @@ export const htmlFactory = <
   }
 ) => {
   // Conditionally load Tailwind via CDN
-  let tailwindLink = "";
+  let tailwindScript = "";
   if (useTailwind) {
     // If a config is provided, this assumes that you have a CDN that can take it as a query parameter.
     // You'd need to adjust this if your CDN setup is different.
@@ -52,7 +52,7 @@ export const htmlFactory = <
     // : "";
 
     // turn these into plugin params
-    tailwindLink = `<link href="https://cdn.tailwindcss.com" rel="stylesheet">`;
+    tailwindScript = `  <script src="https://cdn.tailwindcss.com"></script>`;
   }
 
   // Conditionally load htmx
@@ -69,9 +69,7 @@ export const htmlFactory = <
     return `
 <body>
     ${jsonToHtml(bodyConfig)}
-</body>
-    
-    `;
+</body>`;
   };
 
   //   ${
@@ -85,10 +83,11 @@ export const htmlFactory = <
   //   }
 
   const headConfigToHtml = () => {
-    return `    
+    return `
+<!doctype html>
 <head>
     <title>${pageTitle}</title>
-    ${tailwindLink}
+    ${tailwindScript}
 
     ${htmxScript}
 </head>`;

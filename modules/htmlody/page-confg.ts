@@ -1,4 +1,16 @@
-import { htmlFactory, pageFactory } from "./html-generator";
+import { JsonHtmlNodeMap, JsonTagElNode } from ".";
+import { pageFactory } from "./html-generator";
+
+export const htmxButton: JsonTagElNode = {
+  content: "Click Me",
+  attributes: {
+    "hx-post": "/clicked",
+    "hx-trigger": "click",
+    "hx-target": "#clicked",
+    "hx-swap": "outerHTML",
+  },
+  tag: "button",
+};
 
 export const htmlBody = {
   h1: {
@@ -7,35 +19,31 @@ export const htmlBody = {
       class: "title-class",
       id: "title-id",
     },
+
+    tag: "h1",
   },
-  p: { content: "This is a description" },
+  p: { content: "This is a description", tag: "p" },
   a: {
     content: "Click Me",
     attributes: {
       href: "https://www.example.com",
     },
+    tag: "a",
   },
 
-  div: {
+  div_1: {
+    tag: "div",
     attributes: {
       class: "bg-red-500",
     },
     children: {
-      button: {
-        content: "Click Me",
-        attributes: {
-          "hx-post": "/clicked",
-          "hx-trigger": "click",
-          "hx-target": "#clicked",
-          "hx-swap": "outerHTML",
-        },
-      },
-      div: {
+      button_1: htmxButton,
+      div_1: {
+        tag: "div",
         content: "Hello World",
       },
     },
   },
-} as const; // satisfies JsonHtmlNodeMap;
-
+} satisfies JsonHtmlNodeMap;
 
 type HtmlTypeRes = ReturnType<typeof pageFactory.infer>;
