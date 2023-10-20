@@ -1,19 +1,17 @@
 import { describe, expect, it } from "bun:test";
 import { Attributes, JsonHtmlNodeMap, JsonTagElNode } from "./html-type-engine";
 import {
-    extractTagName,
-    formatAttributes,
-    jsonToHtml,
-    renderChildren,
-    renderHtmlTag,
+  formatAttributes,
+  nodeFactory,
+  retrieveElement,
 } from "./htmlody-utils";
-describe("extractTagName", () => {
-  it("should extract the tag from the node", () => {
-    const randomTagName = `tag${Math.floor(Math.random() * 1000)}`;
-    const node: JsonTagElNode = {
-      tag: randomTagName,
-    };
-    expect(extractTagName(node)).toBe(randomTagName);
+import { jsonToHtml, renderChildren } from "./json-to-html-engine";
+
+describe("formatAttributes", () => {
+  it("should handle empty attributes", () => {
+    const attributes: Attributes = {};
+    const formatted = formatAttributes(attributes, {});
+    expect(formatted).toBe("");
   });
 });
 
@@ -23,7 +21,7 @@ describe("formatAttributes", () => {
       id: `id-${Math.floor(Math.random() * 1000)}`,
       class: "sample-class",
     };
-    const formatted = formatAttributes(attributes);
+    const formatted = formatAttributes(attributes, {});
     expect(formatted).toContain(attributes.id);
     expect(formatted).toContain(attributes.class);
   });
@@ -37,28 +35,8 @@ describe("renderChildren", () => {
         content: `content-${Math.floor(Math.random() * 1000)}`,
       },
     };
-    const rendered = renderChildren(children);
+    const rendered = renderChildren(children, []);
     expect(rendered).toContain(children.div_id.content);
-  });
-});
-
-describe("renderHtmlTag", () => {
-  it("should render HTML tag with attributes and content", () => {
-    const tagName = "div";
-    const attributesStr = 'class="sample"';
-    const content = "Hello World";
-    const childrenHtml = "<span>Child</span>";
-
-    const rendered = renderHtmlTag(
-      tagName,
-      attributesStr,
-      content,
-      childrenHtml
-    );
-    expect(rendered).toContain(tagName);
-    expect(rendered).toContain(attributesStr);
-    expect(rendered).toContain(content);
-    expect(rendered).toContain(childrenHtml);
   });
 });
 
@@ -81,10 +59,69 @@ describe("jsonToHtml", () => {
       },
     };
 
-    const rendered = jsonToHtml(nodeMap);
+    const rendered = jsonToHtml(nodeMap, []);
     expect(rendered).toContain(nodeMap.div_id1.content);
     expect(rendered).toContain(nodeMap.div_id1.attributes!.id);
     expect(rendered).toContain(nodeMap.div_id1.attributes!.class);
     expect(rendered).toContain(nodeMap.div_id1.children!.span_id1.content);
+  });
+});
+
+describe("retrieveElement", () => {
+  it("should retrieve an element from a JsonHtmlNodeMap", () => {
+    const JsonHtmlNodeMap = {
+      div: {
+        tag: "div",
+        attributes: {
+          class: "sample-class",
+        },
+        content: "Sample Content",
+      },
+    };
+    const element = retrieveElement(JsonHtmlNodeMap, "div");
+    expect(element).toEqual({
+      tag: "div",
+      attributes: {
+        class: "sample-class",
+      },
+      content: "Sample Content",
+    });
+  });
+
+  it("should return undefined if the element is not present in the JsonHtmlNodeMap", () => {
+    const JsonHtmlNodeMap = {
+      div: {
+        tag: "div",
+        attributes: {
+          class: "sample-class",
+        },
+        content: "Sample Content",
+      },
+    };
+    const element = retrieveElement(JsonHtmlNodeMap, "span");
+    expect(element).toBeUndefined();
+  });
+});
+
+describe("nodeFactory", () => {
+  it("should create a new node with the given configuration", () => {
+    const nodeConfig = {
+      tag: "div",
+      attributes: {
+        class: "sample-class",
+        id: "sample-id",
+      },
+      content: "Sample Content",
+    };
+    const factory = nodeFactory(nodeConfig);
+    const newNode = factory.create();
+    expect(newNode).toEqual({
+      tag: "div",
+      attributes: {
+        class: "sample-class",
+        id: "sample-id",
+      },
+      content: "Sample Content",
+    });
   });
 });

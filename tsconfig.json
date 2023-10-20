@@ -20,6 +20,10 @@
       "mod/*": ["modules/*"]
     }
   },
-  "include": ["./modules/**/*.ts", "modules/**/*.ts", "./release.ts"],
-  "exclude": ["plugins/*", "modules/**/*.test.ts"]
+  "include": [
+    "./modules/**/*.ts",
+    "modules/**/*.ts",
+    "plugins/**/*.ts",
+    "./release.ts"
+  ]
 }

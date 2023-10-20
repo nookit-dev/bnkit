@@ -1,16 +1,36 @@
+import { SELF_CLOSING_TAGS, VALID_HTML_TAGS } from "./constants";
 import {
-    Attributes,
-    FullJsonHtmlDocStructure,
-    JsonHtmlHead,
-    JsonHtmlNodeMap,
-    JsonTagElNode,
+  Attributes,
+  FullJsonHtmlDocStructure,
+  JsonHtmlHead,
+  JsonHtmlNodeMap,
+  JsonTagElNode
 } from "./html-type-engine";
 
-const retrieveElement = <Structure extends JsonHtmlNodeMap>(
+export const retrieveElement = <Structure extends JsonHtmlNodeMap>(
   JsonHtmlNodeMap: Structure,
   element: keyof Structure
 ) => {
   return JsonHtmlNodeMap[element];
+};
+
+export const nodeFactory = <
+  Extension extends Record<string, unknown>,
+  NodeT extends JsonTagElNode = JsonTagElNode<Extension>,
+  NodeConfigT extends NodeT = NodeT
+>(
+  config: NodeConfigT
+) => {
+  const createNode = (options?: Omit<NodeConfigT, "tag">): NodeT => {
+    return {
+      ...config,
+      ...options,
+    };
+  };
+
+  return {
+    create: createNode,
+  };
 };
 
 export const buildPageConfig = <
@@ -28,25 +48,20 @@ export const buildPageConfig = <
   };
 };
 
-// Utility to extract tag name from the node map
-export function extractTagName<Node extends JsonTagElNode>(
-  node: Node
-): Node["tag"] {
-  return node.tag;
-}
-
 export function formatAttributes(attributes: Attributes): string {
   return Object.entries(attributes)
     .map(([key, value]) => `${key}="${value}"`)
     .join(" ");
 }
 
-export function renderChildren(children: JsonHtmlNodeMap): string {
-  return Object.entries(children)
-    .map(([childTagName, childNode]) =>
-      jsonToHtml({ [childTagName]: childNode })
-    )
-    .join("");
+function isValidHtmlTag(tagName: string): boolean {
+  return VALID_HTML_TAGS.has(tagName);
+}
+
+function isValidAttributesString(attributesStr: string): boolean {
+  // Regex pattern for valid attribute format: key="value"
+  const attributePattern = /^(\s?[a-zA-Z-]+="[^"]*"\s?)+$/;
+  return attributePattern.test(attributesStr);
 }
 
 export function renderHtmlTag(
@@ -56,27 +71,20 @@ export function renderHtmlTag(
   childrenHtml: string
 ): string {
   const space = attributesStr ? " " : "";
+
+  // Check if the tag name is valid
+  if (!isValidHtmlTag(tagName)) {
+    throw new Error(`Invalid tag name provided: ${tagName}`);
+  }
+
+  if (attributesStr !== "" && !isValidAttributesString(attributesStr)) {
+    throw new Error(`Invalid attributes string provided: ${attributesStr}`);
+  }
+
+  // Check if the tag is a self-closing tag using Set lookup
+  if (SELF_CLOSING_TAGS.has(tagName)) {
+    return `<${tagName}${space}${attributesStr} />`;
+  }
+
   return `<${tagName}${space}${attributesStr}>${content}${childrenHtml}</${tagName}>`;
-}
-
-export function jsonToHtml(nodeMap: JsonHtmlNodeMap): string {
-  return Object.keys(nodeMap)
-    .map((id) => {
-      const node = nodeMap[id];
-      const tagName = extractTagName(node);
-      if (!tagName) {
-        console.log({
-          nodeMap,
-          id,
-          node,
-        });
-        throw new Error(`Tag name not provided for ID: ${id}`);
-      }
-      const content = node.content || "";
-      const attributesStr = formatAttributes(node.attributes || {});
-      const childrenHtml = node.children ? renderChildren(node.children) : "";
-
-      return renderHtmlTag(tagName, attributesStr, content, childrenHtml);
-    })
-    .join("");
 }

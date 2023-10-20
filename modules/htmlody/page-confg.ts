@@ -1,5 +1,5 @@
-import { JsonHtmlNodeMap, JsonTagElNode } from ".";
-import { pageFactory } from "./html-generator";
+import { JsonTagElNode } from ".";
+// import { pageFactory } from "./html-generator";
 
 export const htmxButton: JsonTagElNode = {
   content: "Click Me",
@@ -44,6 +44,6 @@ export const htmlBody = {
       },
     },
   },
-} satisfies JsonHtmlNodeMap;
+} // satisfies JsonHtmlNodeMap;
 
-type HtmlTypeRes = ReturnType<typeof pageFactory.infer>;
+// type HtmlTypeRes = ReturnType<typeof pageFactory.infer>;

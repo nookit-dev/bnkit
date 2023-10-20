@@ -1,16 +1,14 @@
 import { htmlRes, serverFactory } from "../server";
-import { htmlFactory } from "./html-generator";
+import { htmlFactory } from "./html-factory";
 
 import { htmlBody } from "./page-confg";
 
-export const pageFactory = htmlFactory({ title: "My Title" }, htmlBody, {
+const pageFactory = htmlFactory({ title: "My Title" }, htmlBody, {
   pageTitle: "My Page",
   // tailwindConfig,
   useHtmx: true,
   useTailwind: true,
 });
-
-
 
 const renderedPage = pageFactory.getHtmlOut();
 

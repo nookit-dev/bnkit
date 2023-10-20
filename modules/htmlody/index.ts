@@ -1,8 +1,7 @@
-export { htmlFactory, pageFactory } from "./html-generator";
+export { htmlFactory } from "./html-factory";
 export type {
     Attributes,
     ConstructHtmlTag,
-    GenericNodeMap,
     JsonHtmlNodeMap,
     JsonTagElNode,
     RecursiveConstructHtmlTag,
@@ -10,10 +9,8 @@ export type {
 } from "./html-type-engine";
 export {
     buildPageConfig,
-    extractTagName,
     formatAttributes,
-    jsonToHtml,
-    renderChildren,
     renderHtmlTag
 } from "./htmlody-utils";
 
+export { jsonToHtml, renderChildren } from "./json-to-html-engine";

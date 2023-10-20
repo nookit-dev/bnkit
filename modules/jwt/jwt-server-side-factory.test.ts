@@ -22,7 +22,7 @@ describe("jwtServerSideFactory", () => {
       jwt,
       "secret"
     );
-    
+
     // The header should match the one we set in createJwt
     expect(header).toEqual({ alg: "HS256", typ: "JWT" });
 

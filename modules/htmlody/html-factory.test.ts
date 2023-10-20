@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { htmlFactory } from "./html-generator";
+import { htmlFactory } from "./html-factory";
 import type { JsonHtmlNodeMap } from "./html-type-engine";
 import { htmlBody } from "./html-type-engine.test";
 
@@ -20,6 +20,7 @@ describe("htmlFactory", () => {
       },
     },
   };
+  
   it("renders basic elements correctly", () => {
     const factory = htmlFactory(mockHeadConfig, mockBodyConfig, {
       pageTitle: "Test Page",
@@ -59,12 +60,8 @@ describe("htmlFactory", () => {
     });
     const htmlOut = factory.getHtmlOut();
 
-    expect(htmlOut).toContain(
-      '<link href="https://cdn.tailwindcss.com" rel="stylesheet">'
-    );
-    expect(htmlOut).toContain(
-      '<script src="https://unpkg.com/htmx.org"></script>'
-    );
+    expect(htmlOut).toContain('<script src="https://cdn.tailwindcss.com"></script>');
+    expect(htmlOut).toContain('<script src="https://unpkg.com/htmx.org"></script>');
   });
 });
 
@@ -82,8 +79,6 @@ describe("htmlFactory", () => {
     const factory = createPageFactory();
     const htmlOut = factory.getHtmlOut();
 
-    console.log(JSON.stringify(factory.buildPageConfig(), null, 2));
-
     expect(htmlOut).toContain(
       '<h1 class="title-class" id="title-id">Hello World</h1>'
     );
@@ -100,11 +95,7 @@ describe("htmlFactory", () => {
     const factory = createPageFactory();
     const htmlOut = factory.getHtmlOut();
 
-    expect(htmlOut).toContain(
-      '<link href="https://cdn.tailwindcss.com" rel="stylesheet">'
-    );
-    expect(htmlOut).toContain(
-      '<script src="https://unpkg.com/htmx.org"></script>'
-    );
+    expect(htmlOut).toContain('<script src="https://cdn.tailwindcss.com"></script>');
+    expect(htmlOut).toContain('<script src="https://unpkg.com/htmx.org"></script>');
   });
 });

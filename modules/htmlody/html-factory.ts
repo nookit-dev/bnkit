@@ -1,13 +1,12 @@
-import { htmlRes, serverFactory } from "../server";
 import type {
-    ConstructHtmlTag,
-    FunctionMap,
-    JsonHtmlHead,
-    JsonHtmlNodeMap,
-    RecursiveConstructHtmlTag,
+  ConstructHtmlTag,
+  FunctionMap,
+  JsonHtmlHead,
+  JsonHtmlNodeMap,
+  RecursiveConstructHtmlTag,
 } from "./html-type-engine";
-import { buildPageConfig, jsonToHtml } from "./htmlody-utils";
-import { htmlBody } from "./page-confg";
+import { buildPageConfig } from "./htmlody-utils";
+import { jsonToHtml } from "./json-to-html-engine";
 
 const tailwindConfig = {
   content: [],
@@ -34,11 +33,10 @@ export const htmlFactory = <
     tailwindConfig,
     useHtmx,
     useTailwind,
-    pageTitle,
   }: {
-    useTailwind?: boolean;
+    useTailwind?: boolean | string;
     tailwindConfig?: object;
-    useHtmx?: boolean;
+    useHtmx?: boolean | string;
     pageTitle?: string;
   }
 ) => {
@@ -48,17 +46,22 @@ export const htmlFactory = <
     // If a config is provided, this assumes that you have a CDN that can take it as a query parameter.
     // You'd need to adjust this if your CDN setup is different.
     const configParam = tailwindConfig;
-    // ? `?config=${encodeURIComponent(tailwindConfig)}`
-    // : "";
-
-    // turn these into plugin params
-    tailwindScript = `  <script src="https://cdn.tailwindcss.com"></script>`;
+    if (useTailwind === true) {
+      // TODO turn these into plugin params
+      tailwindScript = `<script src="https://cdn.tailwindcss.com"></script>`;
+    } else if (typeof useTailwind === "string") {
+      tailwindScript = `<script src="${useTailwind}"></script>`;
+    }
   }
 
   // Conditionally load htmx
   let htmxScript = "";
-  if (useHtmx) {
+
+  if (useHtmx === true) {
     htmxScript = `<script src="https://unpkg.com/htmx.org"></script>`;
+    // optionally pass in path to htmx file
+  } else if (typeof useHtmx === "string") {
+    htmxScript = `<script src="${useHtmx}"></script>`;
   }
 
   const infer = (): RecursiveConstructHtmlTag<Body> => {
@@ -86,10 +89,7 @@ export const htmlFactory = <
     return `
 <!doctype html>
 <head>
-    <title>${pageTitle}</title>
-    ${tailwindScript}
-
-    ${htmxScript}
+    <title>${headConfig.title}</title>
 </head>`;
   };
 
@@ -98,6 +98,9 @@ export const htmlFactory = <
 <html>
     ${headConfigToHtml()}
     ${bodyConfigToHtml()}
+    ${tailwindScript}
+
+    ${htmxScript}
 </html>
 `;
   };
@@ -120,23 +123,3 @@ const example = {
 } as const; //as const;
 
 type Tester = ConstructHtmlTag<typeof example>;
-
-export const pageFactory = htmlFactory({ title: "My Title" }, htmlBody, {
-  pageTitle: "My Page",
-  // tailwindConfig,
-  useHtmx: true,
-  useTailwind: true,
-});
-
-const server = serverFactory({
-  serve: Bun.serve,
-  routes: {
-    "/": {
-      GET: (req, res) => {
-        return htmlRes(pageFactory.getHtmlOut());
-      },
-    },
-  },
-});
-
-server.start();

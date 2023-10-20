@@ -1,18 +1,21 @@
 export type Attributes = Record<string, string>;
 
-export type JsonTagElNode = {
+export type ClassRecord = {
+  [key: string]: boolean;
+};
+
+export type ExtensionRec = Record<string, unknown>;
+
+export type JsonTagElNode<Ext extends ExtensionRec = {}> = {
   content?: string;
   children?: JsonHtmlNodeMap;
   attributes?: Attributes;
   tag: string;
-};
+  // cr?: ClassRecord
+} & Ext;
 
-export type JsonHtmlNodeMap = {
-  [id: string]: JsonTagElNode;
-};
-
-export type GenericNodeMap<T extends JsonHtmlNodeMap = JsonHtmlNodeMap> = {
-  [tag in keyof T]: T[tag];
+export type JsonHtmlNodeMap<NodeT extends JsonTagElNode = JsonTagElNode> = {
+  [id: string]: JsonTagElNode<NodeT>;
 };
 
 type ConvertAttributesToHtmlString<Attrs extends Attributes> = {
