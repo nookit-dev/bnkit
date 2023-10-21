@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { Attributes, JsonHtmlNodeMap, JsonTagElNode } from "./html-type-engine";
 import {
+  collectClassNames,
   formatAttributes,
   nodeFactory,
   retrieveElement,
@@ -123,5 +124,43 @@ describe("nodeFactory", () => {
       },
       content: "Sample Content",
     });
+  });
+});
+
+describe("collectClassNames", () => {
+  it("should add class names to uniqueClassNames set", () => {
+    const node = {
+      tag: "div",
+      attributes: {
+        class: "sample-class-1 sample-class-2",
+      },
+      content: "Sample Content",
+    };
+    const uniqueClassNames = new Set<string>();
+    collectClassNames(node, uniqueClassNames);
+    expect(uniqueClassNames).toEqual(new Set(["sample-class-1", "sample-class-2"]));
+  });
+
+  it("should not add class names to uniqueClassNames set if class attribute is not present", () => {
+    const node = {
+      tag: "div",
+      content: "Sample Content",
+    };
+    const uniqueClassNames = new Set<string>();
+    collectClassNames(node, uniqueClassNames);
+    expect(uniqueClassNames).toEqual(new Set());
+  });
+
+  it("should not add class names to uniqueClassNames set if class attribute is not a string", () => {
+    const node = {
+      tag: "div",
+      attributes: {
+        class: 123,
+      },
+      content: "Sample Content",
+    };
+    const uniqueClassNames = new Set<string>();
+    collectClassNames(node, uniqueClassNames);
+    expect(uniqueClassNames).toEqual(new Set());
   });
 });

@@ -47,7 +47,6 @@ describe("generateCSS", () => {
 
   it("should handle nodes without the cr property", () => {
     const mockNodeMap: JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>> = {
-      // @ts-expect-error
       exampleDiv: {
         tag: "div",
       },

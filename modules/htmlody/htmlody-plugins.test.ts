@@ -1,6 +1,11 @@
 import { describe, expect, it } from "bun:test";
-import { ClassRecordAttributes, classRecordPlugin, classRecordPluginHandler } from "./htmlody-plugins";
 import { JsonHtmlNodeMap, JsonTagElNode, jsonToHtml } from ".";
+import {
+  ClassRecordAttributes,
+  classRecordPlugin,
+  classRecordPluginHandler,
+  markdownPlugin
+} from "./htmlody-plugins";
 
 describe("classRecordPluginHandler", () => {
   it("should add classes to attributes based on ClassRecord", () => {
@@ -67,5 +72,35 @@ describe("classRecordPlugin", () => {
   it("should not add classes with a value of false", () => {
     const renderedHtml = jsonToHtml(sampleNodeMap, [classRecordPlugin]);
     expect(renderedHtml).not.toContain("class-two");
+  });
+});
+
+describe("Markdown Plugin with jsonToHtml", () => {
+  it("should convert a simple markdown text to HTML", () => {
+    const input = {
+      sampleId: {
+        tag: "div",
+        markdown: "# Hello\nThis is **bold**.",
+      },
+    };
+
+    const output = jsonToHtml(input, [markdownPlugin]);
+
+    const expectedOutput = `<div><h1>Hello</h1>\n<p>This is <strong>bold</strong>.</p></div>`;
+    expect(output).toBe(expectedOutput);
+  });
+
+  it("should handle nodes without markdown", () => {
+    const input = {
+      sampleId: {
+        tag: "div",
+        content: "Just a regular div.",
+      },
+    };
+
+    const output = jsonToHtml(input, [markdownPlugin]);
+
+    const expectedOutput = `<div>Just a regular div.</div>`;
+    expect(output).toBe(expectedOutput);
   });
 });

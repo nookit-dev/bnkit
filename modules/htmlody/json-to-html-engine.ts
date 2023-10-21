@@ -34,7 +34,7 @@ export function jsonToHtml<
       if (!tagName) {
         throw new Error(`Tag name not provided for ID: ${id}`);
       }
-      
+
       const content = node.content || "";
       const attributesStr = formatAttributes(node.attributes || {});
       const childrenHtml = node.children

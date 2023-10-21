@@ -52,12 +52,28 @@ export const parsers = {
   inlineCode(text: string): string {
     return replaceMarkdown(text, /`(.+?)`/g, "<code>$1</code>");
   },
+  paragraphs(text: string): string {
+    // Wrap lines not starting with HTML tags in <p> tags
+    return text.replace(/^(?!<.*>)(.+)$/gm, "<p>$1</p>");
+  },
 };
 
 export function convertMarkdownToHTML(markdownText: string): string {
   let html = markdownText;
-  for (const parser of Object.values(parsers)) {
-    html = parser(html);
+  const parserOrder: Array<keyof typeof parsers> = [
+    "headers",
+    "bold",
+    "italic",
+    "links",
+    "unorderedLists",
+    "orderedLists",
+    "blockquotes",
+    "codeBlocks",
+    "inlineCode",
+    "paragraphs",
+  ];
+  for (const parserName of parserOrder) {
+    html = parsers[parserName](html);
   }
   return html;
 }

@@ -4,7 +4,7 @@ import {
   FullJsonHtmlDocStructure,
   JsonHtmlHead,
   JsonHtmlNodeMap,
-  JsonTagElNode
+  JsonTagElNode,
 } from "./html-type-engine";
 
 export const retrieveElement = <Structure extends JsonHtmlNodeMap>(
@@ -87,4 +87,15 @@ export function renderHtmlTag(
   }
 
   return `<${tagName}${space}${attributesStr}>${content}${childrenHtml}</${tagName}>`;
+}
+
+export function collectClassNames(
+  node: JsonTagElNode,
+  uniqueClassNames: Set<string>
+) {
+  // const uniqueClassNames = new Set<string>();
+  if (node.attributes && typeof node.attributes.class === "string") {
+    const classList = node.attributes.class.split(" ");
+    classList.forEach((cls) => uniqueClassNames.add(cls));
+  }
 }

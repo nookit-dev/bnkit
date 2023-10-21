@@ -1,4 +1,6 @@
+import { convertMarkdownToHTML } from "mod/utils/text-utils";
 import { ClassRecord, JsonTagElNode } from "./html-type-engine";
+
 
 // this will be the node that will be attached to our json node
 export type ClassRecordAttributes = {
@@ -30,4 +32,31 @@ export const classRecordPluginHandler = <
 
 export const classRecordPlugin: HTMLodyPlugin<ClassRecordAttributes> = {
   processNode: classRecordPluginHandler,
+};
+
+export type MarkdownAttributes = {
+  markdown?: string;
+};
+
+export const markdownPluginHandler = <
+  Node extends JsonTagElNode & MarkdownAttributes
+>(
+  node: Node
+): JsonTagElNode => {
+  if (node.markdown) {
+    const htmlContent = convertMarkdownToHTML(node.markdown);
+    // remove the markdown attribute after processing
+    const { markdown, ...remainingAttributes } = node.attributes || {};
+
+    return {
+      ...node,
+      content: htmlContent,
+      attributes: remainingAttributes,
+    };
+  }
+  return node;
+};
+
+export const markdownPlugin: HTMLodyPlugin<MarkdownAttributes> = {
+  processNode: markdownPluginHandler,
 };
