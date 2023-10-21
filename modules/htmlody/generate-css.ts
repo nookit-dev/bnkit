@@ -323,7 +323,7 @@ const bgColorGen = <Color extends string, Shade extends ColorShades>(
   );
 };
 
-const colorRes = bgColorGen("red", 500);
+// const colorRes = bgColorGen("red", 500);
 
 const borderColorGen = <Color extends string, Shade extends ColorShades>(
   color: Color,
@@ -337,49 +337,49 @@ const borderColorGen = <Color extends string, Shade extends ColorShades>(
   );
 };
 
-const generateColorUtilities = <
-  ColorMapT extends ColorMap,
-  ColorKeys extends keyof ColorMapT = keyof ColorMapT,
-  ShadeKey extends keyof ColorMapT[ColorKeys] = keyof ColorMapT[ColorKeys],
-  Shade extends ColorMapT[ColorKeys][ShadeKey] = ColorMapT[ColorKeys][ShadeKey]
->(
-  colorMap: ColorMapT
-) => {
-  let utilities = {};
+// const generateColorUtilities = <
+//   ColorMapT extends ColorMap,
+//   ColorKeys extends keyof ColorMapT = keyof ColorMapT,
+//   ShadeKey extends keyof ColorMapT[ColorKeys] = keyof ColorMapT[ColorKeys],
+//   Shade extends ColorMapT[ColorKeys][ShadeKey] = ColorMapT[ColorKeys][ShadeKey]
+// >(
+//   colorMap: ColorMapT
+// ) => {
+//   let utilities = {};
 
-  const keys = Object.keys(colorMap) as ColorKeys[];
-  for (let i = 0; keys.length; i++) {
-    const color = keys[i];
+//   const keys = Object.keys(colorMap) as ColorKeys[];
+//   for (let i = 0; keys.length; i++) {
+//     const color = keys[i];
 
-    if (color in colorMap) {
-      const shades = Object.keys(
-        colorMap[color]
-      ) as (keyof ColorMapT[ColorKeys])[];
-      for (let j = 0; j < shades.length; j++) {
-        const shade = shades[j];
-        const value = colorMap[color][shade];
-        if (typeof value === "string") {
-          // Make sure value is a string
-          utilities = {
-            ...utilities,
-            ...textColorGen(color, value),
-            ...bgColorGen(color, value),
-            ...borderColorGen(color, value),
-          };
-        }
-      }
-    }
-  }
+//     if (color in colorMap) {
+//       const shades = Object.keys(
+//         colorMap[color]
+//       ) as (keyof ColorMapT[ColorKeys])[];
+//       for (let j = 0; j < shades.length; j++) {
+//         const shade = shades[j];
+//         const value = colorMap[color][shade];
+//         if (typeof value === "string") {
+//           // Make sure value is a string
+//           utilities = {
+//             ...utilities,
+//             ...textColorGen(color, value),
+//             ...bgColorGen(color, value),
+//             ...borderColorGen(color, value),
+//           };
+//         }
+//       }
+//     }
+//   }
 
-  return utilities as Record<
-    | keyof ReturnType<typeof textColorGen<ColorKeys, ShadeKey>>
-    | keyof ReturnType<typeof bgColorGen<ColorKeys, Shade>>
-    | keyof ReturnType<typeof borderColorGen<ColorKeys, Shade>>,
-    string
-  >;
-};
+//   return utilities as Record<
+//     | keyof ReturnType<typeof textColorGen<ColorKeys, ShadeKey>>
+//     | keyof ReturnType<typeof bgColorGen<ColorKeys, Shade>>
+//     | keyof ReturnType<typeof borderColorGen<ColorKeys, Shade>>,
+//     string
+//   >;
+// };
 
-const colorUtilities = generateColorUtilities(colorMap);
+// const colorUtilities = generateColorUtilities(colorMap);
 
 export const CSS_MAP = {
   ...spacingHelper(0.5, 0.125, "rem"),
