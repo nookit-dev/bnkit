@@ -1,33 +1,49 @@
 import { convertMarkdownToHTML } from "mod/utils/text-utils";
-import { ClassRecord, JsonTagElNode } from "./html-type-engine";
-
+import {
+  ClassRecord,
+  ExtensionRec,
+  JsonTagElNode,
+  ResponsiveClassRecord,
+} from "./html-type-engine";
 
 // this will be the node that will be attached to our json node
 export type ClassRecordAttributes = {
-  cr?: ClassRecord;
+  cr?: ResponsiveClassRecord;
 };
 
-export interface HTMLodyPlugin<T extends object = {}> {
-  processNode: (node: JsonTagElNode & T) => JsonTagElNode & T;
+export type CRNode = JsonTagElNode<ClassRecordAttributes>;
+
+export interface HTMLodyPlugin<T extends ExtensionRec = {}> {
+  // need to figure out if finall return type should be with or without the type
+  processNode: (node: JsonTagElNode<T>) => JsonTagElNode<T>;
 }
 
 export const classRecordPluginHandler = <
-  Node extends JsonTagElNode & ClassRecordAttributes
+  Node extends JsonTagElNode & { cr?: ResponsiveClassRecord }
 >(
   node: Node
 ) => {
   let classes = "";
+
   if (node.cr) {
-    classes = Object.entries(node.cr)
-      .filter(([, value]) => value)
-      .map(([key]) => key)
+    const responsiveClasses = Object.entries(node.cr)
+      .map(([breakpoint, classRecord]) => {
+        const breakpointPrefix = breakpoint === "*" ? "" : `${breakpoint}:`;
+        const classList = Object.entries(classRecord || {})
+          .filter(([, value]) => value)
+          .map(([key]) => `${breakpointPrefix}${key}`)
+          .join(" ");
+        return classList;
+      })
       .join(" ");
-    return {
-      ...node,
-      attributes: { ...node.attributes, class: classes },
-    };
+
+    classes = responsiveClasses;
   }
-  return node;
+
+  return {
+    ...node,
+    attributes: { ...node.attributes, class: classes },
+  };
 };
 
 export const classRecordPlugin: HTMLodyPlugin<ClassRecordAttributes> = {

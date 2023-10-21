@@ -1,20 +1,23 @@
 import { describe, expect, it } from "bun:test";
 import { JsonHtmlNodeMap, JsonTagElNode, jsonToHtml } from ".";
 import {
+  CRNode,
   ClassRecordAttributes,
   classRecordPlugin,
   classRecordPluginHandler,
-  markdownPlugin
+  markdownPlugin,
 } from "./htmlody-plugins";
 
 describe("classRecordPluginHandler", () => {
   it("should add classes to attributes based on ClassRecord", () => {
-    const node = {
+    const node: CRNode = {
       tag: "div",
       cr: {
-        "class-1": true,
-        "class-2": false,
-        "class-3": true,
+        "*": {
+          "border-gray-50": true,
+          "border-blue-100": false,
+          "bg-blue-100": true,
+        },
       },
       attributes: {
         id: "sample-id",
@@ -22,12 +25,11 @@ describe("classRecordPluginHandler", () => {
       content: "Sample Content",
     };
     const processedNode = classRecordPluginHandler(node);
-    // @ts-expect-error
-    expect(processedNode.attributes?.class).toBe("class-1 class-3");
+    expect(processedNode.attributes?.class).toBe("border-gray-50 bg-blue-100");
   });
 
   it("should not add classes to attributes if ClassRecord is not present", () => {
-    const node = {
+    const node: CRNode = {
       tag: "div",
       attributes: {
         id: "sample-id",
@@ -35,8 +37,7 @@ describe("classRecordPluginHandler", () => {
       content: "Sample Content",
     };
     const processedNode = classRecordPluginHandler(node);
-    // @ts-expect-error
-    expect(processedNode.attributes?.class).toBeUndefined();
+    expect(processedNode.attributes?.class).toBe("");
   });
 });
 
@@ -46,16 +47,20 @@ describe("classRecordPlugin", () => {
       div1: {
         tag: "div",
         cr: {
-          "class-one": true,
-          "class-two": false,
-          "class-three": true,
+          "*": {
+            "bg-blue-100": true,
+            "bg-gray-100": false,
+            "bg-red-100": true,
+          },
         },
         content: "Hello World!",
       },
       div2: {
         tag: "div",
         cr: {
-          "class-four": true,
+          "*": {
+            "bg-blue-100": true,
+          },
         },
         content: "Another div",
       },
@@ -64,9 +69,11 @@ describe("classRecordPlugin", () => {
   it("should add classes based on the ClassRecord", () => {
     const renderedHtml = jsonToHtml(sampleNodeMap, [classRecordPlugin]);
     expect(renderedHtml).toContain(
-      '<div class="class-one class-three">Hello World!</div>'
+      '<div class="bg-blue-100 bg-red-100">Hello World!</div>'
     );
-    expect(renderedHtml).toContain('<div class="class-four">Another div</div>');
+    expect(renderedHtml).toContain(
+      '<div class="bg-blue-100">Another div</div>'
+    );
   });
 
   it("should not add classes with a value of false", () => {

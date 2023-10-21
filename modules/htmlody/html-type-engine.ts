@@ -1,8 +1,10 @@
+import { CSS_MAP } from "./generate-css";
+
 export type Attributes = Record<string, string>;
 
-export type ClassRecord = {
-  [key: string]: boolean;
-};
+export type ClassRecord = Partial<{
+  [key in keyof typeof CSS_MAP]: boolean;
+}>;
 
 export type ResponsiveClassRecord = {
   "*"?: ClassRecord;
@@ -10,7 +12,7 @@ export type ResponsiveClassRecord = {
   md?: ClassRecord;
   lg?: ClassRecord;
   xl?: ClassRecord;
-}
+};
 
 export type ExtensionRec = Record<string, unknown>;
 
@@ -25,20 +27,6 @@ export type JsonTagElNode<Ext extends ExtensionRec = {}> = {
 export type JsonHtmlNodeMap<NodeT extends JsonTagElNode = JsonTagElNode> = {
   [id: string]: JsonTagElNode<NodeT>;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* type engine(lots of work needs to be done done here still*/
 type ConvertAttributesToHtmlString<Attrs extends Attributes> = {

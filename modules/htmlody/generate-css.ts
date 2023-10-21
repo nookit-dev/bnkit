@@ -337,6 +337,83 @@ const borderColorGen = <Color extends string, Shade extends ColorShades>(
   );
 };
 
+const generatePropertiesForColor = <Color extends TypeColors>(
+  colorKey: Color
+) => {
+  // const color = baseColors[colorKey];
+
+  // const shades = generateShades(color);
+
+  // generate all text colors  and shades
+  const text50 = textColorGen(colorKey, 50);
+  const text100 = textColorGen(colorKey, 100);
+  const text200 = textColorGen(colorKey, 200);
+  const text300 = textColorGen(colorKey, 300);
+  const text400 = textColorGen(colorKey, 400);
+  const text500 = textColorGen(colorKey, 500);
+  const text600 = textColorGen(colorKey, 600);
+  const text700 = textColorGen(colorKey, 700);
+  const text800 = textColorGen(colorKey, 800);
+  const text900 = textColorGen(colorKey, 900);
+
+  // generate all bg colors and shades
+  const bg50 = bgColorGen(colorKey, 50);
+  const bg100 = bgColorGen(colorKey, 100);
+  const bg200 = bgColorGen(colorKey, 200);
+  const bg300 = bgColorGen(colorKey, 300);
+  const bg400 = bgColorGen(colorKey, 400);
+  const bg500 = bgColorGen(colorKey, 500);
+  const bg600 = bgColorGen(colorKey, 600);
+  const bg700 = bgColorGen(colorKey, 700);
+  const bg800 = bgColorGen(colorKey, 800);
+  const bg900 = bgColorGen(colorKey, 900);
+
+  // generate all border colors and shades
+  const border50 = borderColorGen(colorKey, 50);
+  const border100 = borderColorGen(colorKey, 100);
+  const border200 = borderColorGen(colorKey, 200);
+  const border300 = borderColorGen(colorKey, 300);
+  const border400 = borderColorGen(colorKey, 400);
+  const border500 = borderColorGen(colorKey, 500);
+  const border600 = borderColorGen(colorKey, 600);
+  const border700 = borderColorGen(colorKey, 700);
+  const border800 = borderColorGen(colorKey, 800);
+  const border900 = borderColorGen(colorKey, 900);
+
+  return {
+    ...text50,
+    ...text100,
+    ...text200,
+    ...text300,
+    ...text400,
+    ...text500,
+    ...text600,
+    ...text700,
+    ...text800,
+    ...text900,
+    ...bg50,
+    ...bg100,
+    ...bg200,
+    ...bg300,
+    ...bg400,
+    ...bg500,
+    ...bg600,
+    ...bg700,
+    ...bg800,
+    ...bg900,
+    ...border50,
+    ...border100,
+    ...border200,
+    ...border300,
+    ...border400,
+    ...border500,
+    ...border600,
+    ...border700,
+    ...border800,
+    ...border900,
+  };
+};
+
 // const generateColorUtilities = <
 //   ColorMapT extends ColorMap,
 //   ColorKeys extends keyof ColorMapT = keyof ColorMapT,
@@ -474,6 +551,17 @@ export const CSS_MAP = {
   ...sizeFractions("9/12"),
   ...sizeFractions("10/12"),
   ...sizeFractions("11/12"),
+  ...generatePropertiesForColor("red"),
+  ...generatePropertiesForColor("orange"),
+  ...generatePropertiesForColor("yellow"),
+  ...generatePropertiesForColor("green"),
+  ...generatePropertiesForColor("blue"),
+  ...generatePropertiesForColor("indigo"),
+  ...generatePropertiesForColor("purple"),
+  ...generatePropertiesForColor("pink"),
+  ...generatePropertiesForColor("slate"),
+  ...generatePropertiesForColor("gray"),
+
   "w-full": "width: 100%;",
   "h-full": "height: 100%;",
   "w-screen": "width: 100vw;",
@@ -547,9 +635,6 @@ export const CSS_MAP = {
   "text-base": fontSize("1rem"),
   "text-lg": fontSize("1.125rem"),
   "text-xl": fontSize("1.25rem"),
-
-  // Background Color
-  "bg-red-500": color("#f56565"),
 
   // Border Utilities
   border: border("1px", "solid", "black"),
