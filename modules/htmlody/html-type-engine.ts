@@ -1,4 +1,4 @@
-import { CSS_MAP } from "./generate-css";
+import { CSS_MAP } from "./css-engine";
 
 export type Attributes = Record<string, string>;
 
@@ -28,7 +28,7 @@ export type JsonHtmlNodeMap<NodeT extends JsonTagElNode = JsonTagElNode> = {
   [id: string]: JsonTagElNode<NodeT>;
 };
 
-/* type engine(lots of work needs to be done done here still*/
+/********* TYPE ENGINE (lots of work needs to be done done here still*/
 type ConvertAttributesToHtmlString<Attrs extends Attributes> = {
   [Key in keyof Attrs]: `${Key}="${Attrs[Key]}"`;
 }[keyof Attrs];
