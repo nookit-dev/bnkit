@@ -1,9 +1,9 @@
-import { CSS_MAP } from "./css-engine";
+import type { CSSMapKeys } from "./css-engine";
 
 export type Attributes = Record<string, string>;
 
 export type ClassRecord = Partial<{
-  [key in keyof typeof CSS_MAP]: boolean;
+  [key in CSSMapKeys]: boolean;
 }>;
 
 export type ResponsiveClassRecord = {
@@ -18,7 +18,7 @@ export type ExtensionRec = Record<string, unknown>;
 
 export type JsonTagElNode<Ext extends ExtensionRec = {}> = {
   content?: string;
-  children?: JsonHtmlNodeMap;
+  children?: JsonHtmlNodeMap<JsonTagElNode<Ext>>;
   attributes?: Attributes;
   tag: string;
   // cr?: ClassRecord

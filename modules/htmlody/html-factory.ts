@@ -1,3 +1,4 @@
+import { generateCSS, generateColorVariables } from "./css-engine";
 import type {
   ConstructHtmlTag,
   FunctionMap,
@@ -5,6 +6,7 @@ import type {
   JsonHtmlNodeMap,
   RecursiveConstructHtmlTag,
 } from "./html-type-engine";
+import { CRNode, classRecordPlugin } from "./htmlody-plugins";
 import { buildPageConfig } from "./htmlody-utils";
 import { jsonToHtml } from "./json-to-html-engine";
 
@@ -25,7 +27,7 @@ const functionMap = {
 
 export const htmlFactory = <
   Head extends JsonHtmlHead,
-  Body extends JsonHtmlNodeMap
+  Body extends JsonHtmlNodeMap<CRNode>
 >(
   headConfig: Head,
   bodyConfig: Body,
@@ -68,10 +70,11 @@ export const htmlFactory = <
     return {} as RecursiveConstructHtmlTag<Body>;
   };
 
-  const bodyConfigToHtml = () => {
+  const bodyConfigToHtml = ({ children }: { children?: string } = {}) => {
     return `
 <body>
-    ${jsonToHtml(bodyConfig)}
+    ${jsonToHtml(bodyConfig, [classRecordPlugin])}
+    ${children}
 </body>`;
   };
 
@@ -97,7 +100,14 @@ export const htmlFactory = <
     return `
 <html>
     ${headConfigToHtml()}
-    ${bodyConfigToHtml()}
+
+    ${bodyConfigToHtml({
+      children: `<style>${generateColorVariables()}</style>\n
+<style>${generateCSS(bodyConfig)}</div>
+      
+      
+      `,
+    })}
     ${tailwindScript}
 
     ${htmxScript}
