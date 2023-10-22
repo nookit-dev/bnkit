@@ -38,17 +38,24 @@ type CSSConfig = {
   colors: Record<string, string>;
 };
 
-const textAlign = <Val extends string>(val: Val) =>
+export const textAlign = <Val extends string>(val: Val) =>
   `text-align: ${val};` as const;
-const fontSize = <Val extends string>(val: Val) =>
+export const fontSize = <Val extends string>(val: Val) =>
   `font-size: ${val};` as const;
-const color = <Val extends string>(val: Val) =>
+export const color = <Val extends string>(val: Val) =>
   `background-color: ${val};` as const;
-const border = <W extends string, S extends string, C extends string>(
+export const border = <W extends string, S extends string, C extends string>(
   width: string,
   style: string,
   color: string
 ) => `border: ${width} ${style} ${color};` as const;
+
+export const breakpoints = {
+  sm: "640px",
+  md: "768px",
+  lg: "1024px",
+  xl: "1280px",
+} as const;
 
 export function generateCSS<
   NodeMap extends JsonHtmlNodeMap<
@@ -60,30 +67,45 @@ export function generateCSS<
   // Collect all used classes
   Object.values(nodeMap).forEach((node) => {
     if (node.cr) {
-      Object.keys(node.cr).forEach((key) => {
-        if (node.cr![key]) {
-          key.split(" ").forEach((className) => usedClasses.add(className));
-        }
+      Object.entries(node.cr).forEach(([breakpoint, classRecord]) => {
+        const breakpointPrefix = breakpoint === "*" ? "" : `${breakpoint}:`;
+        Object.keys(classRecord).forEach((key) => {
+          if (classRecord[key]) {
+            key
+              .split(" ")
+              .forEach((className) =>
+                usedClasses.add(`${breakpointPrefix}${className}`)
+              );
+          }
+        });
       });
     }
   });
 
   // Generate CSS
   let cssStr = "";
-  usedClasses.forEach((className) => {
+
+  usedClasses.forEach((fullClassName) => {
+    const splitClassName = fullClassName.split(":");
+    const breakpointPrefix = splitClassName.length > 1 ? splitClassName[0] : "";
+    const className =
+      splitClassName.length > 1 ? splitClassName[1] : splitClassName[0];
+
     const cssName = CSS_MAP?.[className] as unknown as string | undefined;
 
     if (typeof CSS_MAP?.[className] === "string") {
-      cssStr += `.${className} { ${CSS_MAP[className]} }\n`;
+      const selector = breakpointPrefix
+        ? `@media (min-width: ${breakpoints[breakpointPrefix]}) { .${fullClassName} { ${CSS_MAP[className]} } }`
+        : `.${fullClassName} { ${CSS_MAP[className]} }`;
+
+      cssStr += `${selector}\n`;
     }
   });
 
   return cssStr;
 }
 
-type CSSFactory = (config: CSSConfig) => Record<string, string>;
-
-const createKeyVal = <Key extends string, Val extends string>(
+export const createKeyVal = <Key extends string, Val extends string>(
   key: Key,
   val: Val
 ) => {
@@ -96,7 +118,7 @@ const createKeyVal = <Key extends string, Val extends string>(
   return obj;
 };
 
-const cssPropertyValueGen = <
+export const cssPropertyValueGen = <
   ClassAbbrevKey extends string,
   Property extends string,
   Value extends number | string,
@@ -116,9 +138,9 @@ const cssPropertyValueGen = <
   };
 };
 
-type CSSUnits = "rem" | "px" | "%" | "em";
+export type CSSUnits = "rem" | "px" | "%" | "em";
 
-const sizingHelper = <
+export const sizingHelper = <
   ClassValKey extends number,
   Value extends number | string,
   Unit extends CSSUnits
@@ -152,9 +174,7 @@ const fractionHelper = <
   );
 };
 
-const fractionHelperRes = fractionHelper("w", "1/2", "width");
-
-const sizeFractions = <Fraction extends keyof FractionPercentMapT>(
+export const sizeFractions = <Fraction extends keyof FractionPercentMapT>(
   fraction: Fraction
 ) => {
   return {
@@ -163,7 +183,7 @@ const sizeFractions = <Fraction extends keyof FractionPercentMapT>(
   };
 };
 
-const spacingHelper = <
+export const spacingHelper = <
   ClassAbbrevKey extends number,
   Val extends number,
   Unit extends CSSUnits
@@ -206,49 +226,42 @@ const spacingHelper = <
   } as const;
 };
 
-// Test
-const result = spacingHelper(1, 0.25, "rem");
-const result2 = spacingHelper(2, 0.25, "rem");
+export type ColorShades =
+  | 50
+  | 100
+  | 200
+  | 300
+  | 400
+  | 500
+  | 600
+  | 700
+  | 800
+  | 900;
 
-const combined = {
-  ...result,
-  ...result2,
-};
-
-type ColorShades = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
-
-type TypeColors =
-  | "red"
-  | "orange"
-  | "yellow"
-  | "green"
-  | "blue"
-  | "indigo"
-  | "purple"
-  | "pink"
-  | "slate"
-  | "gray";
-
-type ColorMap = {
-  [Key in TypeColors]: {
+export type ColorMap = {
+  [Key in ColorType]: {
     [Key in ColorShades]: string;
   };
 };
 
-const baseColors: Record<TypeColors, string> = {
-  red: "#f00",
-  orange: "#f60",
-  yellow: "#ff0",
-  green: "#0f0",
-  blue: "#00f",
+export const baseColors = {
+  red: "#ff0000",
+  orange: "#ffa500",
+  yellow: "#ffff00",
+  green: "#0f0000",
+  blue: "#0000ff",
   indigo: "#4b0082",
   purple: "#800080",
   pink: "#ffc0cb",
   slate: "#708090",
   gray: "#808080",
-};
+} as const;
 
-const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+export type ColorType = keyof typeof baseColors;
+
+export function hexToRgb(
+  hex: string
+): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
@@ -256,50 +269,95 @@ const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16),
       }
-    : { r: 0, g: 0, b: 0 };
-};
+    : null;
+}
 
-const adjustBrightness = <Color extends string, Factor extends number>(
-  color: Color,
-  factor: Factor
-) => {
-  const { r, g, b } = hexToRgb(color);
-  const adjust = (color: number) =>
-    Math.min(255, Math.max(0, color * factor)).toFixed(0);
-  return `#${adjust(r)}${adjust(g)}${adjust(b)}`;
-};
+export function rgbToHex(r: number, g: number, b: number): string {
+  return (
+    "#" +
+    ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()
+  );
+}
 
-const generateShades = <Color extends string>(
-  color: Color
-): Record<ColorShades, Color | string> => {
-  const shades: Record<ColorShades, Color | string> = {} as Record<
-    ColorShades,
-    Color | string
-  >;
-  // A function to adjust the brightness of a color
+export function adjustBrightness(
+  color: { r: number; g: number; b: number },
+  factor: number
+): { r: number; g: number; b: number } {
+  return {
+    r: Math.round(clamp(color.r * factor, 0, 255)),
+    g: Math.round(clamp(color.g * factor, 0, 255)),
+    b: Math.round(clamp(color.b * factor, 0, 255)),
+  };
+}
 
-  // Generate shades
-  shades[50] = adjustBrightness(color, 1.5);
-  shades[100] = adjustBrightness(color, 1.4);
-  shades[200] = adjustBrightness(color, 1.3);
-  shades[300] = adjustBrightness(color, 1.2);
-  shades[400] = adjustBrightness(color, 1.1);
-  shades[500] = color;
-  shades[600] = adjustBrightness(color, 0.9);
-  shades[700] = adjustBrightness(color, 0.8);
-  shades[800] = adjustBrightness(color, 0.7);
-  shades[900] = adjustBrightness(color, 0.6);
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+export function generateShades(color: ColorType): string[] {
+  const hex = baseColors[color];
+
+  const baseColor = hexToRgb(hex);
+
+  if (!baseColor) throw new Error("Invalid color format");
+
+  const shades: string[] = [];
+  const factors = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+  factors.forEach((factor) => {
+    const adjustedColor = adjustBrightness(baseColor, factor);
+
+    const shade = rgbToHex(adjustedColor.r, adjustedColor.g, adjustedColor.b);
+    shades.push(shade);
+  });
+
   return shades;
+}
+
+export const generateVariablesForColor = <Color extends ColorType>(
+  color: Color
+) => {
+  let cssVariables: string[] = [];
+
+  const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
+
+  const shadeColorArray = generateShades(color);
+
+  for (let i = 0; i < shades.length; i++) {
+    const shade = shades[i];
+    const colorCode = shadeColorArray[i];
+
+    cssVariables.push(`--${color}-${shade}: ${colorCode};\n`);
+  }
+
+  return cssVariables.join("");
 };
 
-const colorMap: ColorMap = Object.fromEntries(
-  Object.entries(baseColors).map(([type, color]) => [
-    type,
-    generateShades(color),
-  ])
-) as ColorMap;
+export const generateColorVariables = () => {
+  let cssVariables = ":root {\n";
 
-const textColorGen = <Color extends string, Shade extends ColorShades>(
+  const colors = [
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "indigo",
+    "purple",
+    "pink",
+    "slate",
+    "gray",
+  ] as const;
+
+  for (let i = 0; i < colors.length; i++) {
+    const color = colors[i];
+    const typedColor = color;
+    cssVariables += generateVariablesForColor(typedColor);
+  }
+
+  cssVariables += "}\n";
+  return cssVariables;
+};
+
+export const textColorGen = <Color extends string, Shade extends ColorShades>(
   color: Color,
   shade: Shade
 ) => {
@@ -311,7 +369,7 @@ const textColorGen = <Color extends string, Shade extends ColorShades>(
   );
 };
 
-const bgColorGen = <Color extends string, Shade extends ColorShades>(
+export const bgColorGen = <Color extends string, Shade extends ColorShades>(
   color: Color,
   shade: Shade
 ) => {
@@ -323,9 +381,7 @@ const bgColorGen = <Color extends string, Shade extends ColorShades>(
   );
 };
 
-// const colorRes = bgColorGen("red", 500);
-
-const borderColorGen = <Color extends string, Shade extends ColorShades>(
+export const borderColorGen = <Color extends string, Shade extends ColorShades>(
   color: Color,
   shade: Shade
 ) => {
@@ -337,13 +393,9 @@ const borderColorGen = <Color extends string, Shade extends ColorShades>(
   );
 };
 
-const generatePropertiesForColor = <Color extends TypeColors>(
+export const generatePropertiesForColor = <Color extends ColorType>(
   colorKey: Color
 ) => {
-  // const color = baseColors[colorKey];
-
-  // const shades = generateShades(color);
-
   // generate all text colors  and shades
   const text50 = textColorGen(colorKey, 50);
   const text100 = textColorGen(colorKey, 100);
@@ -413,50 +465,6 @@ const generatePropertiesForColor = <Color extends TypeColors>(
     ...border900,
   };
 };
-
-// const generateColorUtilities = <
-//   ColorMapT extends ColorMap,
-//   ColorKeys extends keyof ColorMapT = keyof ColorMapT,
-//   ShadeKey extends keyof ColorMapT[ColorKeys] = keyof ColorMapT[ColorKeys],
-//   Shade extends ColorMapT[ColorKeys][ShadeKey] = ColorMapT[ColorKeys][ShadeKey]
-// >(
-//   colorMap: ColorMapT
-// ) => {
-//   let utilities = {};
-
-//   const keys = Object.keys(colorMap) as ColorKeys[];
-//   for (let i = 0; keys.length; i++) {
-//     const color = keys[i];
-
-//     if (color in colorMap) {
-//       const shades = Object.keys(
-//         colorMap[color]
-//       ) as (keyof ColorMapT[ColorKeys])[];
-//       for (let j = 0; j < shades.length; j++) {
-//         const shade = shades[j];
-//         const value = colorMap[color][shade];
-//         if (typeof value === "string") {
-//           // Make sure value is a string
-//           utilities = {
-//             ...utilities,
-//             ...textColorGen(color, value),
-//             ...bgColorGen(color, value),
-//             ...borderColorGen(color, value),
-//           };
-//         }
-//       }
-//     }
-//   }
-
-//   return utilities as Record<
-//     | keyof ReturnType<typeof textColorGen<ColorKeys, ShadeKey>>
-//     | keyof ReturnType<typeof bgColorGen<ColorKeys, Shade>>
-//     | keyof ReturnType<typeof borderColorGen<ColorKeys, Shade>>,
-//     string
-//   >;
-// };
-
-// const colorUtilities = generateColorUtilities(colorMap);
 
 export const CSS_MAP = {
   ...spacingHelper(0.5, 0.125, "rem"),
@@ -629,7 +637,6 @@ export const CSS_MAP = {
   "text-left": textAlign("left"),
   "text-center": textAlign("center"),
   "text-right": textAlign("right"),
-
   "text-xs": fontSize("0.75rem"),
   "text-sm": fontSize("0.875rem"),
   "text-base": fontSize("1rem"),
