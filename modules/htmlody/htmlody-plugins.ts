@@ -40,7 +40,6 @@ export const classRecordPluginHandler = <
     classes = responsiveClasses;
   }
 
-  console.log(classes)
 
   if (classes === "") {
     return node;
