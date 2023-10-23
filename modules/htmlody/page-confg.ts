@@ -1,7 +1,10 @@
-import { JsonTagElNode } from ".";
+import { JsonHtmlNodeMap, JsonTagElNode } from ".";
+import { CRNode, MDNode } from "./htmlody-plugins";
 // import { pageFactory } from "./html-generator";
 
-export const htmxButton: JsonTagElNode = {
+type AppNode = CRNode & MDNode;
+
+export const htmxButton: JsonTagElNode<AppNode> = {
   content: "Click Me",
   attributes: {
     "hx-post": "/clicked",
@@ -12,11 +15,11 @@ export const htmxButton: JsonTagElNode = {
   tag: "button",
 };
 
-export const htmlBody = {
+export const htmlBody: JsonHtmlNodeMap<AppNode> = {
   h1: {
     content: "Hello World",
     attributes: {
-      class: "title-class",
+      class: "bg-blue-500",
       id: "title-id",
     },
 
@@ -36,6 +39,7 @@ export const htmlBody = {
     attributes: {
       class: "bg-red-500",
     },
+
     children: {
       button_1: htmxButton,
       div_1: {
@@ -44,6 +48,6 @@ export const htmlBody = {
       },
     },
   },
-} // satisfies JsonHtmlNodeMap;
+}; 
 
 // type HtmlTypeRes = ReturnType<typeof pageFactory.infer>;

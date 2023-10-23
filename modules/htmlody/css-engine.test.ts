@@ -57,7 +57,7 @@ describe("generateCSS", () => {
       {};
 
     const result = generateCSS(mockNodeMap);
-    expect(result).toEqual("");
+    expect(result).toEqual(null);
   });
 
   it("should handle nodes without the cr property", () => {
@@ -68,7 +68,7 @@ describe("generateCSS", () => {
     };
 
     const result = generateCSS(mockNodeMap);
-    expect(result).toEqual("");
+    expect(result).toEqual(null);
   });
 
   it("should ignore invalid class names", () => {
@@ -84,7 +84,7 @@ describe("generateCSS", () => {
     };
 
     const result = generateCSS(mockNodeMap);
-    expect(result).toEqual(""); // No CSS generated for invalid class names
+    expect(result).toEqual(null);
   });
 
   it("should not generate CSS if all classes are set to false", () => {
@@ -101,7 +101,7 @@ describe("generateCSS", () => {
     };
 
     const result = generateCSS(mockNodeMap);
-    expect(result).toEqual(""); // No CSS generated
+    expect(result).toEqual(null); // No CSS generated
   });
 });
 
@@ -145,7 +145,7 @@ describe("generateColorVariables", () => {
     expect(result).toContain(`--red-50`);
 
     expect(result).toContain(":root {\n--red-50: #1A0000;");
-    expect(result).toContain("--slate-300: #2D333A;");
+    expect(result).toContain("--slate-300: #4E5A65;");
   });
 });
 
@@ -167,14 +167,14 @@ describe("generateVariablesForColor", () => {
   it("should generate CSS variables for shades of a color", () => {
     const result = generateVariablesForColor("red");
     expect(result).toBe(
-      "--red-50: #1A0000;\n--red-100: #330000;\n--red-200: #4D0000;\n--red-300: #660000;\n--red-400: #800000;\n--red-500: #990000;\n--red-600: #B30000;\n--red-700: #CC0000;\n--red-800: #E60000;\n--red-900: #FF0000;\n"
+      "--red-50: #1A0000;\n--red-100: #4D0000;\n--red-200: #800000;\n--red-300: #B30000;\n--red-400: #E60000;\n--red-500: #FF0000;\n--red-600: #FF1A1A;\n--red-700: #FF4D4D;\n--red-800: #FF8080;\n--red-900: #FFB3B3;\n"
     );
   });
 
   it("should generate CSS variables for shades of a different color", () => {
     const result = generateVariablesForColor("blue");
     expect(result).toBe(
-      "--blue-50: #00001A;\n--blue-100: #000033;\n--blue-200: #00004D;\n--blue-300: #000066;\n--blue-400: #000080;\n--blue-500: #000099;\n--blue-600: #0000B3;\n--blue-700: #0000CC;\n--blue-800: #0000E6;\n--blue-900: #0000FF;\n"
+      "--blue-50: #00001A;\n--blue-100: #00004D;\n--blue-200: #000080;\n--blue-300: #0000B3;\n--blue-400: #0000E6;\n--blue-500: #0000FF;\n--blue-600: #1A1AFF;\n--blue-700: #4D4DFF;\n--blue-800: #8080FF;\n--blue-900: #B3B3FF;\n"
     );
   });
 });

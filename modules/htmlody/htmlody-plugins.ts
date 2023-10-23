@@ -1,6 +1,5 @@
 import { convertMarkdownToHTML } from "mod/utils/text-utils";
 import {
-  ClassRecord,
   ExtensionRec,
   JsonTagElNode,
   ResponsiveClassRecord,
@@ -12,6 +11,7 @@ export type ClassRecordAttributes = {
 };
 
 export type CRNode = JsonTagElNode<ClassRecordAttributes>;
+export type MDNode = JsonTagElNode<MarkdownAttributes>;
 
 export interface HTMLodyPlugin<T extends ExtensionRec = {}> {
   // need to figure out if finall return type should be with or without the type
@@ -28,7 +28,7 @@ export const classRecordPluginHandler = <
   if (node.cr) {
     const responsiveClasses = Object.entries(node.cr)
       .map(([breakpoint, classRecord]) => {
-        const breakpointPrefix = breakpoint === "*" ? "" : `${breakpoint}:`;
+        const breakpointPrefix = breakpoint === "*" ? "" : `${breakpoint}_`;
         const classList = Object.entries(classRecord || {})
           .filter(([, value]) => value)
           .map(([key]) => `${breakpointPrefix}${key}`)
@@ -38,6 +38,11 @@ export const classRecordPluginHandler = <
       .join(" ");
 
     classes = responsiveClasses;
+  }
+
+
+  if (classes === "") {
+    return node;
   }
 
   return {
@@ -54,9 +59,7 @@ export type MarkdownAttributes = {
   markdown?: string;
 };
 
-export const markdownPluginHandler = <
-  Node extends JsonTagElNode & MarkdownAttributes
->(
+export const markdownPluginHandler = <Node extends MDNode>(
   node: Node
 ): JsonTagElNode => {
   if (node.markdown) {

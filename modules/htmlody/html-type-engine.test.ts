@@ -13,7 +13,7 @@ export const htmlBody = {
     tag: "h1",
     content: "Hello World",
     attributes: {
-      class: "title-class",
+      class: "bg-blue-500",
       id: "title-id",
     },
   },
@@ -59,7 +59,7 @@ type H1 = ConvertedHtml["h1id"];
 type Results = {
   h1: IsValid<
     ConvertedHtml["h1id"],
-    '<h1 class="title-class" id="title-id">Hello World</h1>'
+    '<h1 class="bg-blue-500" id="title-id">Hello World</h1>'
   >;
   p: IsValid<ConvertedHtml["pid"], "<p>This is a description</p>">;
   a: IsValid<
@@ -70,7 +70,7 @@ type Results = {
 };
 
 expectType<ConvertedHtml["h1id"]>(
-  '<h1 class="title-class" id="title-id">Hello World</h1>'
+  '<h1 class="bg-blue-500" id="title-id">Hello World</h1>'
 );
 expectType<ConvertedHtml["pid"]>("<p>This is a description</p>");
 expectType<ConvertedHtml["aid"]>(

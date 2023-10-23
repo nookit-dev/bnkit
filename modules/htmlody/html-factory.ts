@@ -1,3 +1,4 @@
+import { cc, generateCSS, generateColorVariables } from "./css-engine";
 import type {
   ConstructHtmlTag,
   FunctionMap,
@@ -5,6 +6,7 @@ import type {
   JsonHtmlNodeMap,
   RecursiveConstructHtmlTag,
 } from "./html-type-engine";
+import { CRNode, classRecordPlugin } from "./htmlody-plugins";
 import { buildPageConfig } from "./htmlody-utils";
 import { jsonToHtml } from "./json-to-html-engine";
 
@@ -25,7 +27,7 @@ const functionMap = {
 
 export const htmlFactory = <
   Head extends JsonHtmlHead,
-  Body extends JsonHtmlNodeMap
+  Body extends JsonHtmlNodeMap<CRNode>
 >(
   headConfig: Head,
   bodyConfig: Body,
@@ -68,10 +70,11 @@ export const htmlFactory = <
     return {} as RecursiveConstructHtmlTag<Body>;
   };
 
-  const bodyConfigToHtml = () => {
+  const bodyConfigToHtml = ({ children }: { children?: string } = {}) => {
     return `
 <body>
-    ${jsonToHtml(bodyConfig)}
+    ${jsonToHtml(bodyConfig, [classRecordPlugin])}
+    ${children}
 </body>`;
   };
 
@@ -90,6 +93,11 @@ export const htmlFactory = <
 <!doctype html>
 <head>
     <title>${headConfig.title}</title>
+
+
+    <link rel="stylesheet" href="./assets/normalizer.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
 </head>`;
   };
 
@@ -97,7 +105,12 @@ export const htmlFactory = <
     return `
 <html>
     ${headConfigToHtml()}
-    ${bodyConfigToHtml()}
+
+    ${bodyConfigToHtml({
+      children: `<style>${generateColorVariables()}</style>\n
+<style>${generateCSS(bodyConfig)}</style>
+`,
+    })}
     ${tailwindScript}
 
     ${htmxScript}
@@ -112,14 +125,13 @@ export const htmlFactory = <
   };
 };
 
-const example = {
-  div: {
-    content: "Hello World",
-    attributes: {
-      class: "title-class",
-      id: "title-id",
-    },
+const example: CRNode = {
+  tag: "div",
+  content: "Hello World",
+  cr: cc(["bg-blue-500"]),
+  attributes: {
+    id: "title-id",
   },
-} as const; //as const;
+};
 
 type Tester = ConstructHtmlTag<typeof example>;
