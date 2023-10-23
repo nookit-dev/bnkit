@@ -17,7 +17,27 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "mod/*": ["modules/*"]
+      "mod/*": ["modules/*"],
+      "cli": ["modules/cli"],
+      "cookies": ["modules/cookies"],
+      "data-gen": ["modules/data-gen"],
+      "deploy": ["modules/deploy"],
+      "fetcher": ["modules/fetcher"],
+      "files-folder": ["modules/files-folder"],
+      "hash": ["modules/hash"],
+      "htmlody": ["modules/htmlody"],
+      "jwt": ["modules/jwt"],
+      "logger": ["modules/logger"],
+      "npm-release": ["modules/npm-release"],
+      "server": ["modules/server"],
+      "sqlite": ["modules/sqlite"],
+      "state": ["modules/state"],
+      "test": ["modules/test-utils"],
+      "utils": ["modules/utils"],
+      "uuid": ["modules/uuid"],
+      "validation": ["modules/validation"],
+      "types": ["modules/types"],
+      "type-utils": ["modules/type-utils"]
     }
   },
   "include": [

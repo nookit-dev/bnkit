@@ -40,22 +40,18 @@ export const serverRequestHandler = <
   // try regex match after direct string match
   if (!matchedHandler) {
     for (const pattern in routes) {
-      console.log({
-        pattern,
-        isValidRegex: isValidRegex(pattern),
-      });
       if (isValidRegex(pattern)) {
-        const regex = new RegExp(pattern, 'i');
+        const regex = new RegExp(pattern, "i");
         if (regex.test(url.pathname)) {
-          matchedHandler = 
-            routes[pattern][req.method.toUpperCase() as keyof (typeof routes)[typeof pattern]];
+          matchedHandler =
+            routes[pattern][
+              req.method.toUpperCase() as keyof (typeof routes)[typeof pattern]
+            ];
           break;
         }
       }
     }
   }
-
-  console.log({ matchedHandler, optionsHandler });
 
   if (!matchedHandler && !optionsHandler)
     return Promise.resolve(new Response("Not Found", { status: 404 }));
