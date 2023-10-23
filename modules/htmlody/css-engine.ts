@@ -1,4 +1,9 @@
-import { JsonHtmlNodeMap, JsonTagElNode } from "./html-type-engine";
+import {
+  ClassRecord,
+  JsonHtmlNodeMap,
+  JsonTagElNode,
+  ResponsiveClassRecord,
+} from "./html-type-engine";
 import { ClassRecordAttributes } from "./htmlody-plugins";
 
 const fractionPercentMap = {
@@ -52,18 +57,6 @@ export const cc = <Keys extends CSSMapKeys[]>(keys: Keys) => {
 
   return composition;
 };
-// >(
-//   keys: Keys
-// ) => {
-//   const keyString = typeof keys === "string" ? keys : keys.join(" ");
-//   const composition = {
-//     "*": {
-//       [keyString as "u-class"]: true,
-//     },
-//   };
-
-//   return composition;
-// };
 
 // union class
 export const uClass = (keys: CSSMapKeys[]) => {
@@ -87,54 +80,110 @@ export const border = <W extends string, S extends string, C extends string>(
   color: string
 ) => `border: ${width} ${style} ${color};` as const;
 
+function extractClassNames(classRecord: ClassRecord): string[] {
+  return Object.entries(classRecord)
+    .filter(([_key, value]) => value)
+    .flatMap(([key]) => key.split(" "));
+}
+
+function generateCssSelector(breakpoint: string, className: string): string {
+  const fullClassName =
+    breakpoint === "*" ? className : `${breakpoint}_${className}`;
+  const cssRule = CSS_MAP[className];
+
+  if (breakpoint === "*") {
+    return `.${fullClassName} { ${cssRule} }`;
+  } else {
+    return `@media (min-width: ${breakpoints[breakpoint]}) { .${fullClassName} { ${cssRule} } }`;
+  }
+}
+
+function processClassRecords(
+  classRecords: ResponsiveClassRecord,
+  usedClasses: Set<string>
+): string {
+  let cssStr = "";
+
+  Object.entries(classRecords).forEach(([breakpoint, classRecord]) => {
+    const classNames = extractClassNames(classRecord);
+
+    classNames.forEach((className) => {
+      const fullClassName =
+        breakpoint === "*" ? className : `${breakpoint}_${className}`;
+
+      if (!usedClasses.has(fullClassName)) {
+        usedClasses.add(fullClassName);
+
+        if (typeof CSS_MAP[className] === "string") {
+          const selector = generateCssSelector(breakpoint, className);
+          cssStr += `${selector}\n`;
+        }
+      }
+    });
+  });
+
+  return cssStr;
+}
+
+export function processNode(
+  node: JsonTagElNode<ClassRecordAttributes>,
+  usedClasses: Set<string>
+): string {
+  let cssStr = "";
+
+  if (node.cr) {
+    cssStr += processClassRecords(node.cr, usedClasses);
+  }
+
+  if (node.children) {
+    Object.values(node.children).forEach((childNode) => {
+      cssStr += processNode(childNode, usedClasses);
+    });
+  }
+
+  return cssStr;
+}
+
 export function generateCSS<
   NodeMap extends JsonHtmlNodeMap<
     JsonTagElNode<ClassRecordAttributes>
   > = JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>>
 >(nodeMap: NodeMap): string {
   const usedClasses = new Set<string>();
-
-  // Collect all used classes
-  // this needs to be changed to be a plugin for class records
-  Object.values(nodeMap).forEach((node) => {
-    if (node.cr) {
-      Object.entries(node.cr).forEach(([breakpoint, classRecord]) => {
-        const breakpointPrefix = breakpoint === "*" ? "" : `${breakpoint}:`;
-        Object.keys(classRecord).forEach((key) => {
-          if (classRecord[key]) {
-            key
-              .split(" ")
-              .forEach((className) =>
-                usedClasses.add(`${breakpointPrefix}${className}`)
-              );
-          }
-        });
-      });
-    }
-  });
-
-  // Generate CSS
   let cssStr = "";
 
-  usedClasses.forEach((fullClassName) => {
-    const splitClassName = fullClassName.split(":");
-    const breakpointPrefix = splitClassName.length > 1 ? splitClassName[0] : "";
-    const className =
-      splitClassName.length > 1 ? splitClassName[1] : splitClassName[0];
-
-    const cssName = CSS_MAP?.[className] as unknown as string | undefined;
-
-    if (typeof CSS_MAP?.[className] === "string") {
-      const selector = breakpointPrefix
-        ? `@media (min-width: ${breakpoints[breakpointPrefix]}) { .${fullClassName} { ${CSS_MAP[className]} } }`
-        : `.${fullClassName} { ${CSS_MAP[className]} }`;
-
-      cssStr += `${selector}\n`;
-    }
+  Object.values(nodeMap).forEach((node) => {
+    cssStr += processNode(node, usedClasses);
   });
 
   return cssStr;
 }
+
+// export const cssFactory = <
+//   NodeMap extends JsonHtmlNodeMap<
+//     JsonTagElNode<ClassRecordAttributes>
+//   > = JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>>
+// >(
+//   nodeMap: NodeMap
+// ) => {
+//   const usedClasses = new Set<string>();
+//   const cssStrings: string[] = [];
+
+//   const generateCSS = () => {
+//     Object.values(nodeMap).forEach((node) => {
+//       cssStrings.push(processNode(node, usedClasses));
+//     });
+//   };
+
+//   const getCSS = () => {
+//     return cssStrings.join("\n");
+//   };
+
+//   return {
+//     generateCSS,
+//     getCSS,
+//   };
+// };
 
 export const createKeyVal = <Key extends string, Val extends string>(
   key: Key,
@@ -284,6 +333,9 @@ export const baseColors = {
   pink: "#ffc0cb",
   slate: "#708090",
   gray: "#808080",
+  lightgray: "#d3d3d3",
+  powderblue: "#b0e0e6",
+  whitesmoke: "#f5f5f5",
 } as const;
 
 export type ColorType = keyof typeof baseColors;
@@ -324,21 +376,39 @@ function clamp(value: number, min: number, max: number): number {
 }
 export function generateShades(color: ColorType): string[] {
   const hex = baseColors[color];
-
   const baseColor = hexToRgb(hex);
-
   if (!baseColor) throw new Error("Invalid color format");
 
   const shades: string[] = [];
-  const factors = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
-  factors.forEach((factor) => {
-    const adjustedColor = adjustBrightness(baseColor, factor);
-
+  // Factors less than 1 will darken the color,
+  // 1 will leave it unchanged,
+  // and greater than 1 will lighten it
+  const factors = [0.1, 0.3, 0.5, 0.7, 0.9, 1, 1.1, 1.3, 1.5, 1.7];
+  factors.forEach((factor, index) => {
+    let adjustedColor;
+    if (index < 5) {
+      // Darken the color for shades 50-400
+      adjustedColor = adjustBrightness(baseColor, factor);
+    } else {
+      // Lighten the color for shades 600-900
+      adjustedColor = lightenColor(baseColor, factor);
+    }
     const shade = rgbToHex(adjustedColor.r, adjustedColor.g, adjustedColor.b);
     shades.push(shade);
   });
 
   return shades;
+}
+
+function lightenColor(
+  color: { r: number; g: number; b: number },
+  factor: number
+): { r: number; g: number; b: number } {
+  return {
+    r: Math.round(clamp(color.r + (255 - color.r) * (factor - 1), 0, 255)),
+    g: Math.round(clamp(color.g + (255 - color.g) * (factor - 1), 0, 255)),
+    b: Math.round(clamp(color.b + (255 - color.b) * (factor - 1), 0, 255)),
+  };
 }
 
 export const generateVariablesForColor = <Color extends ColorType>(
@@ -374,6 +444,9 @@ export const generateColorVariables = () => {
     "pink",
     "slate",
     "gray",
+    "lightgray",
+    "powderblue",
+    "whitesmoke",
   ] as const;
 
   for (let i = 0; i < colors.length; i++) {
@@ -417,6 +490,21 @@ export const borderColorGen = <Color extends string, Shade extends ColorShades>(
   return cssPropertyValueGen(
     `border-${color}-${shade}`,
     "border-color",
+    `var(--${color}-${shade})`,
+    ""
+  );
+};
+
+export const textColorStrokeGen = <
+  Color extends string,
+  Shade extends ColorShades
+>(
+  color: Color,
+  shade: Shade
+) => {
+  return cssPropertyValueGen(
+    `text-stroke-${color}-${shade}`,
+    "-webkit-text-stroke-color",
     `var(--${color}-${shade})`,
     ""
   );
@@ -477,6 +565,16 @@ export const generatePropertiesForColor = <Color extends ColorType>(
     ...borderColorGen(colorKey, 700),
     ...borderColorGen(colorKey, 800),
     ...borderColorGen(colorKey, 900),
+    ...textColorStrokeGen(colorKey, 50),
+    ...textColorStrokeGen(colorKey, 100),
+    ...textColorStrokeGen(colorKey, 200),
+    ...textColorStrokeGen(colorKey, 300),
+    ...textColorStrokeGen(colorKey, 400),
+    ...textColorStrokeGen(colorKey, 500),
+    ...textColorStrokeGen(colorKey, 600),
+    ...textColorStrokeGen(colorKey, 700),
+    ...textColorStrokeGen(colorKey, 800),
+    ...textColorStrokeGen(colorKey, 900),
   };
 };
 
@@ -536,9 +634,11 @@ export const generateGapHelper = <
   const xGap = `gap-x-${gap}` as const;
   const yGap = `gap-y-${gap}` as const;
 
-  
-const result = gapHelper("0");
-  return cssPropertyValueGen(baseGap, "gap", gapValue, unit);
+  return {
+    ...cssPropertyValueGen(baseGap, "gap", gapValue, unit),
+    ...cssPropertyValueGen(xGap, "column-gap", gapValue, unit),
+    ...cssPropertyValueGen(yGap, "row-gap", gapValue, unit),
+  };
 
   // return {
   //   [baseGap]: `gap: ${gapValue}${unit};`,
@@ -653,7 +753,11 @@ export const CSS_MAP = {
   ...generatePropertiesForColor("pink"),
   ...generatePropertiesForColor("slate"),
   ...generatePropertiesForColor("gray"),
-
+  ...generatePropertiesForColor("lightgray"),
+  ...generatePropertiesForColor("powderblue"),
+  ...generatePropertiesForColor("whitesmoke"),
+  "text-stroke-black": "-webkit-text-stroke-color: black;",
+  "text-stroke-white": "-webkit-text-stroke-color: white;",
   "w-full": "width: 100%;",
   "h-full": "height: 100%;",
   "w-screen": "width: 100vw;",
@@ -695,6 +799,26 @@ export const CSS_MAP = {
   "list-item-inline": "display: list-item-inline;",
   "list-item-inline-block": "display: list-item-inline-block;",
 
+  // position
+  sticky: "position: sticky;",
+  static: "position: static;",
+  fixed: "position: fixed;",
+  absolute: "position: absolute;",
+  relative: "position: relative;",
+  "inset-0": "top: 0; right: 0; bottom: 0; left: 0;",
+  "inset-y-0": "top: 0; bottom: 0;",
+  "inset-x-0": "right: 0; left: 0;",
+  "inset-y-auto": "top: auto; bottom: auto;",
+  "inset-x-auto": "right: auto; left: auto;",
+  "top-0": "top: 0;",
+  "right-0": "right: 0;",
+  "bottom-0": "bottom: 0;",
+  "left-0": "left: 0;",
+  "top-auto": "top: auto;",
+  "right-auto": "right: auto;",
+  "bottom-auto": "bottom: auto;",
+  "left-auto": "left: auto;",
+
   // Flexbox Utilities
   flex: "display: flex;",
   "inline-flex": "display: inline-flex;",
@@ -728,8 +852,25 @@ export const CSS_MAP = {
   "text-xl": fontSize("1.25rem"),
   "text-2xl": fontSize("1.5rem"),
   "text-3xl": fontSize("1.875rem"),
+  "text-4xl": fontSize("2.25rem"),
+
+  italic: "font-style: italic;",
+  underline: "text-decoration: underline;",
+  "line-through": "text-decoration: line-through;",
+  "no-underline": "text-decoration: none;",
+  uppercase: "text-transform: uppercase;",
+  lowercase: "text-transform: lowercase;",
+  capitalize: "text-transform: capitalize;",
+  "normal-case": "text-transform: none;",
+
+  //text stroke
+  "text-stroke-1": "-webkit-text-stroke: 1px;",
+  "text-stroke-2": "-webkit-text-stroke: 2px;",
+  "text-stroke-3": "-webkit-text-stroke: 3px;",
+
   "text-white": textColor("white"),
   "text-black": textColor("black"),
+
   "bg-white": bgColor("white"),
   "bg-black": bgColor("black"),
 
@@ -791,6 +932,59 @@ export const CSS_MAP = {
   ...generateGapHelper("72", "rem"),
   ...generateGapHelper("80", "rem"),
   ...generateGapHelper("96", "rem"),
+
+  // border radius
+  "rounded-none": "border-radius: 0;",
+  "rounded-sm": "border-radius: 0.125rem;",
+  rounded: "border-radius: 0.25rem;",
+  "rounded-md": "border-radius: 0.375rem;",
+  "rounded-lg": "border-radius: 0.5rem;",
+  "rounded-xl": "border-radius: 0.75rem;",
+  "rounded-2xl": "border-radius: 1rem;",
+  "rounded-3xl": "border-radius: 1.5rem;",
+  "rounded-full": "border-radius: 9999px;",
+  "rounded-t-none": "border-top-left-radius: 0; border-top-right-radius: 0;",
+  "rounded-r-none":
+    "border-top-right-radius: 0; border-bottom-right-radius: 0;",
+  "rounded-b-none":
+    "border-bottom-right-radius: 0; border-bottom-left-radius: 0;",
+  "rounded-l-none": "border-top-left-radius: 0; border-bottom-left-radius: 0;",
+  "rounded-t-sm":
+    "border-top-left-radius: 0.125rem; border-top-right-radius: 0.125rem;",
+  "rounded-r-sm":
+    "border-top-right-radius: 0.125rem; border-bottom-right-radius: 0.125rem;",
+  // TODO: create function to generate all variations
+  "rounded-b-sm":
+    "border-bottom-right-radius: 0.125rem; border-bottom-left-radius: 0.125rem;",
+
+  // max width and height
+  "max-w-none": "max-width: none;",
+  "max-w-xs": "max-width: 20rem;",
+  "max-w-sm": "max-width: 24rem;",
+  "max-w-md": "max-width: 28rem;",
+  "max-w-lg": "max-width: 32rem;",
+  "max-w-xl": "max-width: 36rem;",
+  "max-w-2xl": "max-width: 42rem;",
+  "max-w-3xl": "max-width: 48rem;",
+  "max-w-4xl": "max-width: 56rem;",
+  "max-w-5xl": "max-width: 64rem;",
+  "max-w-6xl": "max-width: 72rem;",
+  "max-w-7xl": "max-width: 80rem;",
+  "max-w-full": "max-width: 100%;",
+
+  "max-h-none": "max-height: none;",
+  "max-h-xs": "max-height: 20rem;",
+  "max-h-sm": "max-height: 24rem;",
+  "max-h-md": "max-height: 28rem;",
+  "max-h-lg": "max-height: 32rem;",
+  "max-h-xl": "max-height: 36rem;",
+  "max-h-2xl": "max-height: 42rem;",
+  "max-h-3xl": "max-height: 48rem;",
+  "max-h-4xl": "max-height: 56rem;",
+  "max-h-5xl": "max-height: 64rem;",
+  "max-h-6xl": "max-height: 72rem;",
+  "max-h-7xl": "max-height: 80rem;",
+  "max-h-full": "max-height: 100%;",
 
   // to support the return type of uClass function`
   "u-class": "",

@@ -24,6 +24,7 @@ export type {
     CRNode,
     ClassRecordAttributes,
     HTMLodyPlugin
+    MDNode
 } from "./htmlody-plugins";
 
 export { uClass } from "./css-engine";

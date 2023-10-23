@@ -93,6 +93,11 @@ export const htmlFactory = <
 <!doctype html>
 <head>
     <title>${headConfig.title}</title>
+
+
+    <link rel="stylesheet" href="./assets/normalizer.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
 </head>`;
   };
 
@@ -103,10 +108,8 @@ export const htmlFactory = <
 
     ${bodyConfigToHtml({
       children: `<style>${generateColorVariables()}</style>\n
-<style>${generateCSS(bodyConfig)}</div>
-      
-      
-      `,
+<style>${generateCSS(bodyConfig)}</style>
+`,
     })}
     ${tailwindScript}
 

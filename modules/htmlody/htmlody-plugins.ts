@@ -1,9 +1,8 @@
 import { convertMarkdownToHTML } from "mod/utils/text-utils";
 import {
-  ClassRecord,
   ExtensionRec,
   JsonTagElNode,
-  ResponsiveClassRecord,
+  ResponsiveClassRecord
 } from "./html-type-engine";
 
 // this will be the node that will be attached to our json node
@@ -12,6 +11,7 @@ export type ClassRecordAttributes = {
 };
 
 export type CRNode = JsonTagElNode<ClassRecordAttributes>;
+export type MDNode = JsonTagElNode<MarkdownAttributes>;
 
 export interface HTMLodyPlugin<T extends ExtensionRec = {}> {
   // need to figure out if finall return type should be with or without the type
@@ -28,7 +28,7 @@ export const classRecordPluginHandler = <
   if (node.cr) {
     const responsiveClasses = Object.entries(node.cr)
       .map(([breakpoint, classRecord]) => {
-        const breakpointPrefix = breakpoint === "*" ? "" : `${breakpoint}:`;
+        const breakpointPrefix = breakpoint === "*" ? "" : `${breakpoint}_`;
         const classList = Object.entries(classRecord || {})
           .filter(([, value]) => value)
           .map(([key]) => `${breakpointPrefix}${key}`)
@@ -55,7 +55,7 @@ export type MarkdownAttributes = {
 };
 
 export const markdownPluginHandler = <
-  Node extends JsonTagElNode & MarkdownAttributes
+  Node extends MDNode
 >(
   node: Node
 ): JsonTagElNode => {
