@@ -73,7 +73,7 @@ const element: CRNode = {
 
 ### 4. Children
 
-- **Definition**: Represents nested HTML elements. Very similar to the way it is used in React
+Represents nested HTML elements. Very similar to the way it is used in React
 
 ```typescript
 const element: CRNode = {
@@ -144,7 +144,7 @@ const responsiveDiv: CRNode = {
 
 The Markdown Plugin for HTMLody allows you to easily incorporate Markdown content within your JSON configuration, converting it to HTML during the rendering process. This enables you to write content in a more human-readable format while still generating structured HTML.
 
-### Basic Example
+### Plugin Basic Example
 
 ```typescript
 import { markdownPlugin, jsonToHtml } from "@bnk/core/modules/htmlody";
@@ -191,4 +191,43 @@ const output = jsonToHtml(input, [markdownPlugin, classRecordPlugin]);
 
 While I will eventualy add automatic type inference based on the plugins, it doesn't automatic do that so in order to create a combined node it would look like the following:
 
+
+```typescript
 type AppNode = MDNode & CRNode
+
+export const htmlBody: JsonHtmlNodeMap<AppNode> = {
+  h1: {
+    content: "Hello World",
+    attributes: {
+      class: "bg-blue-500",
+      id: "title-id",
+    },
+
+    tag: "h1",
+  },
+  p: { content: "This is a description", tag: "p" },
+  a: {
+    content: "Click Me",
+    attributes: {
+      href: "https://www.example.com",
+    },
+    tag: "a",
+  },
+
+  div_1: {
+    tag: "div",
+    attributes: {
+      class: "bg-red-500",
+    },
+    
+    children: {
+      button_1: htmxButton,
+      div_1: {
+        tag: "div",
+        content: "Hello World",
+      },
+    },
+  },
+};
+
+```

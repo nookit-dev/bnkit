@@ -23,7 +23,7 @@ export { classRecordPlugin, markdownPlugin } from "./htmlody-plugins";
 export type {
     CRNode,
     ClassRecordAttributes,
-    HTMLodyPlugin
+    HTMLodyPlugin,
     MDNode
 } from "./htmlody-plugins";
 

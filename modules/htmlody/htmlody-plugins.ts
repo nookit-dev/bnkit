@@ -2,7 +2,7 @@ import { convertMarkdownToHTML } from "mod/utils/text-utils";
 import {
   ExtensionRec,
   JsonTagElNode,
-  ResponsiveClassRecord
+  ResponsiveClassRecord,
 } from "./html-type-engine";
 
 // this will be the node that will be attached to our json node
@@ -40,6 +40,12 @@ export const classRecordPluginHandler = <
     classes = responsiveClasses;
   }
 
+  console.log(classes)
+
+  if (classes === "") {
+    return node;
+  }
+
   return {
     ...node,
     attributes: { ...node.attributes, class: classes },
@@ -54,9 +60,7 @@ export type MarkdownAttributes = {
   markdown?: string;
 };
 
-export const markdownPluginHandler = <
-  Node extends MDNode
->(
+export const markdownPluginHandler = <Node extends MDNode>(
   node: Node
 ): JsonTagElNode => {
   if (node.markdown) {

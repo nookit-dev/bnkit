@@ -101,7 +101,7 @@ function generateCssSelector(breakpoint: string, className: string): string {
 function processClassRecords(
   classRecords: ResponsiveClassRecord,
   usedClasses: Set<string>
-): string {
+): string | null {
   let cssStr = "";
 
   Object.entries(classRecords).forEach(([breakpoint, classRecord]) => {
@@ -122,25 +122,31 @@ function processClassRecords(
     });
   });
 
+  if (!cssStr) return null;
   return cssStr;
 }
 
 export function processNode(
   node: JsonTagElNode<ClassRecordAttributes>,
   usedClasses: Set<string>
-): string {
+): string | null {
   let cssStr = "";
 
   if (node.cr) {
-    cssStr += processClassRecords(node.cr, usedClasses);
+    const classRecords = processClassRecords(node.cr, usedClasses);
+
+    if (classRecords) cssStr += classRecords;
   }
 
   if (node.children) {
     Object.values(node.children).forEach((childNode) => {
-      cssStr += processNode(childNode, usedClasses);
+      const childNodeStr = processNode(childNode, usedClasses);
+
+      if (childNodeStr) cssStr += childNodeStr;
     });
   }
 
+  if (!cssStr) return null;
   return cssStr;
 }
 
@@ -148,14 +154,17 @@ export function generateCSS<
   NodeMap extends JsonHtmlNodeMap<
     JsonTagElNode<ClassRecordAttributes>
   > = JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>>
->(nodeMap: NodeMap): string {
+>(nodeMap: NodeMap): string | null {
   const usedClasses = new Set<string>();
   let cssStr = "";
 
   Object.values(nodeMap).forEach((node) => {
-    cssStr += processNode(node, usedClasses);
+    const nodeStr = processNode(node, usedClasses);
+
+    if (nodeStr) cssStr += nodeStr;
   });
 
+  if (!cssStr) return null;
   return cssStr;
 }
 

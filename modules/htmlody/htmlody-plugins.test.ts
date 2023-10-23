@@ -37,7 +37,7 @@ describe("classRecordPluginHandler", () => {
       content: "Sample Content",
     };
     const processedNode = classRecordPluginHandler(node);
-    expect(processedNode.attributes?.class).toBe("");
+    expect(processedNode.attributes?.class).toBe(undefined);
   });
 });
 

@@ -1,4 +1,4 @@
-import { generateCSS, generateColorVariables } from "./css-engine";
+import { cc, generateCSS, generateColorVariables } from "./css-engine";
 import type {
   ConstructHtmlTag,
   FunctionMap,
@@ -125,14 +125,13 @@ export const htmlFactory = <
   };
 };
 
-const example = {
-  div: {
-    content: "Hello World",
-    attributes: {
-      class: "title-class",
-      id: "title-id",
-    },
+const example: CRNode = {
+  tag: "div",
+  content: "Hello World",
+  cr: cc(["bg-blue-500"]),
+  attributes: {
+    id: "title-id",
   },
-} as const; //as const;
+};
 
 type Tester = ConstructHtmlTag<typeof example>;
