@@ -1,4 +1,4 @@
-# README: npm-release-factory
+# NPM Release Module Readme
 
 ## Overview
 

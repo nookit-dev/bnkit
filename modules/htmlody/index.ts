@@ -27,4 +27,5 @@ export type {
     MDNode
 } from "./htmlody-plugins";
 
-export { uClass } from "./css-engine";
+export { cc, uClass } from "./css-engine";
+
