@@ -96,26 +96,27 @@ Bun Nook Kit offers a wide array of utility modules including:
 
 6. [Files Folder](modules/files-folders/README.md): The Files Folder module provides various utilities for working with files and folders. It includes functions for searching for files, validating file paths, and creating references to files. This module can be useful for tasks like building an in-browser file manager.
 
-7. [Hash](modules/hash/README.md): The Hash module provides a simple abstraction to Bun's hashing functions. It allows you to hash data using common hashing algorithms for tasks such as password hashing or data integrity checks.
+7. [Hash](modules/hash/README.md): The Hash module provides a simple abstraction to Bun's hashing functions. It allows you to hash data using common hashing algorithms for tasks such as password hashing or data integrity checks
 
-8. [JWT](modules/jwt/README.md): The JWT module provides utilities for working with JSON Web Tokens. It allows you to encode and decode JWTs and provides features like token invalidation.
+8. [HTMLody](modules/htmlody/README.md): HTMLody is a tool that enables the conversion of JSON structures into valid HTML and CSS, facilitating both dynamic HTML generation and the export of static assets for enhanced web performance. It offers a flexible and maintainable approach to web development, with support for plugins with prebuilt plugins such as Tailwind-like CSS class utilties and a render Markdown plugin utility, easily integrate with libraries like HTMX for dynamic functionality, and a comprehensive TypeScript support for defining and customizing the JSON elements.
 
-9. [Logger](modules/logger/README.md): The Logger module aims to provide a full-featured logging system for your application. While it is still under development and might be limited in functionality, it can be a useful tool for debugging and error tracking.
+9. [JWT](modules/jwt/README.md): The JWT module provides utilities for working with JSON Web Tokens. It allows you to encode and decode JWTs and provides features like token invalidation.
 
-10. [NPM](modules/npm/README.md) Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages
+10. [Logger](modules/logger/README.md): The Logger module aims to provide a full-featured logging system for your application. While it is still under development and might be limited in functionality, it can be a useful tool for debugging and error tracking.
 
-11. [Server](modules/server/README.md): The Server module is one of the most complex modules in Bun Nook Kit. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
+11. [NPM](modules/npm/README.md) Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages
 
-12. [SQLite](modules/sqlite/README.md): The SQLite module builds on top of Bun's SQLite implementation and provides utilities for working with SQLite databases. It includes functions for instantiating databases, creating type-safe schemas, and performing database operations.
+12. [Server](modules/server/README.md): The Server module is one of the most complex modules in Bun Nook Kit. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
 
-13. [State Management](modules/state/README.md) : The State Management module provides an interface for building type-safe state managers. It offers an immutable state management approach and includes dispatcher functions for easy data manipulation. The module also provides a WebSocket state manager for syncing data between the client and server.
+13. [SQLite](modules/sqlite/README.md): The SQLite module builds on top of Bun's SQLite implementation and provides utilities for working with SQLite databases. It includes functions for instantiating databases, creating type-safe schemas, and performing database operations.
 
-14. [Utils](modules/utils/README.md): This isn't really a module :) - it does contains various utility functions that can be used across different modules. It includes functions like classy for generating class names, normalizeBytes for converting byte numbers to formatted text, and value checkers for inferring data types.
+14. [State Management](modules/state/README.md) : The State Management module provides an interface for building type-safe state managers. It offers an immutable state management approach and includes dispatcher functions for easy data manipulation. The module also provides a WebSocket state manager for syncing data between the client and server.
 
-15. [UUID](modules/uuid/README.md): Generate timestamp encoded UUIDs with UUIDv7 spec implemented
+15. [Utils](modules/utils/README.md): This isn't really a module :) - it does contains various utility functions that can be used across different modules. It includes functions like classy for generating class names, normalizeBytes for converting byte numbers to formatted text, and value checkers for inferring data types.
 
-16. [Type Utils](modules/type-utils.md): TypeScript Utilities
+16. [UUID](modules/uuid/README.md): Generate timestamp encoded UUIDs with UUIDv7 spec implemented
 
+17. [Type Utils](modules/type-utils.md): TypeScript Utilities
 
 ```typescript
 import * as u from '@bnk/core'
