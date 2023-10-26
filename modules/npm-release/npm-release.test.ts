@@ -16,13 +16,54 @@ describe("getCurrentVersion", () => {
 
 describe("updateVersion", () => {
   test("increments patch version by default", () => {
-    const version = updateVersion("1.0.0", false);
+    const version = updateVersion({
+      currentVersion: "1.0.0",
+    });
     expect(version).toEqual("1.0.1");
   });
 
+  test("increments minor version", () => {
+    const version = updateVersion({
+      currentVersion: "1.0.0",
+      increment: "minor",
+    });
+    expect(version).toEqual("1.1.0");
+  });
+  test("increments major version", () => {
+    const version = updateVersion({
+      currentVersion: "1.0.0",
+      increment: "major",
+    });
+    expect(version).toEqual("2.0.0");
+  });
+
+  test("increments major with alpha", () => {
+    const version = updateVersion({
+      currentVersion: "1.0.0",
+      increment: "major",
+      isAlpha: true,
+    });
+
+    expect(version).toContain("alpha")
+    expect(version).toStartWith("2.0.0")
+  });
+
   test("increments alpha version with hash", () => {
-    const version = updateVersion("1.0.0", true);
-    expect(version).toMatch(/1\.0\.0-alpha\.[a-z0-9]{8}/);
+    const version = updateVersion({
+      currentVersion: "1.0.0",
+      increment: "patch",
+      isAlpha: true,
+    });
+    expect(version).toMatch(/1\.0\.1-alpha\.[a-z0-9]{8}/);
+  });
+
+  test("increments alpha version with hash", () => {
+    const version = updateVersion({
+      currentVersion: "1.0.0",
+      increment: "patch",
+      isBeta: true,
+    });
+    expect(version).toMatch(/1\.0\.1-beta\.[a-z0-9]{8}/);
   });
 });
 
