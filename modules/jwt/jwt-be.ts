@@ -19,7 +19,17 @@ export interface JwtHandlers {
 }
 
 // backend  jwt handling
-export const jwtBack = (factorySecret: string, handlers: JwtHandlers) => {
+export const jwtBack = ({
+  factorySignSecret,
+  handlers,
+  encryption,
+}: {
+  factorySignSecret: string;
+  handlers: JwtHandlers;
+  encryption?: {
+    encryptionSecret: string;
+  };
+}) => {
   async function generateRefreshToken(): Promise<string> {
     const refreshToken = crypto.randomBytes(40).toString("hex");
     const expiresIn = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7; // Token valid for one week
@@ -50,15 +60,23 @@ export const jwtBack = (factorySecret: string, handlers: JwtHandlers) => {
   }
 
   async function isValidToken(token: string): Promise<boolean> {
-    const blacklist = await handlers.getInvalidTokens();
-    return blacklist.includes(token);
+    const invalidTokens = await handlers.getInvalidTokens();
+
+    return invalidTokens.includes(token);
   }
 
-  function createJwt(
-    payload: JwtPayload,
-    secret: string = factorySecret,
-    expiresIn: number = 60 * 60
-  ): string {
+  function createJwt({
+    payload,
+    signSecret = factorySignSecret,
+    expiresIn = 60 * 60,
+    encryptionSecret = encryption?.encryptionSecret,
+  }: {
+    payload: JwtPayload;
+    signSecret?: string;
+    expiresIn?: number;
+    // encryption must be enabled on the factory in order for this to work
+    encryptionSecret?: string;
+  }): string {
     try {
       payloadValidator(payload);
     } catch (e) {
@@ -68,21 +86,30 @@ export const jwtBack = (factorySecret: string, handlers: JwtHandlers) => {
     const header = createJwtHeader();
     payload.exp = Math.floor(Date.now() / 1000) + expiresIn;
 
-    const jwt = encodeJwt(header, payload, secret);
-    return encrypt(jwt, secret);
+    // JWT is already sign
+    const jwt = encodeJwt(header, payload, signSecret);
+    return encryption && encryptionSecret
+      ? encrypt(jwt, encryptionSecret)
+      : jwt;
   }
 
   async function verifyJwt(
     token: string,
-    secret: string = factorySecret
+    signSecret: string = factorySignSecret,
+    // encryption must be enabled on the factory in order for this to work
+    encryptionSecret: string | undefined = encryption?.encryptionSecret
   ): Promise<{ header: JwtHeader; payload: JwtPayload }> {
-    const decryptedToken = decrypt(token, secret);
+    let decryptedToken: string = token;
+
+    if (encryption && encryptionSecret) {
+      decryptedToken = decrypt(token, encryptionSecret);
+    }
 
     if (await isValidToken(token)) {
       throw new Error("This token is blacklisted");
     }
 
-    const { header, payload } = decodeJwt(decryptedToken, secret);
+    const { header, payload } = decodeJwt(decryptedToken, signSecret);
 
     if (isTokenExpired(payload)) {
       throw new Error("Token expired");
