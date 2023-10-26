@@ -74,13 +74,16 @@ if (!isLocalRun) {
 }
 
 ulog(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
-const newVersion = await updatePackageVersion(corePackagePath, isAlpha);
+const newVersion = await updatePackageVersion({
+  packagePath: corePackagePath,
+  isAlpha,
+});
 await npmPublish({ packagePath: corePackagePath, isAlpha });
 
-await updatePackageVersion(pluginReactPath, isAlpha);
+await updatePackageVersion({ packagePath: pluginReactPath, isAlpha });
 await npmPublish({ packagePath: pluginReactPath, isAlpha });
 
-await updatePackageVersion(pluginReactServerPath, isAlpha);
+await updatePackageVersion({ packagePath: pluginReactServerPath, isAlpha });
 await npmPublish({ packagePath: pluginReactServerPath, isAlpha });
 
 if (!isLocalRun && !isAlpha) {

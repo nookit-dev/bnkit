@@ -1,4 +1,5 @@
-export const jwtClientSideFactory = () => {
+// frontend
+export const jwtFront = () => {
   function decodeJwt(token: string) {
     const [headerEncoded, payloadEncoded] = token.split(".");
     const headerJson = Buffer.from(headerEncoded, "base64").toString();

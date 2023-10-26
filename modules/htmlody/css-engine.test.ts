@@ -10,11 +10,6 @@ import {
   rgbToHex,
 } from "./css-engine"; // Update this import path
 import { ClassRecordAttributes } from "./htmlody-plugins";
-import { nodeFactory } from "./htmlody-utils";
-
-const createNode = nodeFactory({
-  tag: "div",
-}).create();
 
 describe("generateCSS", () => {
   it("should generate correct CSS from nodeMap", () => {

@@ -30,40 +30,82 @@ export const setupNpmAuth = (npmToken: string) => {
   }
 };
 
-export const updateVersion = (
-  currentVersion: string,
-  isAlpha: boolean
-): string => {
+export type SemanticVersions = "major" | "minor" | "patch";
+
+export interface VersionConfig {
+  currentVersion: string;
+  increment?: SemanticVersions;
+  isAlpha?: boolean;
+  isBeta?: boolean;
+}
+
+export const updateVersion = (config: VersionConfig): string => {
+  const { currentVersion, increment = "patch", isAlpha, isBeta } = config;
+
   const [major, minor, patch] = currentVersion.split(".").map(Number);
+  let newMajor = major;
+  let newMinor = minor;
+  let newPatch = patch;
+
+  switch (increment) {
+    case "major":
+      newMajor += 1;
+      newMinor = 0;
+      newPatch = 0;
+      break;
+    case "minor":
+      newMinor += 1;
+      newPatch = 0;
+      break;
+    case "patch":
+      newPatch += 1;
+      break;
+  }
+
   if (isAlpha) {
     const alphaHash = Math.random().toString(36).substr(2, 8);
-    return `${major}.${minor}.${patch}-alpha.${alphaHash}`;
+    return `${newMajor}.${newMinor}.${newPatch}-alpha.${alphaHash}`;
+  } else if (isBeta) {
+    const betaHash = Math.random().toString(36).substr(2, 8);
+    return `${newMajor}.${newMinor}.${newPatch}-beta.${betaHash}`;
   } else {
-    return `${major}.${minor}.${patch + 1}`;
+    return `${newMajor}.${newMinor}.${newPatch}`;
   }
 };
 
-export const updatePackageVersion = async (
-  packagePath: string,
-  isAlpha: boolean,
-  newVersion?: string
-) => {
+export const updatePackageVersion = async ({
+  isAlpha,
+  packagePath,
+  newVersion,
+  isBeta,
+}: {
+  packagePath: string;
+  isAlpha?: boolean;
+  isBeta?: boolean;
+  newVersion?: string;
+}) => {
   ulog(`Updating ${packagePath}`);
   const packageData = await Bun.file(packagePath).text();
   const parsedData = JSON.parse(packageData);
-  parsedData.version = newVersion || updateVersion(parsedData.version, isAlpha); // Use the provided new version if available
+  parsedData.version = parsedData.version
+    ? updateVersion({ currentVersion: parsedData.version, isAlpha })
+    : newVersion;
+
+  // Use the provided new version if available
   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
   return parsedData.version;
 };
 
 type NpmPublishParams = {
   packagePath: string;
-  isAlpha: boolean;
+  isAlpha?: boolean;
+  isBeta?: boolean;
   maxRetries?: number;
 };
 
 export const npmPublish = async ({
   isAlpha,
+  isBeta,
   packagePath,
   maxRetries = 10,
 }: NpmPublishParams) => {
@@ -104,9 +146,9 @@ export const npmPublish = async ({
       ulog(`Version conflict for ${dir}, trying next version...`);
 
       const currentVersion = await getCurrentVersion(packagePath);
-      const newVersion = updateVersion(currentVersion, false);
+      const newVersion = updateVersion({ currentVersion });
       ulog(`Updating version from ${currentVersion} to ${newVersion}`);
-      await updatePackageVersion(packagePath, isAlpha, newVersion);
+      await updatePackageVersion({ packagePath, isAlpha, isBeta, newVersion });
 
       // Don't set success to true; let the loop continue to retry with the new version
     } else {
@@ -131,11 +173,12 @@ export function npmReleaseFactory(options: NpmReleaseFactoryOptions) {
     npmPublish: ({ isAlpha, packagePath }: NpmPublishParams) =>
       npmPublish({ isAlpha, packagePath, maxRetries }),
     updateVersion: (currentVersion: string, isAlpha: boolean) =>
-      updateVersion(currentVersion, isAlpha),
-    updatePackageVersion: (
-      packagePath: string,
-      isAlpha: boolean,
-      newVersion?: string
-    ) => updatePackageVersion(packagePath, isAlpha, newVersion),
+      updateVersion({ currentVersion, isAlpha }),
+    updatePackageVersion: (params: {
+      packagePath: string;
+      isAlpha?: boolean;
+      newVersion?: string;
+      isBeta?: boolean;
+    }) => updatePackageVersion(params),
   };
 }
