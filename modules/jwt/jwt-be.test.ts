@@ -5,10 +5,10 @@ import { createJwtFileHandlers } from "./jwt-token-file-handlers";
 
 describe("JWT Server Side Factory", () => {
   const factorySecret = "test-secret"; // For testing purposes only
-  const jwtFactory = jwtBack(
-    factorySecret,
-    createJwtFileHandlers("./jwt-tokens.json")
-  );
+  const jwtFactory = jwtBack({
+    handlers: createJwtFileHandlers("./jwt-tokens.json"),
+    factorySignSecret: factorySecret,
+  });
   const testPayload = { userId: 12345, roles: ["user"] };
 
   afterAll(() => {
@@ -19,7 +19,9 @@ describe("JWT Server Side Factory", () => {
 
   describe("JWT Creation & Verification", () => {
     it("should create and verify JWT correctly", async () => {
-      const jwt = jwtFactory.createJwt(testPayload, factorySecret);
+      const jwt = jwtFactory.createJwt({
+        payload: testPayload,
+      });
       expect(jwt).not.toBe(null);
 
       const { header, payload } = await jwtFactory.verifyJwt(
@@ -34,7 +36,9 @@ describe("JWT Server Side Factory", () => {
 
   describe("JWT Encryption & Decryption", () => {
     it("should throw error for tampered JWT", async () => {
-      const jwt = await jwtFactory.createJwt(testPayload, factorySecret);
+      const jwt = await jwtFactory.createJwt({
+        payload: testPayload,
+      });
       const tamperedJwt = jwt.substring(0, 10) + "XX" + jwt.substring(12); // Tampering the JWT
       expect(
         async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)
@@ -66,9 +70,10 @@ describe("JWT Server Side Factory", () => {
   });
 
   describe("Edge Cases", () => {
-
     it("should invalidate and then check and throw error for a token", async () => {
-      const jwt = await jwtFactory.createJwt(testPayload, factorySecret);
+      const jwt = await jwtFactory.createJwt({
+        payload: testPayload,
+      });
       await jwtFactory.invalidateToken(jwt);
 
       expect(
@@ -79,29 +84,28 @@ describe("JWT Server Side Factory", () => {
 
   describe("Token Blacklisting", () => {
     it("should not allow invalidated token to be used", async () => {
-      const jwt = await jwtFactory.createJwt(testPayload, factorySecret);
+      const jwt = await jwtFactory.createJwt({
+        payload: testPayload,
+      });
       await jwtFactory.invalidateToken(jwt);
       expect(
         async () => await jwtFactory.verifyJwt(jwt, factorySecret)
       ).toThrow(Error);
     });
-
-    it("newly created token should not be on the blacklist", async () => {
-      const jwt = await jwtFactory.createJwt(testPayload, factorySecret);
-      expect(async () =>
-        jwtFactory.verifyJwt(jwt, factorySecret)
-      ).not.toThrow();
-    });
   });
 
   describe("Token Structure", () => {
     it("should have a valid JWT structure", async () => {
-      const jwt = await jwtFactory.createJwt(testPayload, factorySecret);
+      const jwt = await jwtFactory.createJwt({
+        payload: testPayload,
+      });
       expect(jwt.split(".").length).toBe(3);
     });
 
     it("should throw an error for tampered encrypted tokens", async () => {
-      const jwt = await jwtFactory.createJwt(testPayload, factorySecret);
+      const jwt = await jwtFactory.createJwt({
+        payload: testPayload,
+      });
       const tamperedJwt = jwt.substring(0, 10) + "XX" + jwt.substring(12);
       expect(
         async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)
@@ -119,12 +123,14 @@ describe("JWT Server Side Factory", () => {
 
   describe("Signature", () => {
     it("should throw error for tampered JWT signature", async () => {
-      const jwt = await jwtFactory.createJwt(testPayload, factorySecret);
+      const jwt = await jwtFactory.createJwt({
+        payload: testPayload,
+      });
       const parts = jwt.split(".");
       const tamperedJwt = `${parts[0]}.${parts[1]}.tamperedSignature`;
       expect(
         async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)
-      ).toThrow("Unable to decrypt token");
+      ).toThrow("Invalid signature");
     });
   });
 
@@ -141,13 +147,19 @@ describe("JWT Server Side Factory", () => {
 
     it("should verify JWT correctly before expiration", () => {
       // Create a JWT that expires in 2 seconds
-      const jwt = jwtFactory.createJwt(testPayload, factorySecret, 2);
+      const jwt = jwtFactory.createJwt({
+        expiresIn: 2,
+        payload: testPayload,
+      });
       expect(() => jwtFactory.verifyJwt(jwt, factorySecret)).not.toThrow();
     });
 
     it("should throw error for expired JWT", async () => {
       // Create a JWT that expires in 2 seconds
-      const jwt = await jwtFactory.createJwt(testPayload, factorySecret, 2);
+      const jwt = jwtFactory.createJwt({
+        expiresIn: 2,
+        payload: testPayload,
+      });
 
       // Simulate the passage of 3 seconds
       mockDateNow(_DateNow() + 3000);
@@ -157,5 +169,21 @@ describe("JWT Server Side Factory", () => {
         async () => await jwtFactory.verifyJwt(jwt, factorySecret)
       ).toThrow("Token expired");
     });
+  });
+});
+
+describe("new tokens not on invalid list", () => {
+  const factorySecret = "test-secret"; // For testing purposes only
+  const jwtFactory = jwtBack({
+    handlers: createJwtFileHandlers("./jwt-tokens.json"),
+    factorySignSecret: factorySecret,
+  });
+  const testPayload = { userId: 12345, roles: ["user"] };
+
+  it("newly created token should not be on the blacklist", async () => {
+    const jwt = await jwtFactory.createJwt({
+      payload: testPayload,
+    });
+    expect(async () => jwtFactory.verifyJwt(jwt, factorySecret)).not.toThrow();
   });
 });
