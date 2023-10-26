@@ -1,12 +1,12 @@
 import { JwtHandlers } from "./jwt-be";
 import { RefreshToken } from "./jwt-types";
 
-interface StoredRefreshToken extends RefreshToken {
+export interface StoredRefreshToken extends RefreshToken {
   token: string;
   exp: number;
 }
 
-interface JwtStorage {
+export interface JwtStorage {
   invalidTokens: string[];
   refreshTokens: StoredRefreshToken[];
 }
