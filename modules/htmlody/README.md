@@ -79,6 +79,7 @@ Represents nested HTML elements. Very similar to the way it is used in React
 const element: CRNode = {
   tag: "div",
   children: {
+    // the key of the child just needs to be unique.
     child1: {
       tag: "p",
       content: "Child node paragraph."
@@ -107,11 +108,11 @@ const createButton = (label: string): CRNode => ({
 const page: CRNode = {
   tag: "div",
   children: {
-    header: {
+    headerId: {
       tag: "h1",
       content: "Welcome to My Site"
     },
-    button: createButton("Click Me")
+    buttonId: createButton("Click Me")
   }
 };
 ```
