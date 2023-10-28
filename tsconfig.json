@@ -24,7 +24,7 @@
       "deploy": ["modules/deploy"],
       "fetcher": ["modules/fetcher"],
       "files-folder": ["modules/files-folder"],
-      "hash": ["modules/hash"],
+      "auth": ["modules/auth"],
       "htmlody": ["modules/htmlody"],
       "jwt": ["modules/jwt"],
       "logger": ["modules/logger"],

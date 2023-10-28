@@ -1,0 +1,58 @@
+import { v7 as uuid } from "mod/uuid";
+
+export const getTokenExpireEpoch = (date: Date, tokenValidTimeSec: number) => {
+  const expireEpoch = date.getTime() + tokenValidTimeSec * 1000;
+
+  console.log(
+    "Inside getTokenExpireEpoch:",
+    date.getTime(),
+    tokenValidTimeSec,
+    expireEpoch
+  );
+
+  return expireEpoch;
+};
+
+export async function verifyToken(
+  tokenString: string,
+  salt: string,
+  storedHash: string
+) {
+  const fullPassword = tokenString + salt;
+  const isMatch = await Bun.password.verify(fullPassword, storedHash);
+
+  return isMatch;
+}
+
+export async function createToken(string: string, salt: string) {
+  const fullPassword = string + salt;
+  return await Bun.password.hash(fullPassword, {
+    algorithm: "argon2id",
+    memoryCost: 65536,
+    timeCost: 3,
+  });
+}
+
+export const createSecurityToken = async (
+  tokenValidTime: number,
+  currentDate?: Date
+) => {
+  const salt = uuid();
+  const { uuid: tokenId, timestamp } = uuid({
+    returnTimestamp: true,
+    dateTime: currentDate,
+  });
+
+  console.log("createSecurityToken Timestamp:", currentDate, timestamp);
+
+  console.log(currentDate?.getTime(), timestamp.getTime());
+
+  const securityToken = await createToken(tokenId, salt);
+  const tokenExpireEpoch = getTokenExpireEpoch(timestamp, tokenValidTime);
+
+  return {
+    securityToken,
+    tokenId,
+    tokenExpireEpoch,
+  };
+};

@@ -1,16 +1,16 @@
 import { htmlRes, serverFactory } from "../server";
-import { htmlFactory } from "./html-factory";
+import { pageGenerator } from "./html-factory";
 
 import { htmlBody } from "./page-confg";
 
-const pageFactory = htmlFactory({ title: "My Title" }, htmlBody, {
-  pageTitle: "My Page",
-  // tailwindConfig,
-  useHtmx: true,
-  useTailwind: true,
-});
+const pageGen = pageGenerator(
+  { title: "My Title" },
+  {
+    useHtmx: true,
+  }
+);
 
-const renderedPage = pageFactory.getHtmlOut();
+const renderedPage = pageGen.buildHtml(htmlBody);
 
 const server = serverFactory({
   serve: Bun.serve,

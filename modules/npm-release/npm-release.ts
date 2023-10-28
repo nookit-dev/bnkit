@@ -37,10 +37,15 @@ export interface VersionConfig {
   increment?: SemanticVersions;
   isAlpha?: boolean;
   isBeta?: boolean;
+  hash?: string;
 }
 
 export const updateVersion = (config: VersionConfig): string => {
   const { currentVersion, increment = "patch", isAlpha, isBeta } = config;
+
+  const hash = config.hash
+    ? config.hash
+    : Math.random().toString(36).substr(2, 8);
 
   const [major, minor, patch] = currentVersion.split(".").map(Number);
   let newMajor = major;
@@ -63,10 +68,10 @@ export const updateVersion = (config: VersionConfig): string => {
   }
 
   if (isAlpha) {
-    const alphaHash = Math.random().toString(36).substr(2, 8);
+    const alphaHash = hash;
     return `${newMajor}.${newMinor}.${newPatch}-alpha.${alphaHash}`;
   } else if (isBeta) {
-    const betaHash = Math.random().toString(36).substr(2, 8);
+    const betaHash = hash;
     return `${newMajor}.${newMinor}.${newPatch}-beta.${betaHash}`;
   } else {
     return `${newMajor}.${newMinor}.${newPatch}`;

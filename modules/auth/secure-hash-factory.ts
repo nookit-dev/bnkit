@@ -1,4 +1,4 @@
-type SecureHashConfig = {
+export type SecureHashConfig = {
   algorithm: "bcrypt";
   memoryCost?: number;
   timeCost?: number;

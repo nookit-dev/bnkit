@@ -3,11 +3,10 @@ export interface JwtHeader {
   typ: string;
 }
 
-export interface JwtPayload {
+export type JwtPayload<T extends object> = {
   exp?: number;
   roles?: string[];
-  [key: string]: any;
-}
+} & T;
 
 export interface RefreshToken {
   token: string;

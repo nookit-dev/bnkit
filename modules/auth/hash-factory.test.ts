@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createNonSecureHashFactory } from "./non-secure-hash-factory";
+import { createNonSecureHashFactory } from "./hash-factory";
 
 describe("NonSecureHashFactory", () => {
   const factory = createNonSecureHashFactory();
