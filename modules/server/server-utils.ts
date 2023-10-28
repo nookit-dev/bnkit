@@ -50,3 +50,36 @@ export function htmlRes(body: string, options?: ResponseInit): Response {
     },
   });
 }
+
+type RedirectOptions = {
+  status?: number;
+  statusText?: string;
+  headers?: Record<string, string>;
+  body?: string | null;
+  cookies?: Record<string, string>;
+};
+
+export const redirectRes = (
+  url: string,
+  options: RedirectOptions = {}
+): Response => {
+  const defaultHeaders: Record<string, string> = {
+    Location: url,
+  };
+
+  // Merge custom headers with default headers
+  const headers = { ...defaultHeaders, ...options.headers };
+
+  // Set cookies if provided
+  if (options.cookies) {
+    for (const [name, value] of Object.entries(options.cookies)) {
+      headers["Set-Cookie"] = `${name}=${value}`;
+    }
+  }
+
+  return new Response(options.body || null, {
+    status: options.status || 302,
+    statusText: options.statusText,
+    headers,
+  });
+};

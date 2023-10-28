@@ -5,15 +5,14 @@ export { serverFactory } from "./server-factory";
 export type {
   InferMiddlewareDataMap,
   Middleware,
-  MiddlewareConfigMap
+  MiddlewareConfigMap,
 } from "./middleware-types";
 
 export type {
   RouteHandler,
   RouteOptionsMiddlewareManger,
-  Routes
+  Routes,
 } from "./routes";
 
 export { corsMiddleware } from "./create-cors-middleware";
-export { htmlRes, jsonRes } from "./server-utils";
-
+export { htmlRes, jsonRes, redirectRes } from "./server-utils";
