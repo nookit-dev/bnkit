@@ -3,13 +3,6 @@ import { v7 as uuid } from "mod/uuid";
 export const getTokenExpireEpoch = (date: Date, tokenValidTimeSec: number) => {
   const expireEpoch = date.getTime() + tokenValidTimeSec * 1000;
 
-  console.log(
-    "Inside getTokenExpireEpoch:",
-    date.getTime(),
-    tokenValidTimeSec,
-    expireEpoch
-  );
-
   return expireEpoch;
 };
 
@@ -42,10 +35,6 @@ export const createSecurityToken = async (
     returnTimestamp: true,
     dateTime: currentDate,
   });
-
-  console.log("createSecurityToken Timestamp:", currentDate, timestamp);
-
-  console.log(currentDate?.getTime(), timestamp.getTime());
 
   const securityToken = await createToken(tokenId, salt);
   const tokenExpireEpoch = getTokenExpireEpoch(timestamp, tokenValidTime);
