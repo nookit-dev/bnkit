@@ -93,7 +93,7 @@ export const jwtBack = <
     finalPayload.exp = Math.floor(Date.now() / 1000) + expiresIn;
 
     // JWT is already sign
-    const jwt = encodeJwt(header, payload, signSecret);
+    const jwt = encodeJwt(header, finalPayload, signSecret);
     return encryption && encryptionSecret
       ? encrypt(jwt, encryptionSecret)
       : jwt;

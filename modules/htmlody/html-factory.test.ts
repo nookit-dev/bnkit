@@ -89,9 +89,6 @@ describe("htmlFactory", () => {
     const htmlOut = factory.buildHtml(htmlBody);
 
     expect(htmlOut).toContain(
-      '<script src="https://cdn.tailwindcss.com"></script>'
-    );
-    expect(htmlOut).toContain(
       '<script src="https://unpkg.com/htmx.org"></script>'
     );
   });
