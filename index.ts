@@ -4,7 +4,7 @@ import * as dataGen from "./modules/data-gen";
 import * as deploy from "./modules/deploy";
 import * as fetcher from "./modules/fetcher";
 import * as filesFolders from "./modules/files-folders";
-import * as hash from "./modules/hash";
+import * as auth from "./modules/auth";
 import * as htmlody from "./modules/htmlody";
 import * as jwt from "./modules/jwt";
 import * as logger from "./modules/logger";
@@ -25,7 +25,7 @@ export {
     deploy,
     fetcher,
     filesFolders,
-    hash,
+    auth,
     htmlody,
     jwt,
     logger,

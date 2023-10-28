@@ -19,7 +19,10 @@ export interface JwtHandlers {
 }
 
 // backend  jwt handling
-export const jwtBack = ({
+export const jwtBack = <
+  Payload extends object,
+  FactoryJwtPayload extends JwtPayload<Payload> = JwtPayload<Payload>
+>({
   factorySignSecret,
   handlers,
   encryption,
@@ -65,18 +68,21 @@ export const jwtBack = ({
     return invalidTokens.includes(token);
   }
 
-  function createJwt({
+  function createJwt<CreatePayload extends Payload = Payload>({
     payload,
     signSecret = factorySignSecret,
     expiresIn = 60 * 60,
     encryptionSecret = encryption?.encryptionSecret,
   }: {
-    payload: JwtPayload;
+    payload: CreatePayload;
     signSecret?: string;
     expiresIn?: number;
     // encryption must be enabled on the factory in order for this to work
     encryptionSecret?: string;
   }): string {
+    const finalPayload: JwtPayload<CreatePayload> = {
+      ...payload,
+    };
     try {
       payloadValidator(payload);
     } catch (e) {
@@ -84,7 +90,7 @@ export const jwtBack = ({
     }
 
     const header = createJwtHeader();
-    payload.exp = Math.floor(Date.now() / 1000) + expiresIn;
+    finalPayload.exp = Math.floor(Date.now() / 1000) + expiresIn;
 
     // JWT is already sign
     const jwt = encodeJwt(header, payload, signSecret);
@@ -98,7 +104,7 @@ export const jwtBack = ({
     signSecret: string = factorySignSecret,
     // encryption must be enabled on the factory in order for this to work
     encryptionSecret: string | undefined = encryption?.encryptionSecret
-  ): Promise<{ header: JwtHeader; payload: JwtPayload }> {
+  ): Promise<{ header: JwtHeader; payload: FactoryJwtPayload }> {
     let decryptedToken: string = token;
 
     if (encryption && encryptionSecret) {
