@@ -6,6 +6,7 @@ import {
   JsonHtmlNodeMap,
   JsonTagElNode,
 } from "./html-type-engine";
+import { CRNode } from "./htmlody-plugins";
 
 export const retrieveElement = <Structure extends JsonHtmlNodeMap>(
   JsonHtmlNodeMap: Structure,
@@ -98,11 +99,8 @@ export function collectClassNames(
     classList.forEach((cls) => uniqueClassNames.add(cls));
   }
 }
-
-export const children = <Nodes extends JsonTagElNode<any>[]>(
-  children: Nodes
-) => {
-  const returnChildren: JsonHtmlNodeMap<Nodes[0]> = {};
+export const children = (children: JsonTagElNode<CRNode>[]) => {
+  const returnChildren: JsonHtmlNodeMap = {};
 
   for (let i = 0; i < children.length; i++) {
     returnChildren[i] = children[i];

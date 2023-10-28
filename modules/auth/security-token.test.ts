@@ -15,15 +15,6 @@ describe("Token Utilities", () => {
       const expected = date.getTime() + tokenValidTimeSec * 1000; // convert seconds to milliseconds
       const result = getTokenExpireEpoch(date, tokenValidTimeSec);
 
-      // Diagnostics
-      console.log("Original Date Epoch:", date.getTime());
-      console.log(
-        "Token Valid Time in Milliseconds:",
-        tokenValidTimeSec * 1000
-      );
-      console.log("Expected:", expected);
-      console.log("Received:", result);
-
       expect(result).toEqual(expected);
     });
   });
