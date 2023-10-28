@@ -1,31 +1,22 @@
-export { htmlFactory } from "./html-factory";
+export { pageGenerator } from "./html-factory";
 export type {
-    Attributes,
-    ClassRecord,
-    ExtensionRec,
-    //   ConstructHtmlTag,
-    JsonHtmlNodeMap,
-    JsonTagElNode,
-    //   RecursiveConstructHtmlTag,
-    TagContent
+  Attributes,
+  ClassRecord,
+  ExtensionRec,
+  JsonHtmlNodeMap,
+  JsonTagElNode,
+  TagContent,
 } from "./html-type-engine";
-export {
-    buildPageConfig,
-    //   collectClassNames,
-    //   formatAttributes,
-    //   nodeFactory,
-    renderHtmlTag
-} from "./htmlody-utils";
+export { buildPageConfig, renderHtmlTag, children } from "./htmlody-utils";
 
 export { jsonToHtml, renderChildren } from "./json-to-html-engine";
 
 export { classRecordPlugin, markdownPlugin } from "./htmlody-plugins";
 export type {
-    CRNode,
-    ClassRecordAttributes,
-    HTMLodyPlugin,
-    MDNode
+  CRNode,
+  ClassRecordAttributes,
+  HTMLodyPlugin,
+  MDNode,
 } from "./htmlody-plugins";
 
 export { cc, uClass } from "./css-engine";
-

@@ -93,9 +93,20 @@ export function collectClassNames(
   node: JsonTagElNode,
   uniqueClassNames: Set<string>
 ) {
-  // const uniqueClassNames = new Set<string>();
   if (node.attributes && typeof node.attributes.class === "string") {
     const classList = node.attributes.class.split(" ");
     classList.forEach((cls) => uniqueClassNames.add(cls));
   }
 }
+
+export const children = <Nodes extends JsonTagElNode<any>[]>(
+  children: Nodes
+) => {
+  const returnChildren: JsonHtmlNodeMap<Nodes[0]> = {};
+
+  for (let i = 0; i < children.length; i++) {
+    returnChildren[i] = children[i];
+  }
+
+  return returnChildren;
+};

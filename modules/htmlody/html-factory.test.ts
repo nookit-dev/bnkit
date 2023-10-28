@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { CRNode } from ".";
 import { cc } from "./css-engine";
-import { htmlFactory } from "./html-factory";
+import { pageGenerator } from "./html-factory";
 import type { JsonHtmlNodeMap } from "./html-type-engine";
 import { htmlBody } from "./html-type-engine.test";
 
@@ -22,10 +22,8 @@ describe("htmlFactory", () => {
   };
 
   it("renders basic elements correctly", () => {
-    const factory = htmlFactory(mockHeadConfig, mockBodyConfig, {
-      pageTitle: "Test Page",
-    });
-    const htmlOut = factory.getHtmlOut();
+    const factory = pageGenerator(mockHeadConfig);
+    const htmlOut = factory.buildHtml(mockBodyConfig);
 
     expect(htmlOut).toContain('<div class="bg-blue-500">');
     expect(htmlOut).toContain("Test Content");
@@ -33,19 +31,15 @@ describe("htmlFactory", () => {
   });
 
   it("renders attributes correctly", () => {
-    const factory = htmlFactory(mockHeadConfig, mockBodyConfig, {
-      pageTitle: "Test Page",
-    });
-    const htmlOut = factory.getHtmlOut();
+    const factory = pageGenerator(mockHeadConfig);
+    const htmlOut = factory.buildHtml(mockBodyConfig);
 
     expect(htmlOut).toContain('class="bg-blue-500"');
   });
 
   it("renders nested children correctly", () => {
-    const factory = htmlFactory(mockHeadConfig, mockBodyConfig, {
-      pageTitle: "Test Page",
-    });
-    const htmlOut = factory.getHtmlOut();
+    const factory = pageGenerator(mockHeadConfig);
+    const htmlOut = factory.buildHtml(mockBodyConfig);
 
     expect(htmlOut).toContain("<span>");
     expect(htmlOut).toContain("Child Content");
@@ -53,16 +47,11 @@ describe("htmlFactory", () => {
   });
 
   it("handles optional configurations correctly", () => {
-    const factory = htmlFactory(mockHeadConfig, mockBodyConfig, {
-      pageTitle: "Test Page",
-      useTailwind: true,
+    const factory = pageGenerator(mockHeadConfig, {
       useHtmx: true,
     });
-    const htmlOut = factory.getHtmlOut();
+    const htmlOut = factory.buildHtml(mockBodyConfig);
 
-    expect(htmlOut).toContain(
-      '<script src="https://cdn.tailwindcss.com"></script>'
-    );
     expect(htmlOut).toContain(
       '<script src="https://unpkg.com/htmx.org"></script>'
     );
@@ -70,18 +59,18 @@ describe("htmlFactory", () => {
 });
 
 const createPageFactory = () => {
-  return htmlFactory({ title: "My Title" }, htmlBody, {
-    pageTitle: "My Page",
-    // tailwindConfig,
-    useHtmx: true,
-    useTailwind: true,
-  });
+  return pageGenerator(
+    { title: "My Title" },
+    {
+      useHtmx: true,
+    }
+  );
 };
 
 describe("htmlFactory", () => {
   it("renders complete HTML structure based on provided config", () => {
     const factory = createPageFactory();
-    const htmlOut = factory.getHtmlOut();
+    const htmlOut = factory.buildHtml(htmlBody);
 
     expect(htmlOut).toContain(
       '<h1 class="bg-blue-500" id="title-id">Hello World</h1>'
@@ -97,7 +86,7 @@ describe("htmlFactory", () => {
 
   it("includes optional configurations like Tailwind and htmx", () => {
     const factory = createPageFactory();
-    const htmlOut = factory.getHtmlOut();
+    const htmlOut = factory.buildHtml(htmlBody);
 
     expect(htmlOut).toContain(
       '<script src="https://cdn.tailwindcss.com"></script>'
