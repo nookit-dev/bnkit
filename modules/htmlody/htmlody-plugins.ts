@@ -40,7 +40,6 @@ export const classRecordPluginHandler = <
     classes = responsiveClasses;
   }
 
-
   if (classes === "") {
     return node;
   }
@@ -79,3 +78,4 @@ export const markdownPluginHandler = <Node extends MDNode>(
 export const markdownPlugin: HTMLodyPlugin<MarkdownAttributes> = {
   processNode: markdownPluginHandler,
 };
+

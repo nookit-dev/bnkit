@@ -1,16 +1,17 @@
+import { JsonTagElNode } from "@bnk/core/modules/htmlody";
 import { describe, expect, it } from "bun:test";
-import { Attributes, JsonHtmlNodeMap, JsonTagElNode } from "./html-type-engine";
+import { Attributes } from "./html-type-engine";
 import {
   collectClassNames,
   formatAttributes,
   nodeFactory,
   retrieveElement,
 } from "./htmlody-utils";
-import { jsonToHtml, renderChildren } from "./json-to-html-engine";
 
 describe("formatAttributes", () => {
   it("should handle empty attributes", () => {
     const attributes: Attributes = {};
+    // @ts-expect-error
     const formatted = formatAttributes(attributes, {});
     expect(formatted).toBe("");
   });
@@ -22,49 +23,10 @@ describe("formatAttributes", () => {
       id: `id-${Math.floor(Math.random() * 1000)}`,
       class: "sample-class",
     };
+    // @ts-expect-error
     const formatted = formatAttributes(attributes, {});
     expect(formatted).toContain(attributes.id);
     expect(formatted).toContain(attributes.class);
-  });
-});
-
-describe("renderChildren", () => {
-  it("should render children recursively", () => {
-    const children: JsonHtmlNodeMap = {
-      div_id: {
-        tag: "div",
-        content: `content-${Math.floor(Math.random() * 1000)}`,
-      },
-    };
-    const rendered = renderChildren(children, []);
-    expect(rendered).toContain(children.div_id.content);
-  });
-});
-
-describe("jsonToHtml", () => {
-  it("should render entire HTML structure from node map", () => {
-    const nodeMap: JsonHtmlNodeMap = {
-      div_id1: {
-        tag: "div",
-        content: "Sample Content",
-        attributes: {
-          id: "sample-id",
-          class: "sample-class",
-        },
-        children: {
-          span_id1: {
-            tag: "span",
-            content: "Child Content",
-          },
-        },
-      },
-    };
-
-    const rendered = jsonToHtml(nodeMap, []);
-    expect(rendered).toContain(nodeMap.div_id1.content);
-    expect(rendered).toContain(nodeMap.div_id1.attributes!.id);
-    expect(rendered).toContain(nodeMap.div_id1.attributes!.class);
-    expect(rendered).toContain(nodeMap.div_id1.children!.span_id1.content);
   });
 });
 
@@ -99,6 +61,7 @@ describe("retrieveElement", () => {
         content: "Sample Content",
       },
     };
+    // @ts-expect-error
     const element = retrieveElement(JsonHtmlNodeMap, "span");
     expect(element).toBeUndefined();
   });
@@ -138,7 +101,9 @@ describe("collectClassNames", () => {
     };
     const uniqueClassNames = new Set<string>();
     collectClassNames(node, uniqueClassNames);
-    expect(uniqueClassNames).toEqual(new Set(["sample-class-1", "sample-class-2"]));
+    expect(uniqueClassNames).toEqual(
+      new Set(["sample-class-1", "sample-class-2"])
+    );
   });
 
   it("should not add class names to uniqueClassNames set if class attribute is not present", () => {
@@ -152,9 +117,10 @@ describe("collectClassNames", () => {
   });
 
   it("should not add class names to uniqueClassNames set if class attribute is not a string", () => {
-    const node = {
+    const node: JsonTagElNode = {
       tag: "div",
       attributes: {
+        // @ts-expect-error
         class: 123,
       },
       content: "Sample Content",

@@ -21,8 +21,7 @@ export type JsonTagElNode<Ext extends ExtensionRec = {}> = {
   children?: JsonHtmlNodeMap<JsonTagElNode<Ext>>;
   attributes?: Attributes;
   tag: string;
-  // cr?: ClassRecord
-} & Ext;
+} & Omit<Ext, "content" | "children" | "attributes" | "tag">;
 
 export type JsonHtmlNodeMap<NodeT extends JsonTagElNode = JsonTagElNode> = {
   [id: string]: JsonTagElNode<NodeT>;

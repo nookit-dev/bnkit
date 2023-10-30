@@ -5,18 +5,18 @@ export type {
   ExtensionRec,
   JsonHtmlNodeMap,
   JsonTagElNode,
-  TagContent,
+  TagContent
 } from "./html-type-engine";
-export { buildPageConfig, renderHtmlTag, children } from "./htmlody-utils";
+export { buildPageConfig, children } from "./htmlody-utils";
 
-export { jsonToHtml, renderChildren } from "./json-to-html-engine";
+export { jsonToHtml, renderChildrenNodes as renderChildren } from "./json-to-html-engine";
 
 export { classRecordPlugin, markdownPlugin } from "./htmlody-plugins";
 export type {
   CRNode,
   ClassRecordAttributes,
   HTMLodyPlugin,
-  MDNode,
+  MDNode
 } from "./htmlody-plugins";
 
 export { cc, uClass } from "./css-engine";

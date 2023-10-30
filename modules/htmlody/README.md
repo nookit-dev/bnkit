@@ -192,7 +192,6 @@ const output = jsonToHtml(input, [markdownPlugin, classRecordPlugin]);
 
 While I will eventualy add automatic type inference based on the plugins, it doesn't automatic do that so in order to create a combined node it would look like the following:
 
-
 ```typescript
 type AppNode = MDNode & CRNode
 

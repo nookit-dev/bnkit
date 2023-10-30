@@ -96,7 +96,7 @@ Bun Nook Kit offers a wide array of utility modules including:
 
 6. [Files Folder](modules/files-folders/README.md): The Files Folder module provides various utilities for working with files and folders. It includes functions for searching for files, validating file paths, and creating references to files. This module can be useful for tasks like building an in-browser file manager.
 
-7. [Hash](modules/hash/README.md): The Hash module provides a simple abstraction to Bun's hashing functions. It allows you to hash data using common hashing algorithms for tasks such as password hashing or data integrity checks
+7. [Auth](modules/Auth/README.md): The auth module provides offers utilities for encryption of passwords/data.
 
 8. [HTMLody](modules/htmlody/README.md): HTMLody is a tool that enables the conversion of JSON structures into valid HTML and CSS, facilitating both dynamic HTML generation and the export of static assets for enhanced web performance. It offers a flexible and maintainable approach to web development, with support for plugins with prebuilt plugins such as Tailwind-like CSS class utilties and a render Markdown plugin utility, easily integrate with libraries like HTMX for dynamic functionality, and a comprehensive TypeScript support for defining and customizing the JSON elements.
 
