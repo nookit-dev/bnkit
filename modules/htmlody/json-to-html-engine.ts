@@ -1,10 +1,7 @@
 import { SELF_CLOSING_TAGS } from "./constants";
-import {
-  ExtensionRec,
-  JsonHtmlNodeMap,
-  JsonTagElNode,
-} from "./html-type-engine";
+import { generateCSS, generateColorVariables } from "./css-engine";
 import { HTMLodyPlugin } from "./htmlody-plugins";
+import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
 import {
   formatAttributes,
   isValidAttributesString,
@@ -62,7 +59,7 @@ export function renderHtmlTag(
 }
 
 export function renderChildrenNodes<Plugins extends HTMLodyPlugin<any>[]>(
-  children: JsonHtmlNodeMap,
+  children: JsonHtmlNodeTree,
   plugins: Plugins
 ): string {
   return Object.entries(children)
@@ -116,7 +113,7 @@ export function jsonToHtml<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
-  NodeMap extends JsonHtmlNodeMap<Node> = JsonHtmlNodeMap<Node>
+  NodeMap extends JsonHtmlNodeTree<Node> = JsonHtmlNodeTree<Node>
 >(nodeMap: NodeMap, plugins: Plugins): string {
   return Object.keys(nodeMap)
     .map((id) => renderNodeToHtml(nodeMap[id], plugins))
@@ -153,6 +150,48 @@ export function renderNodeWithPlugins<
 export type NodePluginsReturn<Plugins extends HTMLodyPlugin<any>[]> =
   ReturnType<Plugins[number]["processNode"]>;
 
+type HeadConfig = {
+  title: string;
+  metaTags?: { name: string; content: string }[];
+  linkTags?: { rel: string; href: string }[];
+  // Add other head configurations as needed
+};
+
+type ScriptLoadingOptions = {
+  useHtmx?: boolean | string;
+  // Add other script loading options as needed
+};
+
+const generateHeadHtml = (headConfig: HeadConfig): string => {
+  const title = headConfig.title ? `<title>${headConfig.title}</title>` : "";
+  const metaTags = headConfig.metaTags
+    ? headConfig.metaTags
+        .map((meta) => `<meta name="${meta.name}" content="${meta.content}">`)
+        .join("")
+    : "";
+  const linkTags = headConfig.linkTags
+    ? headConfig.linkTags
+        .map((link) => `<link rel="${link.rel}" href="${link.href}">`)
+        .join("")
+    : "";
+  // Add other head elements as needed
+  return `${title}${metaTags}${linkTags}`;
+};
+
+const generateScriptTags = (scriptOptions?: ScriptLoadingOptions): string => {
+  let scriptTags = "";
+
+  if (scriptOptions?.useHtmx) {
+    const htmxSrc =
+      typeof scriptOptions.useHtmx === "string"
+        ? scriptOptions.useHtmx
+        : "https://unpkg.com/htmx.org";
+    scriptTags += `<script src="${htmxSrc}"></script>`;
+  }
+
+  return scriptTags;
+};
+
 export const createNodeFactory = <
   Plugins extends HTMLodyPlugin<any>[],
   PluginReturns extends NodePluginsReturn<Plugins>
@@ -170,8 +209,8 @@ export const createNodeFactory = <
     } as JsonTagElNode<PluginReturns>;
   };
 
-  const renderHtml = (
-    nodeMap: JsonHtmlNodeMap,
+  const renderNodeTreeToHtml = (
+    nodeMap: JsonHtmlNodeTree,
     pluginsOverride?: Plugins
   ): string => {
     const activePlugins = pluginsOverride || effectivePlugins;
@@ -189,7 +228,7 @@ export const createNodeFactory = <
   };
 
   const renderChildren = (
-    children: JsonHtmlNodeMap,
+    children: JsonHtmlNodeTree,
     pluginsOverride?: Plugins
   ): string => {
     const activePlugins = pluginsOverride || effectivePlugins;
@@ -200,10 +239,57 @@ export const createNodeFactory = <
       .join("");
   };
 
+  const buildHtmlDoc = (
+    headConfig: HeadConfig,
+    bodyConfig: JsonHtmlNodeTree,
+    scriptOptions?: ScriptLoadingOptions
+  ) => {
+    const headHtml = generateHeadHtml(headConfig);
+
+    const bodyHtml = renderNodeTreeToHtml(bodyConfig);
+
+    const scriptTags = generateScriptTags(scriptOptions);
+
+    // Generate color variables and CSS, this needs to be moved
+    // to a helper function
+    const css = generateCSS(bodyConfig);
+    const colorVariables = generateColorVariables();
+
+    return `
+      <!doctype html>
+      <html>
+        <head>
+          ${headHtml}
+          <style>${colorVariables}</style>
+          <style>${css}</style>
+        </head>
+        <body>
+          ${bodyHtml}
+          ${scriptTags}
+        </body>
+      </html>
+    `;
+  };
+
+  const response = (
+    headConfig: HeadConfig,
+    bodyConfig: JsonHtmlNodeTree,
+    scriptOptions?: ScriptLoadingOptions
+  ) => {
+    const html = buildHtmlDoc(headConfig, bodyConfig, scriptOptions);
+    return new Response(html, {
+      headers: {
+        "Content-Type": "text/html",
+      },
+    });
+  };
+
   return {
     createNode,
-    renderHtml,
+    renderNodeTreeToHtml,
     renderSingleNode,
     renderChildren,
+    buildHtmlDoc,
+    response,
   };
 };

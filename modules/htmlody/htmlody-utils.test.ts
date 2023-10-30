@@ -1,6 +1,6 @@
 import { JsonTagElNode } from "@bnk/core/modules/htmlody";
 import { describe, expect, it } from "bun:test";
-import { Attributes } from "./html-type-engine";
+import { Attributes } from "./htmlody-types";
 import {
   collectClassNames,
   formatAttributes,

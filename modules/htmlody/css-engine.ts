@@ -1,10 +1,10 @@
+import { ClassRecordAttributes } from "./htmlody-plugins";
 import {
   ClassRecord,
-  JsonHtmlNodeMap,
+  JsonHtmlNodeTree,
   JsonTagElNode,
   ResponsiveClassRecord,
-} from "./html-type-engine";
-import { ClassRecordAttributes } from "./htmlody-plugins";
+} from "./htmlody-types";
 
 const fractionPercentMap = {
   "1/2": 50,
@@ -134,26 +134,23 @@ export function processNode(
 
   if (node.cr) {
     const classRecords = processClassRecords(node.cr, usedClasses);
-
     if (classRecords) cssStr += classRecords;
   }
 
   if (node.children) {
     Object.values(node.children).forEach((childNode) => {
       const childNodeStr = processNode(childNode, usedClasses);
-
       if (childNodeStr) cssStr += childNodeStr;
     });
   }
 
-  if (!cssStr) return null;
-  return cssStr;
+  return cssStr || null;
 }
 
 export function generateCSS<
-  NodeMap extends JsonHtmlNodeMap<
+  NodeMap extends JsonHtmlNodeTree<
     JsonTagElNode<ClassRecordAttributes>
-  > = JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>>
+  > = JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>>
 >(nodeMap: NodeMap): string | null {
   const usedClasses = new Set<string>();
   let cssStr = "";
@@ -167,32 +164,6 @@ export function generateCSS<
   if (!cssStr) return null;
   return cssStr;
 }
-
-// export const cssFactory = <
-//   NodeMap extends JsonHtmlNodeMap<
-//     JsonTagElNode<ClassRecordAttributes>
-//   > = JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>>
-// >(
-//   nodeMap: NodeMap
-// ) => {
-//   const usedClasses = new Set<string>();
-//   const cssStrings: string[] = [];
-
-//   const generateCSS = () => {
-//     Object.values(nodeMap).forEach((node) => {
-//       cssStrings.push(processNode(node, usedClasses));
-//     });
-//   };
-
-//   const getCSS = () => {
-//     return cssStrings.join("\n");
-//   };
-
-//   return {
-//     generateCSS,
-//     getCSS,
-//   };
-// };
 
 export const createKeyVal = <Key extends string, Val extends string>(
   key: Key,

@@ -1,14 +1,14 @@
 import { VALID_HTML_TAGS } from "./constants";
+import { CRNode } from "./htmlody-plugins";
 import {
   Attributes,
   FullJsonHtmlDocStructure,
   JsonHtmlHead,
-  JsonHtmlNodeMap,
+  JsonHtmlNodeTree,
   JsonTagElNode,
-} from "./html-type-engine";
-import { CRNode } from "./htmlody-plugins";
+} from "./htmlody-types";
 
-export const retrieveElement = <Structure extends JsonHtmlNodeMap>(
+export const retrieveElement = <Structure extends JsonHtmlNodeTree>(
   JsonHtmlNodeMap: Structure,
   element: keyof Structure
 ) => {
@@ -36,7 +36,7 @@ export const nodeFactory = <
 
 export const buildPageConfig = <
   Head extends JsonHtmlHead,
-  Body extends JsonHtmlNodeMap
+  Body extends JsonHtmlNodeTree
 >(
   head: Head,
   body: Body
@@ -75,7 +75,7 @@ export function collectClassNames(
   }
 }
 export const children = (children: JsonTagElNode<CRNode>[]) => {
-  const returnChildren: JsonHtmlNodeMap = {};
+  const returnChildren: JsonHtmlNodeTree = {};
 
   for (let i = 0; i < children.length; i++) {
     returnChildren[i] = children[i];
@@ -83,3 +83,5 @@ export const children = (children: JsonTagElNode<CRNode>[]) => {
 
   return returnChildren;
 };
+
+

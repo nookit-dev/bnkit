@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { JsonHtmlNodeMap, JsonTagElNode } from ".";
+import { JsonHtmlNodeTree, JsonTagElNode } from ".";
 import {
   adjustBrightness,
   generateCSS,
@@ -13,7 +13,7 @@ import { ClassRecordAttributes } from "./htmlody-plugins";
 
 describe("generateCSS", () => {
   it("should generate correct CSS from nodeMap", () => {
-    const mockNodeMap: JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>> = {
+    const mockNodeMap: JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>> = {
       exampleDiv: {
         tag: "div",
         cr: {
@@ -48,7 +48,7 @@ describe("generateCSS", () => {
     expect(result).toEqual(expectedCss);
   });
   it("should return empty string for empty nodeMap", () => {
-    const mockNodeMap: JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>> =
+    const mockNodeMap: JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>> =
       {};
 
     const result = generateCSS(mockNodeMap);
@@ -56,7 +56,7 @@ describe("generateCSS", () => {
   });
 
   it("should handle nodes without the cr property", () => {
-    const mockNodeMap: JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>> = {
+    const mockNodeMap: JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>> = {
       exampleDiv: {
         tag: "div",
       },
@@ -67,7 +67,7 @@ describe("generateCSS", () => {
   });
 
   it("should ignore invalid class names", () => {
-    const mockNodeMap: JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>> = {
+    const mockNodeMap: JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>> = {
       exampleDiv: {
         tag: "div",
         cr: {
@@ -83,7 +83,7 @@ describe("generateCSS", () => {
   });
 
   it("should not generate CSS if all classes are set to false", () => {
-    const mockNodeMap: JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>> = {
+    const mockNodeMap: JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>> = {
       exampleDiv: {
         tag: "div",
         cr: {

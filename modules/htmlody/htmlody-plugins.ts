@@ -1,9 +1,9 @@
-import { convertMarkdownToHTML } from "mod/utils/text-utils";
+import { convertMarkdownToHTML } from "../utils/text-utils";
 import {
   ExtensionRec,
   JsonTagElNode,
   ResponsiveClassRecord,
-} from "./html-type-engine";
+} from "./htmlody-types";
 
 // this will be the node that will be attached to our json node
 export type ClassRecordAttributes = {
@@ -78,4 +78,3 @@ export const markdownPluginHandler = <Node extends MDNode>(
 export const markdownPlugin: HTMLodyPlugin<MarkdownAttributes> = {
   processNode: markdownPluginHandler,
 };
-

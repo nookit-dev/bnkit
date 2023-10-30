@@ -1,15 +1,13 @@
-export { pageGenerator } from "./html-factory";
 export type {
   Attributes,
   ClassRecord,
   ExtensionRec,
-  JsonHtmlNodeMap,
-  JsonTagElNode,
-  TagContent
-} from "./html-type-engine";
+  JsonHtmlNodeTree as JsonHtmlNodeTree,
+  JsonTagElNode
+} from "./htmlody-types";
 export { buildPageConfig, children } from "./htmlody-utils";
 
-export { jsonToHtml, renderChildrenNodes as renderChildren } from "./json-to-html-engine";
+export { jsonToHtml } from "./json-to-html-engine";
 
 export { classRecordPlugin, markdownPlugin } from "./htmlody-plugins";
 export type {
