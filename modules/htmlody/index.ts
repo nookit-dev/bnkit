@@ -3,9 +3,9 @@ export type {
   ClassRecord,
   ExtensionRec,
   JsonHtmlNodeTree as JsonHtmlNodeTree,
-  JsonTagElNode
+  JsonTagElNode,
 } from "./htmlody-types";
-export { buildPageConfig, children } from "./htmlody-utils";
+export { children } from "./htmlody-utils";
 
 export { jsonToHtml } from "./json-to-html-engine";
 
@@ -14,7 +14,7 @@ export type {
   CRNode,
   ClassRecordAttributes,
   HTMLodyPlugin,
-  MDNode
+  MDNode,
 } from "./htmlody-plugins";
 
 export { cc, uClass } from "./css-engine";

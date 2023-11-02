@@ -1,6 +1,10 @@
 import { SELF_CLOSING_TAGS } from "./constants";
 import { generateCSS, generateColorVariables } from "./css-engine";
-import { HTMLodyPlugin } from "./htmlody-plugins";
+import {
+  HTMLodyPlugin,
+  classRecordPlugin,
+  markdownPlugin,
+} from "./htmlody-plugins";
 import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
 import {
   formatAttributes,
@@ -147,6 +151,47 @@ export function renderNodeWithPlugins<
   return renderHtmlTag(tagName, attributesStr, content, childrenHtml);
 }
 
+const generateTitleNode = (title: string): JsonTagElNode => {
+  return {
+    tag: "title",
+    content: title,
+  };
+};
+
+const generateMetaTagNode = (meta: {
+  name: string;
+  content: string;
+}): JsonTagElNode => {
+  return {
+    tag: "meta",
+    attributes: { name: meta.name, content: meta.content },
+  };
+};
+
+const generateLinkTagNode = (link: {
+  rel: string;
+  href: string;
+}): JsonTagElNode => {
+  return {
+    tag: "link",
+    attributes: { rel: link.rel, href: link.href },
+  };
+};
+
+const generateScriptTagNode = (src: string): JsonTagElNode => {
+  return {
+    tag: "script",
+    attributes: { src },
+  };
+};
+
+const generateStyleTagNode = (content: string): JsonTagElNode => {
+  return {
+    tag: "style",
+    content,
+  };
+};
+
 export type NodePluginsReturn<Plugins extends HTMLodyPlugin<any>[]> =
   ReturnType<Plugins[number]["processNode"]>;
 
@@ -154,7 +199,7 @@ type HeadConfig = {
   title: string;
   metaTags?: { name: string; content: string }[];
   linkTags?: { rel: string; href: string }[];
-  // Add other head configurations as needed
+  styleTags?: { content: string }[];
 };
 
 type ScriptLoadingOptions = {
@@ -162,41 +207,12 @@ type ScriptLoadingOptions = {
   // Add other script loading options as needed
 };
 
-const generateHeadHtml = (headConfig: HeadConfig): string => {
-  const title = headConfig.title ? `<title>${headConfig.title}</title>` : "";
-  const metaTags = headConfig.metaTags
-    ? headConfig.metaTags
-        .map((meta) => `<meta name="${meta.name}" content="${meta.content}">`)
-        .join("")
-    : "";
-  const linkTags = headConfig.linkTags
-    ? headConfig.linkTags
-        .map((link) => `<link rel="${link.rel}" href="${link.href}">`)
-        .join("")
-    : "";
-  // Add other head elements as needed
-  return `${title}${metaTags}${linkTags}`;
-};
-
-const generateScriptTags = (scriptOptions?: ScriptLoadingOptions): string => {
-  let scriptTags = "";
-
-  if (scriptOptions?.useHtmx) {
-    const htmxSrc =
-      typeof scriptOptions.useHtmx === "string"
-        ? scriptOptions.useHtmx
-        : "https://unpkg.com/htmx.org";
-    scriptTags += `<script src="${htmxSrc}"></script>`;
-  }
-
-  return scriptTags;
-};
-
-export const createNodeFactory = <
+export const htmlodyBuilder = <
   Plugins extends HTMLodyPlugin<any>[],
   PluginReturns extends NodePluginsReturn<Plugins>
 >(
-  plugins: Plugins
+  plugins: Plugins,
+  headConfig?: HeadConfig
 ) => {
   const effectivePlugins = plugins;
 
@@ -240,18 +256,55 @@ export const createNodeFactory = <
   };
 
   const buildHtmlDoc = (
-    headConfig: HeadConfig,
     bodyConfig: JsonHtmlNodeTree,
-    scriptOptions?: ScriptLoadingOptions
+    options: {
+      headConfig: HeadConfig;
+      scriptOptions?: ScriptLoadingOptions;
+    } = {
+      headConfig: headConfig || {
+        title: "HTMLody",
+      },
+      scriptOptions: {
+        useHtmx: false,
+      },
+    }
   ) => {
-    const headHtml = generateHeadHtml(headConfig);
+    const headNodes: JsonHtmlNodeTree = {};
 
+    if (options.headConfig.title) {
+      headNodes["title"] = generateTitleNode(options.headConfig.title);
+    }
+
+    if (options.headConfig.metaTags) {
+      options.headConfig.metaTags.forEach((meta, index) => {
+        headNodes[`meta${index}`] = generateMetaTagNode(meta);
+      });
+    }
+
+    if (options.headConfig.linkTags) {
+      options.headConfig.linkTags.forEach((link, index) => {
+        headNodes[`link${index}`] = generateLinkTagNode(link);
+      });
+    }
+
+    if (options.headConfig.styleTags) {
+      options.headConfig.styleTags.forEach((style, index) => {
+        headNodes[`style${index}`] = generateStyleTagNode(style.content);
+      });
+    }
+
+    if (options.scriptOptions?.useHtmx) {
+      const htmxSrc =
+        typeof options.scriptOptions.useHtmx === "string"
+          ? options.scriptOptions.useHtmx
+          : "https://unpkg.com/htmx.org";
+      headNodes["htmxScript"] = generateScriptTagNode(htmxSrc);
+    }
+
+    const headHtml = jsonToHtml(headNodes, []);
     const bodyHtml = renderNodeTreeToHtml(bodyConfig);
 
-    const scriptTags = generateScriptTags(scriptOptions);
-
-    // Generate color variables and CSS, this needs to be moved
-    // to a helper function
+    // todo this needs to be externalized since this is specific to the class records plugin
     const css = generateCSS(bodyConfig);
     const colorVariables = generateColorVariables();
 
@@ -265,18 +318,19 @@ export const createNodeFactory = <
         </head>
         <body>
           ${bodyHtml}
-          ${scriptTags}
         </body>
       </html>
     `;
   };
 
   const response = (
-    headConfig: HeadConfig,
     bodyConfig: JsonHtmlNodeTree,
-    scriptOptions?: ScriptLoadingOptions
+    options: {
+      headConfig: HeadConfig;
+      scriptOptions?: ScriptLoadingOptions;
+    }
   ) => {
-    const html = buildHtmlDoc(headConfig, bodyConfig, scriptOptions);
+    const html = buildHtmlDoc(bodyConfig, options);
     return new Response(html, {
       headers: {
         "Content-Type": "text/html",
@@ -293,3 +347,11 @@ export const createNodeFactory = <
     response,
   };
 };
+
+export const defaultBuilder = htmlodyBuilder(
+  [markdownPlugin, classRecordPlugin],
+  {
+    title: "HTMLody",
+    styleTags: [{ content: generateColorVariables() }],
+  }
+);

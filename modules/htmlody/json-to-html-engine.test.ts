@@ -7,10 +7,10 @@ import {
 import { Attributes, JsonHtmlNodeTree } from "./htmlody-types";
 import { formatAttributes, isValidAttributesString } from "./htmlody-utils";
 import {
-  createNodeFactory,
   getHtmlTags,
   getValidatedAttributesStr,
   getValidatedTagName,
+  htmlodyBuilder,
   jsonToHtml,
   renderChildrenNodes,
   renderHtmlTag,
@@ -268,7 +268,7 @@ describe("createNodeFactory", () => {
   ] satisfies HTMLodyPlugin<any>[];
 
   const { createNode, renderNodeTreeToHtml, renderSingleNode, renderChildren } =
-    createNodeFactory(plugins);
+    htmlodyBuilder(plugins);
 
   describe("createNode", () => {
     it("should createa  default node with a div tag", () => {

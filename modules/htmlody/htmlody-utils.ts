@@ -1,12 +1,6 @@
 import { VALID_HTML_TAGS } from "./constants";
 import { CRNode } from "./htmlody-plugins";
-import {
-  Attributes,
-  FullJsonHtmlDocStructure,
-  JsonHtmlHead,
-  JsonHtmlNodeTree,
-  JsonTagElNode,
-} from "./htmlody-types";
+import { Attributes, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
 
 export const retrieveElement = <Structure extends JsonHtmlNodeTree>(
   JsonHtmlNodeMap: Structure,
@@ -31,21 +25,6 @@ export const nodeFactory = <
 
   return {
     create: createNode,
-  };
-};
-
-export const buildPageConfig = <
-  Head extends JsonHtmlHead,
-  Body extends JsonHtmlNodeTree
->(
-  head: Head,
-  body: Body
-): FullJsonHtmlDocStructure<Head, Body> => {
-  return {
-    html: {
-      head,
-      body,
-    },
   };
 };
 
@@ -83,5 +62,3 @@ export const children = (children: JsonTagElNode<CRNode>[]) => {
 
   return returnChildren;
 };
-
-
