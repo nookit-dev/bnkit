@@ -1,10 +1,7 @@
 import { SELF_CLOSING_TAGS } from "./constants";
-import {
-  ExtensionRec,
-  JsonHtmlNodeMap,
-  JsonTagElNode,
-} from "./html-type-engine";
+import { generateCSS, generateColorVariables } from "./css-engine";
 import { HTMLodyPlugin } from "./htmlody-plugins";
+import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
 import {
   formatAttributes,
   isValidAttributesString,
@@ -62,7 +59,7 @@ export function renderHtmlTag(
 }
 
 export function renderChildrenNodes<Plugins extends HTMLodyPlugin<any>[]>(
-  children: JsonHtmlNodeMap,
+  children: JsonHtmlNodeTree,
   plugins: Plugins
 ): string {
   return Object.entries(children)
@@ -116,7 +113,7 @@ export function jsonToHtml<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
-  NodeMap extends JsonHtmlNodeMap<Node> = JsonHtmlNodeMap<Node>
+  NodeMap extends JsonHtmlNodeTree<Node> = JsonHtmlNodeTree<Node>
 >(nodeMap: NodeMap, plugins: Plugins): string {
   return Object.keys(nodeMap)
     .map((id) => renderNodeToHtml(nodeMap[id], plugins))
@@ -150,14 +147,73 @@ export function renderNodeWithPlugins<
   return renderHtmlTag(tagName, attributesStr, content, childrenHtml);
 }
 
-export type NodePluginsReturn<Plugins extends HTMLodyPlugin<any>[]> =
+const generateTitleNode = (title: string): JsonTagElNode => {
+  return {
+    tag: "title",
+    content: title,
+  };
+};
+
+const generateMetaTagNode = (meta: {
+  name: string;
+  content: string;
+}): JsonTagElNode => {
+  return {
+    tag: "meta",
+    attributes: { name: meta.name, content: meta.content },
+  };
+};
+
+const generateLinkTagNode = (link: {
+  rel: string;
+  href: string;
+}): JsonTagElNode => {
+  return {
+    tag: "link",
+    attributes: { rel: link.rel, href: link.href },
+  };
+};
+
+const generateScriptTagNode = (src: string): JsonTagElNode => {
+  return {
+    tag: "script",
+    attributes: { src },
+  };
+};
+
+const generateStyleTagNode = (content: string): JsonTagElNode => {
+  return {
+    tag: "style",
+    content,
+  };
+};
+
+export type NodePluginsMapper<Plugins extends HTMLodyPlugin<any>[]> =
   ReturnType<Plugins[number]["processNode"]>;
 
-export const createNodeFactory = <
+// type CRNodeTest = NodePluginsReturn<[typeof classRecordPlugin]>
+// const tester: CRNodeTest = {
+
+// }
+
+type HeadConfig = {
+  title: string;
+  metaTags?: { name: string; content: string }[];
+  linkTags?: { rel: string; href: string }[];
+  styleTags?: { content: string }[];
+};
+
+type ScriptLoadingOptions = {
+  useHtmx?: boolean | string;
+  // Add other script loading options as needed
+};
+
+export const htmlodyBuilder = <
   Plugins extends HTMLodyPlugin<any>[],
-  PluginReturns extends NodePluginsReturn<Plugins>
+  PluginReturns extends NodePluginsMapper<Plugins>
 >(
-  plugins: Plugins
+  plugins: Plugins,
+  headConfig?: HeadConfig
 ) => {
   const effectivePlugins = plugins;
 
@@ -170,8 +226,8 @@ export const createNodeFactory = <
     } as JsonTagElNode<PluginReturns>;
   };
 
-  const renderHtml = (
-    nodeMap: JsonHtmlNodeMap,
+  const renderNodeTreeToHtml = (
+    nodeMap: JsonHtmlNodeTree,
     pluginsOverride?: Plugins
   ): string => {
     const activePlugins = pluginsOverride || effectivePlugins;
@@ -189,7 +245,7 @@ export const createNodeFactory = <
   };
 
   const renderChildren = (
-    children: JsonHtmlNodeMap,
+    children: JsonHtmlNodeTree,
     pluginsOverride?: Plugins
   ): string => {
     const activePlugins = pluginsOverride || effectivePlugins;
@@ -200,10 +256,95 @@ export const createNodeFactory = <
       .join("");
   };
 
+  const buildHtmlDoc = (
+    bodyConfig: JsonHtmlNodeTree,
+    options: {
+      headConfig?: HeadConfig;
+      scriptOptions?: ScriptLoadingOptions;
+    } = {
+      headConfig: headConfig || {
+        title: "HTMLody",
+      },
+      scriptOptions: {
+        useHtmx: false,
+      },
+    }
+  ) => {
+    const headNodes: JsonHtmlNodeTree = {};
+
+    if (options?.headConfig?.title) {
+      headNodes["title"] = generateTitleNode(options.headConfig.title);
+    }
+
+    if (options?.headConfig?.metaTags) {
+      options.headConfig.metaTags.forEach((meta, index) => {
+        headNodes[`meta${index}`] = generateMetaTagNode(meta);
+      });
+    }
+
+    if (options?.headConfig?.linkTags) {
+      options.headConfig.linkTags.forEach((link, index) => {
+        headNodes[`link${index}`] = generateLinkTagNode(link);
+      });
+    }
+
+    if (options?.headConfig?.styleTags) {
+      options.headConfig.styleTags.forEach((style, index) => {
+        headNodes[`style${index}`] = generateStyleTagNode(style.content);
+      });
+    }
+
+    if (options.scriptOptions?.useHtmx) {
+      const htmxSrc =
+        typeof options.scriptOptions.useHtmx === "string"
+          ? options.scriptOptions.useHtmx
+          : "https://unpkg.com/htmx.org";
+      headNodes["htmxScript"] = generateScriptTagNode(htmxSrc);
+    }
+
+    const headHtml = jsonToHtml(headNodes, []);
+    const bodyHtml = renderNodeTreeToHtml(bodyConfig);
+
+    // todo this needs to be externalized since this is specific to the class records plugin
+    const css = generateCSS(bodyConfig);
+    const colorVariables = generateColorVariables();
+
+    return `
+      <!doctype html>
+      <html>
+        <head>
+          ${headHtml}
+          <style>${colorVariables}</style>
+          <style>${css}</style>
+        </head>
+        <body>
+          ${bodyHtml}
+        </body>
+      </html>
+    `;
+  };
+
+  const response = (
+    bodyConfig: JsonHtmlNodeTree,
+    options: {
+      headConfig?: HeadConfig;
+      scriptOptions?: ScriptLoadingOptions;
+    } = {}
+  ) => {
+    const html = buildHtmlDoc(bodyConfig, options);
+    return new Response(html, {
+      headers: {
+        "Content-Type": "text/html",
+      },
+    });
+  };
+
   return {
     createNode,
-    renderHtml,
+    renderNodeTreeToHtml,
     renderSingleNode,
     renderChildren,
+    buildHtmlDoc,
+    response,
   };
 };

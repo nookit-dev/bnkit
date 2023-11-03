@@ -1,10 +1,10 @@
+import { ClassRecordAttributes } from "./htmlody-plugins";
 import {
   ClassRecord,
-  JsonHtmlNodeMap,
+  JsonHtmlNodeTree,
   JsonTagElNode,
   ResponsiveClassRecord,
-} from "./html-type-engine";
-import { ClassRecordAttributes } from "./htmlody-plugins";
+} from "./htmlody-types";
 
 const fractionPercentMap = {
   "1/2": 50,
@@ -134,26 +134,23 @@ export function processNode(
 
   if (node.cr) {
     const classRecords = processClassRecords(node.cr, usedClasses);
-
     if (classRecords) cssStr += classRecords;
   }
 
   if (node.children) {
     Object.values(node.children).forEach((childNode) => {
       const childNodeStr = processNode(childNode, usedClasses);
-
       if (childNodeStr) cssStr += childNodeStr;
     });
   }
 
-  if (!cssStr) return null;
-  return cssStr;
+  return cssStr || null;
 }
 
 export function generateCSS<
-  NodeMap extends JsonHtmlNodeMap<
+  NodeMap extends JsonHtmlNodeTree<
     JsonTagElNode<ClassRecordAttributes>
-  > = JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>>
+  > = JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>>
 >(nodeMap: NodeMap): string | null {
   const usedClasses = new Set<string>();
   let cssStr = "";
@@ -167,32 +164,6 @@ export function generateCSS<
   if (!cssStr) return null;
   return cssStr;
 }
-
-// export const cssFactory = <
-//   NodeMap extends JsonHtmlNodeMap<
-//     JsonTagElNode<ClassRecordAttributes>
-//   > = JsonHtmlNodeMap<JsonTagElNode<ClassRecordAttributes>>
-// >(
-//   nodeMap: NodeMap
-// ) => {
-//   const usedClasses = new Set<string>();
-//   const cssStrings: string[] = [];
-
-//   const generateCSS = () => {
-//     Object.values(nodeMap).forEach((node) => {
-//       cssStrings.push(processNode(node, usedClasses));
-//     });
-//   };
-
-//   const getCSS = () => {
-//     return cssStrings.join("\n");
-//   };
-
-//   return {
-//     generateCSS,
-//     getCSS,
-//   };
-// };
 
 export const createKeyVal = <Key extends string, Val extends string>(
   key: Key,
@@ -839,10 +810,36 @@ export const CSS_MAP = {
   "items-start": "align-items: flex-start;",
   "items-center": "align-items: center;",
   "items-end": "align-items: flex-end;",
+  "items-stretch": "align-items: stretch;",
+  "items-baseline": "align-items: baseline;",
+  "items-auto": "align-items: auto;",
+  "items-normal": "align-items: normal;",
 
   "justify-start": "justify-content: flex-start;",
   "justify-center": "justify-content: center;",
   "justify-end": "justify-content: flex-end;",
+  "justify-between": "justify-content: space-between;",
+  "justify-around": "justify-content: space-around;",
+  "justify-evenly": "justify-content: space-evenly;",
+
+  "justify-items-start": "justify-items: flex-start;",
+  "justify-items-center": "justify-items: center;",
+  "justify-items-end": "justify-items: flex-end;",
+  "justify-items-stretch": "justify-items: stretch;",
+  "justify-items-baseline": "justify-items: baseline;",
+  "justify-items-auto": "justify-items: auto;",
+
+  "justify-self-auto": "justify-self: auto;",
+  "justify-self-start": "justify-self: flex-start;",
+  "justify-self-center": "justify-self: center;",
+  "justify-self-end": "justify-self: flex-end;",
+  "justify-self-stretch": "justify-self: stretch;",
+  "justify-self-baseline": "justify-self: baseline;",
+  "justify-self-normal": "justify-self: normal;",
+  "justify-self-left": "justify-self: left;",
+  "justify-self-right": "justify-self: right;",
+  "justify-self-safe": "justify-self: safe;",
+  "justify-self-unsafe": "justify-self: unsafe;",
 
   // Grid Utilities
   "grid-cols-1": "grid-template-columns: repeat(1, minmax(0, 1fr));",

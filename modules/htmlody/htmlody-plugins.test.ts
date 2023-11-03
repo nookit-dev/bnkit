@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { JsonHtmlNodeMap, JsonTagElNode, jsonToHtml } from ".";
+import { JsonHtmlNodeTree, JsonTagElNode, jsonToHtml } from ".";
 import {
   CRNode,
   ClassRecordAttributes,
@@ -42,7 +42,7 @@ describe("classRecordPluginHandler", () => {
 });
 
 describe("classRecordPlugin", () => {
-  const sampleNodeMap: JsonHtmlNodeMap<JsonTagElNode & ClassRecordAttributes> =
+  const sampleNodeMap: JsonHtmlNodeTree<JsonTagElNode & ClassRecordAttributes> =
     {
       div1: {
         tag: "div",

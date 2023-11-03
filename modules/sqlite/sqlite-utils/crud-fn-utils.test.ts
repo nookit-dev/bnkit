@@ -1,17 +1,18 @@
 import Database from "bun:sqlite";
 import { beforeEach, describe, expect, test } from "bun:test";
+import { SchemaMap } from "../sqlite-factory";
 import {
-    createItem,
-    deleteItemById,
-    readItems,
-    updateItem,
+  createItem,
+  deleteItemById,
+  readItems,
+  updateItem,
 } from "./crud-fn-utils"; // replace with the path to your file
 
 const testSchema = {
-  id: "number",
-  name: "string",
-  age: "number",
-};
+  id: "TEXT",
+  name: "TEXT",
+  age: "INTEGER",
+} satisfies SchemaMap;
 
 let db = new Database(":memory:");
 
@@ -30,7 +31,11 @@ describe("Database utility functions", () => {
   });
 
   test("should create an item in the database", () => {
-    createItem(db, "test", log, { id: 1, name: "John", age: 25 });
+    createItem<typeof testSchema>(db, "test", log, {
+      id: "1",
+      name: "John",
+      age: 25,
+    });
     const items = readItems(db, "test", log);
     expect(items).toEqual([{ id: 1, name: "John", age: 25 }]);
   });
@@ -43,7 +48,7 @@ describe("Database utility functions", () => {
 
   test("should update an item in the database", () => {
     db.query("INSERT INTO test (name, age) VALUES (?, ?)").run("Doe", 35);
-    updateItem(db, "test", log, 1, { name: "John Doe" });
+    updateItem<typeof testSchema>(db, "test", log, 1, { name: "John Doe" });
     const items = readItems(db, "test", log);
     expect(items).toEqual([{ id: 1, name: "John Doe", age: 35 }]);
   });

@@ -1,10 +1,11 @@
-import { TypeMapping } from "mod/types";
-import { ForeignKeysT } from "../create-sqlite-table-factory";
+import { SQLiteSchemaToTypeScript, SchemaMap } from "../sqlite-factory";
+import { ForeignKeysT } from "../sqlite-table-factory";
 import { formatForeignKeys } from "./format-foreign-keys";
 import { formatSchema } from "./format-schema";
 
 export function createTableQuery<
-  Schema extends Record<string, keyof TypeMapping>
+  Schema extends SchemaMap,
+  TranslatedSchema extends SQLiteSchemaToTypeScript<Schema> = SQLiteSchemaToTypeScript<Schema>
 >({
   schema,
   tableName,
@@ -14,7 +15,7 @@ export function createTableQuery<
   tableName: string;
   schema: Schema;
   debug?: boolean;
-  foreignKeys?: ForeignKeysT<Schema>;
+  foreignKeys?: ForeignKeysT<TranslatedSchema>;
 }): string {
   if (debug) {
     console.info({ schema, tableName });

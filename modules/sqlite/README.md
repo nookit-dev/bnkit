@@ -2,31 +2,32 @@
 
 This module aids in creating SQLite tables, managing schemas, and handling CRUD operations on database entries.
 
-## Features:
+## Features
 
 - Helps create tables in SQLite
 - Manages schemas in an efficient way
 - Handles CRUD operations on SQLite tables
 
-## Importing the Dependencies:
+## Importing the Dependencies
+
 ```javascript
 import Database from "bun:sqlite";
 import type { SchemaType, SchemaTypeInference } from "@bnk/core/modules/types";
 import { createTableQuery, createItem, deleteItemById, readItems, updateItem } from "@bnk/core/sqlite-factory";
-
 ```
 
-Next, define your schema and use `createSqliteTableFactory` to generate your table.
+Next, define your schema and use `sqliteTableFactory` to generate your table.
+
 ```javascript
 const userSchema = {
-  id: "string",
-  name: "string",
-  email: "string",
+  id: "TEXT",
+  name: "TEXT",
+  email: "TEXT",
 }
 
 const db = new Database({filename: "./mydb.sqlite"})
 
-const userTableFactory = createSqliteTableFactory({
+const userTableFactory = sqliteTableFactory({
   db, 
   tableName: "users", 
   schema: userSchema
@@ -53,6 +54,6 @@ userTableFactory.update("1", {name: "John Updated"});
 userTableFactory.deleteById("1");
 ```
 
-And that's it! We have successfully generated a table and performed some CRUD operations on it. 
+And that's it! We have successfully generated a table and performed some CRUD operations on it.
 
 Please note for actual coding, make sure to handle database errors and edge cases. The examples given are purely for demonstration and simplicity purposes.

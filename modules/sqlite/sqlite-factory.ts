@@ -1,17 +1,16 @@
 import { Database } from "bun:sqlite";
-import { SchemaT, SchemaTInference } from "../types";
 
 import {
-  CreateSqliteTableFactoryParams,
-  createSqliteTableFactory,
-} from "./create-sqlite-table-factory";
+  SqliteTableFactoryParams,
+  sqliteTableFactory,
+} from "./sqlite-table-factory";
 
-export type CreateSqliteFactory<Schema extends SchemaT> = {
-  create: (item: SchemaTInference<Schema>) => Promise<void>;
-  read: () => Promise<SchemaTInference<Schema>[]>;
+export type CreateSqliteFactory<Schema extends SchemaMap> = {
+  create: (item: SQLiteSchemaToTypeScript<Schema>) => Promise<void>;
+  read: () => Promise<SQLiteSchemaToTypeScript<Schema>[]>;
   update: (
     id: number,
-    item: Partial<SchemaTInference<Schema>>
+    item: Partial<SQLiteSchemaToTypeScript<Schema>>
   ) => Promise<void>;
   deleteById: (id: number) => Promise<void>;
 };
@@ -22,15 +21,15 @@ type CreateSqliteFactoryParams = {
   enableForeignKeys?: boolean;
 };
 
-type DBTableFactoryParams<Schema extends SchemaT> = Omit<
-  CreateSqliteTableFactoryParams<Schema>,
+type DBTableFactoryParams<Schema extends SchemaMap> = Omit<
+  SqliteTableFactoryParams<Schema>,
   "db"
 > & {
   debug: boolean;
 };
 
 // Mapping of SQLite types to TypeScript types.
-type SQLiteToTypeScriptTypes = {
+export type SQLiteToTypeScriptTypes = {
   TEXT: string;
   NUMERIC: number | string;
   INTEGER: number;
@@ -39,11 +38,21 @@ type SQLiteToTypeScriptTypes = {
   DATE: Date;
 };
 
+export type SchemaKeys = keyof SQLiteToTypeScriptTypes;
+
+export type SchemaMap = Partial<Record<string, SchemaKeys>>;
+
+export const createTableSchema = <Schema extends SchemaMap>(
+  schema: Schema
+): string => {
+  return undefined as any as string;
+};
+
 // Mapped type that takes a schema with SQLite types and returns a schema with TypeScript types.
-type SQLiteSchemaToTypeScript<
-  T extends { [K in keyof T]: keyof SQLiteToTypeScriptTypes }
-> = {
-  [K in keyof T]: SQLiteToTypeScriptTypes[T[K]];
+export type SQLiteSchemaToTypeScript<T extends SchemaMap> = {
+  [K in keyof T]: T[K] extends SchemaKeys
+    ? SQLiteToTypeScriptTypes[T[K]]
+    : never;
 };
 
 // Example usage.
@@ -52,7 +61,16 @@ const sqlitePersonTableSchema = {
   age: "INTEGER",
   name: "TEXT",
   createdAt: "DATE",
-} as const;
+} satisfies SchemaMap;
+
+export const getType = <T extends SchemaMap>(
+  schema: T
+): SQLiteSchemaToTypeScript<T> => {
+  return undefined as any as SQLiteSchemaToTypeScript<T>;
+};
+
+type Person = SQLiteSchemaToTypeScript<typeof sqlitePersonTableSchema>;
+//  => schema;
 
 // TODO implement into the sqlite factory
 type PersonTableSchema = SQLiteSchemaToTypeScript<
@@ -80,12 +98,12 @@ export function createSqliteFactory({
     db.query("PRAGMA foreign_keys = ON;").run();
   }
 
-  function dbTableFactory<Schema extends SchemaT>({
+  function dbTableFactory<Schema extends SchemaMap>({
     debug: debugTable = debug || false,
     schema,
     tableName,
   }: DBTableFactoryParams<Schema>) {
-    return createSqliteTableFactory(
+    return sqliteTableFactory(
       {
         db,
         schema,

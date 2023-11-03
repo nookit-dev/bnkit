@@ -1,25 +1,29 @@
 import { describe, expect, it } from "bun:test";
-import { JsonHtmlNodeMap } from "./html-type-engine";
 import {
   HTMLodyPlugin,
   classRecordPlugin,
   markdownPlugin,
 } from "./htmlody-plugins";
-import { randomAttributes } from "./htmlody-test-utils";
+import { Attributes, JsonHtmlNodeTree } from "./htmlody-types";
+import { formatAttributes, isValidAttributesString } from "./htmlody-utils";
 import {
-  formatAttributes,
-  isValidAttributesString
-} from "./htmlody-utils";
-import {
-  createNodeFactory,
   getHtmlTags,
   getValidatedAttributesStr,
   getValidatedTagName,
+  htmlodyBuilder,
   jsonToHtml,
   renderChildrenNodes,
   renderHtmlTag,
   renderNodeToHtml,
+  renderNodeWithPlugins,
 } from "./json-to-html-engine";
+
+export function randomAttributes(): Attributes {
+  return {
+    id: `id-${Math.floor(Math.random() * 1000)}`,
+    class: `class-${Math.floor(Math.random() * 1000)}`,
+  };
+}
 
 function expectHtmlToMatch(html: string, expected: string) {
   expect(html.replace(/\s+/g, "")).toBe(expected.replace(/\s+/g, ""));
@@ -57,7 +61,7 @@ describe("renderHtmlTag", () => {
     });
   });
   it("should handle missing content and children", () => {
-    const nodeMap: JsonHtmlNodeMap = {
+    const nodeMap: JsonHtmlNodeTree = {
       div_id1: {
         tag: "div",
         attributes: randomAttributes(),
@@ -117,7 +121,7 @@ describe("jsonToHtml", () => {
   });
 
   it("should render entire HTML structure from node map", () => {
-    const nodeMap: JsonHtmlNodeMap = {
+    const nodeMap: JsonHtmlNodeTree = {
       div_id1: {
         tag: "div",
         content: "Sample Content",
@@ -144,7 +148,7 @@ describe("jsonToHtml", () => {
 
 describe("renderChildren", () => {
   it("should render children recursively", () => {
-    const children: JsonHtmlNodeMap = {
+    const children: JsonHtmlNodeTree = {
       div_id: {
         tag: "div",
         content: `content-${Math.floor(Math.random() * 1000)}`,
@@ -263,8 +267,8 @@ describe("createNodeFactory", () => {
     markdownPlugin,
   ] satisfies HTMLodyPlugin<any>[];
 
-  const { createNode, renderHtml, renderSingleNode, renderChildren } =
-    createNodeFactory(plugins);
+  const { createNode, renderNodeTreeToHtml, renderSingleNode, renderChildren } =
+    htmlodyBuilder(plugins);
 
   describe("createNode", () => {
     it("should createa  default node with a div tag", () => {
@@ -276,7 +280,7 @@ describe("createNodeFactory", () => {
   //renderChildren
   describe("renderChildren", () => {
     it("should render children recursively", () => {
-      const children: JsonHtmlNodeMap = {
+      const children: JsonHtmlNodeTree = {
         div_id: {
           tag: "div",
           content: `content-${Math.floor(Math.random() * 1000)}`,
@@ -306,7 +310,7 @@ describe("createNodeFactory", () => {
         },
       };
 
-      const html = renderHtml(nodeMap);
+      const html = renderNodeTreeToHtml(nodeMap);
       expectHtmlToMatch(
         html,
         '<div id="sample-id" class="sample-class">Sample Content<span>Child Content</span></div>'
@@ -352,6 +356,21 @@ describe("createNodeFactory", () => {
     expectHtmlToMatch(
       html,
       '<div id="sample-id" class="sample-class">Sample Content</div>'
+    );
+  });
+});
+
+describe("renderNodeWithPlugins", () => {
+  it("should throw an error if tag name is not provided", () => {
+    const node = {
+      attributes: {
+        id: "sample-id",
+      },
+      content: "Sample Content",
+    };
+    const plugins = [];
+    expect(() => renderNodeWithPlugins(node, plugins)).toThrow(
+      'Tag name not provided for node. \n      ID: id="sample-id"\n      Content: Sample Content\n      '
     );
   });
 });

@@ -1,10 +1,10 @@
-import { TypeMapping } from "mod/types";
+import { SchemaMap } from "../sqlite-factory";
 
-export function formatSchema<Schema extends Record<string, keyof TypeMapping>>(
+export function formatSchema<Schema extends SchemaMap>(
     schema: Schema
   ): string {
     return Object.entries(schema)
-      .map(([key, type]) => `${key} ${type.toUpperCase()}`)
+      .map(([key, type]) => `${key} ${type?.toUpperCase()}`)
       .join(", ");
   }
   
