@@ -1,14 +1,13 @@
 import Database from "bun:sqlite";
 import { beforeEach, describe, expect, test } from "bun:test";
-import { SchemaT } from "mod/types";
-import { createSqliteFactory } from "./create-sqlite-factory";
+import { SchemaMap, createSqliteFactory } from "./sqlite-factory";
 
 let db = new Database(":memory:");
 
-const noteSchema: SchemaT = {
-  id: "string",
-  text: "string",
-};
+const noteSchema = {
+  id: "TEXT",
+  text: "TEXT",
+} satisfies SchemaMap;
 
 describe("createSqliteFactory", () => {
   beforeEach(() => {
@@ -30,15 +29,15 @@ describe("createSqliteFactory", () => {
     });
 
     notesTable.create({
-      id: 1,
+      id: "1",
       text: "some text",
     });
 
-    const notes = await notesTable.read();
+    const notes = notesTable.read();
 
-    expect(notes).toEqual([{ id: 1, text: "some text" }]);
+    expect(notes).toEqual([{ id: "1", text: "some text" }]);
   });
-  test("should create and read a note in  sqlite and update it", async () => {
+  test("should create and read a note in  sqlite and update it", () => {
     const { dbTableFactory } = createSqliteFactory({ db, debug: true });
 
     const notesTable = dbTableFactory({
@@ -48,23 +47,23 @@ describe("createSqliteFactory", () => {
     });
 
     notesTable.create({
-      id: 1,
+      id: "1",
       text: "some text",
     });
 
-    const notes = await notesTable.read();
+    const notes = notesTable.read();
 
-    expect(notes).toEqual([{ id: 1, text: "some text" }]);
+    expect(notes).toEqual([{ id: "1", text: "some text" }]);
 
-    await notesTable.update(1, {
+    notesTable.update("1", {
       text: "some text updated",
     });
 
-    const updatedNotes = await notesTable.read();
+    const updatedNotes = notesTable.read();
 
-    expect(updatedNotes).toEqual([{ id: 1, text: "some text updated" }]);
+    expect(updatedNotes).toEqual([{ id: "1", text: "some text updated" }]);
   });
-  test("should create and read a note in  sqlite and delete it", async () => {
+  test("should create and read a note in  sqlite and delete it", () => {
     const { dbTableFactory } = createSqliteFactory({ db, debug: true });
 
     const notesTable = dbTableFactory({
@@ -74,17 +73,17 @@ describe("createSqliteFactory", () => {
     });
 
     notesTable.create({
-      id: 1,
+      id: "1",
       text: "some text",
     });
 
-    const notes = await notesTable.read();
+    const notes = notesTable.read();
 
-    expect(notes).toEqual([{ id: 1, text: "some text" }]);
+    expect(notes).toEqual([{ id: "1", text: "some text" }]);
 
-    await notesTable.deleteById(1);
+    notesTable.deleteById("1");
 
-    const updatedNotes = await notesTable.read();
+    const updatedNotes = notesTable.read();
 
     expect(updatedNotes).toEqual([]);
   });

@@ -1,20 +1,21 @@
 import { Database } from "bun:sqlite";
 import { afterEach, describe, expect, test } from "bun:test";
-import { createSqliteTableFactory } from "./create-sqlite-table-factory";
+import { SchemaMap } from "./sqlite-factory";
+import { sqliteTableFactory } from "./sqlite-table-factory";
 
 const mockDb = new Database(":memory:");
 const testSchema = {
-  id: "number",
-  name: "string",
-  age: "number",
-} as const;
+  id: "TEXT",
+  name: "TEXT",
+  age: "INTEGER",
+} satisfies SchemaMap;
 
 const factoryOptions = {
   debug: true,
 };
 
-describe("createSqliteTableFactory", () => {
-  const factory = createSqliteTableFactory(
+describe("sqliteTableFactory", () => {
+  const factory = sqliteTableFactory(
     {
       db: mockDb,
       schema: testSchema,
@@ -29,7 +30,7 @@ describe("createSqliteTableFactory", () => {
   });
 
   test("should insert an item into the database using the factory", () => {
-    const item = { id: 1, name: "John", age: 30 };
+    const item = { id: "1", name: "John", age: 30 };
     factory.create(item);
     const items = factory.read();
     expect(items.length).toBe(1);
@@ -37,7 +38,7 @@ describe("createSqliteTableFactory", () => {
   });
 
   test("should read items from the database using the factory", () => {
-    const item = { id: 1, name: "Jane", age: 25 };
+    const item = { id: "1", name: "Jane", age: 25 };
     mockDb
       .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
       .run(item.id, item.name, item.age);
@@ -47,7 +48,7 @@ describe("createSqliteTableFactory", () => {
   });
 
   test("should update an item in the database using the factory", () => {
-    const item = { id: 1, name: "Doe", age: 35 };
+    const item = { id: "1", name: "Doe", age: 35 };
     mockDb
       .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
       .run(item.id, item.name, item.age);
@@ -58,7 +59,7 @@ describe("createSqliteTableFactory", () => {
     expect(items[0]).toEqual({ ...item, name: updatedName });
   });
   test("should delete an item from the database using the factory", () => {
-    const item = { id: 1, name: "Alice", age: 40 };
+    const item = { id: "1", name: "Alice", age: 40 };
     mockDb
       .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
       .run(item.id, item.name, item.age);

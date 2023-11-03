@@ -1,10 +1,6 @@
 import { SELF_CLOSING_TAGS } from "./constants";
 import { generateCSS, generateColorVariables } from "./css-engine";
-import {
-  HTMLodyPlugin,
-  classRecordPlugin,
-  markdownPlugin,
-} from "./htmlody-plugins";
+import { HTMLodyPlugin } from "./htmlody-plugins";
 import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
 import {
   formatAttributes,
@@ -192,8 +188,13 @@ const generateStyleTagNode = (content: string): JsonTagElNode => {
   };
 };
 
-export type NodePluginsReturn<Plugins extends HTMLodyPlugin<any>[]> =
+export type NodePluginsMapper<Plugins extends HTMLodyPlugin<any>[]> =
   ReturnType<Plugins[number]["processNode"]>;
+
+// type CRNodeTest = NodePluginsReturn<[typeof classRecordPlugin]>
+// const tester: CRNodeTest = {
+
+// }
 
 type HeadConfig = {
   title: string;
@@ -209,7 +210,7 @@ type ScriptLoadingOptions = {
 
 export const htmlodyBuilder = <
   Plugins extends HTMLodyPlugin<any>[],
-  PluginReturns extends NodePluginsReturn<Plugins>
+  PluginReturns extends NodePluginsMapper<Plugins>
 >(
   plugins: Plugins,
   headConfig?: HeadConfig
@@ -258,7 +259,7 @@ export const htmlodyBuilder = <
   const buildHtmlDoc = (
     bodyConfig: JsonHtmlNodeTree,
     options: {
-      headConfig: HeadConfig;
+      headConfig?: HeadConfig;
       scriptOptions?: ScriptLoadingOptions;
     } = {
       headConfig: headConfig || {
@@ -271,23 +272,23 @@ export const htmlodyBuilder = <
   ) => {
     const headNodes: JsonHtmlNodeTree = {};
 
-    if (options.headConfig.title) {
+    if (options?.headConfig?.title) {
       headNodes["title"] = generateTitleNode(options.headConfig.title);
     }
 
-    if (options.headConfig.metaTags) {
+    if (options?.headConfig?.metaTags) {
       options.headConfig.metaTags.forEach((meta, index) => {
         headNodes[`meta${index}`] = generateMetaTagNode(meta);
       });
     }
 
-    if (options.headConfig.linkTags) {
+    if (options?.headConfig?.linkTags) {
       options.headConfig.linkTags.forEach((link, index) => {
         headNodes[`link${index}`] = generateLinkTagNode(link);
       });
     }
 
-    if (options.headConfig.styleTags) {
+    if (options?.headConfig?.styleTags) {
       options.headConfig.styleTags.forEach((style, index) => {
         headNodes[`style${index}`] = generateStyleTagNode(style.content);
       });
@@ -326,9 +327,9 @@ export const htmlodyBuilder = <
   const response = (
     bodyConfig: JsonHtmlNodeTree,
     options: {
-      headConfig: HeadConfig;
+      headConfig?: HeadConfig;
       scriptOptions?: ScriptLoadingOptions;
-    }
+    } = {}
   ) => {
     const html = buildHtmlDoc(bodyConfig, options);
     return new Response(html, {
@@ -347,11 +348,3 @@ export const htmlodyBuilder = <
     response,
   };
 };
-
-export const defaultBuilder = htmlodyBuilder(
-  [markdownPlugin, classRecordPlugin],
-  {
-    title: "HTMLody",
-    styleTags: [{ content: generateColorVariables() }],
-  }
-);
