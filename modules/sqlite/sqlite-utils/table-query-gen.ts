@@ -23,10 +23,6 @@ export function createTableLevelConstraint(
   if (definition.foreignKey) {
     const [referencedTable, referencedField]: string[] =
       definition.foreignKey.split("(");
-    console.log({
-      referencedField,
-      referencedTable,
-    });
 
     if (!referencedField)
       throw new Error(
