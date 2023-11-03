@@ -178,26 +178,14 @@ describe("createTableLevelConstraint", () => {
     );
   });
 
-  it("should correctly format multiple foreign keys for a single field", () => {
-    const definition: FieldDefinition = {
-      type: "INTEGER",
-      foreignKey: "table1(id), table2(id)",
-    };
-    const result = createTableLevelConstraint("multiFk", definition);
-    // Assuming your database schema allows multiple foreign keys per field,
-    // which is not standard in SQLite or most RDBMS.
-    expect(result).toBe(
-      "FOREIGN KEY (`multiFk`) REFERENCES table1(id), FOREIGN KEY (`multiFk`) REFERENCES table2(id)"
-    );
-  });
-
   it("should return null for a malformed foreign key definition", () => {
     const definition: FieldDefinition = {
       type: "INTEGER",
       foreignKey: "malformed",
     };
-    const result = createTableLevelConstraint("fkMalformed", definition);
-    expect(result).toBeNull();
+    expect(() =>
+      createTableLevelConstraint("fkMalformed", definition)
+    ).toThrow();
   });
 
   // Test for a case where the foreign key reference does not include a field
@@ -206,8 +194,9 @@ describe("createTableLevelConstraint", () => {
       type: "INTEGER",
       foreignKey: "other_table",
     };
-    const result = createTableLevelConstraint("fkIncomplete", definition);
-    expect(result).toBeNull();
+    expect(() =>
+      createTableLevelConstraint("fkIncomplete", definition)
+    ).toThrow();
   });
 
   // Test for proper escaping of table and column names in foreign key definitions

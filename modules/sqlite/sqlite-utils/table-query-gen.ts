@@ -5,6 +5,10 @@ export function assembleCreateTableQuery(
   columns: string[],
   tableLevelConstraints: string[]
 ): string {
+  if (columns.length === 0)
+    throw new Error(
+      `No columns for table ${tableName}`
+    );
   const tableDefinition = [...columns, ...tableLevelConstraints]
     .filter(Boolean)
     .join(", ");
@@ -15,9 +19,24 @@ export function createTableLevelConstraint(
   fieldName: string,
   definition: FieldDefinition
 ): string | null {
+  console.log({ fieldName, definition });
   if (definition.foreignKey) {
-    const [referencedTable, referencedField] = definition.foreignKey.split("(");
-    return `FOREIGN KEY (\`${fieldName}\`) REFERENCES ${referencedTable}(${referencedField}`;
+    const [referencedTable, referencedField]: string[] =
+      definition.foreignKey.split("(");
+    console.log({
+      referencedField,
+      referencedTable,
+    });
+
+    if (!referencedField)
+      throw new Error(
+        `No referenced field for foreign key ${definition.foreignKey}`
+      );
+    if (!referencedTable)
+      throw new Error(
+        `No referenced table for foreign key ${definition.foreignKey}`
+      );
+    return `FOREIGN KEY (\`${fieldName}\`) REFERENCES ${referencedTable.trim()}(${referencedField}`.trim();
   }
   return null;
 }
