@@ -5,8 +5,8 @@ import { SchemaMap, createSqliteFactory } from "./sqlite-factory";
 let db = new Database(":memory:");
 
 const noteSchema = {
-  id: "TEXT",
-  text: "TEXT",
+  id: { type: "TEXT" },
+  text: { type: "TEXT" },
 } satisfies SchemaMap;
 
 describe("createSqliteFactory", () => {

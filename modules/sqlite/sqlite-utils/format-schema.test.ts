@@ -4,11 +4,13 @@ import { formatSchema } from "./format-schema";
 
 test("formatSchema formats schema correctly", () => {
   const schema = {
-    id: "INTEGER",
-    name: "TEXT",
+    id: { type: "INTEGER" },
+    name: { type: "TEXT" },
   } satisfies SchemaMap;
 
   // TODO need to fix schema type
   const result = formatSchema(schema);
-  expect(result).toBe("id INTEGER, name TEXT");
+
+  expect(result[0]).toBe("id INTEGER");
+  expect(result[1]).toBe("name TEXT");
 });

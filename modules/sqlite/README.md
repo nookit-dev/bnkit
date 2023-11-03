@@ -20,9 +20,9 @@ Next, define your schema and use `sqliteTableFactory` to generate your table.
 
 ```javascript
 const userSchema = {
-  id: "TEXT",
-  name: "TEXT",
-  email: "TEXT",
+  id: { type: "TEXT" },
+  name: { type: "TEXT" },
+  email: { type: "TEXT" },
 }
 
 const db = new Database({filename: "./mydb.sqlite"})

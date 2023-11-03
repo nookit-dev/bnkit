@@ -9,9 +9,9 @@ import {
 } from "./crud-fn-utils"; // replace with the path to your file
 
 const testSchema = {
-  id: "TEXT",
-  name: "TEXT",
-  age: "INTEGER",
+  id: { type: "TEXT" },
+  name: { type: "TEXT" },
+  age: { type: "INTEGER" },
 } satisfies SchemaMap;
 
 let db = new Database(":memory:");

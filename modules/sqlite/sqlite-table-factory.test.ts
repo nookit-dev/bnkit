@@ -5,9 +5,9 @@ import { sqliteTableFactory } from "./sqlite-table-factory";
 
 const mockDb = new Database(":memory:");
 const testSchema = {
-  id: "TEXT",
-  name: "TEXT",
-  age: "INTEGER",
+  id: { type: "TEXT" },
+  name: { type: "TEXT" },
+  age: { type: "INTEGER" },
 } satisfies SchemaMap;
 
 const factoryOptions = {

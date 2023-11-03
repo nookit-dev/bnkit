@@ -1,7 +1,7 @@
 import Database from "bun:sqlite";
 import {
   CreateSqliteFactory,
-  SQLiteSchemaToTypeScript,
+  SQLiteSchemaInfer,
   SchemaMap,
 } from "./sqlite-factory";
 import {
@@ -10,7 +10,7 @@ import {
   readItems,
   updateItem,
 } from "./sqlite-utils/crud-fn-utils";
-import { createTableQuery } from "./sqlite-utils/table-query-string";
+import { createTableQuery } from "./sqlite-utils/table-query-gen";
 
 export type ForeignKeysT<Schema> =
   | { column: keyof Schema; references: string }[]
@@ -39,17 +39,17 @@ function logger(debug: boolean) {
 
 export function sqliteTableFactory<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaToTypeScript<Schema> = SQLiteSchemaToTypeScript<Schema>
+  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
 >(
   params: SqliteTableFactoryParams<Schema>,
   options: SqliteTableOptions<Schema> = {}
 ) {
   const { db, schema, tableName } = params;
-  const { debug = false, foreignKeys = null } = options;
+  const { debug = false } = options;
 
   const log = logger(debug);
 
-  db.query(createTableQuery({ tableName, schema, foreignKeys, debug })).run();
+  db.query(createTableQuery({ tableName, schema, debug })).run();
 
   // Pass necessary context to external CRUD functions
   function create(item: TranslatedSchema) {
@@ -67,7 +67,7 @@ export function sqliteTableFactory<
     updateItem<Schema>(db, tableName, log, id, item);
   }
 
-  function deleteById(id: number| string) {
+  function deleteById(id: number | string) {
     deleteItemById(db, tableName, log, id);
   }
 

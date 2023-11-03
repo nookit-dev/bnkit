@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { SchemaMap, SQLiteSchemaToTypeScript } from "../sqlite-factory";
+import { SchemaMap, SQLiteSchemaInfer } from "../sqlite-factory";
 import {
   deleteQueryString,
   insertQueryString,
@@ -9,7 +9,7 @@ import {
 
 export function createItem<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaToTypeScript<Schema> = SQLiteSchemaToTypeScript<Schema>
+  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
 >(
   db: Database,
   tableName: string,
@@ -25,7 +25,7 @@ export function createItem<
 
 export function readItems<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaToTypeScript<Schema> = SQLiteSchemaToTypeScript<Schema>
+  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
 >(
   db: Database,
   tableName: string,
@@ -39,7 +39,7 @@ export function readItems<
 
 export function updateItem<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaToTypeScript<Schema> = SQLiteSchemaToTypeScript<Schema>
+  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
 >(
   db: Database,
   tableName: string,
