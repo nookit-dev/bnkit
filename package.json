@@ -1,6 +1,6 @@
 {
   "name": "@bnk/core",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "main": "index.ts",
   "devDependencies": {
     "bun": "^1.0.8",
