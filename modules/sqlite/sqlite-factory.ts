@@ -5,16 +5,6 @@ import {
   sqliteTableFactory,
 } from "./sqlite-table-factory";
 
-export type CreateSqliteFactory<Schema extends SchemaMap> = {
-  create: (item: SQLiteSchemaInfer<Schema>) => Promise<void>;
-  read: () => Promise<SQLiteSchemaInfer<Schema>[]>;
-  update: (
-    id: number,
-    item: Partial<SQLiteSchemaInfer<Schema>>
-  ) => Promise<void>;
-  deleteById: (id: number) => Promise<void>;
-};
-
 type CreateSqliteFactoryParams = {
   db: Database;
   debug?: boolean;
@@ -25,7 +15,7 @@ type DBTableFactoryParams<Schema extends SchemaMap> = Omit<
   SqliteTableFactoryParams<Schema>,
   "db"
 > & {
-  debug: boolean;
+  debug?: boolean;
 };
 
 // Mapping of SQLite types to TypeScript types.
@@ -41,12 +31,12 @@ export type SQLiteToTypeScriptTypes = {
 export type SQLiteDataTypes = keyof SQLiteToTypeScriptTypes;
 
 export type FieldDefinition = {
-  type: SQLiteDataTypes; // The data type of the field
-  primaryKey?: boolean; // Whether the field is a primary key
-  unique?: boolean; // Whether the field should be unique
-  foreignKey?: string; // Reference to another table (foreign key)
-  notNull?: boolean; // Whether the field can be null
-  defaultValue?: string | number; // Default value for the field
+  type: SQLiteDataTypes; 
+  primaryKey?: boolean; 
+  unique?: boolean;
+  foreignKey?: string;
+  required?: boolean; 
+  defaultValue?: string | number; 
 };
 
 // Mapped type that takes a schema with SQLite types and returns a schema with TypeScript types.
@@ -58,19 +48,6 @@ export type SQLiteSchemaInfer<T extends SchemaMap> = {
 
 export type SchemaMap = Partial<Record<string, FieldDefinition>>;
 
-// example
-const sqlitePersonTableSchema = {
-  id: { type: "TEXT" },
-  age: { type: "INTEGER" },
-  name: { type: "TEXT" },
-  createdAt: { type: "DATE" },
-} satisfies SchemaMap;
-
-type Person = SQLiteSchemaInfer<typeof sqlitePersonTableSchema>;
-
-// TODO implement into the sqlite factory
-type PersonTableSchema = SQLiteSchemaInfer<typeof sqlitePersonTableSchema>;
-
 export const createTableSchema = <Schema extends SchemaMap>(
   schema: Schema
 ): string => {
@@ -81,16 +58,6 @@ export const getType = <T extends SchemaMap>(
   schema: T
 ): SQLiteSchemaInfer<T> => {
   return undefined as any as SQLiteSchemaInfer<T>;
-};
-
-
-
-// This should now have the correct types.
-let person: PersonTableSchema = {
-  id: "some-id",
-  age: 42,
-  name: "some-name",
-  createdAt: new Date(),
 };
 
 export function createSqliteFactory({
@@ -126,3 +93,24 @@ export function createSqliteFactory({
 
   return { dbTableFactory };
 }
+
+// This should now have the correct types.
+// let person: PersonTableSchema = {
+//   id: "some-id",
+//   age: 42,
+//   name: "some-name",
+//   createdAt: new Date(),
+// };
+
+// // example
+// const sqlitePersonTableSchema = {
+//   id: { type: "TEXT" },
+//   age: { type: "INTEGER" },
+//   name: { type: "TEXT" },
+//   createdAt: { type: "DATE" },
+// } satisfies SchemaMap;
+
+// type Person = SQLiteSchemaInfer<typeof sqlitePersonTableSchema>;
+
+// // TODO implement into the sqlite factory
+// type PersonTableSchema = SQLiteSchemaInfer<typeof sqlitePersonTableSchema>;

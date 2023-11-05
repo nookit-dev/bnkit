@@ -19,7 +19,6 @@ export function createTableLevelConstraint(
   fieldName: string,
   definition: FieldDefinition
 ): string | null {
-  console.log({ fieldName, definition });
   if (definition.foreignKey) {
     const [referencedTable, referencedField]: string[] =
       definition.foreignKey.split("(");
@@ -47,7 +46,7 @@ export function createColumnDefinition(
 
   if (definition.primaryKey) constraints.push("PRIMARY KEY");
   if (definition.unique) constraints.push("UNIQUE");
-  if (definition.notNull) constraints.push("NOT NULL");
+  if (definition.required) constraints.push("NOT NULL");
   if (definition.defaultValue !== undefined) {
     constraints.push(`DEFAULT ${definition.defaultValue}`);
   }

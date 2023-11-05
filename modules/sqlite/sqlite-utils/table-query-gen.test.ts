@@ -68,7 +68,7 @@ describe("createColumnDefinition", () => {
   });
 
   it("should generate a column definition with a NOT NULL constraint", () => {
-    const definition: FieldDefinition = { type: "INTEGER", notNull: true };
+    const definition: FieldDefinition = { type: "INTEGER", required: true };
     const result = createColumnDefinition("age", definition);
     expect(result).toBe("`age` INTEGER NOT NULL");
   });
@@ -91,7 +91,7 @@ describe("createColumnDefinition", () => {
   it("should generate a column definition with multiple constraints", () => {
     const definition: FieldDefinition = {
       type: "INTEGER",
-      notNull: true,
+      required: true,
       unique: true,
       defaultValue: 0,
     };

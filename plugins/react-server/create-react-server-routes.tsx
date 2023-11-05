@@ -20,12 +20,6 @@ export const createReactServerRoutes = async <
   // change ./ to just / for buildEntry
   const cleanedBuildEntry = buildEntry.replace("./", "/");
 
-  console.log({
-    cleanedBuildEntry,
-    middlewareConfig,
-    appState,
-    buildEntry,
-  });
   const routes: Routes<MiddlewareConfig> = {
     "/": {
       GET: await createReactStreamHandler({

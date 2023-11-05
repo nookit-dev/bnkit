@@ -11,7 +11,7 @@ test("insertQueryString", () => {
   const tableName = "users";
   const item = { name: "Alice", age: 30 };
   const query = insertQueryString(tableName, item);
-  const expectedQuery = `INSERT INTO users VALUES (?, ?)`;
+  const expectedQuery = `INSERT INTO users (name, age) VALUES (?, ?)`;
   expect(query).toBe(expectedQuery);
 });
 

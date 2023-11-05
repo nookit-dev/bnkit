@@ -1,13 +1,11 @@
 import Database from "bun:sqlite";
-import {
-  CreateSqliteFactory,
-  SQLiteSchemaInfer,
-  SchemaMap,
-} from "./sqlite-factory";
+import { SQLiteSchemaInfer, SchemaMap } from "./sqlite-factory";
 import {
   createItem,
   deleteItemById,
+  readItemById,
   readItems,
+  readItemsWhere,
   updateItem,
 } from "./sqlite-utils/crud-fn-utils";
 import { createTableQuery } from "./sqlite-utils/table-query-gen";
@@ -51,35 +49,27 @@ export function sqliteTableFactory<
 
   db.query(createTableQuery({ tableName, schema, debug })).run();
 
-  // Pass necessary context to external CRUD functions
-  function create(item: TranslatedSchema) {
-    return createItem<Schema>(db, tableName, log, item);
-  }
-
-  function read(): TranslatedSchema[] {
-    return readItems<Schema>(db, tableName, log) as TranslatedSchema[];
-  }
-
-  function update(
-    id: string | number,
-    item: Partial<Omit<TranslatedSchema, "id">>
-  ) {
-    updateItem<Schema>(db, tableName, log, id, item);
-  }
-
-  function deleteById(id: number | string) {
-    deleteItemById(db, tableName, log, id);
-  }
-
-  function infer(): CreateSqliteFactory<Schema> {
-    return undefined as any as CreateSqliteFactory<Schema>;
-  }
-
   return {
-    create,
-    read,
-    update,
-    deleteById,
-    infer,
+    readItemsWhere(where: Partial<TranslatedSchema>) {
+      return readItemsWhere<Schema>(db, tableName, log, where);
+    },
+    create(item: TranslatedSchema) {
+      return createItem<Schema>(db, tableName, log, item);
+    },
+    readAll(): TranslatedSchema[] {
+      return readItems<Schema>(db, tableName, log) as TranslatedSchema[];
+    },
+    readById(id: string | number) {
+      return readItemById<Schema>(db, tableName, log, id);
+    },
+    update(id: string | number, item: Partial<Omit<TranslatedSchema, "id">>) {
+      return updateItem<Schema>(db, tableName, log, id, item);
+    },
+    deleteById(id: number | string) {
+      return deleteItemById(db, tableName, log, id);
+    },
+    infer(): TranslatedSchema {
+      return undefined as any as TranslatedSchema;
+    },
   };
 }

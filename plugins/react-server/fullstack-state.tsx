@@ -1,5 +1,5 @@
 import React from "react";
-// this file is just an example 
+// this file is just an example
 import { createContext, useEffect, useState } from "react";
 
 export type ContextStateT<StateT extends object = {}> = {
@@ -70,7 +70,6 @@ const clientToServerStateKeyUpdate = async <
     }),
   });
   const json = await res.json();
-  console.log({ json });
   return json;
 };
 
@@ -100,7 +99,6 @@ export const StateProvider = <StateT extends object>({
     key: Key,
     value: StateT[Key]
   ) => {
-    console.log({ key, value });
     if (isServerSide) return null;
 
     setState((prev) => ({
@@ -128,8 +126,6 @@ const useClientAppState = () => {
 
 const Counter = () => {
   const { state, updateKey } = useClientAppState();
-
-  console.log({ state, updateKey });
 
   return (
     <div>

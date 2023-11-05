@@ -33,7 +33,7 @@ describe("createSqliteFactory", () => {
       text: "some text",
     });
 
-    const notes = notesTable.read();
+    const notes = notesTable.readAll();
 
     expect(notes).toEqual([{ id: "1", text: "some text" }]);
   });
@@ -51,7 +51,7 @@ describe("createSqliteFactory", () => {
       text: "some text",
     });
 
-    const notes = notesTable.read();
+    const notes = notesTable.readAll();
 
     expect(notes).toEqual([{ id: "1", text: "some text" }]);
 
@@ -59,7 +59,7 @@ describe("createSqliteFactory", () => {
       text: "some text updated",
     });
 
-    const updatedNotes = notesTable.read();
+    const updatedNotes = notesTable.readAll();
 
     expect(updatedNotes).toEqual([{ id: "1", text: "some text updated" }]);
   });
@@ -77,13 +77,13 @@ describe("createSqliteFactory", () => {
       text: "some text",
     });
 
-    const notes = notesTable.read();
+    const notes = notesTable.readAll();
 
     expect(notes).toEqual([{ id: "1", text: "some text" }]);
 
     notesTable.deleteById("1");
 
-    const updatedNotes = notesTable.read();
+    const updatedNotes = notesTable.readAll();
 
     expect(updatedNotes).toEqual([]);
   });
