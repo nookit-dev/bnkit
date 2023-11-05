@@ -1,17 +1,18 @@
 import Database from "bun:sqlite";
-import { beforeEach, describe, expect, test } from "bun:test";
+import { beforeEach, describe, expect, it, test } from "bun:test";
 import { SchemaMap } from "../sqlite-factory";
 import {
   createItem,
+  createWhereClause,
   deleteItemById,
   readItems,
   updateItem,
 } from "./crud-fn-utils"; // replace with the path to your file
 
 const testSchema = {
-  id: "TEXT",
-  name: "TEXT",
-  age: "INTEGER",
+  id: { type: "TEXT" },
+  name: { type: "TEXT" },
+  age: { type: "INTEGER" },
 } satisfies SchemaMap;
 
 let db = new Database(":memory:");
@@ -58,5 +59,97 @@ describe("Database utility functions", () => {
     deleteItemById(db, "test", log, 1);
     const items = readItems(db, "test", log);
     expect(items).toEqual([]);
+  });
+});
+
+describe("createWhereClause", () => {
+  it("should create a WHERE clause and parameters for a SQL query", () => {
+    const where = { id: 1, name: "John" };
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: "id = ? AND name = ?",
+      parameters: [1, "John"],
+    });
+  });
+
+  it("should handle an empty object", () => {
+    const where = {};
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: "",
+      parameters: [],
+    });
+  });
+
+  it("should handle null and undefined values", () => {
+    const where = { id: null, name: undefined };
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: "id = ? AND name = ?",
+      parameters: [null, undefined],
+    });
+  });
+
+  it('should handle more than two properties', () => {
+    const where = { id: 1, name: 'John', age: 30 };
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: 'id = ? AND name = ? AND age = ?',
+      parameters: [1, 'John', 30],
+    });
+  });
+
+  it('should handle boolean values', () => {
+    const where = { isActive: true };
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: 'isActive = ?',
+      parameters: [true],
+    });
+  });
+
+  it('should handle numeric string values', () => {
+    const where = { id: '1' };
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: 'id = ?',
+      parameters: ['1'],
+    });
+  });
+
+  it('should handle more than two properties', () => {
+    const where = { id: 1, name: 'John', age: 30 };
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: 'id = ? AND name = ? AND age = ?',
+      parameters: [1, 'John', 30],
+    });
+  });
+
+  it('should handle boolean values', () => {
+    const where = { isActive: true };
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: 'isActive = ?',
+      parameters: [true],
+    });
+  });
+
+  it('should handle numeric string values', () => {
+    const where = { id: '1' };
+    const result = createWhereClause(where);
+
+    expect(result).toEqual({
+      whereClause: 'id = ?',
+      parameters: ['1'],
+    });
   });
 });

@@ -26,13 +26,11 @@ const middleware = {
 const routes = {
   "/": {
     GET: (req, mid) => {
-      console.log({ mid });
       return new Response(`Hello World! ${mid?.time?.timestamp}`);
     },
   },
   "/random": {
     GET: (req, mid) => {
-      console.log({ mid });
       return new Response(`Hello World! ${mid?.time?.timestamp}`);
     },
   },
