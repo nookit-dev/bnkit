@@ -39,7 +39,6 @@ export function readItemById<
   const data = db.query(query).get({ $id: id }) as TranslatedSchema;
   return data;
 }
-// Assuming SchemaMap and SQLiteSchemaInfer are defined types, as implied by the original function signature
 
 // This type represents the shape of the 'where' parameter
 type Where<T> = Partial<T>;
