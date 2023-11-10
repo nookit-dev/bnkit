@@ -7,7 +7,7 @@ import {
   deleteItemById,
   readItems,
   updateItem,
-} from "./crud-fn-utils"; // replace with the path to your file
+} from "./crud-fn-utils"; 
 
 const testSchema = {
   id: { type: "TEXT" },
