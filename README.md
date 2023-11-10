@@ -95,9 +95,9 @@ Bun Nook Kit offers a wide array of utility modules including:
 
 4. [🏗️Deploy](modules/deploy/DEPLOY-README.md): The Deploy module provides utilities for deployment, with a focus on GitHub Actions integration. It helps you automate the deployment process for your Bun Nook Kit package.
 
-5. [🐶🦴Fetcher](modules/fetcher/README.md): The Fetcher module enhances the standard fetch function provided by Bun. It allows you to configure an entire API and provides a TypeScript interface for easy integration with your project. The Fetcher module helps you make HTTP requests and handles data fetching and updating.
+5. [🐶🦴Fetcher](modules/fetcher/FETCHER-README.md): The Fetcher module enhances the standard fetch function provided by Bun. It allows you to configure an entire API and provides a TypeScript interface for easy integration with your project. The Fetcher module helps you make HTTP requests and handles data fetching and updating.
 
-6. [📂Files Folder](modules/files-folders/FETCHER-README.md): The Files Folder module provides various utilities for working with files and folders. It includes functions for searching for files, validating file paths, and creating references to files. This module can be useful for tasks like building an in-browser file manager.
+6. [📂Files Folder](modules/files-folders/FILES-FOLDER-README.md): The Files Folder module provides various utilities for working with files and folders. It includes functions for searching for files, validating file paths, and creating references to files. This module can be useful for tasks like building an in-browser file manager.
 
 7. [🔐Auth](modules/auth/AUTH-README.md): The auth module provides offers utilities for encryption of passwords/data.
 
@@ -107,7 +107,7 @@ Bun Nook Kit offers a wide array of utility modules including:
 
 10. [🪵Logger](modules/logger/LOGGER-README.md): The Logger module aims to provide a full-featured logging system for your application. While it is still under development and might be limited in functionality, it can be a useful tool for debugging and error tracking.
 
-11. [📦NPM](modules/npm/NPM-RELEASE-README.md) Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages
+11. [📦NPM](modules/npm-release/NPM-RELEASE-README.md) Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages
 
 12. [🌎Server](modules/server/SERVER-README.md): The Server module is one of the most complex modules in Bun Nook Kit. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
 
@@ -121,6 +121,8 @@ Bun Nook Kit offers a wide array of utility modules including:
 
 17. [🧙‍♂️Type Utils](modules/TYPE-UTILS.md): TypeScript Utilities
 
+18. [✅Validation]: The Validation module aims to provide a comprehensive suite of validation functions. It includes functions for checking the validity of API data and can be used to ensure data integrity and accuracy.
+
 ```typescript
 import * as bnk from '@bnk/core'
 
@@ -128,10 +130,6 @@ const uuid = bnk.uuid.v7()
 
 console.log(uuid)
 ```
-
-1. Validation: The Validation module aims to provide a comprehensive suite of validation functions. It includes functions for checking the validity of API data and can be used to ensure data integrity and accuracy.
-
-2. WebRTC: The WebRTC module aims to provide an interface for setting up WebRTC connections between clients. While integration with the server module is planned, the module can currently be used for establishing peer-to-peer connections between clients.
 
 ## Plugins
 
