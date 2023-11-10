@@ -4,33 +4,43 @@
 
 ## Getting Started
 
-1. Install Bun:
+Install Bun if you don't alrady have it:
 
 ```bash
 curl -fsSL https://bun.sh/install | bash
 ```
 
-2. Initialize a new Bun project:
+### Server quickstart
 
 ```bash
-mkdir playground && cd playground
-bun init 
+bun create github.com/brandon-schabel/bnk-server-starter
 ```
 
-3. Install Bun Nook Kit:
+```bash
+cd bun-server-starter
+```
+
+```bash
+bun dev
+```
+
+Visit `http://localhost:3000` in your browser and you should see Hello world and
+`http://localhost:3000/json` for the json
+
+## Usage Overview
+
+### Install
 
 ```bash
 bun add @bnk/core
 ```
 
-4. Use Bun Nook Kit modules - server example with json response
+Use any an all Bun Nook Kit modules - server example with json response (similar to starter project)
 
 `index.ts`
 
 ```typescript
-import * as u from "@bnk/core";
-
-
+import * as bnk from "@bnk/core";
 
 const routes = {
   "/": {
@@ -38,13 +48,13 @@ const routes = {
     GET: (request) => new Response("Hello World!")
   },
   "/json": {
-    GET: request => u.server.jsonRes({
+    GET: request => bnk.server.jsonRes({
       message: "Hello JSON Response!"
     })
   }
-} satisfies u.server.Routes
+} satisfies bnk.server.Routes
 
-const { start, routes } = u.server.serverFactory({
+const { start, routes } = bnk.server.serverFactory({
   routes
 });
 
@@ -52,13 +62,6 @@ const { start, routes } = u.server.serverFactory({
 // start on default port 3000
 start()
 ```
-
-```bash
-bun run index.ts
-```
-
-Visit `http://localhost:3000` in your browser and you should see Hello world and
-`http://localhost:3000/json` for the json
 
 Note:
 The keyword satisfies in TypeScript, gives us typesafety, if you have middleware it would even infer the response from those! Which can then be passed to the routes and used in the handlers. So instead of explicitly saying routes is a specific type, it just makes sure that type(Routes in this case) can be succesfully applied to that object/array/whatever(routes config in this case), since it doesn't specifically set the type, we can then infer all the types from the middleware and routes. Following this it makes it possible to make typesafe API
@@ -84,44 +87,44 @@ Join our [Discord Server]("https://discord.gg/rQyWN7V6"), drop in and ask questi
 
 Bun Nook Kit offers a wide array of utility modules including:
 
-1. [CLI](modules/cli/README.md): The CLI module aims to provide a simple way to build a basic command-line interface for tasks such as project scaffolding or generating configurations. It helps you handle command-line input, parse arguments, and interact with the file system.
+1. [🖥️CLI](modules/cli/CLI-README.md): The CLI module aims to provide a simple way to build a basic command-line interface for tasks such as project scaffolding or generating configurations. It helps you handle command-line input, parse arguments, and interact with the file system.
 
-2. [Cookie](modules/cookies/README.md): The Cookie module provides utilities for handling cookies on both the client-side and server-side. It allows you to set, get, and delete cookies, as well as manage cookie options such as expiration and domain.
+2. [🍪Cookies](modules/cookies/COOKIES-README.md): The Cookie module provides utilities for handling cookies on both the client-side and server-side. It allows you to set, get, and delete cookies, as well as manage cookie options such as expiration and domain.
 
-3. [Data Gen](modules/data-gen/README.md): The Data Gen module is a simple data generator that allows you to create mock data for testing purposes. While it may not replace more robust data generation tools, it provides a quick and easy way to generate sample data.
+3. [💿Data Gen](modules/data-gen/DATA-GEN-README.md): The Data Gen module is a simple data generator that allows you to create mock data for testing purposes. While it may not replace more robust data generation tools, it provides a quick and easy way to generate sample data.
 
-4. [Deploy](modules/deploy/README.md): The Deploy module provides utilities for deployment, with a focus on GitHub Actions integration. It helps you automate the deployment process for your Bun Nook Kit package.
+4. [🏗️Deploy](modules/deploy/DEPLOY-README.md): The Deploy module provides utilities for deployment, with a focus on GitHub Actions integration. It helps you automate the deployment process for your Bun Nook Kit package.
 
-5. [Fetcher](modules/fetcher/README.md): The Fetcher module enhances the standard fetch function provided by Bun. It allows you to configure an entire API and provides a TypeScript interface for easy integration with your project. The Fetcher module helps you make HTTP requests and handles data fetching and updating.
+5. [🐶🦴Fetcher](modules/fetcher/README.md): The Fetcher module enhances the standard fetch function provided by Bun. It allows you to configure an entire API and provides a TypeScript interface for easy integration with your project. The Fetcher module helps you make HTTP requests and handles data fetching and updating.
 
-6. [Files Folder](modules/files-folders/README.md): The Files Folder module provides various utilities for working with files and folders. It includes functions for searching for files, validating file paths, and creating references to files. This module can be useful for tasks like building an in-browser file manager.
+6. [📂Files Folder](modules/files-folders/FETCHER-README.md): The Files Folder module provides various utilities for working with files and folders. It includes functions for searching for files, validating file paths, and creating references to files. This module can be useful for tasks like building an in-browser file manager.
 
-7. [Auth](modules/Auth/README.md): The auth module provides offers utilities for encryption of passwords/data.
+7. [🔐Auth](modules/auth/AUTH-README.md): The auth module provides offers utilities for encryption of passwords/data.
 
-8. [HTMLody](modules/htmlody/README.md): HTMLody is a tool that enables the conversion of JSON structures into valid HTML and CSS, facilitating both dynamic HTML generation and the export of static assets for enhanced web performance. It offers a flexible and maintainable approach to web development, with support for plugins with prebuilt plugins such as Tailwind-like CSS class utilties and a render Markdown plugin utility, easily integrate with libraries like HTMX for dynamic functionality, and a comprehensive TypeScript support for defining and customizing the JSON elements.
+8. [📜HTMLody](modules/htmlody/HTMLODY-README.md): HTMLody is a tool that enables the conversion of JSON structures into valid HTML and CSS, facilitating both dynamic HTML generation and the export of static assets for enhanced web performance. It offers a flexible and maintainable approach to web development, with support for plugins with prebuilt plugins such as Tailwind-like CSS class utilties and a render Markdown plugin utility, easily integrate with libraries like HTMX for dynamic functionality, and a comprehensive TypeScript support for defining and customizing the JSON elements.
 
-9. [JWT](modules/jwt/README.md): The JWT module provides utilities for working with JSON Web Tokens. It allows you to encode and decode JWTs and provides features like token invalidation.
+9. [🔎JWT](modules/jwt/JWT-README.md): The JWT module provides utilities for working with JSON Web Tokens. It allows you to encode and decode JWTs and provides features like token invalidation.
 
-10. [Logger](modules/logger/README.md): The Logger module aims to provide a full-featured logging system for your application. While it is still under development and might be limited in functionality, it can be a useful tool for debugging and error tracking.
+10. [🪵Logger](modules/logger/LOGGER-README.md): The Logger module aims to provide a full-featured logging system for your application. While it is still under development and might be limited in functionality, it can be a useful tool for debugging and error tracking.
 
-11. [NPM](modules/npm/README.md) Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages
+11. [📦NPM](modules/npm/NPM-RELEASE-README.md) Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages
 
-12. [Server](modules/server/README.md): The Server module is one of the most complex modules in Bun Nook Kit. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
+12. [🌎Server](modules/server/SERVER-README.md): The Server module is one of the most complex modules in Bun Nook Kit. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
 
-13. [SQLite](modules/sqlite/README.md): The SQLite module builds on top of Bun's SQLite implementation and provides utilities for working with SQLite databases. It includes functions for instantiating databases, creating type-safe schemas, and performing database operations.
+13. [📝SQLite](modules/sqlite/SQLITE-README.md): The SQLite module builds on top of Bun's SQLite implementation and provides utilities for working with SQLite databases. It includes functions for instantiating databases, creating type-safe schemas, and performing database operations.
 
-14. [State Management](modules/state/README.md) : The State Management module provides an interface for building type-safe state managers. It offers an immutable state management approach and includes dispatcher functions for easy data manipulation. The module also provides a WebSocket state manager for syncing data between the client and server.
+14. [🔄State Management](modules/state/STATE-README.md) : The State Management module provides an interface for building type-safe state managers. It offers an immutable state management approach and includes dispatcher functions for easy data manipulation. The module also provides a WebSocket state manager for syncing data between the client and server.
 
-15. [Utils](modules/utils/README.md): This isn't really a module :) - it does contains various utility functions that can be used across different modules. It includes functions like classy for generating class names, normalizeBytes for converting byte numbers to formatted text, and value checkers for inferring data types.
+15. [🛠️Utils](modules/utils/UTILS-README.md): This isn't really a module :) - it does contains various utility functions that can be used across different modules. It includes functions like classy for generating class names, normalizeBytes for converting byte numbers to formatted text, and value checkers for inferring data types.
 
-16. [UUID](modules/uuid/README.md): Generate timestamp encoded UUIDs with UUIDv7 spec implemented
+16. [🆔UUID](modules/uuid/UUID-README.md): Generate timestamp encoded UUIDs with UUIDv7 spec implemented
 
-17. [Type Utils](modules/type-utils.md): TypeScript Utilities
+17. [🧙‍♂️Type Utils](modules/TYPE-UTILS.md): TypeScript Utilities
 
 ```typescript
-import * as u from '@bnk/core'
+import * as bnk from '@bnk/core'
 
-const uuid = u.uuid.v7()
+const uuid = bnk.uuid.v7()
 
 console.log(uuid)
 ```
@@ -152,32 +155,37 @@ This version aims to maintain the original meaning while enhancing clarity and g
 
 ## Example Projects
 
-[Bun Nook Kit Server With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-with-bun-nook-kit)
-
-[Bun Nook Kit Server & Sqlite With HTMX, Tailwind](https://github.com/brandon-schabel/htmx-bun-nook-kit-sqlite)
-
-[Bun Nook Kit Auth Server With React!]([githubb.com/brandon-schabel/](https://github.com/brandon-schabel/bun-nook-kit-auth-app))
-
 ## Alpha Software
 
 Please use at your own risk, this is alpha software and is still very much in the early stages and the APIs are **guranteed** to change.
 
-## Coming Soon: 
+## Coming Soon
 
-### Stacks
-I have a few templates for building full stack apps in the works. 
+### Stacks 🥞
+
+I have a few templates for building full stack apps in the works.
+
 1. BNK Payments Stack - Use BNKs built in HTMLody and it's CSS engine to create interactive full stack applications with payments and auth preconfigured.
 2. BNK SSR React With Client Side Hydration with Auth - A Stack that will come preconfigurated with a full stack SSR'd BNK based server plugin. This allows you to take full advantage of the existing React ecosystem.
-3. Decoupled Client/Server with Auth 
+3. Decoupled Client/Server with Auth
+
+### Finalize V1 APIs
+
+Close To Final For V1:
+
+- Server
+- SQLite
+- UUID
+- JWT
+- Cookies
+- HTMLody/CSS-Engine
+- Fetcher
 
 ### Dev Tools
 
-
 ### Use JS Libraries Like React Anywhere in HTMLody
 
-
-### Better handling for Server Sent Events in Server, Fetcher, etc 
-
+### Better handling for Server Sent Events in Server, Fetcher, etc
 
 ## License
 
