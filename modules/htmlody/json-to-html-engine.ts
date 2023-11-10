@@ -9,7 +9,7 @@ import {
   isValidHtmlTag,
 } from "./htmlody-utils";
 
-export function getValidatedTagName(tagName: string): string {
+export function validateTagName(tagName: string): string {
   if (!isValidHtmlTag(tagName)) {
     throw new Error(`Invalid tag name provided: ${tagName}`);
   }
@@ -43,14 +43,24 @@ export function getHtmlTags(
   };
 }
 
-export function renderHtmlTag(
-  tagName: string,
-  attributesStr: string,
-  content: string,
-  childrenHtml: string
-): string {
-  // TODO add back validation
-  // const validatedTagName = getValidatedTagName(tagName);
+export function renderHtmlTag({
+  attributesStr,
+  childrenHtml,
+  content,
+  tagName,
+  validate,
+}: {
+  tagName: string;
+  attributesStr: string;
+  content: string;
+  childrenHtml: string;
+  validate?: boolean;
+}): string {
+  if (validate) {
+    console.log("validating tag name", tagName)
+    validateTagName(tagName);
+  }
+
   const validatedAttributesStr = getValidatedAttributesStr(attributesStr);
   const { startTag, closeTag } = getHtmlTags(
     // validatedTagName,
@@ -83,11 +93,16 @@ function processNodeWithPlugins<
   }
   return processedNode;
 }
+
+export type JSONToHTMLOptions = {
+  validateHtmlTags?: boolean;
+};
+
 export function renderNodeToHtml<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>
->(node: Node, plugins: Plugins): string {
+>(node: Node, plugins: Plugins, options?: JSONToHTMLOptions): string {
   node = processNodeWithPlugins(node, plugins);
 
   const idAttribute = node.attributes?.id ? `id="${node.attributes.id}"` : "";
@@ -111,7 +126,7 @@ export function renderNodeToHtml<
     ? renderChildrenNodes(node.children, plugins)
     : "";
 
-  return renderHtmlTag(tagName, attributesStr, content, childrenHtml);
+  return renderHtmlTag({ tagName, attributesStr, content, childrenHtml });
 }
 
 export function jsonToHtml<
@@ -119,9 +134,9 @@ export function jsonToHtml<
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
   NodeMap extends JsonHtmlNodeTree<Node> = JsonHtmlNodeTree<Node>
->(nodeMap: NodeMap, plugins: Plugins): string {
+>(nodeMap: NodeMap, plugins: Plugins, options?: JSONToHTMLOptions): string {
   return Object.keys(nodeMap)
-    .map((id) => renderNodeToHtml(nodeMap[id], plugins))
+    .map((id) => renderNodeToHtml(nodeMap[id], plugins, options))
     .join("");
 }
 
@@ -129,7 +144,7 @@ export function renderNodeWithPlugins<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>
->(node: Node, plugins: Plugins): string {
+>(node: Node, plugins: Plugins, options?: JSONToHTMLOptions): string {
   node = processNodeWithPlugins(node, plugins);
 
   const tagName = node.tag;
@@ -151,7 +166,13 @@ export function renderNodeWithPlugins<
     ? renderChildrenNodes(node.children, plugins)
     : "";
 
-  return renderHtmlTag(tagName, attributesStr, content, childrenHtml);
+  return renderHtmlTag({
+    tagName,
+    attributesStr,
+    content,
+    childrenHtml,
+    validate: options?.validateHtmlTags,
+  });
 }
 
 const generateTitleNode = (title: string): JsonTagElNode => {

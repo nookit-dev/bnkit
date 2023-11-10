@@ -9,13 +9,13 @@ import { formatAttributes, isValidAttributesString } from "./htmlody-utils";
 import {
   getHtmlTags,
   getValidatedAttributesStr,
-  getValidatedTagName,
   htmlodyBuilder,
   jsonToHtml,
   renderChildrenNodes,
   renderHtmlTag,
   renderNodeToHtml,
   renderNodeWithPlugins,
+  validateTagName,
 } from "./json-to-html-engine";
 
 export function randomAttributes(): Attributes {
@@ -36,12 +36,12 @@ describe("renderHtmlTag", () => {
     const content = "Hello World";
     const childrenHtml = "<span>Child</span>";
 
-    const rendered = renderHtmlTag(
+    const rendered = renderHtmlTag({
       tagName,
       attributesStr,
       content,
-      childrenHtml
-    );
+      childrenHtml,
+    });
     expect(rendered).toContain(tagName);
     expect(rendered).toContain(attributesStr);
     expect(rendered).toContain(content);
@@ -51,7 +51,8 @@ describe("renderHtmlTag", () => {
     it("should throw error for invalid tags", () => {
       let errorOccurred = false;
       try {
-        renderHtmlTag("invalidTag", "", "", "");
+        // @ts-expect-error
+        renderHtmlTag({ validate: true, tagName: "invalidTag" });
       } catch (e) {
         errorOccurred = true;
         // @ts-expect-error
@@ -114,9 +115,13 @@ describe("jsonToHtml", () => {
     }; // @ts-expect-error
     const plugins = [];
 
-    // @ts-expect-error
-    expect(() => jsonToHtml(nodeMap, plugins)).toThrow(
-      "Tag name not provided for node. \n      \n      Content: Sample Content\n      "
+    expect(() =>
+      // @ts-expect-error
+      jsonToHtml(nodeMap, plugins, {
+        validateHtmlTags: true,
+      })
+    ).toThrow(
+      "Tag name not provided for node. \n      \n      Content: Sample Content\n\n      {\n  \"attributes\": {\n    \"class\": \"sample-class\"\n  },\n  \"content\": \"Sample Content\"\n}\n      "
     );
   });
 
@@ -162,12 +167,12 @@ describe("renderChildren", () => {
 describe("getValidatedTagName", () => {
   it("should return the tag name if it's valid", () => {
     const tagName = "div";
-    const result = getValidatedTagName(tagName);
+    const result = validateTagName(tagName);
     expect(result).toBe(tagName);
   });
 
   it("should throw an error for invalid tags", () => {
-    expect(() => getValidatedTagName("invalidTag")).toThrow(
+    expect(() => validateTagName("invalidTag")).toThrow(
       "Invalid tag name provided: invalidTag"
     );
   });
@@ -268,7 +273,7 @@ describe("createNodeFactory", () => {
   ] satisfies HTMLodyPlugin<any>[];
 
   const { createNode, renderNodeTreeToHtml, renderSingleNode, renderChildren } =
-    htmlodyBuilder(plugins);
+    htmlodyBuilder({ plugins });
 
   describe("createNode", () => {
     it("should createa  default node with a div tag", () => {
@@ -370,7 +375,7 @@ describe("renderNodeWithPlugins", () => {
     };
     const plugins = [];
     expect(() => renderNodeWithPlugins(node, plugins)).toThrow(
-      'Tag name not provided for node. \n      ID: id="sample-id"\n      Content: Sample Content\n      '
+      'Tag name not provided for node. \n      ID: id=\"sample-id\"\n      Content: Sample Content\n\n      {\n  \"attributes\": {\n    \"id\": \"sample-id\"\n  },\n  \"content\": \"Sample Content\"\n}\n      '
     );
   });
 });
