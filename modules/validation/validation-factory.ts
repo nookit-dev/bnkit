@@ -48,7 +48,7 @@ export function handleError(
   }
 }
 
-export function createValidatorFactory<Schema extends Record<string, any>>(
+export function createValidatorFactory<Schema extends Record<string, unknown>>(
   schema: Schema
 ) {
   type SchemaKeys = keyof Schema;

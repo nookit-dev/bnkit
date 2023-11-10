@@ -14,15 +14,13 @@ export const serverFactory = <
   >[0],
   MiddlewareDataMap extends InferMiddlewareDataMap<MiddlewareConfig> = InferMiddlewareDataMap<MiddlewareConfig>
 >({
-  middlewareControl,
+  middleware,
   routes,
-  settings,
   fetchHandler = serverRequestHandler,
   optionsHandler,
-  serve,
+  serve = Bun.serve,
 }: {
-  settings?: {};
-  middlewareControl?: MiddlewareFactory;
+  middleware?: MiddlewareFactory;
   routes: Routes<MiddlewareConfig>;
   fetchHandler?: typeof serverRequestHandler<
     MiddlewareFactory,
@@ -30,16 +28,19 @@ export const serverFactory = <
     MiddlewareDataMap
   >;
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
-  serve: typeof Bun.serve;
+  serve?: typeof Bun.serve;
 }) => {
   const start = (port: number = 3000) => {
+    if (Bun?.env.NODE_ENV === "development") {
+      console.log("Starting server on port: ", port);
+    }
     return serve({
       port,
       fetch: (req) =>
         fetchHandler({
           req,
           routes,
-          middlewareRet: middlewareControl,
+          middlewareRet: middleware,
           optionsHandler,
         }),
     });

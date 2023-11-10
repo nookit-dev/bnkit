@@ -1,10 +1,7 @@
-export type Middleware<Opts extends object, Res extends any> = (
-  request: Request,
-  opts?: Opts
-) => Res;
+export type Middleware<Res extends unknown> = (request: Request) => Res;
 
 export type MiddlewareConfigMap = {
-  [id: string]: Middleware<any, any>;
+  [id: string]: Middleware<unknown>;
 };
 export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
 
