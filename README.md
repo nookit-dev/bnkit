@@ -4,7 +4,7 @@
 
 ## Getting Started
 
-1. Install Bun if you don't alrady have it:
+Install Bun if you don't alrady have it:
 
 ```bash
 curl -fsSL https://bun.sh/install | bash
@@ -27,7 +27,13 @@ bun dev
 Visit `http://localhost:3000` in your browser and you should see Hello world and
 `http://localhost:3000/json` for the json
 
-### Usage Overview
+## Usage Overview
+
+### Install
+
+```bash
+bun add @bnk/core
+```
 
 Use any an all Bun Nook Kit modules - server example with json response (similar to starter project)
 
