@@ -109,7 +109,7 @@ Bun Nook Kit offers a wide array of utility modules including:
 
 11. [📦NPM](modules/npm-release/NPM-RELEASE-README.md) Release: The NPM Release module provides utilities for managing NPM packages. It allows you to update the package version, retrieve the package version, and set up npm authentication. This module can be used in conjunction with the Deploy module for publishing NPM packages
 
-12. [🌎Server](modules/server/SERVER-README.md): The Server module is one of the most complex modules in Bun Nook Kit. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless type safety integration with the Fetcher module.
+12. [🌎Server](modules/server/SERVER-README.md): The Server module is one of the most complex modules in Bun Nook Kit. It helps you set up an HTTP server with various middleware options. It simplifies tasks like handling CORS and provides a TypeScript interface for type-safe request handlers. The goal is to provide seamless andtype safe server configurations.
 
 13. [📝SQLite](modules/sqlite/SQLITE-README.md): The SQLite module builds on top of Bun's SQLite implementation and provides utilities for working with SQLite databases. It includes functions for instantiating databases, creating type-safe schemas, and performing database operations.
 
