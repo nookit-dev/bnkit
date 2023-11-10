@@ -7,10 +7,12 @@ HTMLody Plugins and Types are integral parts of a system designed for dynamic HT
 ## Features
 
 ### HTMLody Plugins
+
 - **Class Record Plugin**: Enhances HTML elements with responsive class records, allowing for dynamic, breakpoint-specific styling.
 - **Markdown Plugin**: Converts markdown content into HTML, enabling markdown to be seamlessly integrated into HTML elements.
 
 ### HTMLody Types
+
 - **ClassRecord**: Defines boolean mappings for CSS utility classes.
 - **ResponsiveClassRecord**: Manages responsive utility classes for different screen sizes (e.g., sm, md, lg, xl).
 - **ExtensionRec**: Generic record type for extending HTML element attributes.
@@ -21,7 +23,7 @@ HTMLody Plugins and Types are integral parts of a system designed for dynamic HT
 ### Using the Class Record Plugin
 
 ```javascript
-import { classRecordPlugin } from 'your-module-path/htmlody-plugins';
+import { classRecordPlugin } from '@bnk/core/modules/htmlody/htmlody-plugins';
 
 const responsiveElement = {
   tag: "div",
@@ -38,7 +40,7 @@ const processedElement = classRecordPlugin.processNode(responsiveElement);
 ### Applying the Markdown Plugin
 
 ```javascript
-import { markdownPlugin } from 'your-module-path/htmlody-plugins';
+import { markdownPlugin } from '@bnk/core/modules/htmlody/htmlody-plugins';
 
 const markdownElement = {
   tag: "div",

@@ -31,7 +31,7 @@ The Fetcher Module in the Bun Nook Kit is a versatile and type-safe HTTP request
 ### Configuring and Using the Fetcher Factory
 
 ```typescript
-import { createFetchFactory, HttpMethod } from 'your-module-path';
+import { createFetchFactory, HttpMethod } from '@bnk/core/modules/fetcher';
 
 const apiConfig = {
   myEndpoint: {

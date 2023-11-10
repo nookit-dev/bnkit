@@ -35,7 +35,7 @@ The Files-Folder module is a comprehensive suite for managing files and director
 ### Creating or Updating a File
 
 ```javascript
-import { saveOrUpdateFile } from 'your-module-path/file-editing-utils';
+import { saveOrUpdateFile } from '@bnk/core/modules/files-folders/file-editing-utils';
 
 await saveOrUpdateFile({
   filePath: 'path/to/file.txt',
@@ -46,7 +46,7 @@ await saveOrUpdateFile({
 ### Reading JSON File
 
 ```javascript
-import { readJson } from 'your-module-path/file-reading-utils';
+import { readJson } from '@bnk/core/modules/files-folders/file-reading-utils';
 
 const data = await readJson('path/to/data.json');
 console.log(data);
@@ -55,7 +55,7 @@ console.log(data);
 ### Searching for Files in a Directory
 
 ```javascript
-import { searchDirForFileName } from 'your-module-path/file-search-utils';
+import { searchDirForFileName } from '@bnk/core/modules/files-folders/file-search-utils';
 
 const files = await searchDirForFileName('path/to/directory', 'searchedFileName.txt');
 console.log(files);
@@ -64,7 +64,7 @@ console.log(files);
 ### Checking if a File Exists
 
 ```javascript
-import { fileExists } from 'your-module-path/file-validation-utils';
+import { fileExists } from '@bnk/core/modules/files-folders/file-validation-utils';
 
 const exists = await fileExists('path/to/file.txt');
 console.log(exists ? 'File exists' : 'File does not exist');
