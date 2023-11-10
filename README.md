@@ -4,7 +4,7 @@
 
 ## Getting Started
 
-Install Bun if you don't alrady have it:
+Install Bun if you don't already have it:
 
 ```bash
 curl -fsSL https://bun.sh/install | bash
