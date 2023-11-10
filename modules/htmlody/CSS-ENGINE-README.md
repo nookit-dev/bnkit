@@ -1,7 +1,3 @@
-Understanding that your CSS Engine Module is inspired by Tailwind CSS and is used in conjunction with the HTMLody module to provide a robust templating system, the README should reflect this context. This information will help users understand how your module fits within the larger ecosystem and its intended use cases. Let's revise the README to include this perspective:
-
----
-
 # CSS Engine Module README
 
 ## Introduction
@@ -11,15 +7,18 @@ The CSS Engine Module, inspired by Tailwind CSS, offers a dynamic and flexible a
 ## Features
 
 ### Tailwind-Inspired API
+
 - Emulates the utility-first design of Tailwind CSS, providing a familiar API for developers.
 - Supports responsive design with customizable breakpoints and utility classes.
 
 ### Utility Class Generators
+
 - **Fraction Percent Mapping**, **Spacing Helper**, **Sizing Helper**: Generate responsive layout utilities.
 - **Color Utilities**: Functions for text, background, border, and shadow colors.
 - **Advanced Styling**: Includes gap helpers, text and border color generators, and shadow size mapping.
 
 ### Responsive and Customizable
+
 - Leverages fractional values and responsive breakpoints to create flexible layouts.
 - Allows easy customization and extension to fit specific project needs.
 
@@ -45,4 +44,3 @@ const textColorClasses = textColorGen("blue", 500);
 // Background color utility classes
 const bgColorClasses = bgColorGen("red", 500);
 ```
-

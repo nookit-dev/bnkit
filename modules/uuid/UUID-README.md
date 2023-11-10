@@ -52,23 +52,3 @@ const { timestamp } = extractTimestampFromUuidV7('01e501f3-9f9b-7f3a-b473-2c8c4d
 ## Testing
 
 The module includes a comprehensive set of tests to ensure the reliability of UUID generation and manipulation functions, covering various scenarios and edge cases.
-
-## Integration with Bun and Other Modules
-
-This module is designed to work seamlessly with Bun and can be integrated with other modules in the Bun Nook Kit for a comprehensive solution in web application development.
-
-## Customization and Extension
-
-(Describe how users can extend or customize the UUID module for their specific use cases.)
-
-## Contributing
-
-(Provide guidelines for contributing to this module.)
-
-## License
-
-(Include licensing information for the UUID module.)
-
----
-
-This README provides a high-level overview of the UUID module's capabilities, usage examples, and integration aspects. Adjust the content to better fit the specifics of your project or implementation. Let me know if there are any further details or adjustments you'd like to include.

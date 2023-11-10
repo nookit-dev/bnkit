@@ -221,8 +221,6 @@ type HeadConfig = {
   scriptTags?: { src?: string; type: string; content: string }[];
 };
 
-
-
 type HTMLodyOptions = {
   middleware?: ReturnType<typeof middlewareFactory>;
 };
@@ -230,13 +228,11 @@ type HTMLodyOptions = {
 export const htmlodyBuilder = <
   Plugins extends HTMLodyPlugin<any>[],
   PluginReturns extends NodePluginsMapper<Plugins>,
-  Options extends HTMLodyOptions = HTMLodyOptions,
-
+  Options extends HTMLodyOptions = HTMLodyOptions
 >({
   plugins,
   options: builderOptions,
-}:
-{
+}: {
   plugins: Plugins;
   options?: {
     allpages: {
@@ -299,7 +295,6 @@ export const htmlodyBuilder = <
     bodyConfig: JsonHtmlNodeTree,
     options?: {
       headConfig?: HeadConfig;
-      // scriptOptions?: ScriptLoadingOptions;
     }
   ) => {
     const headNodes: JsonHtmlNodeTree = {};
@@ -389,7 +384,6 @@ export const htmlodyBuilder = <
     bodyConfig: JsonHtmlNodeTree,
     options?: {
       headConfig?: HeadConfig;
-      // scriptOptions?: ScriptLoadingOptions;
     }
   ) => {
     const html = buildHtmlDoc(bodyConfig, options);

@@ -57,7 +57,3 @@ notesTable.create({ id: "1", text: "Note text" });
 ## Testing
 
 Includes comprehensive tests to ensure the reliability of schema-to-type translation and CRUD operations on SQLite databases.
-
-## Integration with Bun and Other Modules
-
-Designed to work seamlessly with Bun, this module can be integrated with other modules in the Bun Nook Kit for a complete solution in web application development.
