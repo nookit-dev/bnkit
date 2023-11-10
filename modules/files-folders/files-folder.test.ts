@@ -13,7 +13,7 @@ const getTestFactory = () => {
 
 // Tests that saveResultToFile saves the given content to a file at the specified file path
 it("saves content to file", async () => {
-  const filePath = "./test/test-files/test.txt";
+  const filePath = "./test/test-utils/test.txt";
   const content = "Hello, world!";
   await saveOrUpdateFile({ filePath, content });
   const fileContent = await fsPromise.readFile(filePath, "utf-8");
@@ -48,8 +48,8 @@ describe("fileFactory", async () => {
     const factory = getTestFactory();
 
     const filePaths = [
-      "./modules/files-factory/test/test1.txt",
-      "./modules/files-factory/test/test2.txt",
+      "./modules/files-folders/test/test1.txt",
+      "./modules/files-folders/test/test2.txt",
     ];
 
     const contents = ["Hello, world!", "Goodbye, world!"];
@@ -68,8 +68,8 @@ describe("fileFactory", async () => {
   it("updates multiple files", async () => {
     const factory = getTestFactory();
     const filePaths = [
-      "./test/test-files/test1.txt",
-      "./test/test-files/test2.txt",
+      "./test/test-utils/test1.txt",
+      "./test/test-utils/test2.txt",
     ];
     const initialContents = ["Hello, world!", "Goodbye, world!"];
     const newContents = "Updated content";
@@ -91,7 +91,7 @@ describe("fileFactory", async () => {
   it("recursively searches directory for file", async () => {
     const factory = getTestFactory();
     const fileName = "test.txt";
-    const filePath = `./test/test-files/${fileName}`;
+    const filePath = `./test/test-utils/${fileName}`;
     const content = "Hello, world!";
     await saveOrUpdateFile({ filePath, content });
     const fileExists = await factory.searchDirForFile(fileName);
@@ -103,7 +103,7 @@ describe("fileFactory", async () => {
   it("checks if file exists", async () => {
     const factory = getTestFactory();
     const fileName = "test.txt";
-    const filePath = `./test/test-files/${fileName}`;
+    const filePath = `./test/test-utils/${fileName}`;
     const content = "Hello, world!";
     await saveOrUpdateFile({ filePath, content });
     const fileExists = await factory.fileExists(filePath);
@@ -115,7 +115,7 @@ describe("fileFactory", async () => {
   it("deletes a file", async () => {
     const factory = getTestFactory();
     const fileName = "test.txt";
-    const filePath = `./test/test-files/${fileName}`;
+    const filePath = `./test/test-utils/${fileName}`;
     const content = "Hello, world!";
     await saveOrUpdateFile({ filePath, content });
     await factory.deleteFile(filePath);
@@ -127,7 +127,7 @@ describe("fileFactory", async () => {
   it("reads JSON file", async () => {
     const factory = getTestFactory();
     const fileName = "test.json";
-    const filePath = `./test/test-files/${fileName}`;
+    const filePath = `./test/test-utils/${fileName}`;
     const jsonContent = { greeting: "Hello, world!" };
     await fsPromise.writeFile(filePath, JSON.stringify(jsonContent));
     const content = await factory.readJson(filePath);

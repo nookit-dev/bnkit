@@ -28,7 +28,7 @@ export function appendURLParameters(
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    throw new Error(JSON.stringify(response)); // adapt this to your needs
+    throw new Error(JSON.stringify(response));
   }
   return await response.json();
 }

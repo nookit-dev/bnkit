@@ -162,6 +162,23 @@ This version aims to maintain the original meaning while enhancing clarity and g
 
 Please use at your own risk, this is alpha software and is still very much in the early stages and the APIs are **guranteed** to change.
 
+## Coming Soon: 
+
+### Stacks
+I have a few templates for building full stack apps in the works. 
+1. BNK Payments Stack - Use BNKs built in HTMLody and it's CSS engine to create interactive full stack applications with payments and auth preconfigured.
+2. BNK SSR React With Client Side Hydration with Auth - A Stack that will come preconfigurated with a full stack SSR'd BNK based server plugin. This allows you to take full advantage of the existing React ecosystem.
+3. Decoupled Client/Server with Auth 
+
+### Dev Tools
+
+
+### Use JS Libraries Like React Anywhere in HTMLody
+
+
+### Better handling for Server Sent Events in Server, Fetcher, etc 
+
+
 ## License
 
 Bun Nook Kit is licensed under the MIT License. Enjoy the freedom to use, modify, and distribute the software under very permissive terms.

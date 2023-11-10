@@ -1,3 +1,4 @@
+import { htmlRes, middlewareFactory } from "mod/server";
 import { SELF_CLOSING_TAGS } from "./constants";
 import { generateCSS, generateColorVariables } from "./css-engine";
 import { HTMLodyPlugin } from "./htmlody-plugins";
@@ -48,10 +49,12 @@ export function renderHtmlTag(
   content: string,
   childrenHtml: string
 ): string {
-  const validatedTagName = getValidatedTagName(tagName);
+  // TODO add back validation
+  // const validatedTagName = getValidatedTagName(tagName);
   const validatedAttributesStr = getValidatedAttributesStr(attributesStr);
   const { startTag, closeTag } = getHtmlTags(
-    validatedTagName,
+    // validatedTagName,
+    tagName,
     validatedAttributesStr
   );
 
@@ -97,6 +100,8 @@ export function renderNodeToHtml<
       `Tag name not provided for node. 
       ${idAttribute ? `ID: ${idAttribute}` : ""}
       ${content ? `Content: ${content}` : ""}
+
+      ${JSON.stringify(node, null, 2)}
       `
     );
   }
@@ -135,6 +140,8 @@ export function renderNodeWithPlugins<
       `Tag name not provided for node. 
       ${idAttribute ? `ID: ${idAttribute}` : ""}
       ${content ? `Content: ${content}` : ""}
+
+      ${JSON.stringify(node, null, 2)}
       `
     );
   }
@@ -174,13 +181,6 @@ const generateLinkTagNode = (link: {
   };
 };
 
-const generateScriptTagNode = (src: string): JsonTagElNode => {
-  return {
-    tag: "script",
-    attributes: { src },
-  };
-};
-
 const generateStyleTagNode = (content: string): JsonTagElNode => {
   return {
     tag: "style",
@@ -188,43 +188,82 @@ const generateStyleTagNode = (content: string): JsonTagElNode => {
   };
 };
 
+const generateScriptTagNode = (script: {
+  src?: string;
+  type?: string;
+  content: string;
+}): JsonTagElNode => {
+  const node: JsonTagElNode = {
+    tag: "script",
+    attributes: {},
+    content: script.content,
+  };
+
+  if (script.src && node.attributes) {
+    node.attributes.src = script.src;
+  }
+
+  if (script.type && node.attributes) {
+    node.attributes.type = script.type;
+  }
+
+  return node;
+};
+
 export type NodePluginsMapper<Plugins extends HTMLodyPlugin<any>[]> =
   ReturnType<Plugins[number]["processNode"]>;
-
-// type CRNodeTest = NodePluginsReturn<[typeof classRecordPlugin]>
-// const tester: CRNodeTest = {
-
-// }
 
 type HeadConfig = {
   title: string;
   metaTags?: { name: string; content: string }[];
   linkTags?: { rel: string; href: string }[];
   styleTags?: { content: string }[];
+  scriptTags?: { src?: string; type: string; content: string }[];
 };
 
-type ScriptLoadingOptions = {
-  useHtmx?: boolean | string;
-  // Add other script loading options as needed
+
+
+type HTMLodyOptions = {
+  middleware?: ReturnType<typeof middlewareFactory>;
 };
 
 export const htmlodyBuilder = <
   Plugins extends HTMLodyPlugin<any>[],
-  PluginReturns extends NodePluginsMapper<Plugins>
->(
-  plugins: Plugins,
-  headConfig?: HeadConfig
-) => {
+  PluginReturns extends NodePluginsMapper<Plugins>,
+  Options extends HTMLodyOptions = HTMLodyOptions,
+
+>({
+  plugins,
+  options: builderOptions,
+}:
+{
+  plugins: Plugins;
+  options?: {
+    allpages: {
+      headConfig?: HeadConfig;
+    };
+  };
+}) => {
   const effectivePlugins = plugins;
 
-  const createNode = (options?: PluginReturns) => {
+  const createNode = <PluginsRet extends PluginReturns = PluginReturns>(
+    options?: PluginReturns
+  ) => {
     return {
       tag: "div",
       content: "",
       attributes: {},
       ...options,
-    } as JsonTagElNode<PluginReturns>;
+    } as JsonTagElNode<PluginsRet>;
   };
+
+  const inferTreeFn = <
+    Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>
+  >(): JsonHtmlNodeTree<Node> => {
+    return undefined as unknown as JsonHtmlNodeTree<Node>;
+  };
+
+  const inferTree = inferTreeFn();
 
   const renderNodeTreeToHtml = (
     nodeMap: JsonHtmlNodeTree,
@@ -258,16 +297,9 @@ export const htmlodyBuilder = <
 
   const buildHtmlDoc = (
     bodyConfig: JsonHtmlNodeTree,
-    options: {
+    options?: {
       headConfig?: HeadConfig;
-      scriptOptions?: ScriptLoadingOptions;
-    } = {
-      headConfig: headConfig || {
-        title: "HTMLody",
-      },
-      scriptOptions: {
-        useHtmx: false,
-      },
+      // scriptOptions?: ScriptLoadingOptions;
     }
   ) => {
     const headNodes: JsonHtmlNodeTree = {};
@@ -276,8 +308,20 @@ export const htmlodyBuilder = <
       headNodes["title"] = generateTitleNode(options.headConfig.title);
     }
 
+    if (builderOptions?.allpages?.headConfig?.title) {
+      headNodes["title"] = generateTitleNode(
+        builderOptions?.allpages?.headConfig.title
+      );
+    }
+
     if (options?.headConfig?.metaTags) {
       options.headConfig.metaTags.forEach((meta, index) => {
+        headNodes[`meta${index}`] = generateMetaTagNode(meta);
+      });
+    }
+
+    if (builderOptions?.allpages?.headConfig?.metaTags) {
+      builderOptions?.allpages?.headConfig.metaTags.forEach((meta, index) => {
         headNodes[`meta${index}`] = generateMetaTagNode(meta);
       });
     }
@@ -288,21 +332,38 @@ export const htmlodyBuilder = <
       });
     }
 
+    if (builderOptions?.allpages?.headConfig?.linkTags) {
+      builderOptions?.allpages?.headConfig.linkTags.forEach((link, index) => {
+        headNodes[`link${index}`] = generateLinkTagNode(link);
+      });
+    }
+
     if (options?.headConfig?.styleTags) {
       options.headConfig.styleTags.forEach((style, index) => {
         headNodes[`style${index}`] = generateStyleTagNode(style.content);
       });
     }
 
-    if (options.scriptOptions?.useHtmx) {
-      const htmxSrc =
-        typeof options.scriptOptions.useHtmx === "string"
-          ? options.scriptOptions.useHtmx
-          : "https://unpkg.com/htmx.org";
-      headNodes["htmxScript"] = generateScriptTagNode(htmxSrc);
+    if (builderOptions?.allpages?.headConfig?.styleTags) {
+      builderOptions?.allpages?.headConfig.styleTags.forEach((style, index) => {
+        headNodes[`style${index}`] = generateStyleTagNode(style.content);
+      });
+    }
+    if (options?.headConfig?.scriptTags) {
+      options.headConfig.scriptTags.forEach((script, index) => {
+        headNodes[`script${index}`] = generateScriptTagNode(script);
+      });
     }
 
-    const headHtml = jsonToHtml(headNodes, []);
+    if (builderOptions?.allpages?.headConfig?.scriptTags) {
+      builderOptions?.allpages?.headConfig.scriptTags.forEach(
+        (script, index) => {
+          headNodes[`script${index}`] = generateScriptTagNode(script);
+        }
+      );
+    }
+
+    const headHtml = renderNodeTreeToHtml(headNodes);
     const bodyHtml = renderNodeTreeToHtml(bodyConfig);
 
     // todo this needs to be externalized since this is specific to the class records plugin
@@ -326,10 +387,10 @@ export const htmlodyBuilder = <
 
   const response = (
     bodyConfig: JsonHtmlNodeTree,
-    options: {
+    options?: {
       headConfig?: HeadConfig;
-      scriptOptions?: ScriptLoadingOptions;
-    } = {}
+      // scriptOptions?: ScriptLoadingOptions;
+    }
   ) => {
     const html = buildHtmlDoc(bodyConfig, options);
     return new Response(html, {
@@ -339,6 +400,54 @@ export const htmlodyBuilder = <
     });
   };
 
+  const warp = ({ id, src }: { id: string; src: string }) => {
+    const turboFrameNode = ({
+      id,
+      src,
+      children,
+    }: {
+      id: string;
+      src?: string;
+      children: JsonHtmlNodeTree<PluginReturns>;
+    }) => {
+      const turboFrame: JsonTagElNode = {
+        tag: "turbo-frame",
+        attributes: {
+          id,
+        },
+        children,
+      };
+
+      if (src && turboFrame?.attributes) {
+        turboFrame.attributes.src = src;
+      }
+
+      return turboFrame;
+    };
+
+    return {
+      pushNode: (content: JsonTagElNode<PluginReturns>) => {
+        const tfNode = turboFrameNode({
+          id,
+          children: {
+            CONTENT: content,
+          },
+        });
+
+        return htmlRes(renderSingleNode(tfNode));
+      },
+      docNodeMount: (content: JsonTagElNode<PluginReturns>) => {
+        return turboFrameNode({
+          id,
+          src,
+          children: {
+            CONTENT: content,
+          },
+        });
+      },
+    };
+  };
+
   return {
     createNode,
     renderNodeTreeToHtml,
@@ -346,5 +455,7 @@ export const htmlodyBuilder = <
     renderChildren,
     buildHtmlDoc,
     response,
+    inferTree,
+    warp,
   };
 };

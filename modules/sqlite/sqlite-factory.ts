@@ -31,12 +31,12 @@ export type SQLiteToTypeScriptTypes = {
 export type SQLiteDataTypes = keyof SQLiteToTypeScriptTypes;
 
 export type FieldDefinition = {
-  type: SQLiteDataTypes; 
-  primaryKey?: boolean; 
+  type: SQLiteDataTypes;
+  primaryKey?: boolean;
   unique?: boolean;
   foreignKey?: string;
-  required?: boolean; 
-  defaultValue?: string | number; 
+  required?: boolean;
+  defaultValue?: string | number;
 };
 
 // Mapped type that takes a schema with SQLite types and returns a schema with TypeScript types.
@@ -93,24 +93,3 @@ export function createSqliteFactory({
 
   return { dbTableFactory };
 }
-
-// This should now have the correct types.
-// let person: PersonTableSchema = {
-//   id: "some-id",
-//   age: 42,
-//   name: "some-name",
-//   createdAt: new Date(),
-// };
-
-// // example
-// const sqlitePersonTableSchema = {
-//   id: { type: "TEXT" },
-//   age: { type: "INTEGER" },
-//   name: { type: "TEXT" },
-//   createdAt: { type: "DATE" },
-// } satisfies SchemaMap;
-
-// type Person = SQLiteSchemaInfer<typeof sqlitePersonTableSchema>;
-
-// // TODO implement into the sqlite factory
-// type PersonTableSchema = SQLiteSchemaInfer<typeof sqlitePersonTableSchema>;

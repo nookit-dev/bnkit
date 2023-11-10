@@ -4,7 +4,7 @@ import {
   insertQueryString,
   selectAllTableQueryString,
   updateQueryString,
-} from "./crud-string-utils"; // Replace with the actual path to your module
+} from "./crud-string-utils";
 
 // Test for insertQueryString
 test("insertQueryString", () => {

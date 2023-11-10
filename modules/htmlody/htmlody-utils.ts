@@ -53,7 +53,8 @@ export function collectClassNames(
     classList.forEach((cls) => uniqueClassNames.add(cls));
   }
 }
-export const children = (children: JsonTagElNode<CRNode>[]) => {
+
+export const children = (children: JsonTagElNode<CRNode>[] ) => {
   const returnChildren: JsonHtmlNodeTree = {};
 
   for (let i = 0; i < children.length; i++) {

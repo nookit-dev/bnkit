@@ -14,13 +14,30 @@ export function createItem<
   db: Database,
   tableName: string,
   log: (msg: any) => void,
-  item: TranslatedSchema
-) {
+  item: TranslatedSchema,
+  returnInsertedItem: boolean = false // optional parameter to return the inserted item
+): TranslatedSchema | null {
   const query = insertQueryString(tableName, item);
   const valuesArray = Object.values(item);
   log({ query, valuesArray });
+
+  // Perform the insert operation
   db.query(query).run(...valuesArray);
-  return [];
+
+  if (returnInsertedItem) {
+    // Assuming your db instance has a method to get the last inserted row id
+    // This is pseudocode and may need to be adapted to the actual method available in bun:sqlite
+
+    // Query to select the last inserted item
+    const selectQuery = `SELECT * FROM ${tableName} WHERE id = last_insert_rowid();`;
+    const insertedItem = db.query(selectQuery).get() as TranslatedSchema;
+
+    log({ selectQuery, lastId: insertedItem.id, insertedItem });
+    return insertedItem as TranslatedSchema;
+  }
+
+  // If not returning the inserted item, return an empty array
+  return null;
 }
 
 // Modify the readItems function to include an optional id parameter.
