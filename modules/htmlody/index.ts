@@ -7,7 +7,7 @@ export type {
 } from "./htmlody-types";
 export { children } from "./htmlody-utils";
 
-export { jsonToHtml,htmlodyBuilder} from "./json-to-html-engine";
+export { jsonToHtml, htmlodyBuilder } from "./json-to-html-engine";
 
 export { classRecordPlugin, markdownPlugin } from "./htmlody-plugins";
 export type {
