@@ -32,7 +32,7 @@ Visit `http://localhost:3000` in your browser and you should see Hello world and
 ### Install
 
 ```bash
-bun add @bnk/core
+bun add bnkit
 ```
 
 Use any an all Bun Nook Kit modules - server example with json response (similar to starter project)
@@ -40,7 +40,7 @@ Use any an all Bun Nook Kit modules - server example with json response (similar
 `index.ts`
 
 ```typescript
-import * as bnk from "@bnk/core";
+import * as bnk from "bnkit";
 
 const routes = {
   "/": {
@@ -83,7 +83,7 @@ Join our [Discord Server]("https://discord.gg/rQyWN7V6"), drop in and ask questi
 
 - **Builds on Web APIs** Bun itself is built on strong principles of sticking to Web APIs In order to maintain as much comptaibility across various packages, BNK sticks to the fundementals of the webplatform APIs.
 
-## Features
+## Doc Links and Overview
 
 Bun Nook Kit offers a wide array of utility modules including:
 
@@ -124,7 +124,7 @@ Bun Nook Kit offers a wide array of utility modules including:
 18. [✅Validation]: The Validation module aims to provide a comprehensive suite of validation functions. It includes functions for checking the validity of API data and can be used to ensure data integrity and accuracy.
 
 ```typescript
-import * as bnk from '@bnk/core'
+import * as bnk from 'bnkit'
 
 const uuid = bnk.uuid.v7()
 
