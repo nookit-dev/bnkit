@@ -1,0 +1,3 @@
+[submodule "docs"]
+	path = docs
+	url = https://github.com/brandon-schabel/bun-nook-kit-docs
