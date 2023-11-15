@@ -1,4 +1,4 @@
-import { v7 as uuid } from "mod/uuid";
+import { v7 as uuid } from "../uuid";
 
 export const getTokenExpireEpoch = (date: Date, tokenValidTimeSec: number) => {
   const expireEpoch = date.getTime() + tokenValidTimeSec * 1000;

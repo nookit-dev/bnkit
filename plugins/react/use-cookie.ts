@@ -1,5 +1,5 @@
-import { CookieOptions } from "@bnk/core/modules/cookies/cookie-types";
-import { clientCookieFactory } from "@bnk/core/modules/cookies/create-client-side-cookie-factory";
+import { CookieOptions } from "bnkit/cookies/cookie-types";
+import { clientCookieFactory } from "bnkit/cookies/create-client-side-cookie-factory";
 import { useEffect, useState } from "react";
 
 export function useCookie<T = string>(

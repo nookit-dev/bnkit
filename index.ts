@@ -1,32 +1,30 @@
-import * as cli from "./modules/cli";
-import * as cookies from "./modules/cookies";
-import * as dataGen from "./modules/data-gen";
-import * as deploy from "./modules/deploy";
-import * as fetcher from "./modules/fetcher";
-import * as filesFolders from "./modules/files-folders";
-import * as auth from "./modules/auth";
-import * as htmlody from "./modules/htmlody";
-import * as jwt from "./modules/jwt";
-import * as logger from "./modules/logger";
-import * as npm from "./modules/npm-release";
-import * as server from "./modules/server";
-import * as sqlite from "./modules/sqlite";
-import * as state from "./modules/state";
-import * as uuid from "./modules/uuid";
-import * as validation from "./modules/validation";
+import * as auth from "./auth";
+import * as cli from "./cli";
+import * as cookies from "./cookies";
+import * as dataGen from "./data-gen";
+import * as deploy from "./deploy";
+import * as fetcher from "./fetcher";
+import * as filesFolders from "./files-folders";
+import * as htmlody from "./htmlody";
+import * as jwt from "./jwt";
+import * as logger from "./logger";
+import * as npm from "./npm-release";
+import * as server from "./server";
+import * as sqlite from "./sqlite";
+import * as state from "./state";
+import * as uuid from "./uuid";
+import * as validation from "./validation";
 
 // utility exports
-import * as utils from "./modules/utils/classy";
+import * as utils from "./utils/classy";
 
 export {
-    cli,
+    auth, cli,
     cookies,
     dataGen,
     deploy,
     fetcher,
-    filesFolders,
-    auth,
-    htmlody,
+    filesFolders, htmlody,
     jwt,
     logger,
     npm,

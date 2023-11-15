@@ -1,7 +1,7 @@
-import { HttpMethod } from "mod/utils/http-types";
+import { HttpMethod } from "../utils/http-types";
 import { middlewareFactory } from "./middleware-manager";
 
-import { HTMLodyPlugin, htmlodyBuilder } from "mod/htmlody";
+import { HTMLodyPlugin, htmlodyBuilder } from "../htmlody";
 import type {
   InferMiddlewareDataMap,
   MiddlewareConfigMap,

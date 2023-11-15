@@ -1,4 +1,4 @@
-import { MiddlewareConfigMap, Routes, jsonRes } from "@bnk/core/modules/server";
+import { MiddlewareConfigMap, Routes, jsonRes } from "bnkit/server";
 import { createReactStreamHandler } from "./react-dom-stream-handler";
 
 export const createReactServerRoutes = async <

@@ -1,4 +1,4 @@
-import { MiddlewareConfigMap, serverFactory } from "@bnk/core/modules/server";
+import { MiddlewareConfigMap, serverFactory } from "bnkit/server";
 import { createReactServerRoutes } from "./create-react-server-routes";
 
 export const reactServer = async <AppStateT extends object = {}>({

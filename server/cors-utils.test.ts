@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "bun:test";
-import { CORSOptions } from "mod/utils/http-types";
+import { CORSOptions } from "../utils/http-types";
 import {
   buildControlHeaders,
   isMethodAllowed,

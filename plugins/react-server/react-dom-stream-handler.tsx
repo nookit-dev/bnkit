@@ -1,4 +1,4 @@
-import { RouteHandler } from "@bnk/core/modules/server";
+import { RouteHandler } from "bnkit/server";
 import { renderToReadableStream } from "react-dom/server";
 
 export const createReactStreamHandler = async ({

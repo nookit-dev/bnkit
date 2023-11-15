@@ -1,11 +1,11 @@
-import { JsonTagElNode } from "@bnk/core/modules/htmlody";
+import { JsonTagElNode } from "bnkit/htmlody";
 import { describe, expect, it } from "bun:test";
 import { Attributes } from "./htmlody-types";
 import {
-  collectClassNames,
-  formatAttributes,
-  nodeFactory,
-  retrieveElement,
+    collectClassNames,
+    formatAttributes,
+    nodeFactory,
+    retrieveElement,
 } from "./htmlody-utils";
 
 describe("formatAttributes", () => {

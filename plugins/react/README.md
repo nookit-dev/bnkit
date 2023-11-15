@@ -25,7 +25,7 @@ Usage example:
 
 js
 
-`import { useFetcher } from '@bnk/react';`
+`import { useFetcher } from '@bnkit/react';`
 
 `const fetch = useFetcher({ url: 'https://api.example.com' });`
 

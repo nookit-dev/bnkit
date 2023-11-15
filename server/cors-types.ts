@@ -1,4 +1,4 @@
-import { CommonHttpHeaders, HttpMethod } from "mod/utils/http-types";
+import { CommonHttpHeaders, HttpMethod } from "../utils/http-types";
 
 export type CORSOptions = {
   origins?: string[];

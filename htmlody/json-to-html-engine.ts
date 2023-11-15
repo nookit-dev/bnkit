@@ -1,4 +1,4 @@
-import { htmlRes, middlewareFactory } from "mod/server";
+import { htmlRes, middlewareFactory } from "../server";
 import { SELF_CLOSING_TAGS } from "./constants";
 import { generateCSS, generateColorVariables } from "./css-engine";
 import { HTMLodyPlugin } from "./htmlody-plugins";

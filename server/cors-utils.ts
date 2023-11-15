@@ -1,4 +1,4 @@
-import { CORSOptions, HttpMethod } from "mod/utils/http-types";
+import { CORSOptions, HttpMethod } from "../utils/http-types";
 
 export const log = (message: string) => {
   console.error(message);

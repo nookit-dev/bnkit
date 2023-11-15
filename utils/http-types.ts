@@ -1,4 +1,4 @@
-import { PartialRecord } from "mod/type-utils";
+import { PartialRecord } from "../type-utils";
 
 export type HttpMethod =
   | "GET"

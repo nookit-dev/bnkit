@@ -1,6 +1,6 @@
 {
-  "name": "@bnk/react-server",
-  "version": "0.3.8",
+  "name": "@bnkit/react-server",
+  "version": "0.4.0",
   "module": "index.ts",
   "main": "index.ts",
   "scripts": {
@@ -15,11 +15,11 @@
     "bun-types": "latest",
     "react": "latest",
     "react-dom": "^18.2.0",
-    "@bnk/core": "link:@bnk/core"
+    "bnkit": "link:bnkit"
   },
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "@bnk/core": "^0.1.5"
+    "bnkit": "^0.4.0"
   }
 }

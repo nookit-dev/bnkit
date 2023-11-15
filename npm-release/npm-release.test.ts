@@ -1,5 +1,5 @@
 import { describe, expect, jest, test } from "bun:test";
-import { isTestFile } from "mod/test-utils";
+import { isTestFile } from "../test-utils";
 import { getCurrentVersion, npmPublish, updateVersion } from "./npm-release";
 describe("getCurrentVersion", () => {
   test("returns the version from the package.json", async () => {

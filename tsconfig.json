@@ -13,37 +13,32 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": false,
     "types": [
-      "bun-types" // add Bun global
+      "bun-types",
     ],
     "baseUrl": ".",
     "paths": {
-      "mod/*": ["modules/*"],
-      "cli": ["modules/cli"],
-      "cookies": ["modules/cookies"],
-      "data-gen": ["modules/data-gen"],
-      "deploy": ["modules/deploy"],
-      "fetcher": ["modules/fetcher"],
+      "cli": ["cli"],
+      "cookies": ["cookies"],
+      "data-gen": ["data-gen"],
+      "deploy": ["deploy"],
+      "fetcher": ["fetcher"],
       "files-folder": ["modules/files-folder"],
-      "auth": ["modules/auth"],
-      "htmlody": ["modules/htmlody"],
-      "jwt": ["modules/jwt"],
-      "logger": ["modules/logger"],
-      "npm-release": ["modules/npm-release"],
-      "server": ["modules/server"],
-      "sqlite": ["modules/sqlite"],
-      "state": ["modules/state"],
-      "test": ["modules/test-utils"],
-      "utils": ["modules/utils"],
-      "uuid": ["modules/uuid"],
-      "validation": ["modules/validation"],
-      "types": ["modules/types"],
-      "type-utils": ["modules/type-utils"]
+      "auth": ["auth"],
+      "htmlody": ["htmlody"],
+      "jwt": ["jwt"],
+      "logger": ["logger"],
+      "npm-release": ["npm-release"],
+      "server": ["server"],
+      "sqlite": ["sqlite"],
+      "state": ["state"],
+      "test": ["test-utils"],
+      "utils": ["utils"],
+      "uuid": ["uuid"],
+      "validation": ["validation"],
+      "types": ["types"],
+      "type-utils": ["type-utils"]
     }
   },
-  "include": [
-    "./modules/**/*.ts",
-    "modules/**/*.ts",
-    "plugins/**/*.ts",
-    "./release.ts"
-  ]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "plugins/**/node_modules"]
 }

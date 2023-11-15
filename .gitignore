@@ -176,6 +176,5 @@ bun.lockb
 
 .DS_Store
 
-.vscode
 .npmrc
 .history
