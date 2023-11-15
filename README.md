@@ -7,6 +7,7 @@ Bun Nook Kit (BNK) is a comprehensive toolkit for software development, leveragi
 
 
 ## [View Modules Docs Site](https://nookit.dev/readme)
+#### [Doc Repo](https://github.com/brandon-schabel/bun-nook-kit-docs)
 
 ## Quick Start
 
