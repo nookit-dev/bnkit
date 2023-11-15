@@ -187,10 +187,13 @@ Close To Final For V1:
 
 ## Screenshots
 (if you made it this far)
-<img width="1026" alt="Xnapper-2023-11-14-19 42 26" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/8b5a1aa2-94f6-4af1-9e1d-8b7ce9eb4b01">
-The above screenshot based in an HTMLody component, shows the TypeScript inference abilities as all the types shown in the in intellisense where inferred from the sqlite schema set for the user subscription.
 
-The next two screenshot shows how easy it can be to create and start a server - even with middleware with great type inference.
+Screenshot shows an HTMLody component, as well the TypeScript inference abilities as all the types shown in the in intellisense were inferred from the SQLite schema configured for the user subscription.
+<img width="1026" alt="Xnapper-2023-11-14-19 42 26" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/8b5a1aa2-94f6-4af1-9e1d-8b7ce9eb4b01">
+
+
+The next two screenshots show how easy it can be to create and start a server - even with middleware with great type inference.
+
 <img width="555" alt="Xnapper-2023-11-14-19 43 47" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/0d66c9ec-0f3a-487c-98f8-8c14faeaa82d">
 
 <img width="582" alt="Xnapper-2023-11-14-19 47 14" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/78afc0e7-46c0-4269-8072-e8622f111b08">
