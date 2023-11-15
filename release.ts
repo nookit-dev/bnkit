@@ -1,8 +1,8 @@
 import Bun from "bun";
-import { ulog } from "modules/utils/ulog";
 import path from "path";
 import { exit } from "process";
 import * as u from "./";
+import { ulog } from "./utils/ulog";
 
 // run bun test
 const testProc = Bun.spawnSync(["bun", "test", "--coverage"], {});
