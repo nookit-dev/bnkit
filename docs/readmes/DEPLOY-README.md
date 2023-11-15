@@ -22,7 +22,7 @@ This GitHub Actions Utility Module is designed for automating Git operations in 
 ### Logging Standard Output
 
 ```javascript
-import { logStdOutput, SyncSubprocess } from '@bnk/core/modules/deploy';
+import { logStdOutput, SyncSubprocess } from 'bnkit/deploy';
 
 const process = new SyncSubprocess('your-command');
 logStdOutput(process);
@@ -31,7 +31,7 @@ logStdOutput(process);
 ### Creating GitHub Actions Factory
 
 ```javascript
-import { createGitHubActionsFactory } from '@bnk/core/modules/deploy';
+import { createGitHubActionsFactory } from 'bnkit/deploy';
 
 const gitUtils = createGitHubActionsFactory({
   sshRepoUrl: 'git@github.com:user/repo.git',
@@ -44,7 +44,7 @@ gitUtils.commitAndPush('Your commit message');
 ### Configuring Git for GitHub Actions
 
 ```javascript
-import { createGitHubActionsFactory } from '@bnk/core/modules/deploy';
+import { createGitHubActionsFactory } from 'bnkit/deploy';
 
 const gitUtils = createGitHubActionsFactory({ 
   sshRepoUrl: 'git@github.com:user/repo.git' 

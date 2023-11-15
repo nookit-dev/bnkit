@@ -11,8 +11,8 @@ Here is a quick guide on how to generate different types of data:
 You can import the functions you need as below:
 
 ```typescript
-import { createRandomData, randNum, randFromArray, dataGenerators, inferTypeAndGenerate  } from '@bnk/modules/data-gen-factory';
-import type {DataGeneratorMapConfig }from '@bnk/modules/data-gen-factory'
+import { createRandomData, randNum, randFromArray, dataGenerators, inferTypeAndGenerate  } from 'bnkit/data-gen';
+import type { DataGeneratorMapConfig }from 'bnkit/data-gen'
 
 ```
 

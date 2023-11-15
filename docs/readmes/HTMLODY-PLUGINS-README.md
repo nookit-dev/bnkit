@@ -23,7 +23,7 @@ HTMLody Plugins and Types are integral parts of a system designed for dynamic HT
 ### Using the Class Record Plugin
 
 ```javascript
-import { classRecordPlugin } from '@bnk/core/modules/htmlody/htmlody-plugins';
+import { classRecordPlugin } from 'bnkit/htmlody/htmlody-plugins';
 
 const responsiveElement = {
   tag: "div",
@@ -40,7 +40,7 @@ const processedElement = classRecordPlugin.processNode(responsiveElement);
 ### Applying the Markdown Plugin
 
 ```javascript
-import { markdownPlugin } from '@bnk/core/modules/htmlody/htmlody-plugins';
+import { markdownPlugin } from 'bnkit/htmlody/htmlody-plugins';
 
 const markdownElement = {
   tag: "div",

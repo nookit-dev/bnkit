@@ -19,13 +19,13 @@ import {
   createSecurityToken,
   verifyToken,
   getTokenExpireEpoch
-} from '@bnk/auth';
+} from 'bnkit/auth';
 ```
 
 Here's a quick example to create and verify a token:
 
 ```typescript
-import { createSecurityToken, verifyToken } from '@bnk/auth';
+import { createSecurityToken, verifyToken } from 'bnkit/auth';
 
 async function demoAuth() {
   // Create a new security token

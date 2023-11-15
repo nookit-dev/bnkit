@@ -27,7 +27,7 @@ The CSS Engine Module, inspired by Tailwind CSS, offers a dynamic and flexible a
 ### Creating Responsive Layouts
 
 ```javascript
-import { sizeFractions } from '@bnk/modules/css-engine';
+import { sizeFractions } from 'bnkit/htmlody/css-engine';
 
 // Responsive half-width classes
 const widthClasses = sizeFractions("1/2");
@@ -36,7 +36,7 @@ const widthClasses = sizeFractions("1/2");
 ### Styling Text and Background
 
 ```javascript
-import { textColorGen, bgColorGen } from '@bnk/modules/css-engine';
+import { textColorGen, bgColorGen } from 'bnkit/htmlody/css-engine';
 
 // Text color utility classes
 const textColorClasses = textColorGen("blue", 500);

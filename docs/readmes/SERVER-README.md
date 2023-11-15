@@ -25,7 +25,7 @@ The Bun Nook Kit Server Module is a robust solution for building servers in Bun-
 ### Defining Middleware with Types
 
 ```javascript
-import { Middleware, MiddlewareConfigMap } from '@bnk/core/modules/server';
+import { Middleware, MiddlewareConfigMap } from 'bnkit/server';
 
 const timeMiddleware: Middleware<
   { test1: string },
@@ -47,7 +47,7 @@ const middleware = { time: timeMiddleware, cors: corsHeaders } satisfies Middlew
 ### Creating Routes with Type-Safe Handlers
 
 ```javascript
-import { Routes } from '@bnk/core/modules/server';
+import { Routes } from 'bnkit/server';
 
 const routes: Routes<{ middleware: typeof middleware }> = {
   "/": {
@@ -60,7 +60,7 @@ const routes: Routes<{ middleware: typeof middleware }> = {
 ### Configuring and Starting the Server
 
 ```javascript
-import { serverFactory, middlewareFactory } from '@bnk/core/modules/server';
+import { serverFactory, middlewareFactory } from 'bnkit/server';
 
 const middlewareControl = middlewareFactory(middleware);
 

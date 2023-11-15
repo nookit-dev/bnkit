@@ -29,7 +29,7 @@ The SQLite Module in the Bun Nook Kit provides a seamless integration of SQLite 
 ### Defining a SQLite Schema and Corresponding TypeScript Type
 
 ```typescript
-import { SchemaMap } from '@bnk/core/modules/sqlite/sqlite-factory';
+import { SchemaMap } from 'bnkit/sqlite/sqlite-factory';
 
 const noteSchema = {
   id: { type: "TEXT" },
@@ -43,7 +43,7 @@ type Note = SQLiteSchemaInfer<typeof noteSchema>;
 ### Creating and Using a Table with the Inferred TypeScript Type
 
 ```typescript
-import { createSqliteFactory, SQLiteSchemaInfer } from '@bnk/core/modules/sqlite';
+import { createSqliteFactory, SQLiteSchemaInfer } from 'bnkit/sqlite';
 
 const db = new Database("path/to/database");
 const { dbTableFactory } = createSqliteFactory({ db });
@@ -64,8 +64,8 @@ notesTable.create({ id: "1", text: "Note text" });
 You can integrate the SQLite module with the server module for dynamic web applications. For example, use SQLite for storing and retrieving data in server routes:
 
 ```typescript
-import { serverFactory } from '@bnk/core/modules/server';
-import { createSqliteFactory } from '@bnk/core/modules/sqlite';
+import { serverFactory } from 'bnkit/server';
+import { createSqliteFactory } from 'bnkit/sqlite';
 
 const db = new Database("path/to/database");
 const { dbTableFactory } = createSqliteFactory({ db });

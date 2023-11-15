@@ -21,7 +21,7 @@ Here's a simplified example of how the auth module connects to Bun Nook Kit:
 export { createSecurityToken, verifyToken } from './security-token';
 
 // using just the auth module from BNK stack
-import { createSecurityToken, verifyToken } from '@bnk/module/auth';
+import { createSecurityToken, verifyToken } from 'bnkit/auth';
 
 // Usage of the auth module's functionality
 async function initializeAuth() {
@@ -33,5 +33,6 @@ async function initializeAuth() {
 By following this standardized method of connection, Bun Nook Kit ensures that each module can be developed and maintained in isolation, promoting a robust and scalable architecture.
 
 ### Single Release For All Modules
-When there is a new release the modules are published as a single modules installed as `@bnk/core`
-Plugins contain other peer dependencies, so are not considered a core module. Those are installed seperately `bun add @bnk/react` for example.
+
+When there is a new release the modules are published as a single modules installed as `bnkit`
+Plugins contain other peer dependencies, so are not considered a core module. Those are installed seperately `bun add @bnkit/react` for example.

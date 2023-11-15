@@ -26,7 +26,7 @@ The UUID Module in the Bun Nook Kit provides a set of utilities for generating, 
 ### Generating Different Versions of UUIDs
 
 ```javascript
-import { generateUuid, generateUuidV6, generateUuidV7, generateUuidV8 } from '@bnk/';
+import { generateUuid, generateUuidV6, generateUuidV7, generateUuidV8 } from 'bnkit/uuid';
 
 const uuidV6 = generateUuidV6();
 const uuidV7 = generateUuidV7();
@@ -36,7 +36,7 @@ const uuidV8 = generateUuidV8([BigInt(0x123456789abc), BigInt(0x123), BigInt(0x3
 ### Validating UUIDs
 
 ```javascript
-import { isValidUuid } from '@bnk/core/modules/uuid';
+import { isValidUuid } from 'bnkit/uuid';
 
 const valid = isValidUuid('f47ac10b-58cc-4372-a567-0e02b2c3d479');
 ```
@@ -44,7 +44,7 @@ const valid = isValidUuid('f47ac10b-58cc-4372-a567-0e02b2c3d479');
 ### Extracting Timestamp from UUID v7
 
 ```javascript
-import { extractTimestampFromUuidV7 } from '@bnk/core/modules/uuid';
+import { extractTimestampFromUuidV7 } from 'bnkit/uuid';
 
 const { timestamp } = extractTimestampFromUuidV7('01e501f3-9f9b-7f3a-b473-2c8c4d43a3f4');
 ```

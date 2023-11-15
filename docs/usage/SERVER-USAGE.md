@@ -21,7 +21,7 @@ The Bun Nook Kit Server Module is designed for creating robust servers in Bun-ba
 ### 1. Defining Middleware with Types
 
 ```typescript
-import { Middleware, MiddlewareConfigMap } from '@bnk/core/modules/server';
+import { Middleware, MiddlewareConfigMap } from 'bnkit/server';
 
 const timeMiddleware: Middleware<
   { test1: string },
@@ -43,7 +43,7 @@ const middleware = { time: timeMiddleware, cors: corsHeaders } satisfies Middlew
 ### 2. Creating Type-Safe Routes
 
 ```typescript
-import { Routes } from '@bnk/core/modules/server';
+import { Routes } from 'bnkit/server';
 
 const routes: Routes<{ middleware: typeof middleware }> = {
   "/": {
@@ -56,7 +56,7 @@ const routes: Routes<{ middleware: typeof middleware }> = {
 ### 3. Configuring and Starting the Server
 
 ```typescript
-import { serverFactory, middlewareFactory } from '@bnk/core/modules/server';
+import { serverFactory, middlewareFactory } from 'bnkit/server';
 
 const middlewareControl = middlewareFactory(middleware);
 
@@ -73,8 +73,8 @@ start(3000); // Start the server on port 3000
 Integrating the server with HTMLody can be done by using HTMLody to generate HTML content for server responses. For example, you can create a route that returns an HTMLody-generated page:
 
 ```typescript
-import { jsonToHtml } from '@bnk/core/modules/htmlody';
-import { htmlRes } from '@bnk/core/modules/server'
+import { jsonToHtml } from 'bnkit/htmlody';
+import { htmlRes } from 'bnkit/server'
 
 const htmlRoute: RouteHandler = (req, mid) => {
   const page = /* Define your HTMLody page here */;

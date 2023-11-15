@@ -4,7 +4,7 @@
 
 ## Overview
 
-HTMLody, part of the `@bnk/core` library, offers a powerful and flexible way to generate HTML content using TypeScript. It allows you to define HTML elements, styles, and content programmatically, making it easier to build both dynamic and static web pages.
+HTMLody, part of the `Bun Nook Kit` library, offers a powerful and flexible way to generate HTML content using TypeScript. It allows you to define HTML elements, styles, and content programmatically, making it easier to build both dynamic and static web pages.
 
 ---
 
@@ -15,7 +15,7 @@ HTMLody, part of the `@bnk/core` library, offers a powerful and flexible way to 
 To create a basic HTML element, define a `CRNode` and specify the tag and content:
 
 ```typescript
-import { CRNode } from "@bnk/core/modules/htmlody";
+import { CRNode } from "bnkit/htmlody";
 
 const element: CRNode = {
   tag: "div",
@@ -85,7 +85,7 @@ const responsiveDiv: CRNode = {
 Incorporate Markdown content within your JSON configuration:
 
 ```typescript
-import { markdownPlugin, jsonToHtml } from "@bnk/core/modules/htmlody";
+import { markdownPlugin, jsonToHtml } from "bnkit/htmlody";
 
 const content: MDNode = {
   main: {

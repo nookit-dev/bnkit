@@ -22,7 +22,7 @@ The primary input to the system is a JSON configuration that defines the structu
 
 ## Overview
 
-This guide provides a comprehensive walkthrough on how to leverage a JSON-like structure for building HTML websites using TypeScript and the `@bnk/core` library. This approach promotes a programmatic, reusable, and maintainable way of defining your website's structure, style, and content.
+This guide provides a comprehensive walkthrough on how to leverage a JSON-like structure for building HTML websites using TypeScript and the `Bun Nook Kit` library. This approach promotes a programmatic, reusable, and maintainable way of defining your website's structure, style, and content.
 
 ---
 
@@ -33,7 +33,7 @@ This guide provides a comprehensive walkthrough on how to leverage a JSON-like s
 The tag is the most basic yet fundemental part - configure your node to the HTML tag to render.
 
 ```typescript
-import { CRNode, cc, CRNode, uClass } from "@bnk/core/modules/htmlody";
+import { CRNode, cc, CRNode, uClass } from "bnkit/htmlody";
  
 
 const element: CRNode = {
@@ -93,7 +93,7 @@ const element: CRNode = {
 Create reusable components for consistency and reduced duplication. Ensure the return type, is of the correct node type you are using. A CRNode is class record node (which is how cr is supported).
 
 ```typescript
-import { CRNode } from "@bnk/core/modules/htmlody";
+import { CRNode } from "bnkit/htmlody";
 
 const createButton = (label: string): CRNode => ({
   tag: "button",
@@ -126,7 +126,7 @@ Define responsive styles with the `cr` property:
 The cr key stands for "ClassRecords" this will accept an object of all the breakpoints ("*" is for all breakpoints), along with a record passed to the breakpoint config which is a key/value (string/boolean) of each class you want(true being applied). This approach allows you to easily SSR new pages based on changing data from a database. You'll notice the uClass(union class) utility function being used, this is used inside the break pionts instead of having to create a record of classes. Eventually it'll support just arrays, but I wanted to make sure to get the TypeScript correct.
 
 ```typescript
-import { cc, CRNode, uClass } from "@bnk/core/modules/htmlody";
+import { cc, CRNode, uClass } from "bnkit/htmlody";
 
 const responsiveDiv: CRNode = {
   tag: "div",
@@ -148,8 +148,8 @@ The Markdown Plugin for HTMLody allows you to easily incorporate Markdown conten
 ### Plugin Basic Example
 
 ```typescript
-import { markdownPlugin, jsonToHtml } from "@bnk/core/modules/htmlody";
-import type { MDNode } from "@bnk/core/modules/htmlody"
+import { markdownPlugin, jsonToHtml } from "bnkit/htmlody";
+import type { MDNode } from "bnkit/htmlody"
 
 // MDNode = Markdown Node
 const content: MDNode = {
