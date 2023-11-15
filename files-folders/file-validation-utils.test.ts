@@ -7,7 +7,7 @@ import {
   fileExists,
 } from "./file-validation-utils";
 
-const savePath = process.env.PWD + "/modules/files-factory/test";
+const savePath = process.env.PWD + "/files-folders/test";
 const saveFile = savePath + "/test.txt";
 
 describe("fileExists", () => {
@@ -43,7 +43,7 @@ describe("directoryExists", () => {
   });
 
   it("should not create directory if it already exists", async () => {
-    const directoryPath = "modules/files-factory/fake";
+    const directoryPath = "files-folders/fake";
     const fullPath = getFullPath({
       baseDir: ".",
       filePath: directoryPath,

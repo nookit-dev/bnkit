@@ -119,7 +119,7 @@ Bun Nook Kit offers a wide array of utility modules including:
 
 16. [🆔UUID](docs/readmes/UUID-README.md): Generate timestamp encoded UUIDs with UUIDv7 spec implemented
 
-17. [🧙‍♂️Type Utils](modules/TYPE-UTILS.md): TypeScript Utilities
+17. [🧙‍♂️Type Utils](docs/readmes/type-utils.md): TypeScript Utilities
 
 18. [✅Validation]: The Validation module aims to provide a comprehensive suite of validation functions. It includes functions for checking the validity of API data and can be used to ensure data integrity and accuracy.
 

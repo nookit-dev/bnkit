@@ -3,7 +3,7 @@ import { saveOrUpdateFile } from "./file-editing-utils";
 import { recursiveDirSearch, searchDirForFileName } from "./file-search-utils";
 import { deletePath } from "./file-validation-utils";
 
-const testDir = process.env.PWD + "/modules/files-factory/test";
+const testDir = process.env.PWD + "/files-folders/test";
 const nestedDir = testDir + "/nestedDir";
 
 describe("Search Utilities", () => {

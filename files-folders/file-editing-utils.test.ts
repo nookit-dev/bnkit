@@ -4,7 +4,7 @@ import { saveOrUpdateFile } from "./file-editing-utils";
 import { readFileContent } from "./file-reading-utils";
 import { deletePath } from "./file-validation-utils";
 
-const savePath = process.env.PWD + "/modules/files-factory/test";
+const savePath = process.env.PWD + "/files-folders/test";
 
 describe("saveResultToFile", () => {
   it("should save and update content to file", async () => {

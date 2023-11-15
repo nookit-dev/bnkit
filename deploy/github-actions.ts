@@ -1,6 +1,6 @@
 import { SyncSubprocess } from "bun";
-import { ulog } from "modules/utils/ulog";
 import { exit } from "process";
+import { ulog } from "../utils/ulog";
 
 export async function logStdOutput(proc: SyncSubprocess) {
   try {

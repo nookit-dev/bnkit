@@ -48,8 +48,8 @@ describe("fileFactory", async () => {
     const factory = getTestFactory();
 
     const filePaths = [
-      "./modules/files-folders/test/test1.txt",
-      "./modules/files-folders/test/test2.txt",
+      "./files-folders/test/test1.txt",
+      "./files-folders/test/test2.txt",
     ];
 
     const contents = ["Hello, world!", "Goodbye, world!"];
