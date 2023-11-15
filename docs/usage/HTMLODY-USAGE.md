@@ -1,7 +1,5 @@
 ### HTMLody Guide: Building HTML Pages with TypeScript
 
----
-
 ## Overview
 
 HTMLody, part of the `Bun Nook Kit` library, offers a powerful and flexible way to generate HTML content using TypeScript. It allows you to define HTML elements, styles, and content programmatically, making it easier to build both dynamic and static web pages.
