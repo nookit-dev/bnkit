@@ -185,6 +185,13 @@ Close To Final For V1:
 
 ### Better handling for Server Sent Events in Server, Fetcher, etc
 
+## Screenshots
+(if you made it this far)
+<img width="1026" alt="Xnapper-2023-11-14-19 42 26" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/8b5a1aa2-94f6-4af1-9e1d-8b7ce9eb4b01">
+<img width="555" alt="Xnapper-2023-11-14-19 43 47" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/0d66c9ec-0f3a-487c-98f8-8c14faeaa82d">
+<img width="582" alt="Xnapper-2023-11-14-19 47 14" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/78afc0e7-46c0-4269-8072-e8622f111b08">
+<img width="478" alt="Xnapper-2023-11-14-19 51 14" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/9a70c8fa-a88a-48fc-95de-6c8dbadcb047">
+
 ## License
 
 Bun Nook Kit is licensed under the MIT License. Enjoy the freedom to use, modify, and distribute the software under very permissive terms.
