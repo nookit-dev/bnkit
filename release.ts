@@ -1,13 +1,14 @@
 import Bun from "bun";
 import path from "path";
 import { exit } from "process";
-import * as u from "./";
+// import * as u from "./";
 import { ulog } from "./utils/ulog";
+import { deploy, npm } from "index";
 
 // run bun test
 const testProc = Bun.spawnSync(["bun", "test", "--coverage"], {});
 
-const output = await u.deploy.logStdOutput(testProc);
+const output = await deploy.logStdOutput(testProc);
 
 if (!output) {
   ulog("No output");
@@ -20,12 +21,12 @@ const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max num
 const e = Bun.env;
 
 const { npmPublish, setupNpmAuth, updatePackageVersion } =
-  u.npm.npmReleaseFactory({
+  npm.npmReleaseFactory({
     maxRetries: MAX_RETRIES,
     npmToken: NPM_TOKEN,
   });
 
-const { commitAndPush, setupGitConfig } = u.deploy.createGitHubActionsFactory({
+const { commitAndPush, setupGitConfig } = deploy.createGitHubActionsFactory({
   sshRepoUrl: "git@github.com:brandon-schabel/bun-nook-kit.git",
 });
 

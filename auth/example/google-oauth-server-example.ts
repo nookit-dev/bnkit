@@ -1,26 +1,25 @@
+import { createOAuthFactory } from "auth/oauth";
+import { initGoogleOAuth } from "auth/oauth-google-provider";
 import type { Routes } from "server";
 import { serverFactory } from "server";
-import { createOAuthHandler, googleProvider } from "../oauth";
-
-const oauthHandler = createOAuthHandler(googleProvider);
 
 const googleClientId = Bun.env.GOOGLE_OAUTH_CLIENT_ID || "";
 const googleClientSecret = Bun.env.GOOGLE_OAUTH_CLIENT_SECRET || "";
 
 
-console.log({
-    googleClientId, 
-    googleClientSecret
-})
+const googleOAuthConfig = initGoogleOAuth({
+  clientId: googleClientId,
+  clientSecret: googleClientSecret,
+});
+
+const googleOAuth = createOAuthFactory(googleOAuthConfig);
 
 const routes = {
   "/login": {
-    GET: (req) => {
-      const authUrl = oauthHandler.initiateOAuthFlow({
-        clientId: googleClientId,
-        clientSecret: googleClientSecret,
-        redirectUri: "http://localhost:3000/callback",
-      });
+    GET: () => {
+      // you could pass a param for the provider
+      const authUrl = googleOAuth.initiateOAuthFlow();
+
       return new Response(null, {
         headers: { Location: authUrl },
         status: 302,
@@ -30,7 +29,7 @@ const routes = {
   "/callback": {
     GET: async (req) => {
       try {
-        const host = req.headers.get("host")
+        const host = req.headers.get("host");
         // Parse the URL and query parameters
         const url = new URL(req.url, `http://${host}`);
         const queryParams = new URLSearchParams(url.search);
@@ -40,24 +39,20 @@ const routes = {
           return new Response("No code provided in query", { status: 400 });
         }
 
-        const tokenInfo = await oauthHandler.handleRedirect(code, {
-          clientId: googleClientId,
-          clientSecret: googleClientSecret,
-          redirectUri: "http://localhost:3000/callback",
-        });
+        const tokenInfo = await googleOAuth.handleRedirect(code);
 
         console.log({ tokenInfo });
 
         // Logic after successful authentication
         return new Response("Login Successful!");
       } catch (error) {
-        console.error(error)
+        console.error(error);
         return new Response("Authentication failed", { status: 500 });
       }
     },
   },
   "/": {
-    GET: (req) => {
+    GET: () => {
       // HTML content for the login page
       const htmlContent = `<html><body><h2>Login with Google</h2><button onclick="window.location.href='/login'">Login</button></body></html>`;
       return new Response(htmlContent, {
@@ -71,4 +66,4 @@ const server = serverFactory({
   routes,
 });
 
-server.start()
+server.start(3000);
