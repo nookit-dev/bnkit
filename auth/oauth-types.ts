@@ -23,3 +23,14 @@ export type OAuthToken = {
   idToken?: string; // Optional, used in OpenID Connect (OIDC)
   // Additional fields can be added here depending on the OAuth provider
 };
+
+export type OAuthProviderOptions = {
+  redirectUrl: string;
+};
+
+export type OAuthProviderCreds = Pick<OAuthConfig, "clientId" | "clientSecret">;
+export type OAuthProviderFn = (
+  config: OAuthProviderCreds,
+  options?: OAuthProviderOptions
+) => OAuthConfig;
+export type OAuthProviderInitializer = (config: OAuthConfig) => OAuthHelpers;

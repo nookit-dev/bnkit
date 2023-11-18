@@ -1,5 +1,5 @@
 import { createOAuthFactory } from "auth/oauth";
-import { initGoogleOAuth } from "auth/oauth-google-provider";
+import { initGoogleOAuth } from "auth/oauth-providers";
 import type { Routes } from "server";
 import { serverFactory } from "server";
 
