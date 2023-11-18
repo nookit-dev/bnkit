@@ -1,11 +1,11 @@
 import { OAuthConfig, OAuthProviderFn } from "./oauth-types";
 
-export type ProvidersConfig = Record<
+export type ProvidersConfigRecord = Record<
   string,
   Omit<OAuthConfig, "clientId" | "clientSecret">
 >;
 
-export const bnkProviders = {
+export const oAuthProviders = {
   google: {
     redirectUri: "http://localhost:3000/callback", // just a default placeholder
     authReqUrl: "https://accounts.google.com/o/oauth2/v2/auth",
@@ -17,7 +17,7 @@ export const bnkProviders = {
       "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
     tokenUrl: "http://needtofind",
   },
-} satisfies ProvidersConfig;
+} satisfies ProvidersConfigRecord;
 
 export const initGoogleOAuth: OAuthProviderFn = (
   { clientId, clientSecret },
@@ -25,8 +25,8 @@ export const initGoogleOAuth: OAuthProviderFn = (
 ) => {
   const redirectUrl = options?.redirectUrl;
   return {
-    ...bnkProviders.google,
-    redirectUri: redirectUrl ? redirectUrl : bnkProviders.google.redirectUri,
+    ...oAuthProviders.google,
+    redirectUri: redirectUrl ? redirectUrl : oAuthProviders.google.redirectUri,
     clientId,
     clientSecret,
   };

@@ -43,19 +43,6 @@ export async function getOAuthToken<T extends OAuthToken>({
   return oAuthFetcher<T>(config.tokenUrl, params);
 }
 
-export const createOAuthFactory = (config: OAuthConfig) => {
-  const provider = initProvider(config);
-
-  return {
-    handleRedirect: async (code: string) => {
-      return await provider.getToken(code, config);
-    },
-    initiateOAuthFlow: () => {
-      return provider.getAuthorizationUrl(config);
-    },
-  };
-};
-
 export const initProvider: OAuthProviderInitializer = (config) => {
   return {
     // TODO add options to be able to change response_type/scope, etc
@@ -80,6 +67,19 @@ export const initProvider: OAuthProviderInitializer = (config) => {
           return response;
         }
       });
+    },
+  };
+};
+
+export const oAuthFactory = (config: OAuthConfig) => {
+  const provider = initProvider(config);
+
+  return {
+    handleRedirect: async (code: string) => {
+      return await provider.getToken(code, config);
+    },
+    initiateOAuthFlow: () => {
+      return provider.getAuthorizationUrl(config);
     },
   };
 };

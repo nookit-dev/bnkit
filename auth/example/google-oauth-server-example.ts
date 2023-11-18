@@ -1,4 +1,4 @@
-import { createOAuthFactory } from "auth/oauth";
+import { oAuthFactory } from "auth/oauth";
 import { initGoogleOAuth } from "auth/oauth-providers";
 import type { Routes } from "server";
 import { serverFactory } from "server";
@@ -12,7 +12,7 @@ const googleOAuthConfig = initGoogleOAuth({
   clientSecret: googleClientSecret,
 });
 
-const googleOAuth = createOAuthFactory(googleOAuthConfig);
+const googleOAuth = oAuthFactory(googleOAuthConfig);
 
 const routes = {
   "/login": {
