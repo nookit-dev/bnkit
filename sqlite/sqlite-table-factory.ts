@@ -3,6 +3,7 @@ import { SQLiteSchemaInfer, SchemaMap } from "./sqlite-factory";
 import {
   createItem,
   deleteItemById,
+  readFirstItemByKey,
   readItemById,
   readItems,
   readItemsWhere,
@@ -61,6 +62,15 @@ export function sqliteTableFactory<
     },
     readById(id: string | number) {
       return readItemById<Schema>(db, tableName, log, id);
+    },
+    readItemByKey(key: string, value: string | number) {
+      return readFirstItemByKey<Schema>(
+        db,
+        tableName,
+        log,
+        key,
+        value
+      ) as unknown as TranslatedSchema;
     },
     update(id: string | number, item: Partial<Omit<TranslatedSchema, "id">>) {
       return updateItem<Schema>(db, tableName, log, id, item);

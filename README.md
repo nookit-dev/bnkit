@@ -6,8 +6,6 @@
 Bun Nook Kit (BNK) is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
 
 
-## [View Modules Docs Site](https://nookit.dev/readme)
-#### [Doc Repo](https://github.com/brandon-schabel/bun-nook-kit-docs)
 
 ## Quick Start
 
@@ -34,9 +32,10 @@ bun dev
 Visit `http://localhost:3000` in your browser and you should see Hello world and
 `http://localhost:3000/json` for the json
 
-## Usage Overview
+## [View Modules Docs Site](https://nookit.dev/readme)
+### [Doc Repo](https://github.com/brandon-schabel/bun-nook-kit-docs)
 
-### Install
+## Bun Nook Kit Installation
 
 ```bash
 bun add bnkit
@@ -72,7 +71,7 @@ start()
 
 ## Discord Server
 
-Join our [Discord Server]("https://discord.gg/rQyWN7V6"), drop in and ask questions, give feedback or just for a chat!
+Join our [Discord Server]("https://discord.gg/rQyWN7V6") https://discord.gg/rQyWN7V6, drop in and ask questions, give feedback or just for a chat!
 
 ## Key Highlights
 
@@ -82,7 +81,7 @@ Join our [Discord Server]("https://discord.gg/rQyWN7V6"), drop in and ask questi
 
 - **TypeSafe with Strong TypeScript type Inferencing** - Strong types tell you where things are incorrect, strong type inferrence allows you to utilize the advantages of strong types and not having to deal with too much TypeScript.
 
-- **Modular** Everything is built with as little dependency other other modules in the repo, however they still work together. Soon I'll be working on a full stack auth package which will utilize everything from server routes, cookies, database(sqlite).
+- **Modular** Everything is built with as little direct dependency on other modules in the repo, however they still work together. Soon I'll be working on a full stack auth package which will utilize everything from server routes, cookies, database(sqlite).
 
 - **Builds on Web APIs** Bun itself is built on strong principles of sticking to Web APIs In order to maintain as much comptaibility across various packages, BNK sticks to the fundementals of the webplatform APIs.
 

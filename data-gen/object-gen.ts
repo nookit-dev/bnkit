@@ -7,11 +7,11 @@ interface DataGenerators {
   date: (generator?: DataGenerator<Date>) => Date;
   object: <T extends Record<string, any>>(
     shape: T,
-    generatorMap?: Partial<Record<keyof T, DataGenerator<any>>>
+    generatorMap?: Partial<Record<keyof T, DataGenerator<any>>>,
   ) => DataGenerator<T>;
   array: <T>(
     generator: DataGenerator<T>,
-    length?: number
+    length?: number,
   ) => DataGenerator<T[]>;
 }
 
@@ -22,7 +22,8 @@ export const dataGenerators: DataGenerators = {
   date: (generator = () => new Date()) => generator(),
   object: <T extends Record<string, any>>(
     shape: T,
-    generatorMap: Partial<Record<keyof T, DataGenerator<any>>> = {})=>{
+    generatorMap: Partial<Record<keyof T, DataGenerator<any>>> = {},
+  ) => {
     return () => {
       const result = {} as any;
       for (const key in shape) {
@@ -36,7 +37,7 @@ export const dataGenerators: DataGenerators = {
       return result as T;
     };
   },
-  array: <T>(generator: DataGenerator<T>, length = 10) => {
+  array: <T,>(generator: DataGenerator<T>, length = 10) => {
     return () => {
       const result = [];
       for (let i = 0; i < length; i++) {
@@ -47,7 +48,7 @@ export const dataGenerators: DataGenerators = {
   },
 };
 
-export const inferTypeAndGenerate = <Val>(value: Val): any => {
+export const inferTypeAndGenerate = <Val,>(value: Val): any => {
   switch (typeof value) {
     case "string":
       return dataGenerators.string();
@@ -64,7 +65,7 @@ export const inferTypeAndGenerate = <Val>(value: Val): any => {
         const inferredTypeGenerator = inferTypeAndGenerate(value[0]);
         return dataGenerators.array(
           () => inferredTypeGenerator,
-          value.length
+          value.length,
         )();
       } else if (typeof value === "object" && value !== null) {
         return dataGenerators.object(value as Record<string, any>)();

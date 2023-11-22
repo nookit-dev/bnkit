@@ -21,8 +21,12 @@ export function createItem<
   const valuesArray = Object.values(item);
   log({ query, valuesArray });
 
-  // Perform the insert operation
-  db.query(query).run(...valuesArray);
+  try {
+    // Perform the insert operation
+    db.query(query).run(...valuesArray);
+  } catch (e) {
+    throw e;
+  }
 
   if (returnInsertedItem) {
     // Assuming your db instance has a method to get the last inserted row id
@@ -30,14 +34,35 @@ export function createItem<
 
     // Query to select the last inserted item
     const selectQuery = `SELECT * FROM ${tableName} WHERE id = last_insert_rowid();`;
-    const insertedItem = db.query(selectQuery).get() as TranslatedSchema;
 
-    log({ selectQuery, lastId: insertedItem.id, insertedItem });
-    return insertedItem as TranslatedSchema;
+    try {
+      const insertedItem = db.query(selectQuery).get() as TranslatedSchema;
+
+      log({ selectQuery, lastId: insertedItem.id, insertedItem });
+      return insertedItem as TranslatedSchema;
+    } catch (e) {
+      throw e;
+    }
   }
 
   // If not returning the inserted item, return an empty array
   return null;
+}
+
+export function readFirstItemByKey<
+  Schema extends SchemaMap,
+  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
+>(
+  db: Database,
+  tableName: string,
+  log: (msg: any) => void,
+  key: keyof TranslatedSchema,
+  value: string | number
+): TranslatedSchema {
+  const queryString = selectItemByKeyQueryString(tableName, String(key));
+  log(queryString);
+  const query = db.prepare(queryString).get(value) as TranslatedSchema;
+  return query;
 }
 
 // Modify the readItems function to include an optional id parameter.
@@ -50,10 +75,11 @@ export function readItemById<
   log: (msg: any) => void,
   id: string | number // Add an optional id parameter
 ): TranslatedSchema {
-  const query = selectItemByIdQueryString(tableName, id);
+  const query = selectItemByKeyQueryString(tableName, "id");
   log(query);
-  // Use the ID in the parameterized query to prevent SQL injection.
-  const data = db.query(query).get({ $id: id }) as TranslatedSchema;
+
+  const data = db.prepare(query).get(id) as TranslatedSchema;
+
   return data;
 }
 
@@ -104,11 +130,12 @@ export function readItemsWhere<
 }
 
 // In your crud-string-utils file, add a function to create a SQL query string to select by ID.
-export function selectItemByIdQueryString(
+export function selectItemByKeyQueryString(
   tableName: string,
-  id: string | number
+  key: string
+  // value: string | number
 ): string {
-  return `SELECT * FROM ${tableName} WHERE id = $id;`;
+  return `SELECT * FROM ${tableName} WHERE ${key} = ?`;
 }
 
 export function readItems<

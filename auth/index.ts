@@ -2,5 +2,9 @@ export {
   createSecurityToken,
   createToken,
   getTokenExpireEpoch,
-  verifyToken,
+  verifyToken
 } from "./security-token";
+
+export { oAuthFactory } from "./oauth";
+
+export { initGoogleOAuth, oAuthProviders } from "./oauth-providers";

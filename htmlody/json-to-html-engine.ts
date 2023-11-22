@@ -57,7 +57,6 @@ export function renderHtmlTag({
   validate?: boolean;
 }): string {
   if (validate) {
-    console.log("validating tag name", tagName)
     validateTagName(tagName);
   }
 
@@ -410,7 +409,7 @@ export const htmlodyBuilder = <
     const html = buildHtmlDoc(bodyConfig, options);
     return new Response(html, {
       headers: {
-        "Content-Type": "text/html",
+        "Content-Type": "text/html; charset=utf-8",
       },
     });
   };
