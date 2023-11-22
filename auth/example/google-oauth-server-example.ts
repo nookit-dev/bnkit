@@ -47,7 +47,7 @@ const routes = {
         return new Response("Login Successful!");
       } catch (error) {
         console.error(error);
-        return new Response("Authentication failed", { status: 500 });
+        return new Response("Authentication failed", { status: 403 });
       }
     },
   },
