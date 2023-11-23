@@ -17,5 +17,8 @@
     "tsc": "tsc --project tsconfig.json",
     "tsc:noEmit": "tsc --noEmit --project tsconfig-noEmit.json",
     "validate": "bun run tsc:noEmite && bun run test"
+  },
+  "bin": {
+    "bnkit": "sh ./scripts/cli.sh"
   }
 }

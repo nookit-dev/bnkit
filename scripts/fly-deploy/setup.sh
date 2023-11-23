@@ -1,7 +1,6 @@
 #!/bin/bash
 
-
-BNK_SCRIPT_PATH="node_modules/bnkit/utils/setup-scripts/fly-deploy-files"
+BNK_SCRIPT_PATH="node_modules/bnkit/scripts/fly-deploy"
 
 # parse all flags 
 while [ $# -gt 0 ]; do
@@ -16,8 +15,10 @@ done
 PROJECT_DIR=$dir
 FULL_PATH="$PROJECT_DIR/$BNK_SCRIPT_PATH"
 
+echo "Project Directory: $PROJECT_DIR"
+
 cp -r $FULL_PATH/.dockerignore $PROJECT_DIR/.dockerignore
-cp -r $FULL_PATH/deploy-to-fly.yml PROJECT_DIR/.github/workflows
+cp -r $FULL_PATH/deploy-to-fly.yml $PROJECT_DIR/.github/workflows
 cp -r $FULL_PATH/Dockerfile $PROJECT_DIR/Dockerfile
 cp -r $FULL_PATH/fly.toml $PROJECT_DIR/fly.toml
 
