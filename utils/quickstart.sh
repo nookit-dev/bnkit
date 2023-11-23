@@ -28,7 +28,7 @@ fi
 
 # Clone the starter project using Bun
 echo "Cloning the $PROJECT_NAME project..."
-bun create github.com/brandon-schabel/bun-server-starter $PROJECT_NAME
+bun create github.com/brandon-schabel/start-bnk $PROJECT_NAME
 cd $PROJECT_NAME
 
 # Run the project setup script

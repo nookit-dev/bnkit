@@ -14,10 +14,8 @@
 Bun Nook Kit (BNK) is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
 
 ## Server Quickstart Template
-Make sure to replace <your-project-name> with whatever you want the folder to be created as
-
 ```bash
-curl -fsSL https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/utils/quickstart.sh | bash
+echo -p bnk-starter | bash <(curl -fsSL https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/utils/quickstart.sh)
 ```
 
 Visit `http://localhost:3000` in your browser and you should see Hello world and
