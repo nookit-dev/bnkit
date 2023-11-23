@@ -7,7 +7,7 @@
 ![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/bun_nook_kit)
 ![npm](https://img.shields.io/npm/v/bnkit?logo=npm)
 ![GitHub release (with filter)](https://img.shields.io/github/v/release/brandon-schabel/bun-nook-kit)
-![Stars][https://img.shields.io/github/stars/brandon-schabel/bun-nook-kit]
+![Stars](https://img.shields.io/github/stars/brandon-schabel/bun-nook-kit)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/bnkit)
 ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/bnkit)
 
