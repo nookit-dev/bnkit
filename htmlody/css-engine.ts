@@ -1000,6 +1000,7 @@ export const CSS_MAP = {
   "max-h-6xl": "max-height: 72rem;",
   "max-h-7xl": "max-height: 80rem;",
   "max-h-full": "max-height: 100%;",
+  "100vh": "height: 100vh;",
 
   // to support the return type of uClass function`
   "u-class": "",

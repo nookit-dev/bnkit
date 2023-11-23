@@ -1,4 +1,7 @@
-# Bun Nook Kit Plugins
+# React Bun Nook Kit Plugin
+![npm bundle size](https://img.shields.io/bundlephobia/min/%40bnk%2Freact)
+
+## Bun Nook Kit Plugins
 
 This plugin library provides a collection of easy-to-use, modular plugins to enhance the functionality of Bun Nook Kit applications. These plugins are not core modules but are built upon the core modules, adding extra features and flexibility to Bun Nook Kit projects.
 

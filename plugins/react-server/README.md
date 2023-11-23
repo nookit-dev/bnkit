@@ -1,4 +1,5 @@
 # react-server
+![npm bundle size](https://img.shields.io/bundlephobia/min/%40bnk%2Freact-server)
 
 To install dependencies:
 

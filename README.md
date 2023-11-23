@@ -2,6 +2,14 @@
 
 ![Bun Nook Kit Logo](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
 
+![GitHub License](https://img.shields.io/github/license/brandon-schabel/bun-nook-kit)
+![Discord](https://img.shields.io/discord/1164699087543746560)
+![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/bun_nook_kit)
+![npm](https://img.shields.io/npm/v/bnkit?logo=npm)
+![GitHub release (with filter)](https://img.shields.io/github/v/release/brandon-schabel/bun-nook-kit)
+![Stars][https://img.shields.io/github/stars/brandon-schabel/bun-nook-kit]
+![npm bundle size](https://img.shields.io/bundlephobia/min/bnkit)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/bnkit)
 
 Bun Nook Kit (BNK) is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
 
@@ -146,6 +154,9 @@ Create typesafe server routes and middleware!
 
 <img width="582" alt="Xnapper-2023-11-14-19 47 14" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/78afc0e7-46c0-4269-8072-e8622f111b08">
 
+
+### Sponsors
+None! Be the first to sponsor BNK :)
 
 ## License
 
