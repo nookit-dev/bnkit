@@ -33,5 +33,8 @@ case $choice in
         ;;
 esac
 
+echo $PROJECT_DIR
+echo $SCRIPTS_PATH/$SCRIPT
+
 # Run the chosen script
 bash $SCRIPTS_PATH/$SCRIPT --dir "$(pwd)"
