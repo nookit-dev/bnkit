@@ -1,6 +1,15 @@
 #!/bin/bash
 
-# Script to setup and run a Bun project
+# Script to setup and run a Bun project with a given project name
+
+# Check for project name argument
+if [ $# -eq 0 ]; then
+  echo "No project name provided. Usage: $0 [project-name]"
+  exit 1
+fi
+
+# The project name is the first argument
+PROJECT_NAME=$1
 
 # Function to check if a command exists
 command_exists() {
@@ -15,27 +24,14 @@ if ! command_exists bun; then
 fi
 
 # Clone the starter project using Bun
-echo "Cloning the bnk-server-starter project..."
-bun create github.com/brandon-schabel/bnk-server-starter
-cd bnk-server-starter
+echo "Cloning the $PROJECT_NAME project..."
+bun create github.com/brandon-schabel/$PROJECT_NAME
+cd $PROJECT_NAME
 
-# Install dependencies
-echo "Installing dependencies with bun install..."
-bun install
-
-# Start the server
-echo "Starting the server with bun dev..."
-bun dev &
-
-# Wait for server to start
-sleep 5
-
-# Open the web browser
-echo "Opening the browser at localhost:3000..."
-if command_exists xdg-open; then
-  xdg-open http://localhost:3000
-elif command_exists open; then
-  open http://localhost:3000
+# Run the project setup script
+if [ -f "./setup.sh" ]; then
+  echo "Running project setup script..."
+  sh ./setup.sh
 else
-  echo "Browser cannot be opened automatically. Please open localhost:3000 manually."
+  echo "No setup.sh script found in the project directory."
 fi

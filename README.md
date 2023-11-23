@@ -13,48 +13,37 @@
 
 Bun Nook Kit (BNK) is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
 
-
-
-## Quick Start
-
-Install Bun if you don't already have it:
+## Server Quickstart Template
+Make sure to replace <your-project-name> with whatever you want the folder to be created as
 
 ```bash
-curl -fsSL https://bun.sh/install | bash
-```
-
-### Server Quickstart Template
-
-```bash
-bun create github.com/brandon-schabel/bnk-server-starter
-```
-
-```bash
-cd bun-server-starter
-```
-
-```bash
-bun dev
+curl -fsSL https://github.com/brandon-schabel/bun-nook-kit/blob/main/utils/quickstart.sh | bash
 ```
 
 Visit `http://localhost:3000` in your browser and you should see Hello world and
 `http://localhost:3000/json` for the json
 
-## [View Modules Docs Site](https://nookit.dev/readme)
-### [Doc Repo](https://github.com/brandon-schabel/bun-nook-kit-docs)
+---
+### 
+# ➡ [Documentation](https://nookit.dev/readme)
+### 
 
-## Bun Nook Kit Installation
 
-```bash
-bun add bnkit
-```
+## Bun Nook Kit Package Installation
+
+Install in your project: 
+`bun add bnkit`
+
+Plugin install example: 
+`bun add @bnk/react`
 
 Use any an all Bun Nook Kit modules - server example with json response (similar to starter project)
 
 `index.ts`
 
 ```typescript
-import * as bnk from "bnkit";
+import { jsonRes, serverFactory } from "bnkit/server";
+import { middleware, RoutesWithMiddleware } from "./middlewares";
 
 const routes = {
   "/": {
@@ -66,10 +55,11 @@ const routes = {
       message: "Hello JSON Response!"
     })
   }
-} satisfies bnk.server.Routes
+} satisfies RoutesWithMiddleware
 
 const { start, routes } = bnk.server.serverFactory({
-  routes
+  routes,
+  middleware
 });
 
 
@@ -163,3 +153,6 @@ None! Be the first to sponsor BNK :)
 Bun Nook Kit is licensed under the MIT License. Enjoy the freedom to use, modify, and distribute the software under very permissive terms.
 
 Jumpstart your journey to revolutionary software development with Bun Nook Kit!
+
+Contribute to the docs:
+### [Docs Repo](https://github.com/brandon-schabel/bun-nook-kit-docs)
