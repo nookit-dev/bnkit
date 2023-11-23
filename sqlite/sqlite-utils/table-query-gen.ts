@@ -1,4 +1,4 @@
-import { FieldDefinition, SchemaMap } from "../sqlite-factory";
+import { FieldDef, SchemaMap } from "../sqlite-factory";
 
 export function assembleCreateTableQuery(
   tableName: string,
@@ -17,7 +17,7 @@ export function assembleCreateTableQuery(
 
 export function createTableLevelConstraint(
   fieldName: string,
-  definition: FieldDefinition
+  definition: FieldDef
 ): string | null {
   if (definition.foreignKey) {
     const [referencedTable, referencedField]: string[] =
@@ -38,7 +38,7 @@ export function createTableLevelConstraint(
 
 export function createColumnDefinition(
   fieldName: string,
-  definition: FieldDefinition
+  definition: FieldDef
 ): string {
   if (!definition) throw new Error(`No definition for field ${fieldName}`);
   const type = definition.type;
@@ -72,7 +72,7 @@ export function createTableQuery<Schema extends SchemaMap>({
   const columns = Object.keys(schema).map((fieldName) => {
     return createColumnDefinition(
       fieldName,
-      schema[fieldName] as FieldDefinition
+      schema[fieldName] as FieldDef
     );
   });
   const tableLevelConstraints = Object.keys(schema)
@@ -80,7 +80,7 @@ export function createTableQuery<Schema extends SchemaMap>({
       (fieldName) =>
         createTableLevelConstraint(
           fieldName,
-          schema[fieldName] as FieldDefinition
+          schema[fieldName] as FieldDef
         ) || ""
     )
     .filter(Boolean);

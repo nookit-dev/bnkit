@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { SchemaMap, SQLiteSchemaInfer } from "../sqlite-factory";
+import { SchemaMap, SQLInfer } from "../sqlite-factory";
 import {
   deleteQueryString,
   insertQueryString,
@@ -7,39 +7,61 @@ import {
   updateQueryString,
 } from "./crud-string-utils";
 
-export function createItem<
+type BaseDBParams = {
+  db: Database;
+  tableName: string;
+  debug?: boolean;
+};
+
+type ParamsWithId = BaseDBParams & { id: string | number };
+
+type DBItem<
+  S extends SchemaMap,
+  TranslatedS extends SQLInfer<S> = SQLInfer<S>
+> = Partial<Omit<TranslatedS, "id">>;
+
+type DBParamsItemNoId<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
->(
-  db: Database,
-  tableName: string,
-  log: (msg: any) => void,
-  item: TranslatedSchema,
-  returnInsertedItem: boolean = false // optional parameter to return the inserted item
-): TranslatedSchema | null {
+  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
+> = BaseDBParams & {
+  item: DBItem<Schema, TranslatedS>;
+};
+
+export function createItem<
+  S extends SchemaMap,
+  TranslatedS extends SQLInfer<S> = SQLInfer<S>
+>({
+  db,
+  debug,
+  item,
+  returnInsertedItem,
+  tableName,
+}: DBParamsItemNoId<S, TranslatedS> & {
+  returnInsertedItem?: boolean;
+}): TranslatedS | null {
   const query = insertQueryString(tableName, item);
   const valuesArray = Object.values(item);
-  log({ query, valuesArray });
+
+  if (debug) console.table({ query, valuesArray });
 
   try {
     // Perform the insert operation
-    db.query(query).run(...valuesArray);
+    db.query(query).run(...(valuesArray as any[]));
   } catch (e) {
     throw e;
   }
 
   if (returnInsertedItem) {
-    // Assuming your db instance has a method to get the last inserted row id
-    // This is pseudocode and may need to be adapted to the actual method available in bun:sqlite
-
     // Query to select the last inserted item
     const selectQuery = `SELECT * FROM ${tableName} WHERE id = last_insert_rowid();`;
 
     try {
-      const insertedItem = db.query(selectQuery).get() as TranslatedSchema;
+      const insertedItem = db.query(selectQuery).get() as TranslatedS;
 
-      log({ selectQuery, lastId: insertedItem.id, insertedItem });
-      return insertedItem as TranslatedSchema;
+      if (debug)
+        console.table({ selectQuery, lastId: insertedItem.id, insertedItem });
+
+      return insertedItem as TranslatedS;
     } catch (e) {
       throw e;
     }
@@ -50,35 +72,33 @@ export function createItem<
 }
 
 export function readFirstItemByKey<
-  Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
->(
-  db: Database,
-  tableName: string,
-  log: (msg: any) => void,
-  key: keyof TranslatedSchema,
-  value: string | number
-): TranslatedSchema {
+  S extends SchemaMap,
+  TranslatedS extends SQLInfer<S> = SQLInfer<S>
+>({
+  db,
+  debug,
+  key,
+  tableName,
+  value,
+}: BaseDBParams & {
+  key: keyof TranslatedS;
+  value: string | number;
+}): TranslatedS {
   const queryString = selectItemByKeyQueryString(tableName, String(key));
-  log(queryString);
-  const query = db.prepare(queryString).get(value) as TranslatedSchema;
+  if (debug) console.info(`readFirstItemByKey: ${queryString}`);
+  const query = db.prepare(queryString).get(value) as TranslatedS;
   return query;
 }
 
 // Modify the readItems function to include an optional id parameter.
 export function readItemById<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
->(
-  db: Database,
-  tableName: string,
-  log: (msg: any) => void,
-  id: string | number // Add an optional id parameter
-): TranslatedSchema {
+  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
+>({ db, debug, id, tableName }: ParamsWithId): TranslatedS {
   const query = selectItemByKeyQueryString(tableName, "id");
-  log(query);
+  if (debug) console.info(`readItemById: ${query}`);
 
-  const data = db.prepare(query).get(id) as TranslatedSchema;
+  const data = db.prepare(query).get(id) as TranslatedS;
 
   return data;
 }
@@ -94,37 +114,52 @@ interface WhereClauseResult {
 
 // Function to create a WHERE clause and parameters for a SQL query
 export function createWhereClause<T extends Record<string, any>>(
-  where: Where<T>
+  where: Where<T>,
+  debug: boolean = false
 ): WhereClauseResult {
   const keys = Object.keys(where) as Array<keyof T>;
   const whereClause = keys.map((key) => `${String(key)} = ?`).join(" AND ");
   const parameters = keys.map((key) => where[key]);
+
+  if (debug) {
+    // create object of keys/values to be used as parameters in the query
+    // e.g. { $name: 'John', $age: 25 }
+    const debugEntries = Object.fromEntries(
+      keys.map((key) => [`$${key as string}`, where[key]])
+    );
+
+    console.table(debugEntries);
+  }
 
   return { whereClause, parameters };
 }
 
 export function readItemsWhere<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
->(
-  db: Database,
-  tableName: string,
-  log: (msg: any) => void,
-  where: Where<TranslatedSchema>
-): TranslatedSchema[] {
-  const { whereClause, parameters } =
-    createWhereClause<TranslatedSchema>(where);
+  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
+>({
+  db,
+  tableName,
+  debug,
+  where,
+}: BaseDBParams & {
+  where: Where<TranslatedS>;
+}): TranslatedS[] {
+  const { whereClause, parameters } = createWhereClause<TranslatedS>(
+    where,
+    debug
+  );
 
   // The query string now uses '?' placeholders for parameters
   const queryString = `SELECT * FROM ${tableName} WHERE ${whereClause};`;
-  log(queryString); // Log the query string for debugging purposes
+  if (debug) console.info(`readItemsWhere ${queryString}`);
 
   // Prepare the statement with the queryString
   const statement = db.prepare(queryString);
 
   // Assuming the .all() method on the prepared statement executes the query
   // and retrieves all the results after binding the parameters
-  const data = statement.all(parameters) as TranslatedSchema[];
+  const data = statement.all(parameters) as TranslatedS[];
 
   return data; // Return the query results
 }
@@ -133,50 +168,44 @@ export function readItemsWhere<
 export function selectItemByKeyQueryString(
   tableName: string,
   key: string
-  // value: string | number
 ): string {
   return `SELECT * FROM ${tableName} WHERE ${key} = ?`;
 }
 
 export function readItems<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
->(
-  db: Database,
-  tableName: string,
-  log: (msg: any) => void
-): TranslatedSchema[] {
+  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
+>({ db, debug, tableName }: BaseDBParams): TranslatedS[] {
   const query = selectAllTableQueryString(tableName);
-  log(query);
-  const data = db.query(query).all() as TranslatedSchema[];
+  if (debug) console.info(query);
+  const data = db.query(query).all() as TranslatedS[];
   return data;
 }
 
 export function updateItem<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
->(
-  db: Database,
-  tableName: string,
-  log: (msg: any) => void,
-  id: string | number,
-  item: Partial<Omit<TranslatedSchema, "id">>
-) {
+  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
+>({
+  db,
+  debug,
+  id,
+  item,
+  tableName,
+}: ParamsWithId & {
+  item: Partial<Omit<TranslatedS, "id">>;
+}) {
   const query = updateQueryString(tableName, item);
-  log(query);
+
+  if (debug) console.info(query);
+
   const params = Object.fromEntries(
     Object.entries(item).map(([key, value]) => [`$${key}`, value])
   );
   db.query(query).run({ ...params, $id: id });
 }
 
-export function deleteItemById(
-  db: Database,
-  tableName: string,
-  log: (msg: any) => void,
-  id: number | string
-) {
+export function deleteItemById({ db, debug, id, tableName }: ParamsWithId) {
   const query = deleteQueryString(tableName);
-  log(query);
+  if (debug) console.info(`deleteQueryString: `, query);
   db.query(query).run({ $id: id });
 }

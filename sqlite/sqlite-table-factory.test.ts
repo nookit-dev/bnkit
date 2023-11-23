@@ -32,7 +32,7 @@ describe("sqliteTableFactory", () => {
   test("should insert an item into the database using the factory", () => {
     const item = { id: "1", name: "John", age: 30 };
     factory.create(item);
-    const items = factory.readAll();
+    const items = factory.getAll();
     expect(items.length).toBe(1);
     expect(items[0]).toEqual(item);
   });
@@ -42,7 +42,7 @@ describe("sqliteTableFactory", () => {
     mockDb
       .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
       .run(item.id, item.name, item.age);
-    const items = factory.readAll();
+    const items = factory.getAll();
     expect(items.length).toBe(1);
     expect(items[0]).toEqual(item);
   });
@@ -54,7 +54,7 @@ describe("sqliteTableFactory", () => {
       .run(item.id, item.name, item.age);
     const updatedName = "John Doe";
     factory.update(item.id, { name: updatedName });
-    const items = factory.readAll();
+    const items = factory.getAll();
     expect(items.length).toBe(1);
     expect(items[0]).toEqual({ ...item, name: updatedName });
   });
@@ -63,8 +63,8 @@ describe("sqliteTableFactory", () => {
     mockDb
       .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
       .run(item.id, item.name, item.age);
-    factory.deleteById(item.id);
-    const items = factory.readAll();
+    factory.delById(item.id);
+    const items = factory.getAll();
     expect(items.length).toBe(0);
   });
 });

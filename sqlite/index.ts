@@ -1,4 +1,4 @@
-export { createSqliteFactory } from "./sqlite-factory";
+export { sqliteFactory as createSqliteFactory } from "./sqlite-factory";
 export {
   createItem,
   deleteItemById,

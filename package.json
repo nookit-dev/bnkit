@@ -19,6 +19,6 @@
     "validate": "bun run tsc:noEmite && bun run test"
   },
   "bin": {
-    "bnkit": "sh ./scripts/cli.sh"
+    "bnkit": "sh ./scripts/cli.ts"
   }
 }

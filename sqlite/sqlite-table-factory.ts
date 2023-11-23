@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { SQLiteSchemaInfer, SchemaMap } from "./sqlite-factory";
+import { SchemaMap, SQLInfer } from "./sqlite-factory";
 import {
   createItem,
   deleteItemById,
@@ -38,7 +38,7 @@ function logger(debug: boolean) {
 
 export function sqliteTableFactory<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLiteSchemaInfer<Schema> = SQLiteSchemaInfer<Schema>
+  TranslatedSchema extends SQLInfer<Schema> = SQLInfer<Schema>
 >(
   params: SqliteTableFactoryParams<Schema>,
   options: SqliteTableOptions<Schema> = {}
@@ -46,37 +46,35 @@ export function sqliteTableFactory<
   const { db, schema, tableName } = params;
   const { debug = false } = options;
 
-  const log = logger(debug);
-
   db.query(createTableQuery({ tableName, schema, debug })).run();
 
   return {
-    readItemsWhere(where: Partial<TranslatedSchema>) {
-      return readItemsWhere<Schema>(db, tableName, log, where);
+    readWhere(where: Partial<TranslatedSchema>) {
+      return readItemsWhere<Schema>({ db, tableName, debug, where });
     },
     create(item: TranslatedSchema) {
-      return createItem<Schema>(db, tableName, log, item);
+      return createItem<Schema>({ db, tableName, debug, item });
     },
-    readAll(): TranslatedSchema[] {
-      return readItems<Schema>(db, tableName, log) as TranslatedSchema[];
+    getAll(): TranslatedSchema[] {
+      return readItems<Schema>({ db, tableName, debug }) as TranslatedSchema[];
     },
-    readById(id: string | number) {
-      return readItemById<Schema>(db, tableName, log, id);
+    getById(id: string | number) {
+      return readItemById<Schema>({ db, tableName, debug, id });
     },
-    readItemByKey(key: string, value: string | number) {
-      return readFirstItemByKey<Schema>(
+    getByKey(key: string, value: string | number) {
+      return readFirstItemByKey<Schema>({
         db,
         tableName,
-        log,
+        debug,
         key,
-        value
-      ) as unknown as TranslatedSchema;
+        value,
+      }) as unknown as TranslatedSchema;
     },
     update(id: string | number, item: Partial<Omit<TranslatedSchema, "id">>) {
-      return updateItem<Schema>(db, tableName, log, id, item);
+      return updateItem<Schema>({ db, tableName, debug, id, item });
     },
-    deleteById(id: number | string) {
-      return deleteItemById(db, tableName, log, id);
+    delById(id: number | string) {
+      return deleteItemById({ db, tableName, debug, id });
     },
     infer(): TranslatedSchema {
       return undefined as any as TranslatedSchema;

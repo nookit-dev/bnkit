@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "bun:test";
-import { FieldDefinition, SchemaMap } from "../sqlite-factory";
+import { FieldDef, SchemaMap } from "../sqlite-factory";
 import {
   assembleCreateTableQuery,
   createColumnDefinition,
@@ -42,13 +42,13 @@ test("createTableQuery constructs SQL query correctly without foreign keys", () 
 
 describe("createColumnDefinition", () => {
   it("should generate a column definition for a simple TEXT field", () => {
-    const definition: FieldDefinition = { type: "TEXT" };
+    const definition: FieldDef = { type: "TEXT" };
     const result = createColumnDefinition("name", definition);
     expect(result).toBe("`name` TEXT");
   });
 
   it("should generate a column definition for an INTEGER field with a PRIMARY KEY", () => {
-    const definition: FieldDefinition = { type: "INTEGER", primaryKey: true };
+    const definition: FieldDef = { type: "INTEGER", primaryKey: true };
     const result = createColumnDefinition("id", definition);
     expect(result).toBe("`id` INTEGER PRIMARY KEY");
   });
@@ -57,30 +57,30 @@ describe("createColumnDefinition", () => {
 
   it("should throw an error if the definition is not provided", () => {
     expect(() => {
-      createColumnDefinition("age", undefined as unknown as FieldDefinition);
+      createColumnDefinition("age", undefined as unknown as FieldDef);
     }).toThrow();
   });
 
   it("should generate a column definition with a UNIQUE constraint", () => {
-    const definition: FieldDefinition = { type: "TEXT", unique: true };
+    const definition: FieldDef = { type: "TEXT", unique: true };
     const result = createColumnDefinition("username", definition);
     expect(result).toBe("`username` TEXT UNIQUE");
   });
 
   it("should generate a column definition with a NOT NULL constraint", () => {
-    const definition: FieldDefinition = { type: "INTEGER", required: true };
+    const definition: FieldDef = { type: "INTEGER", required: true };
     const result = createColumnDefinition("age", definition);
     expect(result).toBe("`age` INTEGER NOT NULL");
   });
 
   it("should generate a column definition with a DEFAULT value", () => {
-    const definition: FieldDefinition = { type: "TEXT", defaultValue: "N/A" };
+    const definition: FieldDef = { type: "TEXT", defaultValue: "N/A" };
     const result = createColumnDefinition("status", definition);
     expect(result).toBe("`status` TEXT DEFAULT N/A");
   });
 
   it("should correctly quote a DEFAULT string value", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "TEXT",
       defaultValue: "'active'",
     };
@@ -89,7 +89,7 @@ describe("createColumnDefinition", () => {
   });
 
   it("should generate a column definition with multiple constraints", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "INTEGER",
       required: true,
       unique: true,
@@ -102,13 +102,13 @@ describe("createColumnDefinition", () => {
   });
 
   it("should not include DEFAULT when defaultValue is not provided", () => {
-    const definition: FieldDefinition = { type: "REAL" };
+    const definition: FieldDef = { type: "REAL" };
     const result = createColumnDefinition("price", definition);
     expect(result).toBe("`price` REAL");
   });
 
   it("should handle numeric DEFAULT values correctly", () => {
-    const definition: FieldDefinition = { type: "INTEGER", defaultValue: 10 };
+    const definition: FieldDef = { type: "INTEGER", defaultValue: 10 };
     const result = createColumnDefinition("quantity", definition);
     expect(result).toBe("`quantity` INTEGER DEFAULT 10");
   });
@@ -123,7 +123,7 @@ describe("createColumnDefinition", () => {
 
   // Test for proper escaping of field names that are SQL keywords
   it("should escape field names that are SQL keywords", () => {
-    const definition: FieldDefinition = { type: "TEXT" };
+    const definition: FieldDef = { type: "TEXT" };
     const result = createColumnDefinition("group", definition);
     expect(result).toBe("`group` TEXT");
   });
@@ -131,7 +131,7 @@ describe("createColumnDefinition", () => {
 
 describe("createTableLevelConstraint", () => {
   it("should generate a foreign key constraint", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "INTEGER",
       foreignKey: "other_table(id)",
     };
@@ -140,13 +140,13 @@ describe("createTableLevelConstraint", () => {
   });
 
   it("should return null if no foreign key is defined", () => {
-    const definition: FieldDefinition = { type: "INTEGER" };
+    const definition: FieldDef = { type: "INTEGER" };
     const result = createTableLevelConstraint("fkTest", definition);
     expect(result).toBeNull();
   });
 
   it("should generate a foreign key constraint with a custom reference field", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "INTEGER",
       foreignKey: "other_table(custom_id)",
     };
@@ -157,7 +157,7 @@ describe("createTableLevelConstraint", () => {
   });
 
   it("should properly trim the foreign key definition", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "INTEGER",
       foreignKey: " other_table (custom_id) ",
     };
@@ -168,7 +168,7 @@ describe("createTableLevelConstraint", () => {
   });
 
   it("should handle foreign keys that include spaces or special characters", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "TEXT",
       foreignKey: "`other table`(`special id`)",
     };
@@ -179,7 +179,7 @@ describe("createTableLevelConstraint", () => {
   });
 
   it("should return null for a malformed foreign key definition", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "INTEGER",
       foreignKey: "malformed",
     };
@@ -190,7 +190,7 @@ describe("createTableLevelConstraint", () => {
 
   // Test for a case where the foreign key reference does not include a field
   it("should return null if foreign key reference is incomplete", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "INTEGER",
       foreignKey: "other_table",
     };
@@ -201,7 +201,7 @@ describe("createTableLevelConstraint", () => {
 
   // Test for proper escaping of table and column names in foreign key definitions
   it("should escape table and column names in foreign key definitions", () => {
-    const definition: FieldDefinition = {
+    const definition: FieldDef = {
       type: "INTEGER",
       foreignKey: "`other-table`(`id`)",
     };

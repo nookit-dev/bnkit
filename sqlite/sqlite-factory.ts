@@ -5,7 +5,7 @@ import {
   sqliteTableFactory,
 } from "./sqlite-table-factory";
 
-type CreateSqliteFactoryParams = {
+type SqliteFactoryParams = {
   db: Database;
   debug?: boolean;
   enableForeignKeys?: boolean;
@@ -19,7 +19,7 @@ type DBTableFactoryParams<Schema extends SchemaMap> = Omit<
 };
 
 // Mapping of SQLite types to TypeScript types.
-export type SQLiteToTypeScriptTypes = {
+export type SQLiteSchemaToTSMap = {
   TEXT: string;
   NUMERIC: number | string;
   INTEGER: number;
@@ -28,10 +28,10 @@ export type SQLiteToTypeScriptTypes = {
   DATE: Date;
 };
 
-export type SQLiteDataTypes = keyof SQLiteToTypeScriptTypes;
+export type SQLiteData = keyof SQLiteSchemaToTSMap;
 
-export type FieldDefinition = {
-  type: SQLiteDataTypes;
+export type FieldDef = {
+  type: SQLiteData;
   primaryKey?: boolean;
   unique?: boolean;
   foreignKey?: string;
@@ -40,34 +40,26 @@ export type FieldDefinition = {
 };
 
 // Mapped type that takes a schema with SQLite types and returns a schema with TypeScript types.
-export type SQLiteSchemaInfer<T extends SchemaMap> = {
-  [K in keyof T]: T[K] extends FieldDefinition
-    ? SQLiteToTypeScriptTypes[T[K]["type"]]
+export type SQLInfer<T extends SchemaMap> = {
+  [K in keyof T]: T[K] extends FieldDef
+    ? SQLiteSchemaToTSMap[T[K]["type"]]
     : never;
 };
 
-export type SchemaMap = Partial<Record<string, FieldDefinition>>;
+export type SchemaMap = Partial<Record<string, FieldDef>>;
 
-export const createTableSchema = <Schema extends SchemaMap>(
-  schema: Schema
-): string => {
-  return undefined as any as string;
+export const getType = <T extends SchemaMap>(schema: T): SQLInfer<T> => {
+  return undefined as any as SQLInfer<T>;
 };
 
-export const getType = <T extends SchemaMap>(
-  schema: T
-): SQLiteSchemaInfer<T> => {
-  return undefined as any as SQLiteSchemaInfer<T>;
-};
-
-export function createSqliteFactory({
+export function sqliteFactory({
   db,
   debug = false,
   // because foreign keys in sqlite are disabled by default
   // https://renenyffenegger.ch/notes/development/databases/SQLite/sql/pragma/foreign_keys#:~:text=pragma%20foreign_keys%20%3D%20on%20enforces%20foreign,does%20not%20enforce%20foreign%20keys.&text=Explicitly%20turning%20off%20the%20validation,dump%20'ed%20database.
   // turning off foreign keys may be using when importing a .dump'ed database
   enableForeignKeys = false,
-}: CreateSqliteFactoryParams) {
+}: SqliteFactoryParams) {
   if (enableForeignKeys) {
     // Enable foreign key constraints
     db.query("PRAGMA foreign_keys = ON;").run();

@@ -1,6 +1,6 @@
 import Database from "bun:sqlite";
 import { beforeEach, describe, expect, test } from "bun:test";
-import { SchemaMap, createSqliteFactory } from "./sqlite-factory";
+import { SchemaMap, sqliteFactory } from "./sqlite-factory";
 
 let db = new Database(":memory:");
 
@@ -14,13 +14,13 @@ describe("createSqliteFactory", () => {
     db = new Database(":memory:");
   });
   test("It should create a db factory", () => {
-    const { dbTableFactory } = createSqliteFactory({ db });
+    const { dbTableFactory } = sqliteFactory({ db });
 
     expect(dbTableFactory).toBeDefined();
   });
 
   test("should create and read a note in  sqlite", async () => {
-    const { dbTableFactory } = createSqliteFactory({ db });
+    const { dbTableFactory } = sqliteFactory({ db });
 
     const notesTable = dbTableFactory({
       schema: noteSchema,
@@ -33,12 +33,12 @@ describe("createSqliteFactory", () => {
       text: "some text",
     });
 
-    const notes = notesTable.readAll();
+    const notes = notesTable.getAll();
 
     expect(notes).toEqual([{ id: "1", text: "some text" }]);
   });
   test("should create and read a note in  sqlite and update it", () => {
-    const { dbTableFactory } = createSqliteFactory({ db, debug: true });
+    const { dbTableFactory } = sqliteFactory({ db, debug: true });
 
     const notesTable = dbTableFactory({
       schema: noteSchema,
@@ -51,7 +51,7 @@ describe("createSqliteFactory", () => {
       text: "some text",
     });
 
-    const notes = notesTable.readAll();
+    const notes = notesTable.getAll();
 
     expect(notes).toEqual([{ id: "1", text: "some text" }]);
 
@@ -59,12 +59,12 @@ describe("createSqliteFactory", () => {
       text: "some text updated",
     });
 
-    const updatedNotes = notesTable.readAll();
+    const updatedNotes = notesTable.getAll();
 
     expect(updatedNotes).toEqual([{ id: "1", text: "some text updated" }]);
   });
   test("should create and read a note in  sqlite and delete it", () => {
-    const { dbTableFactory } = createSqliteFactory({ db, debug: true });
+    const { dbTableFactory } = sqliteFactory({ db, debug: true });
 
     const notesTable = dbTableFactory({
       schema: noteSchema,
@@ -77,13 +77,13 @@ describe("createSqliteFactory", () => {
       text: "some text",
     });
 
-    const notes = notesTable.readAll();
+    const notes = notesTable.getAll();
 
     expect(notes).toEqual([{ id: "1", text: "some text" }]);
 
-    notesTable.deleteById("1");
+    notesTable.delById("1");
 
-    const updatedNotes = notesTable.readAll();
+    const updatedNotes = notesTable.getAll();
 
     expect(updatedNotes).toEqual([]);
   });

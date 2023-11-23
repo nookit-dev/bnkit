@@ -7,7 +7,7 @@ import {
   deleteItemById,
   readItems,
   updateItem,
-} from "./crud-fn-utils"; 
+} from "./crud-fn-utils";
 
 const testSchema = {
   id: { type: "TEXT" },
@@ -16,12 +16,6 @@ const testSchema = {
 } satisfies SchemaMap;
 
 let db = new Database(":memory:");
-
-const log = (msg: any) => {
-  // for the sake of this example, we'll just console log.
-  // in a real-world scenario, you might want to store logs or handle them differently.
-  console.log(msg);
-};
 
 describe("Database utility functions", () => {
   beforeEach(() => {
@@ -32,32 +26,39 @@ describe("Database utility functions", () => {
   });
 
   test("should create an item in the database", () => {
-    createItem<typeof testSchema>(db, "test", log, {
-      id: "1",
-      name: "John",
-      age: 25,
+    createItem({
+      db,
+      tableName: "test",
+      debug: false,
+      item: { id: "1", name: "John", age: 25 },
+      returnInsertedItem: false,
     });
-    const items = readItems(db, "test", log);
+    const items = readItems({ db, tableName: "test" });
     expect(items).toEqual([{ id: 1, name: "John", age: 25 }]);
   });
 
   test("should read items from the database", () => {
     db.query("INSERT INTO test (name, age) VALUES (?, ?)").run("Jane", 30);
-    const items = readItems(db, "test", log);
+    const items = readItems({ db, tableName: "test" });
     expect(items).toEqual([{ id: 1, name: "Jane", age: 30 }]);
   });
 
   test("should update an item in the database", () => {
     db.query("INSERT INTO test (name, age) VALUES (?, ?)").run("Doe", 35);
-    updateItem<typeof testSchema>(db, "test", log, 1, { name: "John Doe" });
-    const items = readItems(db, "test", log);
+    updateItem({
+      db,
+      tableName: "test",
+      debug: false,
+      id: 1,
+      item: { name: "John Doe" },
+    });
+    const items = readItems({ db, tableName: "test" });
     expect(items).toEqual([{ id: 1, name: "John Doe", age: 35 }]);
   });
-
   test("should delete an item from the database by ID", () => {
     db.query("INSERT INTO test (name, age) VALUES (?, ?)").run("Alice", 40);
-    deleteItemById(db, "test", log, 1);
-    const items = readItems(db, "test", log);
+    deleteItemById({ db, id: 1, tableName: "test" });
+    const items = readItems({ db, tableName: "test" });
     expect(items).toEqual([]);
   });
 });
@@ -93,63 +94,63 @@ describe("createWhereClause", () => {
     });
   });
 
-  it('should handle more than two properties', () => {
-    const where = { id: 1, name: 'John', age: 30 };
+  it("should handle more than two properties", () => {
+    const where = { id: 1, name: "John", age: 30 };
     const result = createWhereClause(where);
 
     expect(result).toEqual({
-      whereClause: 'id = ? AND name = ? AND age = ?',
-      parameters: [1, 'John', 30],
+      whereClause: "id = ? AND name = ? AND age = ?",
+      parameters: [1, "John", 30],
     });
   });
 
-  it('should handle boolean values', () => {
+  it("should handle boolean values", () => {
     const where = { isActive: true };
     const result = createWhereClause(where);
 
     expect(result).toEqual({
-      whereClause: 'isActive = ?',
+      whereClause: "isActive = ?",
       parameters: [true],
     });
   });
 
-  it('should handle numeric string values', () => {
-    const where = { id: '1' };
+  it("should handle numeric string values", () => {
+    const where = { id: "1" };
     const result = createWhereClause(where);
 
     expect(result).toEqual({
-      whereClause: 'id = ?',
-      parameters: ['1'],
+      whereClause: "id = ?",
+      parameters: ["1"],
     });
   });
 
-  it('should handle more than two properties', () => {
-    const where = { id: 1, name: 'John', age: 30 };
+  it("should handle more than two properties", () => {
+    const where = { id: 1, name: "John", age: 30 };
     const result = createWhereClause(where);
 
     expect(result).toEqual({
-      whereClause: 'id = ? AND name = ? AND age = ?',
-      parameters: [1, 'John', 30],
+      whereClause: "id = ? AND name = ? AND age = ?",
+      parameters: [1, "John", 30],
     });
   });
 
-  it('should handle boolean values', () => {
+  it("should handle boolean values", () => {
     const where = { isActive: true };
     const result = createWhereClause(where);
 
     expect(result).toEqual({
-      whereClause: 'isActive = ?',
+      whereClause: "isActive = ?",
       parameters: [true],
     });
   });
 
-  it('should handle numeric string values', () => {
-    const where = { id: '1' };
+  it("should handle numeric string values", () => {
+    const where = { id: "1" };
     const result = createWhereClause(where);
 
     expect(result).toEqual({
-      whereClause: 'id = ?',
-      parameters: ['1'],
+      whereClause: "id = ?",
+      parameters: ["1"],
     });
   });
 });
