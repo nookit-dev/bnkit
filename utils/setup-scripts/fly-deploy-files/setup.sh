@@ -8,6 +8,7 @@ curl -O "$REPO_URL/.dockerignore"
 curl -O "$REPO_URL/deploy-to-fly.yml"
 curl -O "$REPO_URL/Dockerfile"
 curl -O "$REPO_URL/fly.toml"
+curl -O "$REPO_URL/fly-readme.md"
 
 # Move deploy-to-fly.yml to .github/workflows in the current working directory
 mkdir -p .github/workflows
