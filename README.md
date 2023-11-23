@@ -17,7 +17,7 @@ Bun Nook Kit (BNK) is a comprehensive toolkit for software development, leveragi
 Make sure to replace <your-project-name> with whatever you want the folder to be created as
 
 ```bash
-curl -fsSL https://github.com/brandon-schabel/bun-nook-kit/blob/main/utils/quickstart.sh | bash
+curl -fsSL https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/utils/quickstart.sh | bash
 ```
 
 Visit `http://localhost:3000` in your browser and you should see Hello world and

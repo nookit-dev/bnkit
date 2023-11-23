@@ -2,19 +2,22 @@
 
 # Script to setup and run a Bun project with a given project name
 
-# Check for project name argument
-if [ $# -eq 0 ]; then
-  echo "No project name provided. Usage: $0 [project-name]"
-  exit 1
-fi
-
-# The project name is the first argument
-PROJECT_NAME=$1
+# Function to prompt for the project name
+prompt_for_project_name() {
+  read -p "Enter the project name: " PROJECT_NAME
+  if [[ -z "$PROJECT_NAME" ]]; then
+    echo "No project name provided. Exiting."
+    exit 1
+  fi
+}
 
 # Function to check if a command exists
 command_exists() {
   type "$1" &> /dev/null
 }
+
+# Prompt for the project name
+prompt_for_project_name
 
 # Install Bun if not already installed
 if ! command_exists bun; then
@@ -25,7 +28,7 @@ fi
 
 # Clone the starter project using Bun
 echo "Cloning the $PROJECT_NAME project..."
-bun create github.com/brandon-schabel/$PROJECT_NAME
+bun create github.com/brandon-schabel/bun-server-starter $PROJECT_NAME
 cd $PROJECT_NAME
 
 # Run the project setup script
