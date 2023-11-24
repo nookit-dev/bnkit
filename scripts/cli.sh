@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # parse all flags 
 while [ $# -gt 0 ]; do
     if [[ $1 == *"--"* ]]; then
@@ -35,6 +34,13 @@ esac
 
 echo $PROJECT_DIR
 echo $SCRIPTS_PATH/$SCRIPT
+
+# if quickstart, run the quick start script without any flags 
+if [ $choice == "qs" ]; then
+    bash <(curl -fsSL https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts/quickstart.sh)
+
+    exit 0
+fi
 
 # Run the chosen script
 bash $SCRIPTS_PATH/$SCRIPT --dir "$(pwd)"

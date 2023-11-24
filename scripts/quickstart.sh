@@ -46,6 +46,12 @@ echo "Cloning the $PROJECT_NAME project..."
 bun create github.com/brandon-schabel/start-bnk "$PROJECT_NAME"
 cd "$PROJECT_NAME" || exit 1
 
+
+echo "Thank you for trying Bun Nook Kit!"
+echo "Add the Bun Nook Kit CLI to your path to have quick access"
+echo "Copy the below code into your .zshrc or .bashrc file to add the bnkcli command to your shell: "
+cat $SCRIPTS_PATH/add-to-path.sh
+
 # Run the project setup script
 if [ -f "./setup.sh" ]; then
   echo "Running project setup script..."
