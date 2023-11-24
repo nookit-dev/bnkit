@@ -2,18 +2,18 @@
 
 ![Bun Nook Kit Logo](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
 
+**Bun Nook Kit (BNK)** is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
+
+
 ![GitHub License](https://img.shields.io/github/license/brandon-schabel/bun-nook-kit)
-![Discord](https://img.shields.io/discord/1164699087543746560)
-![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/bun_nook_kit)
-![npm](https://img.shields.io/npm/v/bnkit?logo=npm)
-![GitHub release (with filter)](https://img.shields.io/github/v/release/brandon-schabel/bun-nook-kit)
-![Stars](https://img.shields.io/github/stars/brandon-schabel/bun-nook-kit)
-![npm bundle size](https://img.shields.io/bundlephobia/min/bnkit)
-![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/bnkit)
 
-Bun Nook Kit (BNK) is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
+![npm](https://img.shields.io/npm/v/bnkit?logo=npm)  ![GitHub release (with filter)](https://img.shields.io/github/v/release/brandon-schabel/bun-nook-kit)  ![Stars](https://img.shields.io/github/stars/brandon-schabel/bun-nook-kit) 
+![npm bundle size](https://img.shields.io/bundlephobia/min/bnkit)  ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/bnkit)
 
-## Server Quickstart Template
+![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/bun_nook_kit).  ![Discord](https://img.shields.io/discord/1164699087543746560)' 
+
+
+## BNK Server Quickstart 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts/quickstart.sh)
 ```
@@ -23,7 +23,11 @@ Visit `http://localhost:3000` in your browser and you should see Hello world and
 
 ---
 ### 
-# ➡ [Documentation](https://nookit.dev/readme)
+# [📋 Documentation](https://nookit.dev/readme)
+#### [🧩 Modules Docs](https://nookit.dev/modules)
+#### [🖥️ BNK CLI Docs](https://nookit.dev/bnk-cli/bnk-cli-readme)
+#### [🔌 Plugin Docs](https://nookit.dev/plugins/BNK+Plugins)
+
 ### 
 
 
