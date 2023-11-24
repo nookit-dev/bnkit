@@ -28,11 +28,28 @@ prompt_for_project_name() {
   fi
 }
 
+# Function to install unzip on Linux (excluding macOS)
+install_unzip_on_linux() {
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo "Linux detected. Checking for root access..."
+
+    if [[ $(id -u) -ne 0 ]]; then
+      echo "Root access is required to install unzip. Please run this script as root or ask your administrator to install unzip."
+      exit 1
+    fi
+
+    echo "Installing unzip..."
+    sudo apt install unzip
+  fi
+}
 # Parse command-line flags
 parse_flags "$@"
 
 # Prompt for the project name if not set
 prompt_for_project_name
+
+# Install unzip on Linux if needed
+install_unzip_on_linux
 
 # Install Bun if not already installed
 if ! command_exists bun; then
@@ -40,7 +57,6 @@ if ! command_exists bun; then
   curl https://bun.sh/install | bash
   export PATH="$HOME/.bun/bin:$PATH"
 fi
-
 # Clone the starter project using Bun
 echo "Cloning the $PROJECT_NAME project..."
 bun create github.com/brandon-schabel/start-bnk "$PROJECT_NAME"
