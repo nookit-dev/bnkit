@@ -1,6 +1,6 @@
 # Bun Nook Kit (BNK)
 
-![Bun Nook Kit Logo](https://user-images.githubusercontent.com/18100375/231109092-34bdc552-dd37-413d-8eec-b9b668340b65.png)
+![BNK Logo](https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/d9f91bca-8875-4c00-8429-87e43b2a026f)
 
 **Bun Nook Kit (BNK)** is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
 
