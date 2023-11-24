@@ -50,12 +50,16 @@ cd "$PROJECT_NAME" || exit 1
 echo "Thank you for trying Bun Nook Kit!"
 echo "Add the Bun Nook Kit CLI to your path to have quick access"
 echo "Copy the below code into your .zshrc or .bashrc file to add the bnkcli command to your shell: "
+echo ""
+echo ""
 
 # Fetch and display the content of the add-to-path.sh script
 echo "Fetching the content of the add-to-path.sh script..."
 curl -s https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts/add-to-path.sh
 
 
+echo ""
+echo ""
 
 # Run the project setup script
 if [ -f "./setup.sh" ]; then
