@@ -65,12 +65,12 @@ fi
 mkdir "$PROJECT_NAME"
 cd "$PROJECT_NAME" 
 
+bun add bnkit
+
 # copy files from ./starter to the new project directory
 echo "Creating BNK quickstart project..."
 
-# recursively copy all files from https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts/starter to the new project directory
-curl -s ${BASE_URL}/starter | xargs -n 1 curl -s ${BASE_URL}/starter/{} -o {}
-
+cp -a ./node_modules/bun-nook-kit/starter/. ./
 
 echo "Thank you for trying Bun Nook Kit!"
 echo "Add the Bun Nook Kit CLI to your path to have quick access"
