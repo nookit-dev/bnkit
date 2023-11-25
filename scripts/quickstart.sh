@@ -2,6 +2,10 @@
 
 # Script to setup and run a Bun project with a given project name
 
+# scripts url https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts
+BASE_URL="https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts"
+HOST="http://localhost:3000"
+
 # Function to check if a command exists
 command_exists() {
   type "$1" &> /dev/null
@@ -57,10 +61,15 @@ if ! command_exists bun; then
   curl https://bun.sh/install | bash
   export PATH="$HOME/.bun/bin:$PATH"
 fi
-# Clone the starter project using Bun
-echo "Cloning the $PROJECT_NAME project..."
-bun create github.com/brandon-schabel/start-bnk "$PROJECT_NAME"
-cd "$PROJECT_NAME" || exit 1
+
+mkdir "$PROJECT_NAME"
+cd "$PROJECT_NAME" 
+
+# copy files from ./starter to the new project directory
+echo "Creating BNK quickstart project..."
+
+# recursively copy all files from https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts/starter to the new project directory
+curl -s ${BASE_URL}/starter | xargs -n 1 curl -s ${BASE_URL}/starter/{} -o {}
 
 
 echo "Thank you for trying Bun Nook Kit!"
@@ -71,16 +80,57 @@ echo ""
 
 # Fetch and display the content of the add-to-path.sh script
 echo "Fetching the content of the add-to-path.sh script..."
-curl -s https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts/add-to-path.sh
-
+curl -s ${BASE_URL}/add-to-path.sh
 
 echo ""
 echo ""
+
+# Install dependencies
+echo "Installing dependencies with bun install..."
+bun install
+
+# starter ask if they want to add --no-start flag (i.e. don't start the server)
+read -p "Do you want to start the server on setup? (y/n): " START_SERVER
+
+# Check if --no-start flag is set
+if [[ $START_SERVER == "y" ]]; then
+  # Start the server and get its PID
+  echo "Starting the server with bun dev..."
+  bun dev &
+  server_pid=$!
+
+  # Wait for server to start
+  sleep 0.5
+
+  # Open the web browser
+  echo "Opening the browser at $HOST..."
+  if command_exists xdg-open; then
+    xdg-open $HOST
+  elif command_exists open; then
+    open $HOST
+  else
+    echo "Browser cannot be opened automatically. Please open $HOST manually."
+  fi
+
+  echo "Setup complete! To stop the server, exit this script."
+
+  echo "Start server again by running \"bun dev\" in the project directory."
+
+  echo "View JSON route at $HOST/json"
+
+  # Keep the script running until it receives a signal to exit
+  wait $server_pid
+else
+  echo "Setup complete! Server not started due to --no-start flag."
+fi
+
+
+
 
 # Run the project setup script
-if [ -f "./setup.sh" ]; then
-  echo "Running project setup script..."
-  sh ./setup.sh
-else
-  echo "No setup.sh script found in the project directory."
-fi
+# if [ -f "./setup.sh" ]; then
+#   echo "Running project setup script..."
+#   sh ./setup.sh
+# else
+#   echo "No setup.sh script found in the project directory."
+# fi
