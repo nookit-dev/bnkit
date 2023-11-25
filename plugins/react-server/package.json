@@ -1,6 +1,6 @@
 {
   "name": "@bnk/react-server",
-  "version": "0.4.36",
+  "version": "0.4.37",
   "module": "index.ts",
   "main": "index.ts",
   "scripts": {
@@ -16,7 +16,6 @@
     "bun-types": "latest",
     "react": "latest",
     "react-dom": "^18.2.0"
-    
   },
   "peerDependencies": {
     "react": "^18.0.0",
