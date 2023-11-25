@@ -1,8 +1,11 @@
-import {
-    TypeMap,
-    createFetchFactory,
-} from "bnkit/fetch-factory";
-import React, { ReactNode, createContext, useContext, useMemo, useState } from "react";
+import { createFetchFactory } from "bnkit/fetcher";
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 // TODO: This hook needs some more work
 type FetchFactoryReturn<ConfigMap extends TypeMap = {}> = ReturnType<
   typeof createFetchFactory<ConfigMap>
