@@ -19,7 +19,7 @@ export interface JwtHandlers {
 }
 
 // backend  jwt handling
-export const jwtBack = <
+export const jwtBackend = <
   Payload extends object,
   FactoryJwtPayload extends JwtPayload<Payload> = JwtPayload<Payload>
 >({

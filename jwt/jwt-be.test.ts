@@ -1,11 +1,11 @@
 import { afterAll, afterEach, describe, expect, it, jest } from "bun:test";
-import { jwtBack } from "./jwt-be";
+import { jwtBackend } from "./jwt-be";
 import { base64UrlDecode, base64UrlEncode, sign } from "./jwt-server-utils";
 import { createJwtFileHandlers } from "./jwt-token-file-handlers";
 
 describe("JWT Server Side Factory", () => {
   const factorySecret = "test-secret"; // For testing purposes only
-  const jwtFactory = jwtBack({
+  const jwtFactory = jwtBackend({
     handlers: createJwtFileHandlers("./jwt-tokens.json"),
     factorySignSecret: factorySecret,
   });
@@ -174,7 +174,7 @@ describe("JWT Server Side Factory", () => {
 
 describe("new tokens not on invalid list", () => {
   const factorySecret = "test-secret"; // For testing purposes only
-  const jwtFactory = jwtBack({
+  const jwtFactory = jwtBackend({
     handlers: createJwtFileHandlers("./jwt-tokens.json"),
     factorySignSecret: factorySecret,
   });

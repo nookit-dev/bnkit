@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { jwtFront } from "./jwt-client";
+import { jwtClient } from "./jwt-client";
 
 const base64url = (source: Buffer) => {
   // Encode in classical base64
@@ -16,7 +16,7 @@ const base64url = (source: Buffer) => {
 }
 
 describe("jwtClientSideFactory", () => {
-  const jwtService = jwtFront();
+  const jwtService = jwtClient();
 
   test("decodeJwt decodes a JWT", () => {
     const token = base64url(Buffer.from('{"alg":"HS256","typ":"JWT"}')) + '.' + base64url(Buffer.from('{"sub":"1234567890","name":"John Doe","roles":["admin"],"exp":1609459200}'));
