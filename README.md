@@ -50,10 +50,10 @@ import { middleware, RoutesWithMiddleware } from "./middlewares";
 const routes = {
   "/": {
     // parse from request if neeeded
-    GET: (request) => new Response("Hello World!")
+    get: (request) => new Response("Hello World!")
   },
   "/json": {
-    GET: request => bnk.server.jsonRes({
+    get: request => bnk.server.jsonRes({
       message: "Hello JSON Response!"
     })
   }

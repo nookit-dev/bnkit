@@ -1,7 +1,7 @@
 import {
-  OAuthConfig,
-  OAuthProviderInitializer,
-  OAuthToken,
+    OAuthConfig,
+    OAuthProviderInitializer,
+    OAuthToken,
 } from "./oauth-types";
 
 type FetcherResponse<T> = T & {
@@ -14,7 +14,7 @@ export async function oAuthFetcher<T>(
   params: Record<string, string | undefined>
 ): Promise<FetcherResponse<T>> {
   const response = await fetch(url, {
-    method: "POST",
+    method: "post",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },

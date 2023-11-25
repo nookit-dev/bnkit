@@ -34,7 +34,7 @@ const initState = async <StateT extends object>() => {
   }
 
   const res = await fetch("/state", {
-    method: "GET",
+    method: "get",
   });
 
   const json = await res.json();
@@ -61,7 +61,7 @@ const clientToServerStateKeyUpdate = async <
   value: StateT[Key]
 ) => {
   const res = await fetch("/state", {
-    method: "POST",
+    method: "post",
     body: JSON.stringify({
       type: "partial",
       state: {

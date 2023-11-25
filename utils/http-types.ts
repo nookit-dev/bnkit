@@ -1,13 +1,13 @@
 import { PartialRecord } from "../type-utils";
 
 export type HttpMethod =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "DELETE"
-  | "PATCH"
-  | "OPTIONS"
-  | "HEAD";
+  | 'get'
+  | "post"
+  | "put"
+  | "delete"
+  | "patch"
+  | "options"
+  | "head";
 
 export type CommonHttpHeaders =
   | "Accept"

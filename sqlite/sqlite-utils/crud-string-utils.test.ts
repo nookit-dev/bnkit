@@ -1,9 +1,9 @@
 import { expect, test } from "bun:test";
 import {
-  deleteQueryString,
-  insertQueryString,
-  selectAllTableQueryString,
-  updateQueryString,
+    deleteQueryString,
+    insertQueryString,
+    selectAllTableQueryString,
+    updateQueryString,
 } from "./crud-string-utils";
 
 // Test for insertQueryString
@@ -27,7 +27,7 @@ test("selectAllTableQueryString", () => {
 test("deleteQueryString", () => {
   const tableName = "users";
   const query = deleteQueryString(tableName);
-  const expectedQuery = `DELETE FROM users WHERE id = $id;`;
+  const expectedQuery = `delete FROM users WHERE id = $id;`;
   expect(query).toBe(expectedQuery);
 });
 

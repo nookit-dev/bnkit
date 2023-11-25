@@ -159,7 +159,7 @@ describe("UUIDv7 generation", () => {
   });
 
   test("UUIDV7 returns timestamp", () => {
-    const { uuid, timestamp } = generateUuidV7({
+    const [uuid, timestamp] = generateUuidV7({
       dateTime: new Date(MOCK_TIMESTAMP),
       returnTimestamp: true,
     });

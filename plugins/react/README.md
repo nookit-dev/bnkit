@@ -32,10 +32,10 @@ js
 
 `const fetch = useFetcher({ url: 'https://api.example.com' });`
 
-// Fetch data using the GET method
+// Fetch data using the get method
 `fetch.get('/resource');`
 
-// Fetch data using the POST method with parameters
+// Fetch data using the post method with parameters
 `fetch.post('/resource', { params: { test: 'test' } });`
 
 // Get the current status of the fetch request

@@ -16,7 +16,7 @@ const googleOAuth = oAuthFactory(googleOAuthConfig);
 
 const routes = {
   "/login": {
-    GET: () => {
+    get: () => {
       // you could pass a param for the provider
       const authUrl = googleOAuth.initiateOAuthFlow();
 
@@ -27,7 +27,7 @@ const routes = {
     },
   },
   "/callback": {
-    GET: async (req) => {
+    get: async (req) => {
       try {
         const host = req.headers.get("host");
         // Parse the URL and query parameters
@@ -52,7 +52,7 @@ const routes = {
     },
   },
   "/": {
-    GET: () => {
+    get: () => {
       // HTML content for the login page
       const htmlContent = `<html><body><h2>Login with Google</h2><button onclick="window.location.href='/login'">Login</button></body></html>`;
       return new Response(htmlContent, {

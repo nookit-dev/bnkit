@@ -5,7 +5,7 @@ const defaultOrigin = "http://example.com";
 
 const testReq = (origin: string = defaultOrigin) => {
   return new Request(origin, {
-    method: "GET",
+    method: "get",
     headers: new Headers({
       Origin: origin,
     }),
@@ -17,14 +17,14 @@ describe("createCorsMiddleware function", () => {
     const requester = testReq(defaultOrigin);
     const result = await corsMiddleware(requester, {
       origins: [defaultOrigin],
-      methods: ["GET", "POST", "PUT", "DELETE"],
+      methods: ["get", "post", "put", "delete"],
       headers: ["Content-Type"],
     });
 
     const { response } = result;
 
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "GET, POST, PUT, DELETE"
+      "get, post, put, delete"
     );
     expect(response.headers.get("Access-Control-Allow-Headers")).toBe(
       "Content-Type"
@@ -32,10 +32,10 @@ describe("createCorsMiddleware function", () => {
   });
 
   test("missing Origin header", async () => {
-    const requester = new Request(defaultOrigin, { method: "GET" });
+    const requester = new Request(defaultOrigin, { method: "get" });
     const result = await corsMiddleware(requester, {
       origins: [defaultOrigin],
-      methods: ["GET", "POST", "PUT", "DELETE"],
+      methods: ["get", "post", "put", "delete"],
       headers: ["Content-Type"],
     });
 
@@ -44,65 +44,65 @@ describe("createCorsMiddleware function", () => {
     expect(response.status).toBe(400);
   });
 
-  test("OPTIONS request", async () => {
+  test("options request", async () => {
     const requester = new Request(defaultOrigin, {
-      method: "OPTIONS",
+      method: "options",
       headers: new Headers({
         Origin: defaultOrigin,
-        "Access-Control-Request-Method": "GET",
+        "Access-Control-Request-Method": "get",
       }),
     });
     const { response } = await corsMiddleware(requester, {
-      methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
+      methods: ["options", "get", "post", "put", "delete"],
       origins: [defaultOrigin],
     });
 
     expect(response.status).toBe(204);
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "OPTIONS, GET, POST, PUT, DELETE"
+      "options, get, post, put, delete"
     );
   });
 
   test("Allow all origins option", async () => {
     const requester = new Request(defaultOrigin, {
-      method: "GET",
+      method: "get",
       headers: new Headers({
         Origin: defaultOrigin,
       }),
     });
     const { response } = await corsMiddleware(requester, {
-      methods: ["GET", "PATCH"],
+      methods: ["get", "PATCH"],
       origins: ["*"],
     });
 
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
 
-  test("unallowed method with OPTIONS request", async () => {
+  test("unallowed method with options request", async () => {
     const request = new Request("http://example.com", {
-      method: "OPTIONS",
+      method: "options",
       headers: {
         Origin: "http://example.com",
         "Access-Control-Request-Method": "PATCH",
       },
     });
     const { response } = await corsMiddleware(request, {
-      methods: ["GET"],
+      methods: ["get"],
       origins: ["http://example.com"],
     });
 
     expect(response.status).toBe(405);
   });
 
-  test("non-OPTIONS request", async () => {
+  test("non-options request", async () => {
     const requester = new Request(defaultOrigin, {
-      method: "GET",
+      method: "get",
       headers: new Headers({
         Origin: defaultOrigin,
       }),
     });
     const { response } = await corsMiddleware(requester, {
-      methods: ["GET"],
+      methods: ["get"],
       origins: [defaultOrigin],
     });
 
@@ -141,12 +141,12 @@ describe("createCorsMiddleware function", () => {
     });
 
     const { response } = await corsMiddleware(request, {
-      methods: ["GET", "POST"],
+      methods: ["get", "post"],
       origins: ["http://example.com"],
     });
 
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "GET, POST"
+      "get, post"
     );
   });
 
@@ -189,30 +189,30 @@ describe("createCorsMiddleware function", () => {
 
   test("should return 405 Method Not Allowed if request method is not allowed", async () => {
     const request = new Request("http://example.com", {
-      method: "POST",
+      method: "post",
       headers: {
         Origin: "http://example.com",
-        "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Method": "post",
       },
     });
     const { response } = await corsMiddleware(request, {
-      methods: ["GET"],
+      methods: ["get"],
       origins: ["http://example.com"],
     });
 
     expect(response.status).toBe(405);
   });
 
-  test("should return 204 No Content if request method is OPTIONS and allowed", async () => {
+  test("should return 204 No Content if request method is options and allowed", async () => {
     const request = new Request("http://example.com", {
-      method: "OPTIONS",
+      method: "options",
       headers: {
         Origin: "http://example.com",
-        "Access-Control-Request-Method": "GET",
+        "Access-Control-Request-Method": "get",
       },
     });
     const { response } = await corsMiddleware(request, {
-      methods: ["GET"],
+      methods: ["get"],
       origins: ["http://example.com"],
     });
     expect(response.status).toBe(204);

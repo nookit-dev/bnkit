@@ -15,90 +15,97 @@ type BaseDBParams = {
 
 type ParamsWithId = BaseDBParams & { id: string | number };
 
-type DBItem<
-  S extends SchemaMap,
-  TranslatedS extends SQLInfer<S> = SQLInfer<S>
-> = Partial<Omit<TranslatedS, "id">>;
+type DBItem<S extends SchemaMap> = Partial<SQLInfer<S>>;
 
-type DBParamsItemNoId<
-  Schema extends SchemaMap,
-  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
-> = BaseDBParams & {
-  item: DBItem<Schema, TranslatedS>;
-};
-
-export function createItem<
-  S extends SchemaMap,
-  TranslatedS extends SQLInfer<S> = SQLInfer<S>
->({
+export function createItem<S extends SchemaMap>({
   db,
   debug,
   item,
   returnInsertedItem,
   tableName,
-}: DBParamsItemNoId<S, TranslatedS> & {
+  keyForInsertLookup,
+}: Omit<ParamsWithId, "id"> & {
+  item: Partial<DBItem<S>>;
   returnInsertedItem?: boolean;
-}): TranslatedS | null {
+  // key of schema for return lookup, defaults to "id"
+  keyForInsertLookup?: keyof SQLInfer<S> extends string
+    ? keyof SQLInfer<S>
+    : never;
+}): SQLInfer<S> | null {
   const query = insertQueryString(tableName, item);
-  const valuesArray = Object.values(item);
+  const valuesArray: any[] = [];
+
+  for (const [key, value] of Object.entries(item)) {
+    if (value !== undefined) {
+      valuesArray.push(value);
+    }
+  }
 
   if (debug) console.table({ query, valuesArray });
 
   try {
     // Perform the insert operation
-    db.query(query).run(...(valuesArray as any[]));
+    db.query(query).run(...valuesArray);
   } catch (e) {
     throw e;
   }
 
-  if (returnInsertedItem) {
-    // Query to select the last inserted item
-    const selectQuery = `SELECT * FROM ${tableName} WHERE id = last_insert_rowid();`;
+  const lookupKey = keyForInsertLookup ? keyForInsertLookup : "id";
+  const lookupValue = item[lookupKey];
 
+  if (lookupValue && lookupKey && returnInsertedItem) {
+    // Fetch the last inserted item using the lookupValue
+    const selectQuery = `SELECT * FROM ${tableName} WHERE ${lookupKey} = ?;`;
     try {
-      const insertedItem = db.query(selectQuery).get() as TranslatedS;
+      const insertedItem = db
+        .prepare(selectQuery)
+        .get(lookupValue) as SQLInfer<S>;
 
-      if (debug)
-        console.table({ selectQuery, lastId: insertedItem.id, insertedItem });
+      if (debug) console.table({ selectQuery, lookupValue, insertedItem });
 
-      return insertedItem as TranslatedS;
+      return insertedItem as SQLInfer<S>;
     } catch (e) {
       throw e;
     }
   }
 
-  // If not returning the inserted item, return an empty array
+  if ((!lookupValue || !lookupKey) && returnInsertedItem) {
+    throw new Error(
+      `returnInsertedItem is true but no lookupKey or lookupValue was provided \n
+      lookupKey: ${lookupKey} \n
+      lookupValue: ${lookupValue} \n`
+    );
+  }
   return null;
 }
 
-export function readFirstItemByKey<
-  S extends SchemaMap,
-  TranslatedS extends SQLInfer<S> = SQLInfer<S>
->({
+export function readFirstItemByKey<Schema extends SchemaMap>({
   db,
   debug,
   key,
   tableName,
   value,
 }: BaseDBParams & {
-  key: keyof TranslatedS;
+  key: keyof SQLInfer<Schema>;
   value: string | number;
-}): TranslatedS {
+}): SQLInfer<Schema> {
   const queryString = selectItemByKeyQueryString(tableName, String(key));
   if (debug) console.info(`readFirstItemByKey: ${queryString}`);
-  const query = db.prepare(queryString).get(value) as TranslatedS;
+  const query = db.prepare(queryString).get(value) as SQLInfer<Schema>;
   return query;
 }
 
 // Modify the readItems function to include an optional id parameter.
-export function readItemById<
-  Schema extends SchemaMap,
-  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
->({ db, debug, id, tableName }: ParamsWithId): TranslatedS {
+export function readItemById<Schema extends SchemaMap>({
+  db,
+  debug,
+  id,
+  tableName,
+}: ParamsWithId): SQLInfer<Schema> {
   const query = selectItemByKeyQueryString(tableName, "id");
   if (debug) console.info(`readItemById: ${query}`);
 
-  const data = db.prepare(query).get(id) as TranslatedS;
+  const data = db.prepare(query).get(id) as SQLInfer<Schema>;
 
   return data;
 }
@@ -134,18 +141,15 @@ export function createWhereClause<T extends Record<string, any>>(
   return { whereClause, parameters };
 }
 
-export function readItemsWhere<
-  Schema extends SchemaMap,
-  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
->({
+export function readItemsWhere<Schema extends SchemaMap>({
   db,
   tableName,
   debug,
   where,
 }: BaseDBParams & {
-  where: Where<TranslatedS>;
-}): TranslatedS[] {
-  const { whereClause, parameters } = createWhereClause<TranslatedS>(
+  where: Where<SQLInfer<Schema>>;
+}): SQLInfer<Schema>[] {
+  const { whereClause, parameters } = createWhereClause<SQLInfer<Schema>>(
     where,
     debug
   );
@@ -159,7 +163,7 @@ export function readItemsWhere<
 
   // Assuming the .all() method on the prepared statement executes the query
   // and retrieves all the results after binding the parameters
-  const data = statement.all(parameters) as TranslatedS[];
+  const data = statement.all(parameters) as SQLInfer<Schema>[];
 
   return data; // Return the query results
 }
@@ -172,27 +176,25 @@ export function selectItemByKeyQueryString(
   return `SELECT * FROM ${tableName} WHERE ${key} = ?`;
 }
 
-export function readItems<
-  Schema extends SchemaMap,
-  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
->({ db, debug, tableName }: BaseDBParams): TranslatedS[] {
+export function readItems<Schema extends SchemaMap>({
+  db,
+  debug,
+  tableName,
+}: BaseDBParams): SQLInfer<Schema>[] {
   const query = selectAllTableQueryString(tableName);
   if (debug) console.info(query);
-  const data = db.query(query).all() as TranslatedS[];
+  const data = db.query(query).all() as SQLInfer<Schema>[];
   return data;
 }
 
-export function updateItem<
-  Schema extends SchemaMap,
-  TranslatedS extends SQLInfer<Schema> = SQLInfer<Schema>
->({
+export function updateItem<Schema extends SchemaMap>({
   db,
   debug,
   id,
   item,
   tableName,
 }: ParamsWithId & {
-  item: Partial<Omit<TranslatedS, "id">>;
+  item: Partial<Omit<SQLInfer<Schema>, "id">>;
 }) {
   const query = updateQueryString(tableName, item);
 

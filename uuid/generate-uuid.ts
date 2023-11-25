@@ -75,10 +75,9 @@ type Version7Params<RetTS extends boolean> = {
   returnTimestamp?: RetTS;
 };
 
-type Version7Return = {
-  uuid: string;
-  timestamp: Date;
-};
+type UUID = string;
+type Timestamp = Date;
+type Version7Return = [UUID, Timestamp];
 
 export function generateUuidV7<RetTS extends boolean = false>({
   dateTime,
@@ -117,14 +116,16 @@ export function generateUuidV7<RetTS extends boolean = false>({
 
   if (returnTimestamp) {
     // Explicitly assert the type of the returned object
-    return { uuid, timestamp: selectedDate } as RetTS extends true
-      ? Version7Return
-      : string;
+    return [uuid, selectedDate] as RetTS extends true ? Version7Return : string;
   }
 
   // Explicitly assert the type of the returned string
   return uuid as RetTS extends true ? Version7Return : string;
 }
+
+export const uuidV7DT = () => {
+  return generateUuidV7({ returnTimestamp: true });
+};
 
 // expect a string of length 36 (32 hexadecimal characters + 4 dashes):
 export function isValidUuid(uuid: string) {

@@ -1,11 +1,11 @@
 import { describe, expect, it, test } from "bun:test";
 import { CORSOptions } from "../utils/http-types";
 import {
-  buildControlHeaders,
-  isMethodAllowed,
-  isOriginAllowed,
-  setCORSHeaders,
-  setCORSHeadersIfOriginPresent,
+    buildControlHeaders,
+    isMethodAllowed,
+    isOriginAllowed,
+    setCORSHeaders,
+    setCORSHeadersIfOriginPresent,
 } from "./cors-utils";
 
 const defaultOrigin = "http://example.com";
@@ -25,11 +25,11 @@ describe("isOriginAllowed", () => {
 
 describe("isMethodAllowed", () => {
   test("allows allowed methods", () => {
-    expect(isMethodAllowed(["GET", "POST"], "GET")).toBe(true);
+    expect(isMethodAllowed(["get", "post"], "get")).toBe(true);
   });
 
   test("disallows disallowed methods", () => {
-    expect(isMethodAllowed(["GET", "POST"], "DELETE")).toBe(false);
+    expect(isMethodAllowed(["get", "post"], "delete")).toBe(false);
   });
 });
 
@@ -58,13 +58,13 @@ describe("setCORSHeaders", () => {
 
   test("sets the Access-Control-Allow-Methods header to the allowed methods", () => {
     const response = new Response();
-    const options: CORSOptions = { methods: ["GET", "POST"] };
+    const options: CORSOptions = { methods: ["get", "post"] };
     const requestOrigin = "https://example.com";
 
     setCORSHeaders({ response, options, requestOrigin });
 
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "GET, POST"
+      "get, post"
     );
   });
 
@@ -86,7 +86,7 @@ describe("setCORSHeadersIfOriginPresent", () => {
     const response = new Response();
     const options: CORSOptions = {
       origins: ["http://example.com"],
-      methods: ["GET", "POST"],
+      methods: ["get", "post"],
       headers: ["Content-Type"],
       credentials: true,
     };
@@ -100,7 +100,7 @@ describe("setCORSHeadersIfOriginPresent", () => {
     const response = new Response();
     const options: CORSOptions = {
       origins: ["http://example.com"],
-      methods: ["GET", "POST"],
+      methods: ["get", "post"],
       headers: ["Content-Type"],
       credentials: true,
     };
@@ -113,7 +113,7 @@ describe("buildControlHeaders", () => {
   it("should build control headers based on provided options", () => {
     const options: CORSOptions = {
       origins: ["http://example.com"],
-      methods: ["GET", "POST"],
+      methods: ["get", "post"],
       headers: ["Content-Type"],
       credentials: true,
     };
@@ -124,6 +124,6 @@ describe("buildControlHeaders", () => {
     expect(headers.get("Access-Control-Allow-Origin")).toBe(
       "http://example.com"
     );
-    expect(headers.get("Access-Control-Allow-Methods")).toBe("GET, POST");
+    expect(headers.get("Access-Control-Allow-Methods")).toBe("get, post");
   });
 });

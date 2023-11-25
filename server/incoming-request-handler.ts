@@ -64,7 +64,7 @@ export const serverRequestHandler = <
 
   return middlewareResponses
     .then((resolvedMwResponses) => {
-      if (req.method === "OPTIONS" && !matchedHandler && optionsHandler) {
+      if (req.method === "options" && !matchedHandler && optionsHandler) {
         return optionsHandler(req, resolvedMwResponses as MiddlewareDataMap);
       }
 

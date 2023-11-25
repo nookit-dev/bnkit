@@ -5,13 +5,15 @@ export function insertQueryString<Item extends Record<string, any>>(
   // Define a whitelist for table names if they are dynamic or ensure tableName is sanitized.
   const safeTableName = escapeIdentifier(tableName);
 
-  // Get the column names and placeholders.
-  const columns = Object.keys(item)
+  const definedKeys = Object.keys(item).filter(
+    (key) => item[key] !== undefined
+  );
+
+  // Map the defined keys to column names and placeholders
+  const columns = definedKeys
     .map((column) => escapeIdentifier(column))
     .join(", ");
-  const placeholders = Object.values(item)
-    .map(() => "?")
-    .join(", ");
+  const placeholders = definedKeys.map(() => "?").join(", ");
 
   // Handle the case where the item might be empty.
   if (columns.length === 0 || placeholders.length === 0) {
@@ -37,7 +39,7 @@ export function selectAllTableQueryString(tableName: string): string {
 export function deleteQueryString(tableName: string): string {
   // Validate or escape the tableName to prevent SQL injection
   const safeTableName = escapeIdentifier(tableName);
-  return `DELETE FROM ${safeTableName} WHERE id = $id;`;
+  return `delete FROM ${safeTableName} WHERE id = $id;`;
 }
 
 export function updateQueryString(

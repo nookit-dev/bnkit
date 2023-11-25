@@ -52,8 +52,23 @@ export function sqliteTableFactory<
     readWhere(where: Partial<TranslatedSchema>) {
       return readItemsWhere<Schema>({ db, tableName, debug, where });
     },
-    create(item: TranslatedSchema) {
-      return createItem<Schema>({ db, tableName, debug, item });
+    create(
+      item: TranslatedSchema,
+      createOptions?: {
+        returnInsertedItem?: boolean;
+        keyForInsertLookup?: keyof SQLInfer<Schema> extends string
+          ? keyof SQLInfer<Schema>
+          : never;
+      }
+    ) {
+      return createItem<Schema>({
+        db,
+        tableName,
+        debug,
+        item,
+        returnInsertedItem: createOptions?.returnInsertedItem,
+        keyForInsertLookup: createOptions?.keyForInsertLookup,
+      });
     },
     getAll(): TranslatedSchema[] {
       return readItems<Schema>({ db, tableName, debug }) as TranslatedSchema[];

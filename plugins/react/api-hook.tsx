@@ -14,7 +14,7 @@ const FetchContext = createContext<FetchFactoryReturn>(
     config: {
       "/test": {
         endpoint: "/test",
-        method: "GET",
+        method: "get",
       },
     },
   })

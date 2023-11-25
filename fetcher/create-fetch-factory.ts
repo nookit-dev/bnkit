@@ -9,10 +9,10 @@ declare var document: {
 import { HttpMethod } from "../utils/http-types";
 import { ExternalFetchConfig, MappedApiConfig, TypeMap } from "./fetch-types";
 import {
-  computeHeaders,
-  createEventStream,
-  fetcher,
-  fileDownload,
+    computeHeaders,
+    createEventStream,
+    fetcher,
+    fileDownload,
 } from "./fetch-utils";
 
 export type FactoryMethods = keyof ReturnType<typeof createFetchFactory>;
@@ -41,14 +41,14 @@ export function createFetchFactory<TMap extends TypeMap>({
         {
           ...fetcherConfig,
           headers,
-          method: fetcherConfig.method || "GET",
+          method: fetcherConfig.method || "get",
         },
         config,
         baseUrl
       );
     },
     get: <Endpoint extends keyof TMap>(
-      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, "GET">
+      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, "get">
     ): Promise<TMap[Endpoint]["response"]> => {
       const headers = computeHeaders(
         defaultHeaders || {},
@@ -59,14 +59,14 @@ export function createFetchFactory<TMap extends TypeMap>({
         {
           ...fetcherConfig,
           headers,
-          method: "GET",
+          method: "get",
         },
         config,
         baseUrl
       );
     },
     post: <Endpoint extends keyof TMap>(
-      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "POST"> & {
+      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "post"> & {
         endpoint: Endpoint;
       }
     ): Promise<TMap[Endpoint]["response"]> => {
@@ -76,14 +76,14 @@ export function createFetchFactory<TMap extends TypeMap>({
       );
 
       return fetcher(
-        { ...fetchConfig, headers, method: "POST" },
+        { ...fetchConfig, headers, method: "post" },
         config,
         baseUrl
       );
     },
 
     postForm: <Endpoint extends keyof TMap>(
-      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "POST"> & {
+      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "post"> & {
         endpoint: Endpoint;
         boundary?: string;
       }
@@ -102,7 +102,7 @@ export function createFetchFactory<TMap extends TypeMap>({
         {
           ...fetchConfig,
           headers,
-          method: "POST",
+          method: "post",
         },
         config,
         baseUrl
@@ -110,7 +110,7 @@ export function createFetchFactory<TMap extends TypeMap>({
     },
 
     delete: <Endpoint extends keyof TMap>(
-      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "DELETE"> & {
+      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "delete"> & {
         endpoint: Endpoint;
       }
     ): Promise<TMap[Endpoint]["response"]> => {
@@ -119,7 +119,7 @@ export function createFetchFactory<TMap extends TypeMap>({
         fetchConfig.headers || {}
       );
       return fetcher(
-        { ...fetchConfig, headers, method: "DELETE" },
+        { ...fetchConfig, headers, method: "delete" },
         config,
         baseUrl
       );

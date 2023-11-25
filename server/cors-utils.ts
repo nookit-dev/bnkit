@@ -142,7 +142,7 @@ export function handleOptionsRequest(
   requestOrigin: string | null,
   options: Partial<CORSOptions>
 ): Response | null {
-  if (request.method === "OPTIONS") {
+  if (request.method === "options") {
     const requestMethod = request.headers.get("Access-Control-Request-Method");
     const response = new Response(null, { status: 204 });
     setCORSHeadersIfOriginPresent(options, requestOrigin, response);

@@ -9,7 +9,8 @@
     "preview": "bun vite preview",
     "yeet": "npm version patch && npm publish --access public",
     "test": "bun test",
-    "test:watch": "bun test --watch"
+    "test:watch": "bun test --watch",
+    "i": "bun install"
   },
   "type": "module",
   "devDependencies": {
@@ -25,6 +26,6 @@
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "bnkit": "^0.4.0"
+    "bnkit": "latest"
   }
 }

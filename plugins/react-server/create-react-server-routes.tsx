@@ -22,13 +22,13 @@ export const createReactServerRoutes = async <
 
   const routes: Routes<MiddlewareConfig> = {
     "/": {
-      GET: await createReactStreamHandler({
+      get: await createReactStreamHandler({
         // idea pass middleware to renderNode and access data on client
         renderNode: Component,
       }),
     },
     "/state": {
-      POST: async (req) => {
+      post: async (req) => {
         try {
           const stateUpdate = (await req.json()) as {
             type: "partial" | "full";
@@ -55,13 +55,13 @@ export const createReactServerRoutes = async <
           });
         }
       },
-      GET: (req) => {
+      get: (req) => {
         if (!appState) new Response("No state", { status: 400 });
         return jsonRes(appState || {});
       },
     },
     ["/" + fileBuildName]: {
-      GET: () => {
+      get: () => {
         return new Response(Bun.file(buildEntry).stream(), {
           headers: {
             "Content-Type": "application/javascript",
@@ -70,7 +70,7 @@ export const createReactServerRoutes = async <
       },
     },
     [cleanedBuildEntry]: {
-      GET: () => {
+      get: () => {
         return new Response(Bun.file(buildEntry).stream(), {
           headers: {
             "Content-Type": "application/javascript",

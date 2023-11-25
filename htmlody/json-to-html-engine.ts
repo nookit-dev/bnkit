@@ -291,8 +291,10 @@ export const htmlodyBuilder = <
       .join("");
   };
 
-  const renderSingleNode = (
-    node: JsonTagElNode,
+  const renderSingleNode = <
+    Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>
+  >(
+    node: Node,
     pluginsOverride?: Plugins
   ): string => {
     const activePlugins = pluginsOverride || effectivePlugins;
@@ -311,8 +313,10 @@ export const htmlodyBuilder = <
       .join("");
   };
 
-  const buildHtmlDoc = (
-    bodyConfig: JsonHtmlNodeTree,
+  const buildHtmlDoc = <
+    JSONNodeTree extends JsonHtmlNodeTree = JsonHtmlNodeTree<PluginReturns>
+  >(
+    bodyConfig: JSONNodeTree,
     options?: {
       headConfig?: HeadConfig;
     }

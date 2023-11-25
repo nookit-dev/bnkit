@@ -26,7 +26,7 @@ describe("sqliteTableFactory", () => {
 
   afterEach(() => {
     // Clean up the database after each test (for isolation purposes)
-    mockDb.query("DELETE FROM test;").run();
+    mockDb.query("delete FROM test;").run();
   });
 
   test("should insert an item into the database using the factory", () => {

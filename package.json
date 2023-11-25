@@ -3,8 +3,8 @@
   "version": "0.4.35",
   "main": "index.ts",
   "devDependencies": {
-    "bun": "^1.0.11",
-    "bun-types": "^1.0.11",
+    "bun": "^1.0.14",
+    "bun-types": "^0.0.14",
     "tsd": "^0.29.0"
   },
   "description": "Bun Nook Kit is a simple zero-dependency, fast, and lightweight toolkit for Bun",

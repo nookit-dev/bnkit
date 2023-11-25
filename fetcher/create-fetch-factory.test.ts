@@ -11,7 +11,7 @@ type FetchArgs = {
 };
 
 describe("post method", () => {
-  test("should make a POST request to the correct URL with JSON body", async () => {
+  test("should make a post request to the correct URL with JSON body", async () => {
     let fetchArgs: FetchArgs = {
       url: "",
       options: {},
@@ -34,7 +34,7 @@ describe("post method", () => {
       config: {
         test: {
           endpoint: "/test",
-          method: "POST",
+          method: "post",
           headers: {
             "Content-Type": "application/json",
           },
@@ -45,7 +45,7 @@ describe("post method", () => {
     await fetchFactory.post({ endpoint: "test", body: postData });
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
-    expect(fetchArgs.options.method).toBe("POST");
+    expect(fetchArgs.options.method).toBe("post");
     // TODO: fix header tests
     // expect(fetchArgs.options.headers.get("Content-Type")).toBe(
     //   "application/json"
@@ -56,7 +56,7 @@ describe("post method", () => {
 });
 
 describe("postForm method", () => {
-  test("should make a POST request to the correct URL with FormData body", async () => {
+  test("should make a post request to the correct URL with FormData body", async () => {
     let fetchArgs: FetchArgs = {
       url: "",
       options: {},
@@ -80,7 +80,7 @@ describe("postForm method", () => {
       config: {
         test: {
           endpoint: "/test",
-          method: "POST",
+          method: "post",
         },
       },
     });
@@ -90,7 +90,7 @@ describe("postForm method", () => {
     await fetchFactory.postForm({ endpoint: "test", bodyData: formData });
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
-    expect(fetchArgs.options.method).toBe("POST");
+    expect(fetchArgs.options.method).toBe("post");
     // @ts-expect-error
     expect(fetchArgs?.options?.headers?.get(["content-type"])).toContain(
       "multipart/form-data"
@@ -99,7 +99,7 @@ describe("postForm method", () => {
 });
 
 describe("delete method", () => {
-  test("should make a DELETE request to the correct URL", async () => {
+  test("should make a delete request to the correct URL", async () => {
     let fetchArgs: FetchArgs = {
       url: "",
       options: {},
@@ -117,13 +117,13 @@ describe("delete method", () => {
       config: {
         test: {
           endpoint: "/test",
-          method: "DELETE",
+          method: "delete",
         },
       },
     });
     await fetchFactory.delete({ endpoint: "test" });
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
-    expect(fetchArgs.options.method).toBe("DELETE");
+    expect(fetchArgs.options.method).toBe("delete");
   });
 });
