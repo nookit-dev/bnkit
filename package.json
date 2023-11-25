@@ -1,6 +1,6 @@
 {
   "name": "bnkit",
-  "version": "0.4.39",
+  "version": "0.4.40",
   "main": "index.ts",
   "devDependencies": {
     "bun": "^1.0.14",
