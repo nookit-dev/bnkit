@@ -70,7 +70,7 @@ bun add bnkit
 # copy files from ./starter to the new project directory
 echo "Creating BNK quickstart project..."
 
-cp -a ./node_modules/bun-nook-kit/starter/. ./
+cp -a ./node_modules/bnkit/scripts/starter/. ./
 
 echo "Thank you for trying Bun Nook Kit!"
 echo "Add the Bun Nook Kit CLI to your path to have quick access"
@@ -123,14 +123,3 @@ if [[ $START_SERVER == "y" ]]; then
 else
   echo "Setup complete! Server not started due to --no-start flag."
 fi
-
-
-
-
-# Run the project setup script
-# if [ -f "./setup.sh" ]; then
-#   echo "Running project setup script..."
-#   sh ./setup.sh
-# else
-#   echo "No setup.sh script found in the project directory."
-# fi
