@@ -3,7 +3,9 @@ name: Release
 on:
   push:
     branches:
+      - release
       - main
+      - beta
   pull_request:
     types: [synchronize, opened, reopened]
 

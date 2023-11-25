@@ -2,8 +2,8 @@ import Bun from "bun";
 import path from "path";
 import { exit } from "process";
 // import * as u from "./";
-import { ulog } from "./utils/ulog";
 import { deploy, npm } from "index";
+import { ulog } from "./utils/ulog";
 
 // run bun test
 const testProc = Bun.spawnSync(["bun", "test", "--coverage"], {});
@@ -20,21 +20,21 @@ const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max num
 
 const e = Bun.env;
 
+const { commitAndPush, setupGitConfig, actionsEnv } =
+  deploy.createGitHubActionsFactory({
+    sshRepoUrl: "git@github.com:brandon-schabel/bun-nook-kit.git",
+  });
+
+const isBeta = actionsEnv.branch === "main";
+const isRelease = actionsEnv.branch === "release";
+const isAlpha = actionsEnv.eventName === "pull_request";
+const isLocalRun = Bun.env.LOCAL_RUN === "true";
+
 const { npmPublish, setupNpmAuth, updatePackageVersion } =
   npm.npmReleaseFactory({
     maxRetries: MAX_RETRIES,
     npmToken: NPM_TOKEN,
   });
-
-const { commitAndPush, setupGitConfig } = deploy.createGitHubActionsFactory({
-  sshRepoUrl: "git@github.com:brandon-schabel/bun-nook-kit.git",
-});
-
-const isLocalRun = Bun.env.LOCAL_RUN === "true";
-
-const isAlpha = isLocalRun
-  ? false
-  : Bun.env.GITHUB_EVENT_NAME === "pull_request";
 
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
@@ -77,15 +77,22 @@ if (!isLocalRun) {
 ulog(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
 const newVersion = await updatePackageVersion({
   packagePath: corePackagePath,
-  isAlpha,
+  isAlpha: actionsEnv.eventName === "pull_request",
+  isBeta: actionsEnv.eventName === "push",
 });
-await npmPublish({ packagePath: corePackagePath, isAlpha });
 
-await updatePackageVersion({ packagePath: pluginReactPath, isAlpha });
-await npmPublish({ packagePath: pluginReactPath, isAlpha });
+await npmPublish({ packagePath: corePackagePath, isAlpha, isBeta });
 
-await updatePackageVersion({ packagePath: pluginReactServerPath, isAlpha });
-await npmPublish({ packagePath: pluginReactServerPath, isAlpha });
+await updatePackageVersion({ packagePath: pluginReactPath, isAlpha, isBeta });
+await npmPublish({ packagePath: pluginReactPath, isAlpha, isBeta });
+
+await updatePackageVersion({
+  packagePath: pluginReactServerPath,
+  isAlpha,
+  isBeta,
+});
+
+await npmPublish({ packagePath: pluginReactServerPath, isAlpha, isBeta });
 
 if (!isLocalRun && !isAlpha) {
   await commitAndPush(`Pushing version: ${newVersion}`);

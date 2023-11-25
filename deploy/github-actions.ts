@@ -24,11 +24,25 @@ export async function logStdOutput(proc: SyncSubprocess) {
   }
 }
 
+type GHActions<Env extends object> = {
+  branch: "main" | "release";
+  eventName: "push" | "pull_request";
+} & Omit<Env, "branch" | "eventName">;
+
 export function createGitHubActionsFactory({
   sshRepoUrl,
 }: {
   sshRepoUrl: string; // for now just ssh based
 }) {
+  const actionsEnv = {
+    eventName: Bun.env.GITHUB_EVENT_NAME,
+    runNumber: Bun.env.GITHUB_RUN_NUMBER,
+    branch: Bun.env.GITHUB_REF?.split("/")?.[2],
+    actor: Bun.env.GITHUB_ACTOR,
+    job: Bun.env.GITHUB_JOB,
+    refType: Bun.env.GITHUB_REF_TYPE,
+  } as const;
+
   const gitCmd = async (commands: string[], log = true) => {
     const commandArray = ["git", ...commands];
 
@@ -97,6 +111,7 @@ export function createGitHubActionsFactory({
   };
 
   return {
+    actionsEnv: actionsEnv as GHActions<typeof actionsEnv>,
     gitCmd,
     commitAndPush,
     setupGitConfig,
