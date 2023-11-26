@@ -1,10 +1,10 @@
-import { HttpMethod } from "../utils/http-types";
+import { RouteMethods } from "../utils/http-types";
 import { middlewareFactory } from "./middleware-manager";
 
 import { HTMLodyPlugin, htmlodyBuilder } from "../htmlody";
 import type {
-  InferMiddlewareDataMap,
-  MiddlewareConfigMap,
+    InferMiddlewareDataMap,
+    MiddlewareConfigMap,
 } from "./middleware-types";
 
 export type RouteHandler<M = {}> = (
@@ -29,7 +29,7 @@ export type Routes<
     : never
 > = {
   [path: string]: Partial<{
-    [K in HttpMethod]: RouteHandler<InferredMiddlewareData>;
+    [K in RouteMethods]: RouteHandler<InferredMiddlewareData>;
   }>;
 };
 
@@ -38,6 +38,6 @@ export type RouteOptionsMiddlewareManger<
   MiddlewareDataMap = InferMiddlewareDataMap<MiddlewareFactory>
 > = {
   [path: string]: Partial<{
-    [K in HttpMethod]: RouteHandler<MiddlewareDataMap>;
+    [K in RouteMethods]: RouteHandler<MiddlewareDataMap>;
   }>;
 };

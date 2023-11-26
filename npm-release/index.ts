@@ -1,6 +1,8 @@
 export {
     getCurrentVersion,
-    npmPublish, npmReleaseFactory, setupNpmAuth,
+    npmPublish,
+    npmReleaseFactory,
+    setupNpmAuth,
     updatePackageVersion,
     updateVersion
 } from "./npm-release";

@@ -6,13 +6,13 @@ declare var document: {
     removeChild: any;
   };
 };
-import { HttpMethod } from "../utils/http-types";
+import { HTTPMethod } from "../utils/http-types";
 import { ExternalFetchConfig, MappedApiConfig, TypeMap } from "./fetch-types";
 import {
-    computeHeaders,
-    createEventStream,
-    fetcher,
-    fileDownload,
+  computeHeaders,
+  createEventStream,
+  fetcher,
+  fileDownload,
 } from "./fetch-utils";
 
 export type FactoryMethods = keyof ReturnType<typeof createFetchFactory>;
@@ -30,7 +30,7 @@ export function createFetchFactory<TMap extends TypeMap>({
 }) {
   return {
     fetcher: <Endpoint extends keyof TMap>(
-      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, HttpMethod>
+      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, HTTPMethod>
     ): Promise<TMap[Endpoint]["response"]> => {
       const headers = computeHeaders(
         defaultHeaders || {},
@@ -59,7 +59,7 @@ export function createFetchFactory<TMap extends TypeMap>({
         {
           ...fetcherConfig,
           headers,
-          method: "get",
+          method: "TG",
         },
         config,
         baseUrl
@@ -76,7 +76,7 @@ export function createFetchFactory<TMap extends TypeMap>({
       );
 
       return fetcher(
-        { ...fetchConfig, headers, method: "post" },
+        { ...fetchConfig, headers, method: "POST" },
         config,
         baseUrl
       );
@@ -102,7 +102,7 @@ export function createFetchFactory<TMap extends TypeMap>({
         {
           ...fetchConfig,
           headers,
-          method: "post",
+          method: "POST",
         },
         config,
         baseUrl
