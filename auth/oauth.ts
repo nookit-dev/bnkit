@@ -1,7 +1,7 @@
 import {
-    OAuthConfig,
-    OAuthProviderInitializer,
-    OAuthToken,
+  OAuthConfig,
+  OAuthProviderInitializer,
+  OAuthToken,
 } from "./oauth-types";
 
 type FetcherResponse<T> = T & {
@@ -11,14 +11,18 @@ type FetcherResponse<T> = T & {
 // Generic OAuth fetcher
 export async function oAuthFetcher<T>(
   url: string,
-  params: Record<string, string | undefined>
+  options: {
+    params: Record<string, string | undefined>;
+    headers?: Record<string, string>;
+  }
 ): Promise<FetcherResponse<T>> {
   const response = await fetch(url, {
     method: "post",
     headers: {
+      ...options.headers,
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: new URLSearchParams(params).toString(),
+    body: new URLSearchParams(options.params).toString(),
   });
 
   return response.json();
@@ -47,6 +51,7 @@ export const initProvider: OAuthProviderInitializer = ({
   clientId,
   authReqUrl,
   redirectUri,
+  headers,
 }) => {
   return {
     // TODO add options to be able to change response_type/scope, etc
@@ -62,7 +67,16 @@ export const initProvider: OAuthProviderInitializer = ({
       return `${authUrl}?${queryParams.toString()}`;
     },
     getToken: async (code: string) => {
-      return getOAuthToken<OAuthToken>({ code, config }).then((response) => {
+      return getOAuthToken<OAuthToken>({
+        code,
+        config: {
+          clientId,
+          clientSecret: "",
+          redirectUri,
+          tokenUrl: "https://oauth2.googleapis.com/token",
+          headers,
+        },
+      }).then((response) => {
         if (response.error) {
           console.error("Error fetching token:", response.error);
           throw new Error(response.error);
