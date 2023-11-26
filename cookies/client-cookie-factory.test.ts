@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, jest, test } from "bun:test";
-import { clientCookieFactory } from "./create-client-side-cookie-factory";
+import { clientCookieFactory } from "./client-cookie-factory";
 
 declare var document: {
   cookie: any;

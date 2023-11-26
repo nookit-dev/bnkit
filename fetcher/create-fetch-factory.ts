@@ -41,14 +41,14 @@ export function createFetchFactory<TMap extends TypeMap>({
         {
           ...fetcherConfig,
           headers,
-          method: fetcherConfig.method || "get",
+          method: fetcherConfig.method || "GET",
         },
         config,
         baseUrl
       );
     },
     get: <Endpoint extends keyof TMap>(
-      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, "get">
+      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, "GET">
     ): Promise<TMap[Endpoint]["response"]> => {
       const headers = computeHeaders(
         defaultHeaders || {},
@@ -59,14 +59,14 @@ export function createFetchFactory<TMap extends TypeMap>({
         {
           ...fetcherConfig,
           headers,
-          method: "TG",
+          method: "GET",
         },
         config,
         baseUrl
       );
     },
     post: <Endpoint extends keyof TMap>(
-      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "post"> & {
+      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "POST"> & {
         endpoint: Endpoint;
       }
     ): Promise<TMap[Endpoint]["response"]> => {
@@ -83,7 +83,7 @@ export function createFetchFactory<TMap extends TypeMap>({
     },
 
     postForm: <Endpoint extends keyof TMap>(
-      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "post"> & {
+      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "POST"> & {
         endpoint: Endpoint;
         boundary?: string;
       }
@@ -110,7 +110,7 @@ export function createFetchFactory<TMap extends TypeMap>({
     },
 
     delete: <Endpoint extends keyof TMap>(
-      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "delete"> & {
+      fetchConfig: ExternalFetchConfig<Endpoint, TMap, "DELETE"> & {
         endpoint: Endpoint;
       }
     ): Promise<TMap[Endpoint]["response"]> => {
@@ -119,7 +119,7 @@ export function createFetchFactory<TMap extends TypeMap>({
         fetchConfig.headers || {}
       );
       return fetcher(
-        { ...fetchConfig, headers, method: "delete" },
+        { ...fetchConfig, headers, method: "DELETE" },
         config,
         baseUrl
       );

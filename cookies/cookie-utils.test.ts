@@ -2,14 +2,12 @@ import { afterEach, describe, expect, it } from "bun:test";
 import {
   parseCookieData,
   retrieveRawCookieValue,
-  setCookie,
-  stringifyCookieData,
+  stringifyCookieData
 } from "./cookie-utils";
 
 declare var document: {
   cookie: any;
 };
-
 
 describe("Cookie Helpers", () => {
   describe("parseCookieData", () => {
@@ -69,24 +67,5 @@ describe("retrieveRawCookieValue", () => {
   it("should handle cookies with no value", () => {
     document.cookie = "emptyCookie=; anotherCookie=anotherValue";
     expect(retrieveRawCookieValue("emptyCookie")).toBe("");
-  });
-});
-
-describe("setCookie", () => {
-  it("should set a cookie with options", () => {
-    setCookie("foo", "bar", {
-      maxAge: 60,
-      path: "/",
-      domain: "example.com",
-      secure: true,
-      httpOnly: true,
-    });
-
-    expect(document.cookie).toContain("foo=bar");
-    expect(document.cookie).toContain("max-age=60");
-    expect(document.cookie).toContain("path=/");
-    expect(document.cookie).toContain("domain=example.com");
-    expect(document.cookie).toContain("secure");
-    expect(document.cookie).toContain("httpOnly");
   });
 });
