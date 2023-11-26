@@ -12,6 +12,7 @@ export type OAuthConfig = {
   tokenUrl: string;
   // the server route that handles the token request from the OAuth provider
   authReqUrl: string;
+  headers?: Record<string, string>;
 };
 
 export type OAuthToken = {
@@ -33,4 +34,5 @@ export type OAuthProviderFn = (
   config: OAuthProviderCreds,
   options?: OAuthProviderOptions
 ) => OAuthConfig;
+
 export type OAuthProviderInitializer = (config: OAuthConfig) => OAuthHelpers;
