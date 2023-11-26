@@ -17,6 +17,11 @@ export const oAuthProviders = {
       "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
     tokenUrl: "http://needtofind",
   },
+  github: {
+    redirectUri: "http://localhost:3000/callback",
+    authReqUrl: "https://github.com/login/oauth/authorize",
+    tokenUrl: "http://https://github.com/login/oauth/access_token",
+  }
 } satisfies ProvidersConfigRecord;
 
 export const initGoogleOAuth: OAuthProviderFn = (
