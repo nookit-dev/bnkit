@@ -31,7 +31,7 @@ export const createSecurityToken = async (
   currentDate?: Date
 ) => {
   const salt = uuid();
-  const { uuid: tokenId, timestamp } = uuid({
+  const [tokenId, timestamp] = uuid({
     returnTimestamp: true,
     dateTime: currentDate,
   });

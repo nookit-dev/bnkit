@@ -34,7 +34,7 @@ describe("post method", () => {
       config: {
         test: {
           endpoint: "/test",
-          method: "post",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -45,7 +45,7 @@ describe("post method", () => {
     await fetchFactory.post({ endpoint: "test", body: postData });
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
-    expect(fetchArgs.options.method).toBe("post");
+    expect(fetchArgs.options.method).toBe("POST");
     // TODO: fix header tests
     // expect(fetchArgs.options.headers.get("Content-Type")).toBe(
     //   "application/json"
@@ -80,7 +80,7 @@ describe("postForm method", () => {
       config: {
         test: {
           endpoint: "/test",
-          method: "post",
+          method: "POST",
         },
       },
     });
@@ -90,7 +90,7 @@ describe("postForm method", () => {
     await fetchFactory.postForm({ endpoint: "test", bodyData: formData });
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
-    expect(fetchArgs.options.method).toBe("post");
+    expect(fetchArgs.options.method).toBe("POST");
     // @ts-expect-error
     expect(fetchArgs?.options?.headers?.get(["content-type"])).toContain(
       "multipart/form-data"
@@ -124,6 +124,6 @@ describe("delete method", () => {
     await fetchFactory.delete({ endpoint: "test" });
 
     expect(fetchArgs.url).toBe("https://api.example.com/test");
-    expect(fetchArgs.options.method).toBe("delete");
+    expect(fetchArgs.options.method).toBe("DELETE");
   });
 });

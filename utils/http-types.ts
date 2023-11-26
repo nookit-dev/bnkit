@@ -1,13 +1,23 @@
 import { PartialRecord } from "../type-utils";
 
-export type HttpMethod =
-  | 'get'
+// for improved readbility when creating server routes lower
+export type RouteMethods =
+  | "get"
   | "post"
   | "put"
   | "delete"
   | "patch"
   | "options"
   | "head";
+
+export type HTTPMethod =
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "PATCH"
+  | "OPTIONS"
+  | "HEAD";
 
 export type CommonHttpHeaders =
   | "Accept"
@@ -61,15 +71,15 @@ export type CORSOptions = {
    * An array of allowed origins. Requests from origins not in this array will be rejected.
    * ["*"] will allow all origins.
    */
-  origins?: string[];
+  allowedOrigins?: string[];
   /**
    * An array of allowed HTTP methods. Requests using methods not in this array will be rejected.
    */
-  methods?: HttpMethod[];
+  allowedMethods?: HTTPMethod[];
   /**
    * An array of allowed HTTP headers. Requests with headers not in this array will be rejected.
    */
-  headers?: CommonHttpHeaders[] | string[];
+  allowedHeaders?: CommonHttpHeaders[] | string[];
   /**
    * Whether or not to allow credentials to be sent with the request.
    */

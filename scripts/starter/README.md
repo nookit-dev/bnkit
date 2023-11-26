@@ -45,7 +45,7 @@ Visit `http://localhost:3000` in your browser and you should see Hello world and
 const routes = {
 // ... other routes
 "/poll": {
-    POST: async (request) => {
+    post: async (request) => {
       const form = await request.formData();
 
       const firstName = form.get("firstName");

@@ -14,5 +14,4 @@ export type {
   Routes,
 } from "./routes";
 
-export { corsMiddleware } from "./create-cors-middleware";
 export { htmlRes, jsonRes, redirectRes } from "./server-utils";
