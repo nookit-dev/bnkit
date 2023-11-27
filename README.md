@@ -1,13 +1,13 @@
 # Bun Nook Kit (BNK)
 
-![BNK Logo](https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/d9f91bca-8875-4c00-8429-87e43b2a026f)
+![BNK Logo](https://github.com/nookit-dev/bnkit/assets/18100375/d9f91bca-8875-4c00-8429-87e43b2a026f)
 
 **Bun Nook Kit (BNK)** is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
 
 
-![GitHub License](https://img.shields.io/github/license/brandon-schabel/bun-nook-kit)
+![GitHub License](https://img.shields.io/github/license/nookit-dev/bnkit)
 
-![npm](https://img.shields.io/npm/v/bnkit?logo=npm)  ![GitHub release (with filter)](https://img.shields.io/github/v/release/brandon-schabel/bun-nook-kit)  ![Stars](https://img.shields.io/github/stars/brandon-schabel/bun-nook-kit) 
+![npm](https://img.shields.io/npm/v/bnkit?logo=npm)  ![GitHub release (with filter)](https://img.shields.io/github/v/release/nookit-dev/bnkit)  ![Stars](https://img.shields.io/github/stars/nookit-dev/bnkit) 
 ![npm bundle size](https://img.shields.io/bundlephobia/min/bnkit)  ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/bnkit)
 
 ![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/bun_nook_kit).  ![Discord](https://img.shields.io/discord/1164699087543746560)' 
@@ -15,7 +15,7 @@
 
 ## BNK Server Quickstart 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts/quickstart.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/nookit-dev/bnkit/main/scripts/quickstart.sh)
 ```
 
 Visit `http://localhost:3000` in your browser and you should see Hello world and
@@ -142,9 +142,9 @@ Close To Final For V1:
 
 Create typesafe server routes and middleware!
 
-<img width="555" alt="Xnapper-2023-11-14-19 43 47" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/0d66c9ec-0f3a-487c-98f8-8c14faeaa82d">
+<img width="555" alt="Xnapper-2023-11-14-19 43 47" src="https://github.com/nookit-dev/bnkit/assets/18100375/0d66c9ec-0f3a-487c-98f8-8c14faeaa82d">
 
-<img width="582" alt="Xnapper-2023-11-14-19 47 14" src="https://github.com/brandon-schabel/bun-nook-kit/assets/18100375/78afc0e7-46c0-4269-8072-e8622f111b08">
+<img width="582" alt="Xnapper-2023-11-14-19 47 14" src="https://github.com/nookit-dev/bnkit/assets/18100375/78afc0e7-46c0-4269-8072-e8622f111b08">
 
 
 ### Sponsors
@@ -157,4 +157,4 @@ Bun Nook Kit is licensed under the MIT License. Enjoy the freedom to use, modify
 Jumpstart your journey to revolutionary software development with Bun Nook Kit!
 
 Contribute to the docs:
-### [Docs Repo](https://github.com/brandon-schabel/bun-nook-kit-docs)
+### [Docs Repo](https://github.com/nookit-dev/bnkit-docs)
