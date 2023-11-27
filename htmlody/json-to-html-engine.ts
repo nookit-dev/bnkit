@@ -1,5 +1,5 @@
 import { htmlRes, middlewareFactory } from "../server";
-import { SELF_CLOSING_TAGS } from "./constants";
+import { HtmlTags, SELF_CLOSING_TAGS, htmlTags } from "./constants";
 import { generateCSS, generateColorVariables } from "./css-engine";
 import { HTMLodyPlugin } from "./htmlody-plugins";
 import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
@@ -9,7 +9,7 @@ import {
   isValidHtmlTag,
 } from "./htmlody-utils";
 
-export function validateTagName(tagName: string): string {
+export function validateTagName(tagName: HtmlTags): string {
   if (!isValidHtmlTag(tagName)) {
     throw new Error(`Invalid tag name provided: ${tagName}`);
   }
@@ -50,7 +50,7 @@ export function renderHtmlTag({
   tagName,
   validate,
 }: {
-  tagName: string;
+  tagName: HtmlTags;
   attributesStr: string;
   content: string;
   childrenHtml: string;
@@ -245,6 +245,36 @@ type HTMLodyOptions = {
   middleware?: ReturnType<typeof middlewareFactory>;
 };
 
+export const htmlodyNodeFactory = <
+  Plugins extends HTMLodyPlugin<any>[],
+  NodeWithPlugins extends NodePluginsMapper<Plugins>,
+  ReturnType extends Record<
+    HtmlTags,
+    (options?: Omit<NodeWithPlugins, "tag">) => JsonTagElNode
+  > = Record<
+    HtmlTags,
+    (options?: Omit<NodeWithPlugins, "tag">) => JsonTagElNode
+  >
+>(): ReturnType => {
+  const create = (tag: HtmlTags, options?: Omit<NodeWithPlugins, "tag">) => {
+    return {
+      tag,
+      content: "",
+      attributes: {},
+      ...options,
+    } as JsonTagElNode<NodeWithPlugins>;
+  };
+
+  const buildFns = {} as ReturnType;
+
+  for (const tag of htmlTags) {
+    buildFns[tag] = (options?: Omit<NodeWithPlugins, "tag">) =>
+      create(tag, options);
+  }
+
+  return buildFns;
+};
+
 export const htmlodyBuilder = <
   Plugins extends HTMLodyPlugin<any>[],
   PluginReturns extends NodePluginsMapper<Plugins>,
@@ -262,15 +292,8 @@ export const htmlodyBuilder = <
 }) => {
   const effectivePlugins = plugins;
 
-  const createNode = <PluginsRet extends PluginReturns = PluginReturns>(
-    options?: PluginReturns
-  ) => {
-    return {
-      tag: "div",
-      content: "",
-      attributes: {},
-      ...options,
-    } as JsonTagElNode<PluginsRet>;
+  const nodeFactory = () => {
+    return htmlodyNodeFactory<Plugins, PluginReturns>();
   };
 
   const inferTreeFn = <
@@ -467,7 +490,7 @@ export const htmlodyBuilder = <
   };
 
   return {
-    createNode,
+    nodeFactory,
     renderNodeTreeToHtml,
     renderSingleNode,
     renderChildren,

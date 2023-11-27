@@ -121,7 +121,7 @@ describe("jsonToHtml", () => {
         validateHtmlTags: true,
       })
     ).toThrow(
-      "Tag name not provided for node. \n      \n      Content: Sample Content\n\n      {\n  \"attributes\": {\n    \"class\": \"sample-class\"\n  },\n  \"content\": \"Sample Content\"\n}\n      "
+      'Tag name not provided for node. \n      \n      Content: Sample Content\n\n      {\n  "attributes": {\n    "class": "sample-class"\n  },\n  "content": "Sample Content"\n}\n      '
     );
   });
 
@@ -272,12 +272,20 @@ describe("createNodeFactory", () => {
     markdownPlugin,
   ] satisfies HTMLodyPlugin<any>[];
 
-  const { createNode, renderNodeTreeToHtml, renderSingleNode, renderChildren } =
-    htmlodyBuilder({ plugins });
+  const {
+    nodeFactory,
+    renderNodeTreeToHtml,
+    renderSingleNode,
+    renderChildren,
+  } = htmlodyBuilder({ plugins });
 
   describe("createNode", () => {
-    it("should createa  default node with a div tag", () => {
-      const node = createNode();
+    it("should create a default node with a div tag", () => {
+      const { div } = nodeFactory();
+      const node = div();
+
+      node.content = "Sample Content";
+
       expect(node.tag).toBe("div");
     });
   });
@@ -325,17 +333,19 @@ describe("createNodeFactory", () => {
 
   // check that markdown plugin works
   it("should convert markdown to HTML", () => {
-    const node = createNode({
-      tag: "div",
+    const { div } = nodeFactory();
+
+    const markdownDiv = div({
       markdown: "# Hello World!",
     });
-    const html = renderSingleNode(node);
+    const html = renderSingleNode(markdownDiv);
     expectHtmlToMatch(html, "<div><h1>Hello World!</h1></div>");
   });
 
   it("should apply plugins to the node", () => {
-    const node = createNode({
-      tag: "div",
+    const { div } = nodeFactory();
+
+    const node = div({
       cr: {
         "*": {
           "bg-blue-200": true,
@@ -349,8 +359,9 @@ describe("createNodeFactory", () => {
   });
 
   it("should render a single node to HTML", () => {
-    const node = createNode({
-      tag: "div",
+    const div = nodeFactory().div;
+
+    const node = div({
       content: "Sample Content",
       attributes: {
         id: "sample-id",
@@ -375,7 +386,7 @@ describe("renderNodeWithPlugins", () => {
     };
     const plugins = [];
     expect(() => renderNodeWithPlugins(node, plugins)).toThrow(
-      'Tag name not provided for node. \n      ID: id=\"sample-id\"\n      Content: Sample Content\n\n      {\n  \"attributes\": {\n    \"id\": \"sample-id\"\n  },\n  \"content\": \"Sample Content\"\n}\n      '
+      'Tag name not provided for node. \n      ID: id="sample-id"\n      Content: Sample Content\n\n      {\n  "attributes": {\n    "id": "sample-id"\n  },\n  "content": "Sample Content"\n}\n      '
     );
   });
 });

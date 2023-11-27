@@ -46,7 +46,6 @@ type FractionPercentMapT = typeof fractionPercentMap;
 
 export type CSSUnits = "rem" | "px" | "%" | "em";
 
-// class composition
 export const cc = <Keys extends CSSMapKeys[]>(keys: Keys) => {
   const keyString = typeof keys === "string" ? keys : keys.join(" ");
   const composition = {
@@ -58,7 +57,6 @@ export const cc = <Keys extends CSSMapKeys[]>(keys: Keys) => {
   return composition;
 };
 
-// union class
 export const uClass = (keys: CSSMapKeys[]) => {
   // type casted so the resulting string doesn't throw a type error,
   // and keys are validated on the input

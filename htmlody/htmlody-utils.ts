@@ -1,4 +1,4 @@
-import { VALID_HTML_TAGS } from "./constants";
+import { HtmlTags, htmlTagsSet } from "./constants";
 import { CRNode } from "./htmlody-plugins";
 import { Attributes, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
 
@@ -34,8 +34,8 @@ export function formatAttributes(attributes: Attributes): string {
     .join(" ");
 }
 
-export function isValidHtmlTag(tagName: string): boolean {
-  return VALID_HTML_TAGS.has(tagName);
+export function isValidHtmlTag(tagName: HtmlTags): boolean {
+  return htmlTagsSet.has(tagName);
 }
 
 export function isValidAttributesString(attributesStr: string): boolean {
@@ -54,7 +54,7 @@ export function collectClassNames(
   }
 }
 
-export const children = (children: JsonTagElNode<CRNode>[] ) => {
+export const children = (children: JsonTagElNode<CRNode>[]) => {
   const returnChildren: JsonHtmlNodeTree = {};
 
   for (let i = 0; i < children.length; i++) {
