@@ -1,8 +1,8 @@
-# Bun Nook Kit (BNK)
+# Bun Nookit (BNK)
 
 ![BNK Logo](https://github.com/nookit-dev/bnkit/assets/18100375/d9f91bca-8875-4c00-8429-87e43b2a026f)
 
-**Bun Nook Kit (BNK)** is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
+**Bun Nookit (BNK)** is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
 
 
 ![GitHub License](https://img.shields.io/github/license/nookit-dev/bnkit)
@@ -31,7 +31,7 @@ Visit `http://localhost:3000` in your browser and you should see Hello world and
 ### 
 
 
-## Bun Nook Kit Package Installation
+## Bun Nookit Package Installation
 
 Install in your project: 
 `bun add bnkit`
@@ -39,7 +39,7 @@ Install in your project:
 Plugin install example: 
 `bun add @bnk/react`
 
-Use any an all Bun Nook Kit modules - server example with json response (similar to starter project)
+Use any an all Bun Nookit modules - server example with json response (similar to starter project)
 
 `index.ts`
 
@@ -87,21 +87,21 @@ Join our [Discord Server]("https://discord.gg/rQyWN7V6") https://discord.gg/rQyW
 
 ## Plugins
 
-Currently Bun Nook Kit has a React plugin, as well as a hook called `useServerState` for connecting to a Bun Nook Kit websocket server state, a `useLocalStorage` hook, and a `useClipboard` hook.
+Currently Bun Nookit has a React plugin, as well as a hook called `useServerState` for connecting to a Bun Nookit websocket server state, a `useLocalStorage` hook, and a `useClipboard` hook.
 
 ## Architecture
 
-Bun Nook Kit is built upon a robust and flexible architecture using factory functions, taking full advantage of their benefits to offer a streamlined, efficient, and versatile toolkit for your development needs.
+Bun Nookit is built upon a robust and flexible architecture using factory functions, taking full advantage of their benefits to offer a streamlined, efficient, and versatile toolkit for your development needs.
 
-- **Encapsulation**: Bun Nook Kit employs factory functions to streamline object creation, concealing the complexity of the process and offering a user-friendly interface. This enables you to utilize module functionalities without delving into the detailed construction logic.
+- **Encapsulation**: Bun Nookit employs factory functions to streamline object creation, concealing the complexity of the process and offering a user-friendly interface. This enables you to utilize module functionalities without delving into the detailed construction logic.
 
-- **Adaptability**: Factory functions in Bun Nook Kit are engineered to return varied object types, dependent on input parameters, ensuring the toolkit can be precisely adapted to meet your project's unique requirements.
+- **Adaptability**: Factory functions in Bun Nookit are engineered to return varied object types, dependent on input parameters, ensuring the toolkit can be precisely adapted to meet your project's unique requirements.
 
-- **Code Reusability**: Adhering to functional programming principles, Bun Nook Kit’ factory functions facilitate efficient code management and hasten development through enabling code reusability and composability.
+- **Code Reusability**: Adhering to functional programming principles, Bun Nookit’ factory functions facilitate efficient code management and hasten development through enabling code reusability and composability.
 
-- **Object Initialization**: Bun Nook Kit' factory functions manage complex object initialization, ensuring modules are instantiated with necessary properties or states.
+- **Object Initialization**: Bun Nookit' factory functions manage complex object initialization, ensuring modules are instantiated with necessary properties or states.
 
-Moreover, Bun Nook Kit employs factory functions to inject additional context where needed. For example, in the files folder module, a base path can be specified to anchor all operations to a particular directory. In the fetcher’s case, it allows the provision of a TypeSafe interface to the module, enabling type-safe fetch requests throughout your project. It also enhances user experience and usability by providing intellisense for available functions in the module. Although Bun Nook Kit heavily utilizes factory functions, almost all functions within them can also be used directly.
+Moreover, Bun Nookit employs factory functions to inject additional context where needed. For example, in the files folder module, a base path can be specified to anchor all operations to a particular directory. In the fetcher’s case, it allows the provision of a TypeSafe interface to the module, enabling type-safe fetch requests throughout your project. It also enhances user experience and usability by providing intellisense for available functions in the module. Although Bun Nookit heavily utilizes factory functions, almost all functions within them can also be used directly.
 
 This version aims to maintain the original meaning while enhancing clarity and grammatical structure. Let me know if further modifications are needed!
 
@@ -152,9 +152,9 @@ None! Be the first to sponsor BNK :)
 
 ## License
 
-Bun Nook Kit is licensed under the MIT License. Enjoy the freedom to use, modify, and distribute the software under very permissive terms.
+Bun Nookit is licensed under the MIT License. Enjoy the freedom to use, modify, and distribute the software under very permissive terms.
 
-Jumpstart your journey to revolutionary software development with Bun Nook Kit!
+Jumpstart your journey to revolutionary software development with Bun Nookit!
 
 Contribute to the docs:
 ### [Docs Repo](https://github.com/nookit-dev/bnkit-docs)
