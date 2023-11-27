@@ -6,7 +6,6 @@ import { serverFactory } from "server";
 const googleClientId = Bun.env.GOOGLE_OAUTH_CLIENT_ID || "";
 const googleClientSecret = Bun.env.GOOGLE_OAUTH_CLIENT_SECRET || "";
 
-
 const googleOAuthConfig = initGoogleOAuth({
   clientId: googleClientId,
   clientSecret: googleClientSecret,

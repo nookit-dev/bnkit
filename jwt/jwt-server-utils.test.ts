@@ -1,14 +1,14 @@
 import { describe, expect, it } from "bun:test";
 import {
-    base64UrlDecode,
-    base64UrlEncode,
-    decodeJwt,
-    decrypt,
-    encodeJwt,
-    encrypt,
-    isTokenExpired,
-    payloadValidator,
-    sign,
+  base64UrlDecode,
+  base64UrlEncode,
+  decodeJwt,
+  decrypt,
+  encodeJwt,
+  encrypt,
+  isTokenExpired,
+  payloadValidator,
+  sign,
 } from "./jwt-server-utils";
 import { JwtHeader, JwtPayload } from "./jwt-types";
 
@@ -34,11 +34,8 @@ describe("JWT Utility Functions", () => {
     it("should throw error for tampered encrypted data", () => {
       const data = "testData";
       const encryptedData = encrypt(data, secret);
-      const tamperedData =
-        encryptedData.substring(0, encryptedData.length - 10) + "TAMPER";
-      expect(() => decrypt(tamperedData, secret)).toThrow(
-        "Unable to decrypt token"
-      );
+      const tamperedData = encryptedData.substring(0, encryptedData.length - 10) + "TAMPER";
+      expect(() => decrypt(tamperedData, secret)).toThrow("Unable to decrypt token");
     });
   });
 
@@ -61,10 +58,7 @@ describe("JWT Utility Functions", () => {
   describe("JWT Encoding & Decoding", () => {
     it("should correctly encode and then decode JWT", () => {
       const jwt = encodeJwt(header, payload, secret);
-      const { header: decodedHeader, payload: decodedPayload } = decodeJwt(
-        jwt,
-        secret
-      );
+      const { header: decodedHeader, payload: decodedPayload } = decodeJwt(jwt, secret);
 
       expect(decodedHeader).toEqual(header);
       expect(decodedPayload.userId).toBe(payload.userId);

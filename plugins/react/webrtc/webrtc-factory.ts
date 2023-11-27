@@ -23,9 +23,7 @@ export function createWebRTCFactory({
    * @param customConfig - Optional custom configuration for the RTCPeerConnection object.
    * @returns A new RTCPeerConnection object.
    */
-  function createPeerConnection(
-    customConfig?: RTCConfiguration
-  ): RTCPeerConnection {
+  function createPeerConnection(customConfig?: RTCConfiguration): RTCPeerConnection {
     const peerConnection = new RTCPeerConnection({
       ...configuration,
       ...customConfig,
@@ -38,9 +36,7 @@ export function createWebRTCFactory({
    * @param peerConnection - The RTCPeerConnection object to create the offer for.
    * @returns A promise that resolves with the created offer.
    */
-  function createOffer(
-    peerConnection: RTCPeerConnection
-  ): Promise<RTCSessionDescriptionInit> {
+  function createOffer(peerConnection: RTCPeerConnection): Promise<RTCSessionDescriptionInit> {
     return peerConnection.createOffer().then((offer) => {
       return peerConnection.setLocalDescription(offer).then(() => offer);
     });
@@ -51,9 +47,7 @@ export function createWebRTCFactory({
    * @param peerConnection - The RTCPeerConnection object to create the answer for.
    * @returns A promise that resolves with the created answer.
    */
-  function createAnswer(
-    peerConnection: RTCPeerConnection
-  ): Promise<RTCSessionDescriptionInit> {
+  function createAnswer(peerConnection: RTCPeerConnection): Promise<RTCSessionDescriptionInit> {
     return peerConnection.createAnswer().then((answer) => {
       return peerConnection.setLocalDescription(answer).then(() => answer);
     });
@@ -67,7 +61,7 @@ export function createWebRTCFactory({
    */
   function setRemoteDescription(
     peerConnection: RTCPeerConnection,
-    description: RTCSessionDescriptionInit
+    description: RTCSessionDescriptionInit,
   ): Promise<void> {
     return peerConnection.setRemoteDescription(description);
   }

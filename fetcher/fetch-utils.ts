@@ -1,10 +1,4 @@
-import {
-  EventHandlerMap,
-  ExternalFetchConfig,
-  FileDownloadConfig,
-  MappedApiConfig,
-  TypeMap,
-} from "./fetch-types";
+import { EventHandlerMap, ExternalFetchConfig, FileDownloadConfig, MappedApiConfig, TypeMap } from "./fetch-types";
 
 declare var window: {
   fetch: any;
@@ -15,10 +9,7 @@ declare var document: {
   body: any;
 };
 
-export function appendURLParameters(
-  url: string,
-  params: Record<string, string> = {}
-): string {
+export function appendURLParameters(url: string, params: Record<string, string> = {}): string {
   const urlWithParams = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
     urlWithParams.append(key, value);
@@ -33,10 +24,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return await response.json();
 }
 
-export function computeHeaders(
-  defaultHeaders: HeadersInit,
-  customHeaders?: HeadersInit
-): HeadersInit {
+export function computeHeaders(defaultHeaders: HeadersInit, customHeaders?: HeadersInit): HeadersInit {
   const resultHeaders = new Headers(defaultHeaders);
 
   if (customHeaders instanceof Headers) {
@@ -56,20 +44,14 @@ export function computeHeaders(
   return resultHeaders;
 }
 
-export async function fetcher<
-  Endpoint extends keyof TMap,
-  TMap extends TypeMap
->(
+export async function fetcher<Endpoint extends keyof TMap, TMap extends TypeMap>(
   fetcherConfig: ExternalFetchConfig<Endpoint, TMap>,
   config: Record<keyof TMap, MappedApiConfig<TMap>>,
-  baseUrl: string
+  baseUrl: string,
   // computeHeadersFunction: (headers?: HeadersInit) => HeadersInit
 ): Promise<TMap[Endpoint]["response"]> {
   const endpointConfig = config[fetcherConfig.endpoint];
-  const finalUrl = appendURLParameters(
-    baseUrl + endpointConfig.endpoint,
-    fetcherConfig.params
-  );
+  const finalUrl = appendURLParameters(baseUrl + endpointConfig.endpoint, fetcherConfig.params);
 
   const method = endpointConfig.method;
   let bodyData = "";
@@ -87,10 +69,7 @@ export async function fetcher<
   return handleResponse(response);
 }
 
-export function fileDownload(
-  config: FileDownloadConfig,
-  baseUrl: string
-): void {
+export function fileDownload(config: FileDownloadConfig, baseUrl: string): void {
   if (typeof window === "undefined") return;
   const finalUrl = new URL(baseUrl + config.endpoint);
   if (config.params) {
@@ -107,11 +86,7 @@ export function fileDownload(
   document.body.removeChild(a);
 }
 
-export function createEventStream(
-  endpoint: string,
-  eventHandlers: EventHandlerMap,
-  baseUrl: string
-): EventSource {
+export function createEventStream(endpoint: string, eventHandlers: EventHandlerMap, baseUrl: string): EventSource {
   const url = baseUrl + endpoint;
   const es = new EventSource(url);
 

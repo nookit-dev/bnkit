@@ -1,11 +1,6 @@
 import { describe, it } from "bun:test";
 import { expect } from "bun:test";
-import {
-  getTokenExpireEpoch,
-  createToken,
-  verifyToken,
-  createSecurityToken,
-} from ".";
+import { getTokenExpireEpoch, createToken, verifyToken, createSecurityToken } from ".";
 
 describe("Token Utilities", () => {
   describe("getTokenExpireEpoch", () => {
@@ -40,8 +35,6 @@ describe("Token Utilities", () => {
 
   describe("createSecurityToken", () => {
     it("should create a security token with default expiration time", async () => {
-
-
       const result = await createSecurityToken(5000);
       expect(result.securityToken).toBeTruthy();
       expect(result.tokenId).toBeTruthy();
@@ -52,7 +45,7 @@ describe("Token Utilities", () => {
       const currentTime = new Date();
       const tokenValidTime = 60 * 15; // 15 minutes
       const result = await createSecurityToken(tokenValidTime, currentTime);
-      const expectedExpiration = currentTime.getTime() + (tokenValidTime * 1000);
+      const expectedExpiration = currentTime.getTime() + tokenValidTime * 1000;
       expect(result.tokenExpireEpoch).toBeCloseTo(expectedExpiration, -2); // -2 is for a precision of 10 milliseconds
     });
   });

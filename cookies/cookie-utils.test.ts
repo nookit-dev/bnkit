@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it } from "bun:test";
-import {
-  parseCookieData,
-  retrieveRawCookieValue,
-  stringifyCookieData
-} from "./cookie-utils";
+import { parseCookieData, retrieveRawCookieValue, stringifyCookieData } from "./cookie-utils";
 
 declare var document: {
   cookie: any;
@@ -59,8 +55,7 @@ describe("retrieveRawCookieValue", () => {
   });
 
   it("should decode URI encoded cookie names and values", () => {
-    document.cookie =
-      "encodedName%3D=encodedValue%3D; anotherCookie=anotherValue";
+    document.cookie = "encodedName%3D=encodedValue%3D; anotherCookie=anotherValue";
     expect(retrieveRawCookieValue("encodedName=")).toBe("encodedValue=");
   });
 

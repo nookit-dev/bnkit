@@ -1,18 +1,11 @@
 import { CookieOptions } from "./cookie-types";
-import {
-  parseCookieData,
-  retrieveRawCookieValue,
-  setCookie,
-} from "./cookie-utils";
+import { parseCookieData, retrieveRawCookieValue, setCookie } from "./cookie-utils";
 
 declare var document: {
   cookie: any;
 };
 
-export function clientCookieFactory<T = string>(
-  cookieKey: string,
-  options?: CookieOptions
-) {
+export function clientCookieFactory<T = string>(cookieKey: string, options?: CookieOptions) {
   const handleSetCookie = (value: T, cookieSetOptions: CookieOptions = {}) => {
     setCookie(cookieKey, value, cookieSetOptions || options || {});
   };

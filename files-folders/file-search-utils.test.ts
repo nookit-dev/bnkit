@@ -12,9 +12,7 @@ describe("Search Utilities", () => {
     const testFile1 = testDir + "/test1.txt";
     const testFile2 = nestedDir + "/test2.txt";
 
-
-
-    await saveOrUpdateFile({ filePath: testFile1, content: "Hello, world!",});
+    await saveOrUpdateFile({ filePath: testFile1, content: "Hello, world!" });
     await saveOrUpdateFile({ filePath: testFile2, content: "Goodbye, world!" });
 
     // Test recursiveDirSearch

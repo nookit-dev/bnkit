@@ -7,9 +7,7 @@ export type NpmReleaseFactoryOptions = {
   npmToken?: string;
 };
 
-export const getCurrentVersion = async (
-  packagePath: string
-): Promise<string> => {
+export const getCurrentVersion = async (packagePath: string): Promise<string> => {
   const packageData = await Bun.file(packagePath).text();
   const parsedData = JSON.parse(packageData);
   return parsedData.version;
@@ -43,9 +41,7 @@ export interface VersionConfig {
 export const updateVersion = (config: VersionConfig): string => {
   const { currentVersion, increment = "patch", isAlpha, isBeta } = config;
 
-  const hash = config.hash
-    ? config.hash
-    : Math.random().toString(36).substr(2, 8);
+  const hash = config.hash ? config.hash : Math.random().toString(36).substr(2, 8);
 
   const [major, minor, patch] = currentVersion.split(".").map(Number);
   let newMajor = major;
@@ -92,9 +88,7 @@ export const updatePackageVersion = async ({
   ulog(`Updating ${packagePath}`);
   const packageData = await Bun.file(packagePath).text();
   const parsedData = JSON.parse(packageData);
-  parsedData.version = parsedData.version
-    ? updateVersion({ currentVersion: parsedData.version, isAlpha })
-    : newVersion;
+  parsedData.version = parsedData.version ? updateVersion({ currentVersion: parsedData.version, isAlpha }) : newVersion;
 
   // Use the provided new version if available
   await Bun.write(packagePath, JSON.stringify(parsedData, null, 2));
@@ -108,20 +102,13 @@ type NpmPublishParams = {
   maxRetries?: number;
 };
 
-export const npmPublish = async ({
-  isAlpha,
-  isBeta,
-  packagePath,
-  maxRetries = 10,
-}: NpmPublishParams) => {
+export const npmPublish = async ({ isAlpha, isBeta, packagePath, maxRetries = 10 }: NpmPublishParams) => {
   const dir = path.dirname(packagePath);
 
   let success = false;
 
   for (let i = 0; i < maxRetries && !success; i++) {
-    ulog(
-      `Publishing from directory: ${dir}, attempt ${i + 1} of ${maxRetries}`
-    );
+    ulog(`Publishing from directory: ${dir}, attempt ${i + 1} of ${maxRetries}`);
 
     const npmWhoIs = Bun.spawnSync(["npm", "whoami"]);
     ulog({ npmWhoIs: npmWhoIs.stdout.toString() });
@@ -143,11 +130,7 @@ export const npmPublish = async ({
     const errorResponse = proc.stderr.toString();
 
     // If there's a specific error indicating a version conflict
-    if (
-      errorResponse.includes(
-        "cannot publish over the previously published versions"
-      )
-    ) {
+    if (errorResponse.includes("cannot publish over the previously published versions")) {
       ulog(`Version conflict for ${dir}, trying next version...`);
 
       const currentVersion = await getCurrentVersion(packagePath);
@@ -175,10 +158,8 @@ export function npmReleaseFactory(options: NpmReleaseFactoryOptions) {
   return {
     getCurrentVersion: () => getCurrentVersion, // this returns a function, not the result of the function. Is this intentional?
     setupNpmAuth: () => setupNpmAuth(npmToken || ""),
-    npmPublish: ({ isAlpha, packagePath }: NpmPublishParams) =>
-      npmPublish({ isAlpha, packagePath, maxRetries }),
-    updateVersion: (currentVersion: string, isAlpha: boolean) =>
-      updateVersion({ currentVersion, isAlpha }),
+    npmPublish: ({ isAlpha, packagePath }: NpmPublishParams) => npmPublish({ isAlpha, packagePath, maxRetries }),
+    updateVersion: (currentVersion: string, isAlpha: boolean) => updateVersion({ currentVersion, isAlpha }),
     updatePackageVersion: (params: {
       packagePath: string;
       isAlpha?: boolean;

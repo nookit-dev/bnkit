@@ -45,7 +45,7 @@ export type FileSearchParams<T extends boolean> = {
 };
 
 export const recursiveDirSearch = async <T extends boolean = false>(
-  params: FileSearchParams<T>
+  params: FileSearchParams<T>,
 ): Promise<T extends true ? FileWithContent[] : FileDirInfo[]> => {
   const {
     directory,
@@ -61,10 +61,7 @@ export const recursiveDirSearch = async <T extends boolean = false>(
   for (const entry of entries) {
     const fullPath = path.join(directory, entry.name);
 
-    if (
-      entry.isDirectory() &&
-      !ignoreDirectories[entry.name as keyof typeof ignoreDirectories]
-    ) {
+    if (entry.isDirectory() && !ignoreDirectories[entry.name as keyof typeof ignoreDirectories]) {
       const nestedResults = await recursiveDirSearch({
         ...params,
         directory: fullPath,
@@ -104,10 +101,7 @@ export const recursiveDirSearch = async <T extends boolean = false>(
   return results as T extends true ? FileWithContent[] : FileDirInfo[];
 };
 
-export async function searchDirForFileName(
-  startingDir: string,
-  fileName: string
-): Promise<string | null> {
+export async function searchDirForFileName(startingDir: string, fileName: string): Promise<string | null> {
   async function searchFn(dir: string): Promise<string | null> {
     const entries = await fsPromise.readdir(dir, { withFileTypes: true });
     for (let entry of entries) {

@@ -34,22 +34,11 @@ const middlewareMapDifferentReturns = {
   booleanMiddleware: (req: Request) => true,
 };
 
-type InferredDifferentReturns = InferMiddlewareDataMap<
-  typeof middlewareMapDifferentReturns
->;
+type InferredDifferentReturns = InferMiddlewareDataMap<typeof middlewareMapDifferentReturns>;
 
-type TestString = TypeCheck<
-  InferredDifferentReturns["stringMiddleware"],
-  string
->;
-type TestNumber = TypeCheck<
-  InferredDifferentReturns["numberMiddleware"],
-  number
->;
-type TestBoolean = TypeCheck<
-  InferredDifferentReturns["booleanMiddleware"],
-  boolean
->;
+type TestString = TypeCheck<InferredDifferentReturns["stringMiddleware"], string>;
+type TestNumber = TypeCheck<InferredDifferentReturns["numberMiddleware"], number>;
+type TestBoolean = TypeCheck<InferredDifferentReturns["booleanMiddleware"], boolean>;
 
 typeCheck<TestString>();
 typeCheck<TestNumber>();
@@ -59,14 +48,9 @@ const middlewareMapNestedPromise = {
   nestedPromiseMiddleware: async (req: Request) => Promise.resolve(42),
 };
 
-type InferredNestedPromise = InferMiddlewareDataMap<
-  typeof middlewareMapNestedPromise
->;
+type InferredNestedPromise = InferMiddlewareDataMap<typeof middlewareMapNestedPromise>;
 
-type TestNestedPromise = TypeCheck<
-  InferredNestedPromise["nestedPromiseMiddleware"],
-  number
->;
+type TestNestedPromise = TypeCheck<InferredNestedPromise["nestedPromiseMiddleware"], number>;
 
 typeCheck<TestNestedPromise>();
 
@@ -81,14 +65,9 @@ const middlewareMapComplexReturns = {
   complexReturnMiddleware: (req: Request) => new ComplexClass("value"),
 };
 
-type InferredComplexReturns = InferMiddlewareDataMap<
-  typeof middlewareMapComplexReturns
->;
+type InferredComplexReturns = InferMiddlewareDataMap<typeof middlewareMapComplexReturns>;
 
-type TestComplexReturns = TypeCheck<
-  InferredComplexReturns["complexReturnMiddleware"],
-  ComplexClass
->;
+type TestComplexReturns = TypeCheck<InferredComplexReturns["complexReturnMiddleware"], ComplexClass>;
 
 typeCheck<TestComplexReturns>();
 
@@ -96,13 +75,8 @@ const middlewareMapFunctionReturn = {
   functionReturnMiddleware: (req: Request) => () => "hello",
 };
 
-type InferredFunctionReturn = InferMiddlewareDataMap<
-  typeof middlewareMapFunctionReturn
->;
+type InferredFunctionReturn = InferMiddlewareDataMap<typeof middlewareMapFunctionReturn>;
 
-type TestFunctionReturn = TypeCheck<
-  InferredFunctionReturn["functionReturnMiddleware"],
-  () => string
->;
+type TestFunctionReturn = TypeCheck<InferredFunctionReturn["functionReturnMiddleware"], () => string>;
 
 typeCheck<TestFunctionReturn>();

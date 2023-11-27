@@ -30,18 +30,12 @@ export function formatTimeMid(timeMid: bigint): string {
   return (timeMid & 0xffffn).toString(16).padStart(4, "0");
 }
 
-export function formatTimeHighAndVersion(
-  timeHi: bigint,
-  version: bigint
-): string {
+export function formatTimeHighAndVersion(timeHi: bigint, version: bigint): string {
   return (((timeHi << 4n) | version) & 0xffffn).toString(16).padStart(4, "0");
 }
 
 export function formatClockSeq(clockSeq: bigint): string {
-  return (
-    ((clockSeq >> 8n) & 0xffn).toString(16).padStart(2, "0") +
-    (clockSeq & 0xffn).toString(16).padStart(2, "0")
-  );
+  return ((clockSeq >> 8n) & 0xffn).toString(16).padStart(2, "0") + (clockSeq & 0xffn).toString(16).padStart(2, "0");
 }
 export function formatNode(node: bigint): string {
   return node.toString(16).padStart(12, "0");
@@ -92,9 +86,7 @@ export function generateUuidV7<RetTS extends boolean = false>({
 
   const randA = (inputRandA ?? BigInt(randomBytes(2).readUInt16BE(0))) & 0xfffn; // Ensure 12 bits
   const varField = BigInt(0x2);
-  const randB =
-    (inputRandB ?? BigInt(randomBytes(8).readBigUInt64BE(0))) &
-    0x3fffffffffffffffn; // Ensure 62 bits
+  const randB = (inputRandB ?? BigInt(randomBytes(8).readBigUInt64BE(0))) & 0x3fffffffffffffffn; // Ensure 62 bits
 
   const unixTsMsBits = unixTsMs << BigInt(80);
   const versionBits = BigInt(version) << BigInt(76);
@@ -102,8 +94,7 @@ export function generateUuidV7<RetTS extends boolean = false>({
   const varBits = varField << BigInt(62);
   const randBBits = randB;
 
-  const uuidBigInt =
-    unixTsMsBits | versionBits | randABits | varBits | randBBits;
+  const uuidBigInt = unixTsMsBits | versionBits | randABits | varBits | randBBits;
   const uuidHex = uuidBigInt.toString(16).padStart(32, "0");
 
   const uuid = [
@@ -129,8 +120,7 @@ export const uuidV7DT = () => {
 
 // expect a string of length 36 (32 hexadecimal characters + 4 dashes):
 export function isValidUuid(uuid: string) {
-  const uuidRegex =
-    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return uuidRegex.test(uuid);
 }
 
@@ -150,9 +140,7 @@ export function extractTimestampFromUuidV7(uuid: string): {
   const timestamp = uuidBigInt >> BigInt(80);
 
   // Extracting the version: it's 4 bits after the timestamp. First, we mask off the timestamp bits by doing a bitwise AND with a mask that is 1 for the version bits and 0 elsewhere. Then, we shift right by (128 - 48 - 4) = 76 bits.
-  const versionMask = BigInt(
-    `0x${"0".repeat(12)}${"F".repeat(1)}${"0".repeat(19)}`
-  );
+  const versionMask = BigInt(`0x${"0".repeat(12)}${"F".repeat(1)}${"0".repeat(19)}`);
   const version = (uuidBigInt & versionMask) >> BigInt(76);
 
   return { timestamp, version };
@@ -223,12 +211,7 @@ export function generateUuidV8(customData: bigint[] = [0n, 0n, 0n]): string {
   const varField = variant & 0x3n;
   const custom_c = customData[2] & 0x3fffffffffffffffn;
 
-  const uuidBigInt =
-    (custom_a << 80n) |
-    (ver << 76n) |
-    (custom_b << 64n) |
-    (varField << 62n) |
-    custom_c;
+  const uuidBigInt = (custom_a << 80n) | (ver << 76n) | (custom_b << 64n) | (varField << 62n) | custom_c;
 
   const uuidHex = uuidBigInt.toString(16).padStart(32, "0");
 
@@ -256,10 +239,7 @@ export const uuidV7ToDate = (uuid: string) => {
 };
 
 type UuidVersion = 6 | 7 | 8;
-export function generateUuid<Ver extends number | UuidVersion>(
-  version: Ver,
-  customData?: bigint[]
-): string {
+export function generateUuid<Ver extends number | UuidVersion>(version: Ver, customData?: bigint[]): string {
   if (version === 6) {
     return generateUuidV6();
   } else if (version === 7) {

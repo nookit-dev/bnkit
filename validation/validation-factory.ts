@@ -29,10 +29,7 @@ export const getErrorType = (error: Error | CustomError): ErrorT => {
   return "type" in error ? error.type : mapBuiltInErrorType(error);
 };
 
-export function handleError(
-  error: Error | CustomError,
-  throwError = false
-): CustomError | undefined {
+export function handleError(error: Error | CustomError, throwError = false): CustomError | undefined {
   const handledError: CustomError =
     "type" in error
       ? error
@@ -48,16 +45,11 @@ export function handleError(
   }
 }
 
-export function createValidatorFactory<Schema extends Record<string, unknown>>(
-  schema: Schema
-) {
+export function createValidatorFactory<Schema extends Record<string, unknown>>(schema: Schema) {
   type SchemaKeys = keyof Schema;
   function validateItem(item: any): Schema {
     if (typeof item !== "object" || item === null) {
-      throw handleError(
-        { type: "ValidationError", message: "Invalid data type" },
-        true
-      );
+      throw handleError({ type: "ValidationError", message: "Invalid data type" }, true);
     }
 
     const validateSchema: Schema = {} as Schema;
@@ -76,19 +68,13 @@ export function createValidatorFactory<Schema extends Record<string, unknown>>(
     });
 
     if (!isValid) {
-      throw handleError(
-        { type: "ValidationError", message: "Invalid data type" },
-        true
-      );
+      throw handleError({ type: "ValidationError", message: "Invalid data type" }, true);
     }
 
     return validateSchema;
   }
 
-  function validateAgainstArraySchema(
-    schema: Schema,
-    data: unknown[]
-  ): ValidationResult<Schema> {
+  function validateAgainstArraySchema(schema: Schema, data: unknown[]): ValidationResult<Schema> {
     try {
       const validatedData = data.map((item) => validateItem(item));
       return { data: validatedData as Schema[] };

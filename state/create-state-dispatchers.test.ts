@@ -69,11 +69,7 @@ describe("createStateDispatchers", () => {
     (dispatchers.emails as { push: Function }).push("another@example.com");
     const [lastKey, lastValue] = updateAndGetLastCall();
     expect(lastKey).toBe("emails");
-    expect(lastValue).toEqual([
-      "john@example.com",
-      "doe@example.com",
-      "another@example.com",
-    ]);
+    expect(lastValue).toEqual(["john@example.com", "doe@example.com", "another@example.com"]);
   });
 
   it("should handle array pop correctly", () => {
@@ -84,24 +80,14 @@ describe("createStateDispatchers", () => {
   });
 
   it("should handle array insert correctly", () => {
-    (dispatchers.emails as { insert: Function }).insert(
-      1,
-      "inserted@example.com"
-    );
+    (dispatchers.emails as { insert: Function }).insert(1, "inserted@example.com");
     const [lastKey, lastValue] = updateAndGetLastCall();
     expect(lastKey).toBe("emails");
-    expect(lastValue).toEqual([
-      "john@example.com",
-      "inserted@example.com",
-      "doe@example.com",
-    ]);
+    expect(lastValue).toEqual(["john@example.com", "inserted@example.com", "doe@example.com"]);
   });
 
   it("should handle array replace correctly", () => {
-    (dispatchers.emails as { replace: Function }).replace(
-      1,
-      "replaced@example.com"
-    );
+    (dispatchers.emails as { replace: Function }).replace(1, "replaced@example.com");
     const [lastKey, lastValue] = updateAndGetLastCall();
     expect(lastKey).toBe("emails");
     expect(lastValue).toEqual(["john@example.com", "replaced@example.com"]);

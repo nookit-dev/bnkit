@@ -3,9 +3,7 @@ import { Dispatchers } from "../../types";
 import { createStateDispatchers } from "state/create-state-dispatchers";
 const MAX_RETRIES = 5;
 
-const getAppStateFromLocalStorage = <State extends object>(
-  defaultState: State
-): State => {
+const getAppStateFromLocalStorage = <State extends object>(defaultState: State): State => {
   const appStateString = localStorage.getItem("appState");
 
   try {
@@ -24,10 +22,7 @@ export type DefaultOptions = {
   optimistic?: boolean;
 };
 
-export function useServerState<
-  State extends object,
-  Options extends DefaultOptions = {}
->({
+export function useServerState<State extends object, Options extends DefaultOptions = {}>({
   defaultState,
   url,
   optimisticMap,
@@ -38,15 +33,9 @@ export function useServerState<
 }): {
   state: State;
   control: Dispatchers<State, Options>;
-  dispatch: (
-    key: keyof State,
-    value: State[keyof State],
-    opts?: Options
-  ) => void;
+  dispatch: (key: keyof State, value: State[keyof State], opts?: Options) => void;
 } {
-  const [state, setState] = useState<State>(() =>
-    getAppStateFromLocalStorage(defaultState)
-  );
+  const [state, setState] = useState<State>(() => getAppStateFromLocalStorage(defaultState));
   const wsRef = useRef<WebSocket | null>(null);
   const initialized = useRef(false);
   const prevStateRef = useRef<State | null>(null);
@@ -121,11 +110,7 @@ export function useServerState<
     }
   };
 
-  const dispatch = (
-    key: keyof State,
-    value: State[keyof State],
-    opts?: Options
-  ) => {
+  const dispatch = (key: keyof State, value: State[keyof State], opts?: Options) => {
     const isOptimistic = opts?.optimistic ?? optimisticMap?.[key] !== false;
 
     if (isOptimistic) {

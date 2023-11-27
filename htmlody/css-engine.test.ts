@@ -48,8 +48,7 @@ describe("generateCSS", () => {
     expect(result).toEqual(expectedCss);
   });
   it("should return empty string for empty nodeMap", () => {
-    const mockNodeMap: JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>> =
-      {};
+    const mockNodeMap: JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>> = {};
 
     const result = generateCSS(mockNodeMap);
     expect(result).toEqual(null);
@@ -162,14 +161,14 @@ describe("generateVariablesForColor", () => {
   it("should generate CSS variables for shades of a color", () => {
     const result = generateVariablesForColor("red");
     expect(result).toBe(
-      "--red-50: #1A0000;\n--red-100: #4D0000;\n--red-200: #800000;\n--red-300: #B30000;\n--red-400: #E60000;\n--red-500: #FF0000;\n--red-600: #FF1A1A;\n--red-700: #FF4D4D;\n--red-800: #FF8080;\n--red-900: #FFB3B3;\n"
+      "--red-50: #1A0000;\n--red-100: #4D0000;\n--red-200: #800000;\n--red-300: #B30000;\n--red-400: #E60000;\n--red-500: #FF0000;\n--red-600: #FF1A1A;\n--red-700: #FF4D4D;\n--red-800: #FF8080;\n--red-900: #FFB3B3;\n",
     );
   });
 
   it("should generate CSS variables for shades of a different color", () => {
     const result = generateVariablesForColor("blue");
     expect(result).toBe(
-      "--blue-50: #00001A;\n--blue-100: #00004D;\n--blue-200: #000080;\n--blue-300: #0000B3;\n--blue-400: #0000E6;\n--blue-500: #0000FF;\n--blue-600: #1A1AFF;\n--blue-700: #4D4DFF;\n--blue-800: #8080FF;\n--blue-900: #B3B3FF;\n"
+      "--blue-50: #00001A;\n--blue-100: #00004D;\n--blue-200: #000080;\n--blue-300: #0000B3;\n--blue-400: #0000E6;\n--blue-500: #0000FF;\n--blue-600: #1A1AFF;\n--blue-700: #4D4DFF;\n--blue-800: #8080FF;\n--blue-900: #B3B3FF;\n",
     );
   });
 });

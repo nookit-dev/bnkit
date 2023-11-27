@@ -18,7 +18,7 @@ const tstReq = (
     headers?: Record<string, string>;
     Origin?: string;
     noOrigin?: boolean;
-  }
+  },
 ) => {
   const req = (rMethod: HTTPMethod = "GET") => {
     const headers = new Headers({
@@ -54,25 +54,19 @@ const tstReq = (
 describe("createCorsMiddleware function", () => {
   test("default values", async () => {
     const requester = tstReq(tstOrigin).get;
-    const headers = requester.headers
+    const headers = requester.headers;
 
     headers.set("Access-Control-Request-Method", "POST");
     const mwConfig = await configCorsMW({
       allowedOrigins: [tstOrigin],
       allowedMethods: tstMethods,
-      allowedHeaders: ["Content-Type"]
-
-
+      allowedHeaders: ["Content-Type"],
     });
 
     const response = mwConfig(requester);
 
-    expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "GET, POST, PUT, DELETE"
-    );
-    expect(response.headers.get("Access-Control-Allow-Headers")).toBe(
-      "Content-Type"
-    );
+    expect(response.headers.get("Access-Control-Allow-Methods")).toBe("GET, POST, PUT, DELETE");
+    expect(response.headers.get("Access-Control-Allow-Headers")).toBe("Content-Type");
   });
 
   test("missing Origin header", async () => {
@@ -98,9 +92,7 @@ describe("createCorsMiddleware function", () => {
     const response = await configCorsMW(defaultOptions)(requester);
 
     expect(response.status).toBe(204);
-    expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "GET, POST, PUT, DELETE"
-    );
+    expect(response.headers.get("Access-Control-Allow-Methods")).toBe("GET, POST, PUT, DELETE");
   });
 
   test("Allow all origins option", async () => {
@@ -150,9 +142,7 @@ describe("createCorsMiddleware function", () => {
 
     const response = mwConfig(requester);
 
-    expect(response?.headers.get("Access-Control-Allow-Origin")).toBe(
-      tstOrigin
-    );
+    expect(response?.headers.get("Access-Control-Allow-Origin")).toBe(tstOrigin);
   });
 
   test("should set Access-Control-Allow-Origin header to request origin", async () => {
@@ -193,9 +183,7 @@ describe("createCorsMiddleware function", () => {
     });
 
     const response = mwConfig(request);
-    expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "GET, POST"
-    );
+    expect(response.headers.get("Access-Control-Allow-Methods")).toBe("GET, POST");
   });
 
   test("should set Access-Control-Allow-Headers header to allowedHeaders", async () => {
@@ -216,9 +204,7 @@ describe("createCorsMiddleware function", () => {
       response,
     });
 
-    expect(response.headers.get("Access-Control-Allow-Headers")).toBe(
-      "Content-Type"
-    );
+    expect(response.headers.get("Access-Control-Allow-Headers")).toBe("Content-Type");
   });
 
   test("should return 400 Bad Request if request does not have Origin header", async () => {
@@ -257,7 +243,7 @@ describe("createCorsMiddleware function", () => {
         allowedMethods: ["GET"],
         allowedOrigins: [tstOrigin],
       },
-      true
+      true,
     )(request);
 
     expect(response.status).toBe(405);

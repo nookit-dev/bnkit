@@ -10,16 +10,14 @@ export function parseQueryParams<ParamsType>(request: Request): ParamsType {
   return params;
 }
 
-export function parseRequestHeaders<HeadersType>(
-  request: Request
-): HeadersType {
+export function parseRequestHeaders<HeadersType>(request: Request): HeadersType {
   return request.headers.toJSON() as unknown as HeadersType;
 }
 
 export type JSONResType = <JSONBodyGeneric extends object>(
   body: JSONBodyGeneric,
   options?: ResponseInit,
-  response?: Response
+  response?: Response,
 ) => Response;
 
 // json res creates it's own response object, but if one is passed in, it will copy headers
@@ -59,10 +57,7 @@ type RedirectOptions = {
   cookies?: Record<string, string>;
 };
 
-export const redirectRes = (
-  url: string,
-  options: RedirectOptions = {}
-): Response => {
+export const redirectRes = (url: string, options: RedirectOptions = {}): Response => {
   const defaultHeaders: Record<string, string> = {
     Location: url,
   };

@@ -13,10 +13,8 @@ function isValidRegex(str: string): boolean {
 
 export const serverRequestHandler = <
   MiddlewareFactory extends ReturnType<typeof middlewareFactory>,
-  MiddlewareConfig extends MiddlewareConfigMap = Parameters<
-    typeof middlewareFactory
-  >[0],
-  MiddlewareDataMap extends InferMiddlewareDataMap<MiddlewareConfig> = InferMiddlewareDataMap<MiddlewareConfig>
+  MiddlewareConfig extends MiddlewareConfigMap = Parameters<typeof middlewareFactory>[0],
+  MiddlewareDataMap extends InferMiddlewareDataMap<MiddlewareConfig> = InferMiddlewareDataMap<MiddlewareConfig>,
 >({
   req,
   routes,
@@ -33,9 +31,7 @@ export const serverRequestHandler = <
 
   const pathRoutes = routes[url.pathname];
 
-  matchedHandler = pathRoutes
-    ? pathRoutes[req.method.toUpperCase() as keyof typeof pathRoutes]
-    : null;
+  matchedHandler = pathRoutes ? pathRoutes[req.method.toUpperCase() as keyof typeof pathRoutes] : null;
 
   // try regex match after direct string match
   if (!matchedHandler) {
@@ -43,24 +39,18 @@ export const serverRequestHandler = <
       if (isValidRegex(pattern)) {
         const regex = new RegExp(pattern, "i");
         if (regex.test(url.pathname)) {
-          matchedHandler =
-            routes[pattern][
-              req.method.toUpperCase() as keyof (typeof routes)[typeof pattern]
-            ];
+          matchedHandler = routes[pattern][req.method.toUpperCase() as keyof (typeof routes)[typeof pattern]];
           break;
         }
       }
     }
   }
 
-  if (!matchedHandler && !optionsHandler)
-    return Promise.resolve(new Response("Not Found", { status: 404 }));
+  if (!matchedHandler && !optionsHandler) return Promise.resolve(new Response("Not Found", { status: 404 }));
   const executeMiddlewares = middlewareRet?.executeMiddlewares;
 
   // Ensure that middleware execution is properly handled when it's not provided
-  const middlewareResponses = executeMiddlewares
-    ? executeMiddlewares(req)
-    : Promise.resolve({} as MiddlewareDataMap);
+  const middlewareResponses = executeMiddlewares ? executeMiddlewares(req) : Promise.resolve({} as MiddlewareDataMap);
 
   return middlewareResponses
     .then((resolvedMwResponses) => {

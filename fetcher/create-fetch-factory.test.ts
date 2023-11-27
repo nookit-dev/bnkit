@@ -92,9 +92,7 @@ describe("postForm method", () => {
     expect(fetchArgs.url).toBe("https://api.example.com/test");
     expect(fetchArgs.options.method).toBe("POST");
     // @ts-expect-error
-    expect(fetchArgs?.options?.headers?.get(["content-type"])).toContain(
-      "multipart/form-data"
-    );
+    expect(fetchArgs?.options?.headers?.get(["content-type"])).toContain("multipart/form-data");
   });
 });
 

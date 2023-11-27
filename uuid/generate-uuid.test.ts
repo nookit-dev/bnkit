@@ -29,8 +29,7 @@ describe("UUID Generation Functions", () => {
   test("getTimestampForV6 returns a predictable bigint", () => {
     // Date.now = jest.fn(() => MOCK_TIMESTAMP);
 
-    const expectedTimestamp =
-      BigInt(MOCK_TIMESTAMP) * BigInt(10000) + BigInt(0x01b21dd213814000);
+    const expectedTimestamp = BigInt(MOCK_TIMESTAMP) * BigInt(10000) + BigInt(0x01b21dd213814000);
 
     const v6Timestamp = getTimestampForV6(MOCK_TIMESTAMP);
 
@@ -79,9 +78,7 @@ describe("UUID Generation Functions", () => {
   });
 
   test("formatTimeHighAndVersion returns a string of length 4", () => {
-    expect(
-      formatTimeHighAndVersion(BigInt(12345678901234), BigInt(6))
-    ).toHaveLength(4);
+    expect(formatTimeHighAndVersion(BigInt(12345678901234), BigInt(6))).toHaveLength(4);
   });
 
   test("formatClockSeq returns a string of length 4", () => {
@@ -101,11 +98,7 @@ describe("UUID Generation Functions", () => {
   });
 
   test("generateUuidV8 returns a UUID string of length 36", () => {
-    const customData = [
-      BigInt(0x123456789abc),
-      BigInt(0x123),
-      BigInt(0x3fffffffffffffff),
-    ];
+    const customData = [BigInt(0x123456789abc), BigInt(0x123), BigInt(0x3fffffffffffffff)];
     expect(generateUuidV8(customData)).toHaveLength(36);
   });
 
@@ -116,11 +109,7 @@ describe("UUID Generation Functions", () => {
   });
 
   test("generateUuid returns a UUID string of length 36 with custom data", () => {
-    const customData: bigint[] = [
-      BigInt(0x123456789abc),
-      BigInt(0x123),
-      BigInt(0x3fffffffff),
-    ];
+    const customData: bigint[] = [BigInt(0x123456789abc), BigInt(0x123), BigInt(0x3fffffffff)];
 
     expect(generateUuid(8, customData)).toHaveLength(36);
   });

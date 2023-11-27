@@ -94,7 +94,7 @@ export function createGitHubActionsFactory({
     } = {
       githubUsername: "github-actions[bot]",
       githubEmail: "41898282+github-actions[bot]@users.noreply.github.com",
-    }
+    },
   ) => {
     ulog("*** Configuring Git ***");
 

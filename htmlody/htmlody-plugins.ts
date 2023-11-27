@@ -1,9 +1,5 @@
 import { convertMarkdownToHTML } from "../utils/text-utils";
-import {
-  ExtensionRec,
-  JsonTagElNode,
-  ResponsiveClassRecord,
-} from "./htmlody-types";
+import { ExtensionRec, JsonTagElNode, ResponsiveClassRecord } from "./htmlody-types";
 
 // this will be the node that will be attached to our json node
 export type ClassRecordAttributes = {
@@ -18,11 +14,7 @@ export interface HTMLodyPlugin<T extends ExtensionRec = {}> {
   processNode: (node: JsonTagElNode<T>) => JsonTagElNode<T>;
 }
 
-export const classRecordPluginHandler = <
-  Node extends JsonTagElNode & { cr?: ResponsiveClassRecord }
->(
-  node: Node
-) => {
+export const classRecordPluginHandler = <Node extends JsonTagElNode & { cr?: ResponsiveClassRecord }>(node: Node) => {
   let classes = "";
 
   if (node.cr) {
@@ -58,9 +50,7 @@ export type MarkdownAttributes = {
   markdown?: string;
 };
 
-export const markdownPluginHandler = <Node extends MDNode>(
-  node: Node
-): JsonTagElNode => {
+export const markdownPluginHandler = <Node extends MDNode>(node: Node): JsonTagElNode => {
   if (node.markdown) {
     const htmlContent = convertMarkdownToHTML(node.markdown);
     // remove the markdown attribute after processing

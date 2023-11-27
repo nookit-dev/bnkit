@@ -1,9 +1,9 @@
 import { expect, test } from "bun:test";
 import {
-    deleteQueryString,
-    insertQueryString,
-    selectAllTableQueryString,
-    updateQueryString,
+  deleteQueryString,
+  insertQueryString,
+  selectAllTableQueryString,
+  updateQueryString,
 } from "./crud-string-utils";
 
 // Test for insertQueryString

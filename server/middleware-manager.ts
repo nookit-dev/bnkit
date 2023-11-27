@@ -1,15 +1,10 @@
-import {
-  InferMiddlewareDataMap,
-  MiddlewareConfigMap,
-} from "./middleware-types";
+import { InferMiddlewareDataMap, MiddlewareConfigMap } from "./middleware-types";
 
-export type InferMiddlewareFromFactory<
-  Factory extends typeof middlewareFactory
-> = ReturnType<ReturnType<Factory>["inferTypes"]>;
+export type InferMiddlewareFromFactory<Factory extends typeof middlewareFactory> = ReturnType<
+  ReturnType<Factory>["inferTypes"]
+>;
 
-export const middlewareFactory = <T extends MiddlewareConfigMap>(
-  middlewareOptions: T
-) => {
+export const middlewareFactory = <T extends MiddlewareConfigMap>(middlewareOptions: T) => {
   const middlewares: MiddlewareConfigMap = {
     ...middlewareOptions,
   };

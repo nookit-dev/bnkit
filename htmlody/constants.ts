@@ -17,7 +17,7 @@ export const SELF_CLOSING_TAGS = new Set([
   "wbr",
 ]);
 
-export const VALID_HTML_TAGS = new Set([
+export const htmlTags = [
   // Metadata and scripting
   "base",
   "head",
@@ -108,4 +108,9 @@ export const VALID_HTML_TAGS = new Set([
   "th",
   "thead",
   "tr",
-]);
+  "turbo-frame",
+] as const;
+
+export type HtmlTags = (typeof htmlTags)[number];
+
+export const htmlTagsSet = new Set(htmlTags);

@@ -3,9 +3,7 @@ import { createStateDispatchers } from "./create-state-dispatchers";
 
 export type AllowedStateKeys = boolean | string | number;
 
-export const createStateManager = <State extends object>(
-  initialState: State
-) => {
+export const createStateManager = <State extends object>(initialState: State) => {
   let currentState: State = initialState;
 
   const stateChangeCallbacks: {
@@ -28,24 +26,17 @@ export const createStateManager = <State extends object>(
     };
   }
 
-  function onStateChange<Key extends keyof State>(
-    key: Key,
-    callback: (newValue: State[Key]) => void
-  ) {
+  function onStateChange<Key extends keyof State>(key: Key, callback: (newValue: State[Key]) => void) {
     (stateChangeCallbacks[key] ??= []).push(callback);
   }
 
   function updateStateAndDispatch(
     key: keyof State,
-    updater:
-      | ((currentState: State[keyof State]) => State[keyof State])
-      | State[keyof State]
+    updater: ((currentState: State[keyof State]) => State[keyof State]) | State[keyof State],
   ) {
     const newValue =
       typeof updater === "function"
-        ? (updater as (currentState: State[keyof State]) => State[keyof State])(
-            currentState[key]
-          )
+        ? (updater as (currentState: State[keyof State]) => State[keyof State])(currentState[key])
         : updater;
     currentState[key] = newValue;
 
@@ -56,10 +47,10 @@ export const createStateManager = <State extends object>(
 
   const whenValueIs = <
     Key extends keyof State = FilteredKeys<State, AllowedStateKeys>,
-    ExpectedVal extends State[Key] = State[Key]
+    ExpectedVal extends State[Key] = State[Key],
   >(
     key: Key,
-    expectedValue: ExpectedVal
+    expectedValue: ExpectedVal,
   ) => {
     const value = currentState[key];
     return {
@@ -69,9 +60,7 @@ export const createStateManager = <State extends object>(
           onStateChange(key, (newValue) => {
             if (newValue === expectedValue) {
               callback();
-              stateChangeCallbacks[key] = stateChangeCallbacks[key]?.filter(
-                (c) => c !== callback
-              );
+              stateChangeCallbacks[key] = stateChangeCallbacks[key]?.filter((c) => c !== callback);
             }
           });
         }

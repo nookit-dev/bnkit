@@ -1,10 +1,10 @@
-import { VALID_HTML_TAGS } from "./constants";
+import { HtmlTags, htmlTagsSet } from "./constants";
 import { CRNode } from "./htmlody-plugins";
 import { Attributes, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
 
 export const retrieveElement = <Structure extends JsonHtmlNodeTree>(
   JsonHtmlNodeMap: Structure,
-  element: keyof Structure
+  element: keyof Structure,
 ) => {
   return JsonHtmlNodeMap[element];
 };
@@ -12,9 +12,9 @@ export const retrieveElement = <Structure extends JsonHtmlNodeTree>(
 export const nodeFactory = <
   Extension extends Record<string, unknown>,
   NodeT extends JsonTagElNode = JsonTagElNode<Extension>,
-  NodeConfigT extends NodeT = NodeT
+  NodeConfigT extends NodeT = NodeT,
 >(
-  config: NodeConfigT
+  config: NodeConfigT,
 ) => {
   const createNode = (options?: Omit<NodeConfigT, "tag">): NodeT => {
     return {
@@ -34,8 +34,8 @@ export function formatAttributes(attributes: Attributes): string {
     .join(" ");
 }
 
-export function isValidHtmlTag(tagName: string): boolean {
-  return VALID_HTML_TAGS.has(tagName);
+export function isValidHtmlTag(tagName: HtmlTags): boolean {
+  return htmlTagsSet.has(tagName);
 }
 
 export function isValidAttributesString(attributesStr: string): boolean {
@@ -44,17 +44,14 @@ export function isValidAttributesString(attributesStr: string): boolean {
   return attributePattern.test(attributesStr);
 }
 
-export function collectClassNames(
-  node: JsonTagElNode,
-  uniqueClassNames: Set<string>
-) {
+export function collectClassNames(node: JsonTagElNode, uniqueClassNames: Set<string>) {
   if (node.attributes && typeof node.attributes.class === "string") {
     const classList = node.attributes.class.split(" ");
     classList.forEach((cls) => uniqueClassNames.add(cls));
   }
 }
 
-export const children = (children: JsonTagElNode<CRNode>[] ) => {
+export const children = (children: JsonTagElNode<CRNode>[]) => {
   const returnChildren: JsonHtmlNodeTree = {};
 
   for (let i = 0; i < children.length; i++) {

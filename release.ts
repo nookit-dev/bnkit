@@ -20,38 +20,26 @@ const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max num
 
 const e = Bun.env;
 
-const { commitAndPush, setupGitConfig, actionsEnv } =
-  deploy.createGitHubActionsFactory({
-    sshRepoUrl: "git@github.com:brandon-schabel/bun-nook-kit.git",
-  });
+const { commitAndPush, setupGitConfig, actionsEnv } = deploy.createGitHubActionsFactory({
+  sshRepoUrl: "git@github.com:brandon-schabel/bun-nook-kit.git",
+});
 
 const isBeta = actionsEnv.branch === "main";
 const isRelease = actionsEnv.branch === "release";
 const isAlpha = actionsEnv.eventName === "pull_request";
 const isLocalRun = Bun.env.LOCAL_RUN === "true";
 
-const { npmPublish, setupNpmAuth, updatePackageVersion } =
-  npm.npmReleaseFactory({
-    maxRetries: MAX_RETRIES,
-    npmToken: NPM_TOKEN,
-  });
+const { npmPublish, setupNpmAuth, updatePackageVersion } = npm.npmReleaseFactory({
+  maxRetries: MAX_RETRIES,
+  npmToken: NPM_TOKEN,
+});
 
 const corePackagePath = path.resolve(process.cwd(), "package.json");
 
 // todo resolve all plugin paths
-const pluginReactPath = path.resolve(
-  process.cwd(),
-  "plugins",
-  "react",
-  "package.json"
-);
+const pluginReactPath = path.resolve(process.cwd(), "plugins", "react", "package.json");
 
-const pluginReactServerPath = path.resolve(
-  process.cwd(),
-  "plugins",
-  "react-server",
-  "package.json"
-);
+const pluginReactServerPath = path.resolve(process.cwd(), "plugins", "react-server", "package.json");
 
 ulog({
   actor: e?.GITHUB_ACTOR,

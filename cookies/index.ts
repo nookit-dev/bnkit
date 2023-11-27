@@ -7,7 +7,6 @@ export {
   parseCookies,
   retrieveRawCookieValue,
   setCookie,
-  stringifyCookieData
+  stringifyCookieData,
 } from "./cookie-utils";
 export { serverCookieFactory as createServerCookieFactory } from "./server-side-cookie-factory";
-

@@ -2,10 +2,7 @@ import { CookieOptions } from "bnkit/cookies/cookie-types";
 import { clientCookieFactory } from "bnkit/cookies/create-client-side-cookie-factory";
 import { useEffect, useState } from "react";
 
-export function useCookie<T = string>(
-  cookieKey: string,
-  options?: CookieOptions
-) {
+export function useCookie<T = string>(cookieKey: string, options?: CookieOptions) {
   const cookie = clientCookieFactory(cookieKey);
 
   const [cookieData, setCookieData] = useState<{ value: T | null }>(() => {
@@ -34,7 +31,7 @@ export function useCookie<T = string>(
     value: T,
     updateOptions: CookieOptions & {
       cookieKey?: string; // optionally override cookie  key
-    } = options || {}
+    } = options || {},
   ) => {
     const stringifiedValue = stringifyCookieData(value);
     cookie.setCookie(stringifiedValue, {

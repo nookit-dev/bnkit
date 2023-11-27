@@ -20,7 +20,7 @@ test("createTableQuery constructs SQL query correctly with foreign keys", () => 
   });
 
   expect(result).toBe(
-    "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT, `fkTest` TEXT, FOREIGN KEY (`fkTest`) REFERENCES other_table(id));"
+    "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT, `fkTest` TEXT, FOREIGN KEY (`fkTest`) REFERENCES other_table(id));",
   );
 });
 
@@ -35,9 +35,7 @@ test("createTableQuery constructs SQL query correctly without foreign keys", () 
     tableName: "test_table",
   });
 
-  expect(result).toBe(
-    "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT);"
-  );
+  expect(result).toBe("CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT);");
 });
 
 describe("createColumnDefinition", () => {
@@ -151,9 +149,7 @@ describe("createTableLevelConstraint", () => {
       foreignKey: "other_table(custom_id)",
     };
     const result = createTableLevelConstraint("fkCustomId", definition);
-    expect(result).toBe(
-      "FOREIGN KEY (`fkCustomId`) REFERENCES other_table(custom_id)"
-    );
+    expect(result).toBe("FOREIGN KEY (`fkCustomId`) REFERENCES other_table(custom_id)");
   });
 
   it("should properly trim the foreign key definition", () => {
@@ -162,9 +158,7 @@ describe("createTableLevelConstraint", () => {
       foreignKey: " other_table (custom_id) ",
     };
     const result = createTableLevelConstraint("fkCustomId", definition);
-    expect(result).toBe(
-      "FOREIGN KEY (`fkCustomId`) REFERENCES other_table(custom_id)"
-    );
+    expect(result).toBe("FOREIGN KEY (`fkCustomId`) REFERENCES other_table(custom_id)");
   });
 
   it("should handle foreign keys that include spaces or special characters", () => {
@@ -173,9 +167,7 @@ describe("createTableLevelConstraint", () => {
       foreignKey: "`other table`(`special id`)",
     };
     const result = createTableLevelConstraint("fkSpecial", definition);
-    expect(result).toBe(
-      "FOREIGN KEY (`fkSpecial`) REFERENCES `other table`(`special id`)"
-    );
+    expect(result).toBe("FOREIGN KEY (`fkSpecial`) REFERENCES `other table`(`special id`)");
   });
 
   it("should return null for a malformed foreign key definition", () => {
@@ -183,9 +175,7 @@ describe("createTableLevelConstraint", () => {
       type: "INTEGER",
       foreignKey: "malformed",
     };
-    expect(() =>
-      createTableLevelConstraint("fkMalformed", definition)
-    ).toThrow();
+    expect(() => createTableLevelConstraint("fkMalformed", definition)).toThrow();
   });
 
   // Test for a case where the foreign key reference does not include a field
@@ -194,9 +184,7 @@ describe("createTableLevelConstraint", () => {
       type: "INTEGER",
       foreignKey: "other_table",
     };
-    expect(() =>
-      createTableLevelConstraint("fkIncomplete", definition)
-    ).toThrow();
+    expect(() => createTableLevelConstraint("fkIncomplete", definition)).toThrow();
   });
 
   // Test for proper escaping of table and column names in foreign key definitions
@@ -206,9 +194,7 @@ describe("createTableLevelConstraint", () => {
       foreignKey: "`other-table`(`id`)",
     };
     const result = createTableLevelConstraint("fkEscaped", definition);
-    expect(result).toBe(
-      "FOREIGN KEY (`fkEscaped`) REFERENCES `other-table`(`id`)"
-    );
+    expect(result).toBe("FOREIGN KEY (`fkEscaped`) REFERENCES `other-table`(`id`)");
   });
 });
 
@@ -216,9 +202,7 @@ describe("assembleCreateTableQuery", () => {
   it("should assemble a create table query with a single column", () => {
     const columns = ["`id` INTEGER PRIMARY KEY"];
     const result = assembleCreateTableQuery("test_table", columns, []);
-    expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER PRIMARY KEY);"
-    );
+    expect(result).toBe("CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER PRIMARY KEY);");
   });
 
   it("should assemble a create table query with foreign key constraints", () => {
@@ -226,23 +210,19 @@ describe("assembleCreateTableQuery", () => {
     const constraints = ["FOREIGN KEY (`id`) REFERENCES other_table(id)"];
     const result = assembleCreateTableQuery("test_table", columns, constraints);
     expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT, FOREIGN KEY (`id`) REFERENCES other_table(id));"
+      "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT, FOREIGN KEY (`id`) REFERENCES other_table(id));",
     );
   });
 
   it("should handle tables with multiple foreign key constraints", () => {
-    const columns = [
-      "`id` INTEGER",
-      "`parent_id` INTEGER",
-      "`owner_id` INTEGER",
-    ];
+    const columns = ["`id` INTEGER", "`parent_id` INTEGER", "`owner_id` INTEGER"];
     const constraints = [
       "FOREIGN KEY (`parent_id`) REFERENCES parents(id)",
       "FOREIGN KEY (`owner_id`) REFERENCES owners(id)",
     ];
     const result = assembleCreateTableQuery("test_table", columns, constraints);
     expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `parent_id` INTEGER, `owner_id` INTEGER, FOREIGN KEY (`parent_id`) REFERENCES parents(id), FOREIGN KEY (`owner_id`) REFERENCES owners(id));"
+      "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `parent_id` INTEGER, `owner_id` INTEGER, FOREIGN KEY (`parent_id`) REFERENCES parents(id), FOREIGN KEY (`owner_id`) REFERENCES owners(id));",
     );
   });
 
@@ -250,17 +230,13 @@ describe("assembleCreateTableQuery", () => {
     const columns = ["`id` INTEGER", "`email` TEXT"];
     const constraints = ["UNIQUE (`email`)"];
     const result = assembleCreateTableQuery("users", columns, constraints);
-    expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER, `email` TEXT, UNIQUE (`email`));"
-    );
+    expect(result).toBe("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER, `email` TEXT, UNIQUE (`email`));");
   });
 
   it("should return a query without any constraints if none are provided", () => {
     const columns = ["`id` INTEGER", "`name` TEXT"];
     const result = assembleCreateTableQuery("simple_table", columns, []);
-    expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `simple_table` (`id` INTEGER, `name` TEXT);"
-    );
+    expect(result).toBe("CREATE TABLE IF NOT EXISTS `simple_table` (`id` INTEGER, `name` TEXT);");
   });
 
   it("should escape table names that are SQL keywords", () => {
@@ -277,39 +253,25 @@ describe("assembleCreateTableQuery", () => {
 
   it("should properly format a table with default values", () => {
     const columns = ["`id` INTEGER", "`name` TEXT DEFAULT 'Unknown'"];
-    const result = assembleCreateTableQuery(
-      "default_values_table",
-      columns,
-      []
-    );
+    const result = assembleCreateTableQuery("default_values_table", columns, []);
     expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `default_values_table` (`id` INTEGER, `name` TEXT DEFAULT 'Unknown');"
+      "CREATE TABLE IF NOT EXISTS `default_values_table` (`id` INTEGER, `name` TEXT DEFAULT 'Unknown');",
     );
   });
 
   it("should assemble a create table query with check constraints", () => {
     const columns = ["`age` INTEGER"];
     const constraints = ["CHECK (`age` >= 18)"];
-    const result = assembleCreateTableQuery(
-      "check_constraints_table",
-      columns,
-      constraints
-    );
-    expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `check_constraints_table` (`age` INTEGER, CHECK (`age` >= 18));"
-    );
+    const result = assembleCreateTableQuery("check_constraints_table", columns, constraints);
+    expect(result).toBe("CREATE TABLE IF NOT EXISTS `check_constraints_table` (`age` INTEGER, CHECK (`age` >= 18));");
   });
 
   it("should handle a table with composite primary keys", () => {
     const columns = ["`id` INTEGER", "`revision` INTEGER"];
     const constraints = ["PRIMARY KEY (`id`, `revision`)"];
-    const result = assembleCreateTableQuery(
-      "composite_keys_table",
-      columns,
-      constraints
-    );
+    const result = assembleCreateTableQuery("composite_keys_table", columns, constraints);
     expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `composite_keys_table` (`id` INTEGER, `revision` INTEGER, PRIMARY KEY (`id`, `revision`));"
+      "CREATE TABLE IF NOT EXISTS `composite_keys_table` (`id` INTEGER, `revision` INTEGER, PRIMARY KEY (`id`, `revision`));",
     );
   });
 
@@ -317,13 +279,9 @@ describe("assembleCreateTableQuery", () => {
   it("should use backticks for all identifiers", () => {
     const columns = ["`id` INTEGER", "`name` TEXT"];
     const constraints = ["FOREIGN KEY (`id`) REFERENCES `other_table`(`id`)"];
-    const result = assembleCreateTableQuery(
-      "backtick_test",
-      columns,
-      constraints
-    );
+    const result = assembleCreateTableQuery("backtick_test", columns, constraints);
     expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `backtick_test` (`id` INTEGER, `name` TEXT, FOREIGN KEY (`id`) REFERENCES `other_table`(`id`));"
+      "CREATE TABLE IF NOT EXISTS `backtick_test` (`id` INTEGER, `name` TEXT, FOREIGN KEY (`id`) REFERENCES `other_table`(`id`));",
     );
   });
 

@@ -19,20 +19,21 @@ import * as validation from "./validation";
 import * as utils from "./utils/classy";
 
 export {
-    auth, cli,
-    cookies,
-    dataGen,
-    deploy,
-    fetcher,
-    filesFolders, htmlody,
-    jwt,
-    logger,
-    npm,
-    server,
-    sqlite,
-    state,
-    utils,
-    uuid,
-    validation
+  auth,
+  cli,
+  cookies,
+  dataGen,
+  deploy,
+  fetcher,
+  filesFolders,
+  htmlody,
+  jwt,
+  logger,
+  npm,
+  server,
+  sqlite,
+  state,
+  utils,
+  uuid,
+  validation,
 };
-

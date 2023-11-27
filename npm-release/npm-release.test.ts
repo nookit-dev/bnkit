@@ -3,9 +3,7 @@ import { isTestFile } from "../test-utils";
 import { getCurrentVersion, npmPublish, updateVersion } from "./npm-release";
 describe("getCurrentVersion", () => {
   test("returns the version from the package.json", async () => {
-    const packagePath = isTestFile(import.meta)
-      ? import.meta.dir + "/mock-package.json"
-      : "./package.json";
+    const packagePath = isTestFile(import.meta) ? import.meta.dir + "/mock-package.json" : "./package.json";
 
     const version = await getCurrentVersion(packagePath);
     const hasThreeParts = version.split(".").length === 3;
@@ -44,8 +42,8 @@ describe("updateVersion", () => {
       isAlpha: true,
     });
 
-    expect(version).toContain("alpha")
-    expect(version).toStartWith("2.0.0")
+    expect(version).toContain("alpha");
+    expect(version).toStartWith("2.0.0");
   });
 
   test("increments alpha version with hash", () => {

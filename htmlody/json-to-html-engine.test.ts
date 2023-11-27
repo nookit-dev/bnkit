@@ -1,9 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  HTMLodyPlugin,
-  classRecordPlugin,
-  markdownPlugin,
-} from "./htmlody-plugins";
+import { HTMLodyPlugin, classRecordPlugin, markdownPlugin } from "./htmlody-plugins";
 import { Attributes, JsonHtmlNodeTree } from "./htmlody-types";
 import { formatAttributes, isValidAttributesString } from "./htmlody-utils";
 import {
@@ -119,9 +115,9 @@ describe("jsonToHtml", () => {
       // @ts-expect-error
       jsonToHtml(nodeMap, plugins, {
         validateHtmlTags: true,
-      })
+      }),
     ).toThrow(
-      "Tag name not provided for node. \n      \n      Content: Sample Content\n\n      {\n  \"attributes\": {\n    \"class\": \"sample-class\"\n  },\n  \"content\": \"Sample Content\"\n}\n      "
+      'Tag name not provided for node. \n      \n      Content: Sample Content\n\n      {\n  "attributes": {\n    "class": "sample-class"\n  },\n  "content": "Sample Content"\n}\n      ',
     );
   });
 
@@ -172,9 +168,7 @@ describe("getValidatedTagName", () => {
   });
 
   it("should throw an error for invalid tags", () => {
-    expect(() => validateTagName("invalidTag")).toThrow(
-      "Invalid tag name provided: invalidTag"
-    );
+    expect(() => validateTagName("invalidTag")).toThrow("Invalid tag name provided: invalidTag");
   });
 });
 
@@ -186,9 +180,7 @@ describe("getValidatedAttributesStr", () => {
   });
 
   it("should throw an error for invalid attributes string", () => {
-    expect(() => getValidatedAttributesStr("invalid=attr")).toThrow(
-      "Invalid attributes string provided: invalid=attr"
-    );
+    expect(() => getValidatedAttributesStr("invalid=attr")).toThrow("Invalid attributes string provided: invalid=attr");
   });
 });
 
@@ -238,9 +230,7 @@ describe("renderNodeToHtml", () => {
       content: "Sample Content",
     };
     // @ts-expect-error
-    expect(() => renderNodeToHtml(node, [])).toThrow(
-      "Tag name not provided for node."
-    );
+    expect(() => renderNodeToHtml(node, [])).toThrow("Tag name not provided for node.");
   });
 
   it("should handle nested children in the node", () => {
@@ -259,25 +249,22 @@ describe("renderNodeToHtml", () => {
     };
 
     const rendered = renderNodeToHtml(node, []);
-    expectHtmlToMatch(
-      rendered,
-      '<div id="sample-id" class="sample-class"><span>Child Content</span></div>'
-    );
+    expectHtmlToMatch(rendered, '<div id="sample-id" class="sample-class"><span>Child Content</span></div>');
   });
 });
 
 describe("createNodeFactory", () => {
-  const plugins = [
-    classRecordPlugin,
-    markdownPlugin,
-  ] satisfies HTMLodyPlugin<any>[];
+  const plugins = [classRecordPlugin, markdownPlugin] satisfies HTMLodyPlugin<any>[];
 
-  const { createNode, renderNodeTreeToHtml, renderSingleNode, renderChildren } =
-    htmlodyBuilder({ plugins });
+  const { nodeFactory, renderNodeTreeToHtml, renderSingleNode, renderChildren } = htmlodyBuilder({ plugins });
 
   describe("createNode", () => {
-    it("should createa  default node with a div tag", () => {
-      const node = createNode();
+    it("should create a default node with a div tag", () => {
+      const { div } = nodeFactory();
+      const node = div();
+
+      node.content = "Sample Content";
+
       expect(node.tag).toBe("div");
     });
   });
@@ -318,24 +305,26 @@ describe("createNodeFactory", () => {
       const html = renderNodeTreeToHtml(nodeMap);
       expectHtmlToMatch(
         html,
-        '<div id="sample-id" class="sample-class">Sample Content<span>Child Content</span></div>'
+        '<div id="sample-id" class="sample-class">Sample Content<span>Child Content</span></div>',
       );
     });
   });
 
   // check that markdown plugin works
   it("should convert markdown to HTML", () => {
-    const node = createNode({
-      tag: "div",
+    const { div } = nodeFactory();
+
+    const markdownDiv = div({
       markdown: "# Hello World!",
     });
-    const html = renderSingleNode(node);
+    const html = renderSingleNode(markdownDiv);
     expectHtmlToMatch(html, "<div><h1>Hello World!</h1></div>");
   });
 
   it("should apply plugins to the node", () => {
-    const node = createNode({
-      tag: "div",
+    const { div } = nodeFactory();
+
+    const node = div({
       cr: {
         "*": {
           "bg-blue-200": true,
@@ -349,8 +338,9 @@ describe("createNodeFactory", () => {
   });
 
   it("should render a single node to HTML", () => {
-    const node = createNode({
-      tag: "div",
+    const div = nodeFactory().div;
+
+    const node = div({
       content: "Sample Content",
       attributes: {
         id: "sample-id",
@@ -358,10 +348,7 @@ describe("createNodeFactory", () => {
       },
     });
     const html = renderNodeToHtml(node, []);
-    expectHtmlToMatch(
-      html,
-      '<div id="sample-id" class="sample-class">Sample Content</div>'
-    );
+    expectHtmlToMatch(html, '<div id="sample-id" class="sample-class">Sample Content</div>');
   });
 });
 
@@ -375,7 +362,7 @@ describe("renderNodeWithPlugins", () => {
     };
     const plugins = [];
     expect(() => renderNodeWithPlugins(node, plugins)).toThrow(
-      'Tag name not provided for node. \n      ID: id=\"sample-id\"\n      Content: Sample Content\n\n      {\n  \"attributes\": {\n    \"id\": \"sample-id\"\n  },\n  \"content\": \"Sample Content\"\n}\n      '
+      'Tag name not provided for node. \n      ID: id="sample-id"\n      Content: Sample Content\n\n      {\n  "attributes": {\n    "id": "sample-id"\n  },\n  "content": "Sample Content"\n}\n      ',
     );
   });
 });

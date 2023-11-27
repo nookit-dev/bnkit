@@ -42,38 +42,33 @@ describe("classRecordPluginHandler", () => {
 });
 
 describe("classRecordPlugin", () => {
-  const sampleNodeMap: JsonHtmlNodeTree<JsonTagElNode & ClassRecordAttributes> =
-    {
-      div1: {
-        tag: "div",
-        cr: {
-          "*": {
-            "bg-blue-100": true,
-            "bg-gray-100": false,
-            "bg-red-100": true,
-          },
+  const sampleNodeMap: JsonHtmlNodeTree<JsonTagElNode & ClassRecordAttributes> = {
+    div1: {
+      tag: "div",
+      cr: {
+        "*": {
+          "bg-blue-100": true,
+          "bg-gray-100": false,
+          "bg-red-100": true,
         },
-        content: "Hello World!",
       },
-      div2: {
-        tag: "div",
-        cr: {
-          "*": {
-            "bg-blue-100": true,
-          },
+      content: "Hello World!",
+    },
+    div2: {
+      tag: "div",
+      cr: {
+        "*": {
+          "bg-blue-100": true,
         },
-        content: "Another div",
       },
-    };
+      content: "Another div",
+    },
+  };
 
   it("should add classes based on the ClassRecord", () => {
     const renderedHtml = jsonToHtml(sampleNodeMap, [classRecordPlugin]);
-    expect(renderedHtml).toContain(
-      '<div class="bg-blue-100 bg-red-100">Hello World!</div>'
-    );
-    expect(renderedHtml).toContain(
-      '<div class="bg-blue-100">Another div</div>'
-    );
+    expect(renderedHtml).toContain('<div class="bg-blue-100 bg-red-100">Hello World!</div>');
+    expect(renderedHtml).toContain('<div class="bg-blue-100">Another div</div>');
   });
 
   it("should not add classes with a value of false", () => {
