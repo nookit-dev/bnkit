@@ -31,7 +31,7 @@ export const serverRequestHandler = <
 
   const pathRoutes = routes[url.pathname];
 
-  matchedHandler = pathRoutes ? pathRoutes[req.method.toUpperCase() as keyof typeof pathRoutes] : null;
+  matchedHandler = pathRoutes ? pathRoutes[req.method.toLowerCase() as keyof typeof pathRoutes] : null;
 
   // try regex match after direct string match
   if (!matchedHandler) {
@@ -39,7 +39,7 @@ export const serverRequestHandler = <
       if (isValidRegex(pattern)) {
         const regex = new RegExp(pattern, "i");
         if (regex.test(url.pathname)) {
-          matchedHandler = routes[pattern][req.method.toUpperCase() as keyof (typeof routes)[typeof pattern]];
+          matchedHandler = routes[pattern][req.method.toLowerCase() as keyof (typeof routes)[typeof pattern]];
           break;
         }
       }
