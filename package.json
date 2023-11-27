@@ -3,8 +3,9 @@
   "version": "0.4.47",
   "main": "index.ts",
   "devDependencies": {
+    "@biomejs/biome": "1.4.0",
     "bun": "^1.0.14",
-    "bun-types": "^0.0.14",
+    "bun-types": "^1.0.14",
     "tsd": "^0.29.0"
   },
   "description": "Bun Nook Kit is a simple zero-dependency, fast, and lightweight toolkit for Bun",
@@ -16,7 +17,8 @@
     "release": "LOCAL_RUN=true bun ./release.ts",
     "tsc": "tsc --project tsconfig.json",
     "tsc:noEmit": "tsc --noEmit --project tsconfig-noEmit.json",
-    "validate": "bun run tsc:noEmite && bun run test"
+    "validate": "bun run tsc:noEmite && bun run test",
+    "format": "bunx @biomejs/biome format .--write"
   },
   "bin": {
     "bnkit": "sh ./scripts/cli.ts"
