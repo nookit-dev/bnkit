@@ -3,7 +3,7 @@
 # Script to setup and run a Bun project with a given project name
 
 # scripts url https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts
-BASE_URL="https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts"
+BASE_URL="https://raw.githubusercontent.com/nookit-dev/bnkit/main/scripts"
 HOST="http://localhost:3000"
 
 # Function to check if a command exists
