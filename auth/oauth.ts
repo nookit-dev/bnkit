@@ -1,8 +1,4 @@
-import {
-  OAuthConfig,
-  OAuthProviderInitializer,
-  OAuthToken,
-} from "./oauth-types";
+import { OAuthConfig, OAuthProviderInitializer, OAuthToken } from "./oauth-types";
 
 type FetcherResponse<T> = T & {
   error?: string;
@@ -14,7 +10,7 @@ export async function oAuthFetcher<T>(
   options: {
     params: Record<string, string | undefined>;
     headers?: Record<string, string>;
-  }
+  },
 ): Promise<FetcherResponse<T>> {
   const response = await fetch(url, {
     method: "post",
@@ -47,12 +43,7 @@ export async function getOAuthToken<T extends OAuthToken>({
   return oAuthFetcher<T>(tokenUrl, params);
 }
 
-export const initProvider: OAuthProviderInitializer = ({
-  clientId,
-  authReqUrl,
-  redirectUri,
-  headers,
-}) => {
+export const initProvider: OAuthProviderInitializer = ({ clientId, authReqUrl, redirectUri, headers }) => {
   return {
     // TODO add options to be able to change response_type/scope, etc
     getAuthorizationUrl: () => {

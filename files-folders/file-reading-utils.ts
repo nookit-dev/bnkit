@@ -9,9 +9,7 @@ export async function readFileContent(filePath: string): Promise<string> {
   }
 }
 
-export async function listFilesAndFolderInPath(
-  fullPath: string
-): Promise<FileDirInfo[]> {
+export async function listFilesAndFolderInPath(fullPath: string): Promise<FileDirInfo[]> {
   const entries = await fsPromise.readdir(fullPath, {
     withFileTypes: true,
   });
@@ -19,11 +17,7 @@ export async function listFilesAndFolderInPath(
     const name = entry.name;
     const entryFullPath = path.join(fullPath, name);
     const bunFileInfo = Bun.file(entryFullPath);
-    const type = entry.isFile()
-      ? "file"
-      : entry.isDirectory()
-      ? "directory"
-      : "other";
+    const type = entry.isFile() ? "file" : entry.isDirectory() ? "directory" : "other";
     let fileExtension = "folder";
     if (type === "file") {
       const regex = /(?:\.([^.]+))?$/;
@@ -40,9 +34,7 @@ export async function listFilesAndFolderInPath(
   return filesAndFolders;
 }
 
-export async function readTextFromMultipleFiles(
-  filePaths: string[]
-): Promise<string[]> {
+export async function readTextFromMultipleFiles(filePaths: string[]): Promise<string[]> {
   const promises = filePaths.map(async (filePath) => {
     return readFileContent(filePath);
   });

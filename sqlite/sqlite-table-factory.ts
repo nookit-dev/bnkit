@@ -11,9 +11,7 @@ import {
 } from "./sqlite-utils/crud-fn-utils";
 import { createTableQuery } from "./sqlite-utils/table-query-gen";
 
-export type ForeignKeysT<Schema> =
-  | { column: keyof Schema; references: string }[]
-  | null;
+export type ForeignKeysT<Schema> = { column: keyof Schema; references: string }[] | null;
 
 export type SqliteTableFactoryParams<Schema extends SchemaMap> = {
   db: Database;
@@ -38,11 +36,8 @@ function logger(debug: boolean) {
 
 export function sqliteTableFactory<
   Schema extends SchemaMap,
-  TranslatedSchema extends SQLInfer<Schema> = SQLInfer<Schema>
->(
-  params: SqliteTableFactoryParams<Schema>,
-  options: SqliteTableOptions<Schema> = {}
-) {
+  TranslatedSchema extends SQLInfer<Schema> = SQLInfer<Schema>,
+>(params: SqliteTableFactoryParams<Schema>, options: SqliteTableOptions<Schema> = {}) {
   const { db, schema, tableName } = params;
   const { debug = false } = options;
 
@@ -56,10 +51,8 @@ export function sqliteTableFactory<
       item: TranslatedSchema,
       createOptions?: {
         returnInsertedItem?: boolean;
-        keyForInsertLookup?: keyof SQLInfer<Schema> extends string
-          ? keyof SQLInfer<Schema>
-          : never;
-      }
+        keyForInsertLookup?: keyof SQLInfer<Schema> extends string ? keyof SQLInfer<Schema> : never;
+      },
     ) {
       return createItem<Schema>({
         db,

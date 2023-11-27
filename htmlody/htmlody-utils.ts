@@ -4,7 +4,7 @@ import { Attributes, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
 
 export const retrieveElement = <Structure extends JsonHtmlNodeTree>(
   JsonHtmlNodeMap: Structure,
-  element: keyof Structure
+  element: keyof Structure,
 ) => {
   return JsonHtmlNodeMap[element];
 };
@@ -12,9 +12,9 @@ export const retrieveElement = <Structure extends JsonHtmlNodeTree>(
 export const nodeFactory = <
   Extension extends Record<string, unknown>,
   NodeT extends JsonTagElNode = JsonTagElNode<Extension>,
-  NodeConfigT extends NodeT = NodeT
+  NodeConfigT extends NodeT = NodeT,
 >(
-  config: NodeConfigT
+  config: NodeConfigT,
 ) => {
   const createNode = (options?: Omit<NodeConfigT, "tag">): NodeT => {
     return {
@@ -44,10 +44,7 @@ export function isValidAttributesString(attributesStr: string): boolean {
   return attributePattern.test(attributesStr);
 }
 
-export function collectClassNames(
-  node: JsonTagElNode,
-  uniqueClassNames: Set<string>
-) {
+export function collectClassNames(node: JsonTagElNode, uniqueClassNames: Set<string>) {
   if (node.attributes && typeof node.attributes.class === "string") {
     const classList = node.attributes.class.split(" ");
     classList.forEach((cls) => uniqueClassNames.add(cls));

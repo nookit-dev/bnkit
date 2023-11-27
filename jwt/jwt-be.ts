@@ -21,7 +21,7 @@ export interface JwtHandlers {
 // backend  jwt handling
 export const jwtBackend = <
   Payload extends object,
-  FactoryJwtPayload extends JwtPayload<Payload> = JwtPayload<Payload>
+  FactoryJwtPayload extends JwtPayload<Payload> = JwtPayload<Payload>,
 >({
   factorySignSecret,
   handlers,
@@ -94,16 +94,14 @@ export const jwtBackend = <
 
     // JWT is already sign
     const jwt = encodeJwt(header, finalPayload, signSecret);
-    return encryption && encryptionSecret
-      ? encrypt(jwt, encryptionSecret)
-      : jwt;
+    return encryption && encryptionSecret ? encrypt(jwt, encryptionSecret) : jwt;
   }
 
   async function verifyJwt(
     token: string,
     signSecret: string = factorySignSecret,
     // encryption must be enabled on the factory in order for this to work
-    encryptionSecret: string | undefined = encryption?.encryptionSecret
+    encryptionSecret: string | undefined = encryption?.encryptionSecret,
   ): Promise<{ header: JwtHeader; payload: FactoryJwtPayload }> {
     let decryptedToken: string = token;
 

@@ -1,13 +1,7 @@
 import Database from "bun:sqlite";
 import { beforeEach, describe, expect, it, test } from "bun:test";
 import { SchemaMap } from "../sqlite-factory";
-import {
-  createItem,
-  createWhereClause,
-  deleteItemById,
-  readItems,
-  updateItem,
-} from "./crud-fn-utils";
+import { createItem, createWhereClause, deleteItemById, readItems, updateItem } from "./crud-fn-utils";
 
 const testSchema = {
   id: { type: "TEXT" },
@@ -20,9 +14,7 @@ let db = new Database(":memory:");
 describe("Database utility functions", () => {
   beforeEach(() => {
     db = new Database(":memory:");
-    db.query(
-      "CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)"
-    ).run();
+    db.query("CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)").run();
   });
 
   test("should create an item in the database", () => {

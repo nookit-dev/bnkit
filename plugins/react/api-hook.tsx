@@ -1,15 +1,7 @@
 import { createFetchFactory } from "bnkit/fetcher";
-import React, {
-  ReactNode,
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import React, { ReactNode, createContext, useContext, useMemo, useState } from "react";
 // TODO: This hook needs some more work
-type FetchFactoryReturn<ConfigMap extends TypeMap = {}> = ReturnType<
-  typeof createFetchFactory<ConfigMap>
->;
+type FetchFactoryReturn<ConfigMap extends TypeMap = {}> = ReturnType<typeof createFetchFactory<ConfigMap>>;
 
 const FetchContext = createContext<FetchFactoryReturn>(
   createFetchFactory({
@@ -20,7 +12,7 @@ const FetchContext = createContext<FetchFactoryReturn>(
         method: "get",
       },
     },
-  })
+  }),
 );
 
 export const FetchProvider = <FetchConfig extends TypeMap>({
@@ -35,14 +27,10 @@ export const FetchProvider = <FetchConfig extends TypeMap>({
       createFetchFactory({
         config: factoryConfig,
       }),
-    []
+    [],
   );
 
-  return (
-    <FetchContext.Provider value={fetchFactory}>
-      {children}
-    </FetchContext.Provider>
-  );
+  return <FetchContext.Provider value={fetchFactory}>{children}</FetchContext.Provider>;
 };
 
 export function useFetchFactory() {
@@ -73,11 +61,7 @@ export function createApiHook<ConfigMap extends TypeMap>({
     const endpointConfig = configMap[endpointKey];
 
     if (!endpointConfig) {
-      throw new Error(
-        `No configuration found for endpoint: ${
-          configMap[typeof endpointKey].endpoint
-        }`
-      );
+      throw new Error(`No configuration found for endpoint: ${configMap[typeof endpointKey].endpoint}`);
     }
 
     const { response } = endpointConfig;

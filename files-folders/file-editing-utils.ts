@@ -8,11 +8,7 @@ type SaveOptions = {
   isJson?: boolean;
 };
 
-export async function saveOrUpdateFile({
-  filePath,
-  content,
-  isJson = false,
-}: SaveOptions): Promise<void> {
+export async function saveOrUpdateFile({ filePath, content, isJson = false }: SaveOptions): Promise<void> {
   try {
     const dirPath = path.dirname(filePath);
     await directoryExists({ path: dirPath, createMissingDirs: true });
@@ -25,17 +21,10 @@ export async function saveOrUpdateFile({
 
     await fsPromise.writeFile(filePath, dataToWrite as string);
   } catch (err: any) {
-    throw new Error(
-      `saveOrUpdateFile: Failed to save or update file at path ${filePath}: ${err?.message}`
-    );
+    throw new Error(`saveOrUpdateFile: Failed to save or update file at path ${filePath}: ${err?.message}`);
   }
 }
 
-export async function updateMultipleFiles(
-  filePaths: string[],
-  content: string
-): Promise<void[]> {
-  return Promise.all(
-    filePaths.map((filePath) => saveOrUpdateFile({ filePath, content }))
-  );
+export async function updateMultipleFiles(filePaths: string[], content: string): Promise<void[]> {
+  return Promise.all(filePaths.map((filePath) => saveOrUpdateFile({ filePath, content })));
 }

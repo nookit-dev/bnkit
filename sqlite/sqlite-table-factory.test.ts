@@ -21,7 +21,7 @@ describe("sqliteTableFactory", () => {
       schema: testSchema,
       tableName: "test",
     },
-    factoryOptions
+    factoryOptions,
   );
 
   afterEach(() => {
@@ -39,9 +39,7 @@ describe("sqliteTableFactory", () => {
 
   test("should read items from the database using the factory", () => {
     const item = { id: "1", name: "Jane", age: 25 };
-    mockDb
-      .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
-      .run(item.id, item.name, item.age);
+    mockDb.query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)").run(item.id, item.name, item.age);
     const items = factory.getAll();
     expect(items.length).toBe(1);
     expect(items[0]).toEqual(item);
@@ -49,9 +47,7 @@ describe("sqliteTableFactory", () => {
 
   test("should update an item in the database using the factory", () => {
     const item = { id: "1", name: "Doe", age: 35 };
-    mockDb
-      .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
-      .run(item.id, item.name, item.age);
+    mockDb.query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)").run(item.id, item.name, item.age);
     const updatedName = "John Doe";
     factory.update(item.id, { name: updatedName });
     const items = factory.getAll();
@@ -60,9 +56,7 @@ describe("sqliteTableFactory", () => {
   });
   test("should delete an item from the database using the factory", () => {
     const item = { id: "1", name: "Alice", age: 40 };
-    mockDb
-      .query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)")
-      .run(item.id, item.name, item.age);
+    mockDb.query("INSERT INTO test (id, name, age) VALUES (?, ?, ?)").run(item.id, item.name, item.age);
     factory.delById(item.id);
     const items = factory.getAll();
     expect(items.length).toBe(0);

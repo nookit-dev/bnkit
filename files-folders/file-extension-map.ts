@@ -21,10 +21,8 @@ type ExtensionMap = {
 export const fileExtensionMap = {
   ts: {
     name: "TypeScript",
-    description:
-      "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
-    logoUrl:
-      "https://raw.githubusercontent.com/github/explore/master/topics/typescript/typescript.png",
+    description: "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
+    logoUrl: "https://raw.githubusercontent.com/github/explore/master/topics/typescript/typescript.png",
     mime: "application/typescript",
     encoding: "utf-8",
   },
@@ -37,8 +35,7 @@ export const fileExtensionMap = {
   },
   js: {
     name: "JavaScript",
-    description:
-      "A lightweight, interpreted, or just-in-time compiled programming language.",
+    description: "A lightweight, interpreted, or just-in-time compiled programming language.",
     logoUrl: "",
     mime: "application/javascript",
     encoding: "utf-8",
@@ -94,8 +91,7 @@ export const fileExtensionMap = {
   },
   rs: {
     name: "Rust",
-    description:
-      "A language empowering everyone to build reliable and efficient software.",
+    description: "A language empowering everyone to build reliable and efficient software.",
     logoUrl: "",
     mime: "text/rust",
     encoding: "utf-8",

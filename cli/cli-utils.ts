@@ -32,14 +32,12 @@ export function getArguments(): string[] {
 export function getOptionValue(
   arg: string,
   nextArg: string,
-  optionDef: OptionDefinition
+  optionDef: OptionDefinition,
 ): string | boolean | undefined {
   let value = optionDef.default;
 
   if (nextArg && !nextArg.startsWith("--")) {
-    const type = optionDef.types.find(
-      (type) => type === typeof nextArg || type === typeof value
-    );
+    const type = optionDef.types.find((type) => type === typeof nextArg || type === typeof value);
     cliLog("Type found: ", type); // Debug log
     if (type === "boolean") {
       if (nextArg.toLowerCase() === "true") {
@@ -60,7 +58,7 @@ export function getOptionValue(
 
 export function parseArgument(
   arg: string,
-  nextArg: string
+  nextArg: string,
 ): { key: string | undefined; value: string | boolean | undefined } {
   let key: string | undefined = undefined;
   let value: string | boolean | undefined;
@@ -111,9 +109,7 @@ export const getAdditionalPrompt = () =>
     });
   });
 
-export const chooseActions = async (
-  actionsConfig: Record<string, any>
-): Promise<Array<keyof typeof actionsConfig>> => {
+export const chooseActions = async (actionsConfig: Record<string, any>): Promise<Array<keyof typeof actionsConfig>> => {
   cliLog("\nChoose actions (separated by commas):");
   const actions = Object.keys(actionsConfig);
   actions.forEach((action, index) => {
@@ -126,27 +122,18 @@ export const chooseActions = async (
   });
 
   const actionIndexes = await new Promise<string>((resolve) => {
-    rl.question(
-      "Enter the numbers corresponding to the actions: ",
-      (actionIndexes) => {
-        rl.close();
-        resolve(actionIndexes);
-      }
-    );
+    rl.question("Enter the numbers corresponding to the actions: ", (actionIndexes) => {
+      rl.close();
+      resolve(actionIndexes);
+    });
   });
 
-  const selectedIndexes = actionIndexes
-    .split(",")
-    .map((index) => parseInt(index.trim()) - 1);
+  const selectedIndexes = actionIndexes.split(",").map((index) => parseInt(index.trim()) - 1);
 
-  const validSelection = selectedIndexes.every(
-    (index) => index >= 0 && index < actions.length
-  );
+  const validSelection = selectedIndexes.every((index) => index >= 0 && index < actions.length);
 
   if (validSelection) {
-    return selectedIndexes.map(
-      (index) => actions[index] as keyof typeof actionsConfig
-    );
+    return selectedIndexes.map((index) => actions[index] as keyof typeof actionsConfig);
   } else {
     cliLog("Invalid input, please try again.");
     return chooseActions(actionsConfig);

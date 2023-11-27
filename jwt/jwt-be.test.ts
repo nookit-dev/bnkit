@@ -24,10 +24,7 @@ describe("JWT Server Side Factory", () => {
       });
       expect(jwt).not.toBe(null);
 
-      const { header, payload } = await jwtFactory.verifyJwt(
-        jwt,
-        factorySecret
-      );
+      const { header, payload } = await jwtFactory.verifyJwt(jwt, factorySecret);
       expect(header).toEqual({ alg: "HS256", typ: "JWT" });
       expect(payload.userId).toBe(testPayload.userId);
       expect(payload.roles[0]).toBe(testPayload.roles[0]);
@@ -40,9 +37,7 @@ describe("JWT Server Side Factory", () => {
         payload: testPayload,
       });
       const tamperedJwt = jwt.substring(0, 10) + "XX" + jwt.substring(12); // Tampering the JWT
-      expect(
-        async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)
-      ).toThrow(Error);
+      expect(async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)).toThrow(Error);
     });
   });
 
@@ -76,9 +71,7 @@ describe("JWT Server Side Factory", () => {
       });
       await jwtFactory.invalidateToken(jwt);
 
-      expect(
-        async () => await jwtFactory.verifyJwt(jwt, factorySecret)
-      ).toThrow(Error);
+      expect(async () => await jwtFactory.verifyJwt(jwt, factorySecret)).toThrow(Error);
     });
   });
 
@@ -88,9 +81,7 @@ describe("JWT Server Side Factory", () => {
         payload: testPayload,
       });
       await jwtFactory.invalidateToken(jwt);
-      expect(
-        async () => await jwtFactory.verifyJwt(jwt, factorySecret)
-      ).toThrow(Error);
+      expect(async () => await jwtFactory.verifyJwt(jwt, factorySecret)).toThrow(Error);
     });
   });
 
@@ -107,9 +98,7 @@ describe("JWT Server Side Factory", () => {
         payload: testPayload,
       });
       const tamperedJwt = jwt.substring(0, 10) + "XX" + jwt.substring(12);
-      expect(
-        async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)
-      ).toThrow();
+      expect(async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)).toThrow();
     });
   });
 
@@ -128,9 +117,7 @@ describe("JWT Server Side Factory", () => {
       });
       const parts = jwt.split(".");
       const tamperedJwt = `${parts[0]}.${parts[1]}.tamperedSignature`;
-      expect(
-        async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)
-      ).toThrow("Invalid signature");
+      expect(async () => await jwtFactory.verifyJwt(tamperedJwt, factorySecret)).toThrow("Invalid signature");
     });
   });
 
@@ -165,9 +152,7 @@ describe("JWT Server Side Factory", () => {
       mockDateNow(_DateNow() + 3000);
 
       // Now, the token should be expired
-      expect(
-        async () => await jwtFactory.verifyJwt(jwt, factorySecret)
-      ).toThrow("Token expired");
+      expect(async () => await jwtFactory.verifyJwt(jwt, factorySecret)).toThrow("Token expired");
     });
   });
 });

@@ -1,23 +1,9 @@
 import { PartialRecord } from "../type-utils";
 
 // for improved readbility when creating server routes lower
-export type RouteMethods =
-  | "get"
-  | "post"
-  | "put"
-  | "delete"
-  | "patch"
-  | "options"
-  | "head";
+export type RouteMethods = "get" | "post" | "put" | "delete" | "patch" | "options" | "head";
 
-export type HTTPMethod =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "DELETE"
-  | "PATCH"
-  | "OPTIONS"
-  | "HEAD";
+export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";
 
 export type CommonHttpHeaders =
   | "Accept"
@@ -101,12 +87,10 @@ export type CreateRouteGeneric<ReqT extends RouteReqDataOpts> = {
 };
 
 export type ReqHandler<ReqT extends RouteReqDataOpts> = (
-  args: CreateRouteGeneric<ReqT>
+  args: CreateRouteGeneric<ReqT>,
 ) => Response | Promise<Response>;
 
-export type OnRequestT<ReqT extends RouteReqDataOpts> = (
-  handler: ReqHandler<ReqT> | Promise<ReqHandler<ReqT>>
-) => void;
+export type OnRequestT<ReqT extends RouteReqDataOpts> = (handler: ReqHandler<ReqT> | Promise<ReqHandler<ReqT>>) => void;
 
 export interface RouteOptions {
   errorMessage?: string;

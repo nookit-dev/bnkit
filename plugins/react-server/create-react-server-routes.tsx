@@ -1,10 +1,7 @@
 import { MiddlewareConfigMap, Routes, jsonRes } from "bnkit/server";
 import { createReactStreamHandler } from "./react-dom-stream-handler";
 
-export const createReactServerRoutes = async <
-  MiddlewareConfig extends MiddlewareConfigMap,
-  State extends object
->({
+export const createReactServerRoutes = async <MiddlewareConfig extends MiddlewareConfigMap, State extends object>({
   Component,
   appState,
   middlewareConfig,

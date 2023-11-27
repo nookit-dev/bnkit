@@ -6,16 +6,10 @@ export type UseClipboardRes = {
   getClipboard: () => Promise<void>;
 };
 
-export function useClipboard(
-  externalValue?: string,
-  updater?: (value: string) => void
-): UseClipboardRes {
-  const [internalClipboardData, setInternalClipboardData] = useState<
-    string | null
-  >(externalValue || null);
+export function useClipboard(externalValue?: string, updater?: (value: string) => void): UseClipboardRes {
+  const [internalClipboardData, setInternalClipboardData] = useState<string | null>(externalValue || null);
 
-  const clipboardData =
-    externalValue !== undefined ? externalValue : internalClipboardData;
+  const clipboardData = externalValue !== undefined ? externalValue : internalClipboardData;
 
   // Write to clipboard
   const setClipboard = useCallback(
@@ -31,7 +25,7 @@ export function useClipboard(
         console.error("Failed to write to clipboard", error);
       }
     },
-    [updater]
+    [updater],
   );
 
   // Read from clipboard

@@ -6,11 +6,7 @@ export const getTokenExpireEpoch = (date: Date, tokenValidTimeSec: number) => {
   return expireEpoch;
 };
 
-export async function verifyToken(
-  tokenString: string,
-  salt: string,
-  storedHash: string
-) {
+export async function verifyToken(tokenString: string, salt: string, storedHash: string) {
   const fullPassword = tokenString + salt;
   const isMatch = await Bun.password.verify(fullPassword, storedHash);
 
@@ -26,10 +22,7 @@ export async function createToken(string: string, salt: string) {
   });
 }
 
-export const createSecurityToken = async (
-  tokenValidTime: number,
-  currentDate?: Date
-) => {
+export const createSecurityToken = async (tokenValidTime: number, currentDate?: Date) => {
   const salt = uuid();
   const [tokenId, timestamp] = uuid({
     returnTimestamp: true,

@@ -1,18 +1,11 @@
-export function insertQueryString<Item extends Record<string, any>>(
-  tableName: string,
-  item: Item
-): string {
+export function insertQueryString<Item extends Record<string, any>>(tableName: string, item: Item): string {
   // Define a whitelist for table names if they are dynamic or ensure tableName is sanitized.
   const safeTableName = escapeIdentifier(tableName);
 
-  const definedKeys = Object.keys(item).filter(
-    (key) => item[key] !== undefined
-  );
+  const definedKeys = Object.keys(item).filter((key) => item[key] !== undefined);
 
   // Map the defined keys to column names and placeholders
-  const columns = definedKeys
-    .map((column) => escapeIdentifier(column))
-    .join(", ");
+  const columns = definedKeys.map((column) => escapeIdentifier(column)).join(", ");
   const placeholders = definedKeys.map(() => "?").join(", ");
 
   // Handle the case where the item might be empty.
@@ -42,10 +35,7 @@ export function deleteQueryString(tableName: string): string {
   return `delete FROM ${safeTableName} WHERE id = $id;`;
 }
 
-export function updateQueryString(
-  tableName: string,
-  item: Record<string, any>
-): string {
+export function updateQueryString(tableName: string, item: Record<string, any>): string {
   // Validate or escape the tableName to prevent SQL injection
   const safeTableName = escapeIdentifier(tableName);
 

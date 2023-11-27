@@ -28,9 +28,7 @@ export function createItem<S extends SchemaMap>({
   item: Partial<DBItem<S>>;
   returnInsertedItem?: boolean;
   // key of schema for return lookup, defaults to "id"
-  keyForInsertLookup?: keyof SQLInfer<S> extends string
-    ? keyof SQLInfer<S>
-    : never;
+  keyForInsertLookup?: keyof SQLInfer<S> extends string ? keyof SQLInfer<S> : never;
 }): SQLInfer<S> | null {
   const query = insertQueryString(tableName, item);
   const valuesArray: any[] = [];
@@ -57,9 +55,7 @@ export function createItem<S extends SchemaMap>({
     // Fetch the last inserted item using the lookupValue
     const selectQuery = `SELECT * FROM ${tableName} WHERE ${lookupKey} = ?;`;
     try {
-      const insertedItem = db
-        .prepare(selectQuery)
-        .get(lookupValue) as SQLInfer<S>;
+      const insertedItem = db.prepare(selectQuery).get(lookupValue) as SQLInfer<S>;
 
       if (debug) console.table({ selectQuery, lookupValue, insertedItem });
 
@@ -73,7 +69,7 @@ export function createItem<S extends SchemaMap>({
     throw new Error(
       `returnInsertedItem is true but no lookupKey or lookupValue was provided \n
       lookupKey: ${lookupKey} \n
-      lookupValue: ${lookupValue} \n`
+      lookupValue: ${lookupValue} \n`,
     );
   }
   return null;
@@ -96,12 +92,7 @@ export function readFirstItemByKey<Schema extends SchemaMap>({
 }
 
 // Modify the readItems function to include an optional id parameter.
-export function readItemById<Schema extends SchemaMap>({
-  db,
-  debug,
-  id,
-  tableName,
-}: ParamsWithId): SQLInfer<Schema> {
+export function readItemById<Schema extends SchemaMap>({ db, debug, id, tableName }: ParamsWithId): SQLInfer<Schema> {
   const query = selectItemByKeyQueryString(tableName, "id");
   if (debug) console.info(`readItemById: ${query}`);
 
@@ -122,7 +113,7 @@ interface WhereClauseResult {
 // Function to create a WHERE clause and parameters for a SQL query
 export function createWhereClause<T extends Record<string, any>>(
   where: Where<T>,
-  debug: boolean = false
+  debug: boolean = false,
 ): WhereClauseResult {
   const keys = Object.keys(where) as Array<keyof T>;
   const whereClause = keys.map((key) => `${String(key)} = ?`).join(" AND ");
@@ -131,9 +122,7 @@ export function createWhereClause<T extends Record<string, any>>(
   if (debug) {
     // create object of keys/values to be used as parameters in the query
     // e.g. { $name: 'John', $age: 25 }
-    const debugEntries = Object.fromEntries(
-      keys.map((key) => [`$${key as string}`, where[key]])
-    );
+    const debugEntries = Object.fromEntries(keys.map((key) => [`$${key as string}`, where[key]]));
 
     console.table(debugEntries);
   }
@@ -149,10 +138,7 @@ export function readItemsWhere<Schema extends SchemaMap>({
 }: BaseDBParams & {
   where: Where<SQLInfer<Schema>>;
 }): SQLInfer<Schema>[] {
-  const { whereClause, parameters } = createWhereClause<SQLInfer<Schema>>(
-    where,
-    debug
-  );
+  const { whereClause, parameters } = createWhereClause<SQLInfer<Schema>>(where, debug);
 
   // The query string now uses '?' placeholders for parameters
   const queryString = `SELECT * FROM ${tableName} WHERE ${whereClause};`;
@@ -169,18 +155,11 @@ export function readItemsWhere<Schema extends SchemaMap>({
 }
 
 // In your crud-string-utils file, add a function to create a SQL query string to select by ID.
-export function selectItemByKeyQueryString(
-  tableName: string,
-  key: string
-): string {
+export function selectItemByKeyQueryString(tableName: string, key: string): string {
   return `SELECT * FROM ${tableName} WHERE ${key} = ?`;
 }
 
-export function readItems<Schema extends SchemaMap>({
-  db,
-  debug,
-  tableName,
-}: BaseDBParams): SQLInfer<Schema>[] {
+export function readItems<Schema extends SchemaMap>({ db, debug, tableName }: BaseDBParams): SQLInfer<Schema>[] {
   const query = selectAllTableQueryString(tableName);
   if (debug) console.info(query);
   const data = db.query(query).all() as SQLInfer<Schema>[];
@@ -200,9 +179,7 @@ export function updateItem<Schema extends SchemaMap>({
 
   if (debug) console.info(query);
 
-  const params = Object.fromEntries(
-    Object.entries(item).map(([key, value]) => [`$${key}`, value])
-  );
+  const params = Object.fromEntries(Object.entries(item).map(([key, value]) => [`$${key}`, value]));
   db.query(query).run({ ...params, $id: id });
 }
 

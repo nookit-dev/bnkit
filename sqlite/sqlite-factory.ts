@@ -1,9 +1,6 @@
 import { Database } from "bun:sqlite";
 
-import {
-  SqliteTableFactoryParams,
-  sqliteTableFactory,
-} from "./sqlite-table-factory";
+import { SqliteTableFactoryParams, sqliteTableFactory } from "./sqlite-table-factory";
 
 type SqliteFactoryParams = {
   db: Database;
@@ -11,10 +8,7 @@ type SqliteFactoryParams = {
   enableForeignKeys?: boolean;
 };
 
-type DBTableFactoryParams<Schema extends SchemaMap> = Omit<
-  SqliteTableFactoryParams<Schema>,
-  "db"
-> & {
+type DBTableFactoryParams<Schema extends SchemaMap> = Omit<SqliteTableFactoryParams<Schema>, "db"> & {
   debug?: boolean;
 };
 
@@ -41,9 +35,7 @@ export type FieldDef = {
 
 // Mapped type that takes a schema with SQLite types and returns a schema with TypeScript types.
 export type SQLInfer<T extends SchemaMap> = {
-  [K in keyof T]: T[K] extends FieldDef
-    ? SQLiteSchemaToTSMap[T[K]["type"]]
-    : never;
+  [K in keyof T]: T[K] extends FieldDef ? SQLiteSchemaToTSMap[T[K]["type"]] : never;
 };
 
 export type SchemaMap = Partial<Record<string, FieldDef>>;
@@ -79,7 +71,7 @@ export function sqliteFactory({
       {
         debug: debugTable,
         enableForeignKeys: debug,
-      }
+      },
     );
   }
 

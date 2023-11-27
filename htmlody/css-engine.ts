@@ -1,10 +1,5 @@
 import { ClassRecordAttributes } from "./htmlody-plugins";
-import {
-  ClassRecord,
-  JsonHtmlNodeTree,
-  JsonTagElNode,
-  ResponsiveClassRecord,
-} from "./htmlody-types";
+import { ClassRecord, JsonHtmlNodeTree, JsonTagElNode, ResponsiveClassRecord } from "./htmlody-types";
 
 const fractionPercentMap = {
   "1/2": 50,
@@ -63,19 +58,15 @@ export const uClass = (keys: CSSMapKeys[]) => {
   return keys.join(" ") as "u-class";
 };
 
-export const textAlign = <Val extends string>(val: Val) =>
-  `text-align: ${val};` as const;
-export const fontSize = <Val extends string>(val: Val) =>
-  `font-size: ${val};` as const;
-export const textColor = <Val extends string>(val: Val) =>
-  `color: ${val};` as const;
-export const bgColor = <Val extends string>(val: Val) =>
-  `background-color: ${val};` as const;
+export const textAlign = <Val extends string>(val: Val) => `text-align: ${val};` as const;
+export const fontSize = <Val extends string>(val: Val) => `font-size: ${val};` as const;
+export const textColor = <Val extends string>(val: Val) => `color: ${val};` as const;
+export const bgColor = <Val extends string>(val: Val) => `background-color: ${val};` as const;
 
 export const border = <W extends string, S extends string, C extends string>(
   width: string,
   style: string,
-  color: string
+  color: string,
 ) => `border: ${width} ${style} ${color};` as const;
 
 function extractClassNames(classRecord: ClassRecord): string[] {
@@ -85,8 +76,7 @@ function extractClassNames(classRecord: ClassRecord): string[] {
 }
 
 function generateCssSelector(breakpoint: string, className: string): string {
-  const fullClassName =
-    breakpoint === "*" ? className : `${breakpoint}_${className}`;
+  const fullClassName = breakpoint === "*" ? className : `${breakpoint}_${className}`;
   const cssRule = CSS_MAP[className];
 
   if (breakpoint === "*") {
@@ -96,18 +86,14 @@ function generateCssSelector(breakpoint: string, className: string): string {
   }
 }
 
-function processClassRecords(
-  classRecords: ResponsiveClassRecord,
-  usedClasses: Set<string>
-): string | null {
+function processClassRecords(classRecords: ResponsiveClassRecord, usedClasses: Set<string>): string | null {
   let cssStr = "";
 
   Object.entries(classRecords).forEach(([breakpoint, classRecord]) => {
     const classNames = extractClassNames(classRecord);
 
     classNames.forEach((className) => {
-      const fullClassName =
-        breakpoint === "*" ? className : `${breakpoint}_${className}`;
+      const fullClassName = breakpoint === "*" ? className : `${breakpoint}_${className}`;
 
       if (!usedClasses.has(fullClassName)) {
         usedClasses.add(fullClassName);
@@ -124,10 +110,7 @@ function processClassRecords(
   return cssStr;
 }
 
-export function processNode(
-  node: JsonTagElNode<ClassRecordAttributes>,
-  usedClasses: Set<string>
-): string | null {
+export function processNode(node: JsonTagElNode<ClassRecordAttributes>, usedClasses: Set<string>): string | null {
   let cssStr = "";
 
   if (node.cr) {
@@ -146,9 +129,9 @@ export function processNode(
 }
 
 export function generateCSS<
-  NodeMap extends JsonHtmlNodeTree<
+  NodeMap extends JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>> = JsonHtmlNodeTree<
     JsonTagElNode<ClassRecordAttributes>
-  > = JsonHtmlNodeTree<JsonTagElNode<ClassRecordAttributes>>
+  >,
 >(nodeMap: NodeMap): string | null {
   const usedClasses = new Set<string>();
   let cssStr = "";
@@ -163,10 +146,7 @@ export function generateCSS<
   return cssStr;
 }
 
-export const createKeyVal = <Key extends string, Val extends string>(
-  key: Key,
-  val: Val
-) => {
+export const createKeyVal = <Key extends string, Val extends string>(key: Key, val: Val) => {
   const obj = {
     [key]: val,
   } as {
@@ -180,12 +160,12 @@ export const cssPropertyValueGen = <
   ClassAbbrevKey extends string,
   Property extends string,
   Value extends number | string,
-  Unit extends string
+  Unit extends string,
 >(
   classAbbrevKey: ClassAbbrevKey,
   property: Property,
   value: Value,
-  unit: Unit
+  unit: Unit,
 ) => {
   const cssGen = `${property}: ${value}${unit};` as const;
 
@@ -196,14 +176,10 @@ export const cssPropertyValueGen = <
   };
 };
 
-export const sizingHelper = <
-  ClassValKey extends number,
-  Value extends number | string,
-  Unit extends CSSUnits
->(
+export const sizingHelper = <ClassValKey extends number, Value extends number | string, Unit extends CSSUnits>(
   classValKey: ClassValKey,
   value: Value,
-  unit: Unit
+  unit: Unit,
 ) => {
   return {
     ...cssPropertyValueGen(`w-${classValKey}`, "width", value, unit),
@@ -214,39 +190,28 @@ export const sizingHelper = <
 const fractionHelper = <
   ClassAbbrevKey extends string,
   Fraction extends keyof FractionPercentMapT,
-  Property extends string
+  Property extends string,
 >(
   classAbbrevKey: ClassAbbrevKey,
   fraction: Fraction,
-  property: Property
+  property: Property,
 ) => {
   const percentageValue = fractionPercentMap[fraction];
 
-  return cssPropertyValueGen(
-    `${classAbbrevKey}-${fraction}`,
-    property,
-    percentageValue,
-    "%"
-  );
+  return cssPropertyValueGen(`${classAbbrevKey}-${fraction}`, property, percentageValue, "%");
 };
 
-export const sizeFractions = <Fraction extends keyof FractionPercentMapT>(
-  fraction: Fraction
-) => {
+export const sizeFractions = <Fraction extends keyof FractionPercentMapT>(fraction: Fraction) => {
   return {
     ...fractionHelper("w", fraction, "width"),
     ...fractionHelper("h", fraction, "height"),
   };
 };
 
-export const spacingHelper = <
-  ClassAbbrevKey extends number,
-  Val extends number,
-  Unit extends CSSUnits
->(
+export const spacingHelper = <ClassAbbrevKey extends number, Val extends number, Unit extends CSSUnits>(
   marginFactorKey: ClassAbbrevKey,
   value: Val,
-  unit: Unit
+  unit: Unit,
 ) => {
   return {
     ...createKeyVal(`m-${marginFactorKey}`, `margin: ${value}${unit};`),
@@ -254,45 +219,20 @@ export const spacingHelper = <
     ...createKeyVal(`mb-${marginFactorKey}`, `margin-bottom: ${value}${unit};`),
     ...createKeyVal(`ml-${marginFactorKey}`, `margin-left: ${value}${unit};`),
     ...createKeyVal(`mr-${marginFactorKey}`, `margin-right: ${value}${unit};`),
-    ...createKeyVal(
-      `mx-${marginFactorKey}`,
-      `margin-left: ${value}${unit}; margin-right: ${value}${unit};`
-    ),
-    ...createKeyVal(
-      `my-${marginFactorKey}`,
-      `margin-top: ${value}${unit}; margin-bottom: ${value}${unit};`
-    ),
+    ...createKeyVal(`mx-${marginFactorKey}`, `margin-left: ${value}${unit}; margin-right: ${value}${unit};`),
+    ...createKeyVal(`my-${marginFactorKey}`, `margin-top: ${value}${unit}; margin-bottom: ${value}${unit};`),
 
     ...createKeyVal(`p-${marginFactorKey}`, `padding: ${value}${unit};`),
     ...createKeyVal(`pt-${marginFactorKey}`, `padding-top: ${value}${unit};`),
-    ...createKeyVal(
-      `pb-${marginFactorKey}`,
-      `padding-bottom: ${value}${unit};`
-    ),
+    ...createKeyVal(`pb-${marginFactorKey}`, `padding-bottom: ${value}${unit};`),
     ...createKeyVal(`pl-${marginFactorKey}`, `padding-left: ${value}${unit};`),
     ...createKeyVal(`pr-${marginFactorKey}`, `padding-right: ${value}${unit};`),
-    ...createKeyVal(
-      `px-${marginFactorKey}`,
-      `padding-left: ${value}${unit}; padding-right: ${value}${unit};`
-    ),
-    ...createKeyVal(
-      `py-${marginFactorKey}`,
-      `padding-top: ${value}${unit}; padding-bottom: ${value}${unit};`
-    ),
+    ...createKeyVal(`px-${marginFactorKey}`, `padding-left: ${value}${unit}; padding-right: ${value}${unit};`),
+    ...createKeyVal(`py-${marginFactorKey}`, `padding-top: ${value}${unit}; padding-bottom: ${value}${unit};`),
   } as const;
 };
 
-export type ColorShades =
-  | 50
-  | 100
-  | 200
-  | 300
-  | 400
-  | 500
-  | 600
-  | 700
-  | 800
-  | 900;
+export type ColorShades = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 
 export type ColorMap = {
   [Key in ColorType]: {
@@ -318,9 +258,7 @@ export const baseColors = {
 
 export type ColorType = keyof typeof baseColors;
 
-export function hexToRgb(
-  hex: string
-): { r: number; g: number; b: number } | null {
+export function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
@@ -332,15 +270,12 @@ export function hexToRgb(
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-  return (
-    "#" +
-    ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()
-  );
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 }
 
 export function adjustBrightness(
   color: { r: number; g: number; b: number },
-  factor: number
+  factor: number,
 ): { r: number; g: number; b: number } {
   return {
     r: Math.round(clamp(color.r * factor, 0, 255)),
@@ -378,10 +313,7 @@ export function generateShades(color: ColorType): string[] {
   return shades;
 }
 
-function lightenColor(
-  color: { r: number; g: number; b: number },
-  factor: number
-): { r: number; g: number; b: number } {
+function lightenColor(color: { r: number; g: number; b: number }, factor: number): { r: number; g: number; b: number } {
   return {
     r: Math.round(clamp(color.r + (255 - color.r) * (factor - 1), 0, 255)),
     g: Math.round(clamp(color.g + (255 - color.g) * (factor - 1), 0, 255)),
@@ -389,9 +321,7 @@ function lightenColor(
   };
 }
 
-export const generateVariablesForColor = <Color extends ColorType>(
-  color: Color
-) => {
+export const generateVariablesForColor = <Color extends ColorType>(color: Color) => {
   let cssVariables: string[] = [];
 
   const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
@@ -437,66 +367,33 @@ export const generateColorVariables = () => {
   return cssVariables;
 };
 
-export const textColorGen = <Color extends string, Shade extends ColorShades>(
-  color: Color,
-  shade: Shade
-) => {
-  return cssPropertyValueGen(
-    `text-${color}-${shade}`,
-    "color",
-    `var(--${color}-${shade})`,
-    ""
-  );
+export const textColorGen = <Color extends string, Shade extends ColorShades>(color: Color, shade: Shade) => {
+  return cssPropertyValueGen(`text-${color}-${shade}`, "color", `var(--${color}-${shade})`, "");
 };
 
-export const bgColorGen = <Color extends string, Shade extends ColorShades>(
-  color: Color,
-  shade: Shade
-) => {
-  return cssPropertyValueGen(
-    `bg-${color}-${shade}`,
-    "background-color",
-    `var(--${color}-${shade})`,
-    ""
-  );
+export const bgColorGen = <Color extends string, Shade extends ColorShades>(color: Color, shade: Shade) => {
+  return cssPropertyValueGen(`bg-${color}-${shade}`, "background-color", `var(--${color}-${shade})`, "");
 };
 
-export const borderColorGen = <Color extends string, Shade extends ColorShades>(
-  color: Color,
-  shade: Shade
-) => {
-  return cssPropertyValueGen(
-    `border-${color}-${shade}`,
-    "border-color",
-    `var(--${color}-${shade})`,
-    ""
-  );
+export const borderColorGen = <Color extends string, Shade extends ColorShades>(color: Color, shade: Shade) => {
+  return cssPropertyValueGen(`border-${color}-${shade}`, "border-color", `var(--${color}-${shade})`, "");
 };
 
-export const textColorStrokeGen = <
-  Color extends string,
-  Shade extends ColorShades
->(
-  color: Color,
-  shade: Shade
-) => {
+export const textColorStrokeGen = <Color extends string, Shade extends ColorShades>(color: Color, shade: Shade) => {
   return cssPropertyValueGen(
     `text-stroke-${color}-${shade}`,
     "-webkit-text-stroke-color",
     `var(--${color}-${shade})`,
-    ""
+    "",
   );
 };
 
 const shadowSizes = {
   "shadow-sm": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
   shadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
-  "shadow-md":
-    "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-  "shadow-lg":
-    "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-  "shadow-xl":
-    "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+  "shadow-md": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+  "shadow-lg": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+  "shadow-xl": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
   "shadow-2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
   "shadow-inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
   "shadow-none": "0 0 #0000",
@@ -509,9 +406,7 @@ export const shadowGen = <Size extends ShadowSize>(size: Size) => {
   return cssPropertyValueGen(size, "box-shadow", shadowValue, "");
 };
 
-export const generatePropertiesForColor = <Color extends ColorType>(
-  colorKey: Color
-) => {
+export const generatePropertiesForColor = <Color extends ColorType>(colorKey: Color) => {
   return {
     ...textColorGen(colorKey, 50),
     ...textColorGen(colorKey, 100),
@@ -596,16 +491,9 @@ const baseGapSizes = {
 
 type GapSize = keyof typeof baseGapSizes;
 
-const gapHelper = <Key extends GapSize>(key: Key) =>
-  cssPropertyValueGen(key, "gap", baseGapSizes[key], "rem");
+const gapHelper = <Key extends GapSize>(key: Key) => cssPropertyValueGen(key, "gap", baseGapSizes[key], "rem");
 
-export const generateGapHelper = <
-  Gap extends GapSize,
-  Unit extends CSSUnits = "rem"
->(
-  gap: Gap,
-  unit: Unit
-) => {
+export const generateGapHelper = <Gap extends GapSize, Unit extends CSSUnits = "rem">(gap: Gap, unit: Unit) => {
   const gapValue = baseGapSizes[gap];
 
   const baseGap = `gap-${gap}` as const;
@@ -852,7 +740,6 @@ export const CSS_MAP = {
   "grid-cols-10": "grid-template-columns: repeat(10, minmax(0, 1fr));",
   "grid-cols-11": "grid-template-columns: repeat(11, minmax(0, 1fr));",
   "grid-cols-12": "grid-template-columns: repeat(12, minmax(0, 1fr));",
-  
 
   // Text Utilities
   "text-left": textAlign("left"),
@@ -957,18 +844,13 @@ export const CSS_MAP = {
   "rounded-3xl": "border-radius: 1.5rem;",
   "rounded-full": "border-radius: 9999px;",
   "rounded-t-none": "border-top-left-radius: 0; border-top-right-radius: 0;",
-  "rounded-r-none":
-    "border-top-right-radius: 0; border-bottom-right-radius: 0;",
-  "rounded-b-none":
-    "border-bottom-right-radius: 0; border-bottom-left-radius: 0;",
+  "rounded-r-none": "border-top-right-radius: 0; border-bottom-right-radius: 0;",
+  "rounded-b-none": "border-bottom-right-radius: 0; border-bottom-left-radius: 0;",
   "rounded-l-none": "border-top-left-radius: 0; border-bottom-left-radius: 0;",
-  "rounded-t-sm":
-    "border-top-left-radius: 0.125rem; border-top-right-radius: 0.125rem;",
-  "rounded-r-sm":
-    "border-top-right-radius: 0.125rem; border-bottom-right-radius: 0.125rem;",
+  "rounded-t-sm": "border-top-left-radius: 0.125rem; border-top-right-radius: 0.125rem;",
+  "rounded-r-sm": "border-top-right-radius: 0.125rem; border-bottom-right-radius: 0.125rem;",
   // TODO: create function to generate all variations
-  "rounded-b-sm":
-    "border-bottom-right-radius: 0.125rem; border-bottom-left-radius: 0.125rem;",
+  "rounded-b-sm": "border-bottom-right-radius: 0.125rem; border-bottom-left-radius: 0.125rem;",
 
   // max width and height
   "max-w-none": "max-width: none;",

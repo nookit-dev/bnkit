@@ -9,10 +9,7 @@ interface DataGenerators {
     shape: T,
     generatorMap?: Partial<Record<keyof T, DataGenerator<any>>>,
   ) => DataGenerator<T>;
-  array: <T>(
-    generator: DataGenerator<T>,
-    length?: number,
-  ) => DataGenerator<T[]>;
+  array: <T>(generator: DataGenerator<T>, length?: number) => DataGenerator<T[]>;
 }
 
 export const dataGenerators: DataGenerators = {
@@ -37,7 +34,7 @@ export const dataGenerators: DataGenerators = {
       return result as T;
     };
   },
-  array: <T,>(generator: DataGenerator<T>, length = 10) => {
+  array: <T>(generator: DataGenerator<T>, length = 10) => {
     return () => {
       const result = [];
       for (let i = 0; i < length; i++) {
@@ -48,7 +45,7 @@ export const dataGenerators: DataGenerators = {
   },
 };
 
-export const inferTypeAndGenerate = <Val,>(value: Val): any => {
+export const inferTypeAndGenerate = <Val>(value: Val): any => {
   switch (typeof value) {
     case "string":
       return dataGenerators.string();
@@ -63,10 +60,7 @@ export const inferTypeAndGenerate = <Val,>(value: Val): any => {
         // Use first item in the array to infer type for array items
         // This is a simplification and assumes uniform array types
         const inferredTypeGenerator = inferTypeAndGenerate(value[0]);
-        return dataGenerators.array(
-          () => inferredTypeGenerator,
-          value.length,
-        )();
+        return dataGenerators.array(() => inferredTypeGenerator, value.length)();
       } else if (typeof value === "object" && value !== null) {
         return dataGenerators.object(value as Record<string, any>)();
       }

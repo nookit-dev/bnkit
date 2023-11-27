@@ -9,15 +9,12 @@ describe("HTML and Markdown utilities", () => {
       const regex = /\*\*(.+?)\*\*/g;
       const replacement = "<strong>$1</strong>";
       const expectedHTML = "<strong>Hello</strong>";
-      expect(replaceMarkdown(markdown, regex, replacement)).toEqual(
-        expectedHTML
-      );
+      expect(replaceMarkdown(markdown, regex, replacement)).toEqual(expectedHTML);
     });
 
     // parsers object
     test("convertMarkdownToHTML converts markdown to HTML", () => {
-      const markdown =
-        "# Hello\n**World**\n*This* is a [link](https://example.com)";
+      const markdown = "# Hello\n**World**\n*This* is a [link](https://example.com)";
       const expectedHTML =
         '<h1>Hello</h1>\n<strong>World</strong>\n<em>This</em> is a <a href="https://example.com">link</a>';
       expect(convertMarkdownToHTML(markdown)).toEqual(expectedHTML);
@@ -25,8 +22,7 @@ describe("HTML and Markdown utilities", () => {
 
     // convertMarkdownToHTML function
     test("convertMarkdownToHTML converts markdown to HTML", () => {
-      const markdown =
-        "# Hello\n**World**\n*This* is a [link](https://example.com)";
+      const markdown = "# Hello\n**World**\n*This* is a [link](https://example.com)";
       const expectedHTML =
         '<h1>Hello</h1>\n<strong>World</strong>\n<em>This</em> is a <a href="https://example.com">link</a>';
       expect(convertMarkdownToHTML(markdown)).toEqual(expectedHTML);
@@ -38,9 +34,7 @@ describe("Markdown Parsers", () => {
   test("headers parser", () => {
     const input = "# Heading 1\n## Heading 2\n### Heading 3";
     const output = parsers.headers(input);
-    expect(output).toBe(
-      "<h1>Heading 1</h1>\n<h2>Heading 2</h2>\n<h3>Heading 3</h3>"
-    );
+    expect(output).toBe("<h1>Heading 1</h1>\n<h2>Heading 2</h2>\n<h3>Heading 3</h3>");
   });
 
   test("bold parser", () => {

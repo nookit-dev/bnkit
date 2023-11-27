@@ -2,12 +2,7 @@ import { HTTPMethod, RouteMethods } from "../utils/http-types";
 
 export type EventHandlerMap = { [event: string]: (ev: MessageEvent) => void };
 
-export type APIConfig<
-  TRes = any,
-  TParams = any,
-  TBody = any,
-  THeaders extends HeadersInit = HeadersInit
-> = {
+export type APIConfig<TRes = any, TParams = any, TBody = any, THeaders extends HeadersInit = HeadersInit> = {
   method: RouteMethods;
   endpoint: string;
   response?: TRes;
@@ -34,11 +29,10 @@ export type MappedApiConfig<TMap extends TypeMap> = APIConfig<
   HeadersInit
 >;
 
-export type ExternalFetchConfig<
-  Endpoint,
-  TMap extends TypeMap,
-  Method extends HTTPMethod = HTTPMethod
-> = Omit<MappedApiConfig<TMap>, "response" | "method"> & {
+export type ExternalFetchConfig<Endpoint, TMap extends TypeMap, Method extends HTTPMethod = HTTPMethod> = Omit<
+  MappedApiConfig<TMap>,
+  "response" | "method"
+> & {
   endpoint: Endpoint;
   method?: Method;
 };

@@ -108,7 +108,7 @@ export const htmlTags = [
   "th",
   "thead",
   "tr",
-  "turbo-frame"
+  "turbo-frame",
 ] as const;
 
 export type HtmlTags = (typeof htmlTags)[number];

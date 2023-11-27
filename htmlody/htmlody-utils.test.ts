@@ -1,12 +1,7 @@
 import { JsonTagElNode } from "bnkit/htmlody";
 import { describe, expect, it } from "bun:test";
 import { Attributes } from "./htmlody-types";
-import {
-    collectClassNames,
-    formatAttributes,
-    nodeFactory,
-    retrieveElement,
-} from "./htmlody-utils";
+import { collectClassNames, formatAttributes, nodeFactory, retrieveElement } from "./htmlody-utils";
 
 describe("formatAttributes", () => {
   it("should handle empty attributes", () => {
@@ -101,9 +96,7 @@ describe("collectClassNames", () => {
     };
     const uniqueClassNames = new Set<string>();
     collectClassNames(node, uniqueClassNames);
-    expect(uniqueClassNames).toEqual(
-      new Set(["sample-class-1", "sample-class-2"])
-    );
+    expect(uniqueClassNames).toEqual(new Set(["sample-class-1", "sample-class-2"]));
   });
 
   it("should not add class names to uniqueClassNames set if class attribute is not present", () => {

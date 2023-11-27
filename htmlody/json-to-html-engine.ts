@@ -3,11 +3,7 @@ import { HtmlTags, SELF_CLOSING_TAGS, htmlTags } from "./constants";
 import { generateCSS, generateColorVariables } from "./css-engine";
 import { HTMLodyPlugin } from "./htmlody-plugins";
 import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
-import {
-  formatAttributes,
-  isValidAttributesString,
-  isValidHtmlTag,
-} from "./htmlody-utils";
+import { formatAttributes, isValidAttributesString, isValidHtmlTag } from "./htmlody-utils";
 
 export function validateTagName(tagName: HtmlTags): string {
   if (!isValidHtmlTag(tagName)) {
@@ -23,10 +19,7 @@ export function getValidatedAttributesStr(attributesStr: string): string {
   return attributesStr;
 }
 
-export function getHtmlTags(
-  tagName: string,
-  attributesStr: string
-): { startTag: string; closeTag: string } {
+export function getHtmlTags(tagName: string, attributesStr: string): { startTag: string; closeTag: string } {
   const space = attributesStr ? " " : "";
 
   // Check if the tag is a self-closing tag using Set lookup
@@ -64,7 +57,7 @@ export function renderHtmlTag({
   const { startTag, closeTag } = getHtmlTags(
     // validatedTagName,
     tagName,
-    validatedAttributesStr
+    validatedAttributesStr,
   );
 
   return `${startTag}${content}${childrenHtml}${closeTag}`;
@@ -72,19 +65,17 @@ export function renderHtmlTag({
 
 export function renderChildrenNodes<Plugins extends HTMLodyPlugin<any>[]>(
   children: JsonHtmlNodeTree,
-  plugins: Plugins
+  plugins: Plugins,
 ): string {
   return Object.entries(children)
-    .map(([childTagName, childNode]) =>
-      jsonToHtml({ [childTagName]: childNode }, plugins)
-    )
+    .map(([childTagName, childNode]) => jsonToHtml({ [childTagName]: childNode }, plugins))
     .join("");
 }
 
 function processNodeWithPlugins<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
-  Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>
+  Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
 >(node: Node, plugins: Plugins): Node {
   let processedNode = { ...node };
   for (const plugin of plugins) {
@@ -100,7 +91,7 @@ export type JSONToHTMLOptions = {
 export function renderNodeToHtml<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
-  Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>
+  Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
 >(node: Node, plugins: Plugins, options?: JSONToHTMLOptions): string {
   node = processNodeWithPlugins(node, plugins);
 
@@ -116,14 +107,12 @@ export function renderNodeToHtml<
       ${content ? `Content: ${content}` : ""}
 
       ${JSON.stringify(node, null, 2)}
-      `
+      `,
     );
   }
 
   const attributesStr = formatAttributes(node.attributes || {});
-  const childrenHtml = node.children
-    ? renderChildrenNodes(node.children, plugins)
-    : "";
+  const childrenHtml = node.children ? renderChildrenNodes(node.children, plugins) : "";
 
   return renderHtmlTag({ tagName, attributesStr, content, childrenHtml });
 }
@@ -132,7 +121,7 @@ export function jsonToHtml<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
-  NodeMap extends JsonHtmlNodeTree<Node> = JsonHtmlNodeTree<Node>
+  NodeMap extends JsonHtmlNodeTree<Node> = JsonHtmlNodeTree<Node>,
 >(nodeMap: NodeMap, plugins: Plugins, options?: JSONToHTMLOptions): string {
   return Object.keys(nodeMap)
     .map((id) => renderNodeToHtml(nodeMap[id], plugins, options))
@@ -142,7 +131,7 @@ export function jsonToHtml<
 export function renderNodeWithPlugins<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
-  Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>
+  Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
 >(node: Node, plugins: Plugins, options?: JSONToHTMLOptions): string {
   node = processNodeWithPlugins(node, plugins);
 
@@ -156,14 +145,12 @@ export function renderNodeWithPlugins<
       ${content ? `Content: ${content}` : ""}
 
       ${JSON.stringify(node, null, 2)}
-      `
+      `,
     );
   }
 
   const attributesStr = formatAttributes(node.attributes || {});
-  const childrenHtml = node.children
-    ? renderChildrenNodes(node.children, plugins)
-    : "";
+  const childrenHtml = node.children ? renderChildrenNodes(node.children, plugins) : "";
 
   return renderHtmlTag({
     tagName,
@@ -230,8 +217,7 @@ const generateScriptTagNode = (script: {
   return node;
 };
 
-export type NodePluginsMapper<Plugins extends HTMLodyPlugin<any>[]> =
-  ReturnType<Plugins[number]["processNode"]>;
+export type NodePluginsMapper<Plugins extends HTMLodyPlugin<any>[]> = ReturnType<Plugins[number]["processNode"]>;
 
 type HeadConfig = {
   title: string;
@@ -248,13 +234,10 @@ type HTMLodyOptions = {
 export const htmlodyNodeFactory = <
   Plugins extends HTMLodyPlugin<any>[],
   NodeWithPlugins extends NodePluginsMapper<Plugins>,
-  ReturnType extends Record<
+  ReturnType extends Record<HtmlTags, (options?: Omit<NodeWithPlugins, "tag">) => JsonTagElNode> = Record<
     HtmlTags,
     (options?: Omit<NodeWithPlugins, "tag">) => JsonTagElNode
-  > = Record<
-    HtmlTags,
-    (options?: Omit<NodeWithPlugins, "tag">) => JsonTagElNode
-  >
+  >,
 >(): ReturnType => {
   const create = (tag: HtmlTags, options?: Omit<NodeWithPlugins, "tag">) => {
     return {
@@ -268,8 +251,7 @@ export const htmlodyNodeFactory = <
   const buildFns = {} as ReturnType;
 
   for (const tag of htmlTags) {
-    buildFns[tag] = (options?: Omit<NodeWithPlugins, "tag">) =>
-      create(tag, options);
+    buildFns[tag] = (options?: Omit<NodeWithPlugins, "tag">) => create(tag, options);
   }
 
   return buildFns;
@@ -278,7 +260,7 @@ export const htmlodyNodeFactory = <
 export const htmlodyBuilder = <
   Plugins extends HTMLodyPlugin<any>[],
   PluginReturns extends NodePluginsMapper<Plugins>,
-  Options extends HTMLodyOptions = HTMLodyOptions
+  Options extends HTMLodyOptions = HTMLodyOptions,
 >({
   plugins,
   options: builderOptions,
@@ -297,52 +279,40 @@ export const htmlodyBuilder = <
   };
 
   const inferTreeFn = <
-    Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>
+    Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>,
   >(): JsonHtmlNodeTree<Node> => {
     return undefined as unknown as JsonHtmlNodeTree<Node>;
   };
 
   const inferTree = inferTreeFn();
 
-  const renderNodeTreeToHtml = (
-    nodeMap: JsonHtmlNodeTree,
-    pluginsOverride?: Plugins
-  ): string => {
+  const renderNodeTreeToHtml = (nodeMap: JsonHtmlNodeTree, pluginsOverride?: Plugins): string => {
     const activePlugins = pluginsOverride || effectivePlugins;
     return Object.keys(nodeMap)
       .map((id) => renderNodeWithPlugins(nodeMap[id], activePlugins))
       .join("");
   };
 
-  const renderSingleNode = <
-    Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>
-  >(
+  const renderSingleNode = <Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>>(
     node: Node,
-    pluginsOverride?: Plugins
+    pluginsOverride?: Plugins,
   ): string => {
     const activePlugins = pluginsOverride || effectivePlugins;
     return renderNodeWithPlugins(node, activePlugins);
   };
 
-  const renderChildren = (
-    children: JsonHtmlNodeTree,
-    pluginsOverride?: Plugins
-  ): string => {
+  const renderChildren = (children: JsonHtmlNodeTree, pluginsOverride?: Plugins): string => {
     const activePlugins = pluginsOverride || effectivePlugins;
     return Object.entries(children)
-      .map(([childTagName, childNode]) =>
-        renderNodeWithPlugins(childNode, activePlugins)
-      )
+      .map(([childTagName, childNode]) => renderNodeWithPlugins(childNode, activePlugins))
       .join("");
   };
 
-  const buildHtmlDoc = <
-    JSONNodeTree extends JsonHtmlNodeTree = JsonHtmlNodeTree<PluginReturns>
-  >(
+  const buildHtmlDoc = <JSONNodeTree extends JsonHtmlNodeTree = JsonHtmlNodeTree<PluginReturns>>(
     bodyConfig: JSONNodeTree,
     options?: {
       headConfig?: HeadConfig;
-    }
+    },
   ) => {
     const headNodes: JsonHtmlNodeTree = {};
 
@@ -351,9 +321,7 @@ export const htmlodyBuilder = <
     }
 
     if (builderOptions?.allpages?.headConfig?.title) {
-      headNodes["title"] = generateTitleNode(
-        builderOptions?.allpages?.headConfig.title
-      );
+      headNodes["title"] = generateTitleNode(builderOptions?.allpages?.headConfig.title);
     }
 
     if (options?.headConfig?.metaTags) {
@@ -398,11 +366,9 @@ export const htmlodyBuilder = <
     }
 
     if (builderOptions?.allpages?.headConfig?.scriptTags) {
-      builderOptions?.allpages?.headConfig.scriptTags.forEach(
-        (script, index) => {
-          headNodes[`script${index}`] = generateScriptTagNode(script);
-        }
-      );
+      builderOptions?.allpages?.headConfig.scriptTags.forEach((script, index) => {
+        headNodes[`script${index}`] = generateScriptTagNode(script);
+      });
     }
 
     const headHtml = renderNodeTreeToHtml(headNodes);
@@ -431,7 +397,7 @@ export const htmlodyBuilder = <
     bodyConfig: JsonHtmlNodeTree,
     options?: {
       headConfig?: HeadConfig;
-    }
+    },
   ) => {
     const html = buildHtmlDoc(bodyConfig, options);
     return new Response(html, {

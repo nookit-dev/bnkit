@@ -47,10 +47,7 @@ describe("fileFactory", async () => {
   it("reads multiple files", async () => {
     const factory = getTestFactory();
 
-    const filePaths = [
-      "./files-folders/test/test1.txt",
-      "./files-folders/test/test2.txt",
-    ];
+    const filePaths = ["./files-folders/test/test1.txt", "./files-folders/test/test2.txt"];
 
     const contents = ["Hello, world!", "Goodbye, world!"];
 
@@ -67,10 +64,7 @@ describe("fileFactory", async () => {
   // Test that updateFiles updates the content of multiple files correctly
   it("updates multiple files", async () => {
     const factory = getTestFactory();
-    const filePaths = [
-      "./test/test-utils/test1.txt",
-      "./test/test-utils/test2.txt",
-    ];
+    const filePaths = ["./test/test-utils/test1.txt", "./test/test-utils/test2.txt"];
     const initialContents = ["Hello, world!", "Goodbye, world!"];
     const newContents = "Updated content";
     for (let i = 0; i < filePaths.length; i++) {

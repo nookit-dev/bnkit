@@ -1,6 +1,6 @@
 {
   "name": "bnkit",
-  "version": "0.4.47",
+  "version": "5.0.0",
   "main": "index.ts",
   "devDependencies": {
     "@biomejs/biome": "1.4.0",
@@ -18,7 +18,8 @@
     "tsc": "tsc --project tsconfig.json",
     "tsc:noEmit": "tsc --noEmit --project tsconfig-noEmit.json",
     "validate": "bun run tsc:noEmite && bun run test",
-    "format": "bunx @biomejs/biome format .--write"
+    "format": "biome format . --write",
+    "lint": "biome lint ."
   },
   "bin": {
     "bnkit": "sh ./scripts/cli.ts"

@@ -1,16 +1,8 @@
 import { saveOrUpdateFile } from "./file-editing-utils";
 import { getFullPath } from "./file-path-utils";
-import {
-  listFilesAndFolderInPath,
-  readJson,
-  readTextFromMultipleFiles,
-} from "./file-reading-utils";
+import { listFilesAndFolderInPath, readJson, readTextFromMultipleFiles } from "./file-reading-utils";
 import { searchDirForFileName } from "./file-search-utils";
-import {
-  deletePath,
-  directoryExists,
-  fileExists,
-} from "./file-validation-utils";
+import { deletePath, directoryExists, fileExists } from "./file-validation-utils";
 
 export function fileFactory({ baseDirectory }: { baseDirectory: string }) {
   return {
@@ -29,7 +21,7 @@ export function fileFactory({ baseDirectory }: { baseDirectory: string }) {
     },
     readTextFromMultipleFiles: (relativePaths: string[]) => {
       const fullPaths = relativePaths.map((relativePath) =>
-        getFullPath({ baseDir: baseDirectory, filePath: relativePath })
+        getFullPath({ baseDir: baseDirectory, filePath: relativePath }),
       );
       return readTextFromMultipleFiles(fullPaths);
     },
@@ -54,14 +46,10 @@ export function fileFactory({ baseDirectory }: { baseDirectory: string }) {
       return fileExists(fullPath);
     },
     deleteFile: (relativePath: string) => {
-      return deletePath(
-        getFullPath({ baseDir: baseDirectory, filePath: relativePath })
-      );
+      return deletePath(getFullPath({ baseDir: baseDirectory, filePath: relativePath }));
     },
     readJson: (relativePath: string) => {
-      return readJson(
-        getFullPath({ baseDir: baseDirectory, filePath: relativePath })
-      );
+      return readJson(getFullPath({ baseDir: baseDirectory, filePath: relativePath }));
     },
     saveJson: (content: object, relativePath: string) => {
       return saveOrUpdateFile({

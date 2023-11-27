@@ -1,15 +1,10 @@
 import { CookieOptions } from "./cookie-types";
-import {
-  encodeCookie,
-  parseCookieData,
-  parseCookies,
-  stringifyCookieData,
-} from "./cookie-utils";
+import { encodeCookie, parseCookieData, parseCookies, stringifyCookieData } from "./cookie-utils";
 
 export function serverCookieFactory<
   T = string,
   FactoryRequest extends Request = Request,
-  FactoryRes extends Response = Response
+  FactoryRes extends Response = Response,
 >(
   cookieKey: string,
   {
@@ -20,7 +15,7 @@ export function serverCookieFactory<
     request?: FactoryRequest;
     response?: FactoryRes;
     options?: CookieOptions;
-  } = {}
+  } = {},
 ) {
   const setCookie = (
     value: T,
@@ -30,10 +25,9 @@ export function serverCookieFactory<
     }: {
       options?: CookieOptions;
       res?: Response | undefined;
-    } = {}
+    } = {},
   ) => {
-    let cookieValue =
-      typeof value === "string" ? value : stringifyCookieData(value);
+    let cookieValue = typeof value === "string" ? value : stringifyCookieData(value);
 
     const cookieString = encodeCookie(cookieKey, cookieValue, options);
 

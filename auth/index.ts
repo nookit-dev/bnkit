@@ -2,7 +2,7 @@ export {
   createSecurityToken,
   createToken,
   getTokenExpireEpoch,
-  verifyToken
+  verifyToken,
 } from "./security-token";
 
 export { oAuthFactory } from "./oauth";

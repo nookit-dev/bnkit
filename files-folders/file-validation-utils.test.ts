@@ -1,11 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { saveOrUpdateFile } from "./file-editing-utils";
 import { getFullPath } from "./file-path-utils";
-import {
-  deletePath,
-  directoryExists,
-  fileExists,
-} from "./file-validation-utils";
+import { deletePath, directoryExists, fileExists } from "./file-validation-utils";
 
 const savePath = process.env.PWD + "/files-folders/test";
 const saveFile = savePath + "/test.txt";
@@ -37,9 +33,7 @@ describe("deleteFile", () => {
 
 describe("directoryExists", () => {
   it("should create directory if it does not exist", async () => {
-    expect(
-      await directoryExists({ path: savePath, createMissingDirs: true })
-    ).toBe(true);
+    expect(await directoryExists({ path: savePath, createMissingDirs: true })).toBe(true);
   });
 
   it("should not create directory if it already exists", async () => {

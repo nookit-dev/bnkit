@@ -4,15 +4,10 @@ import { createContext, useEffect, useState } from "react";
 
 export type ContextStateT<StateT extends object = {}> = {
   state: StateT;
-  updateKey: <Key extends keyof StateT = keyof StateT>(
-    key: Key,
-    value: StateT[Key]
-  ) => void;
+  updateKey: <Key extends keyof StateT = keyof StateT>(key: Key, value: StateT[Key]) => void;
 };
 
-export type ReactContextT<StateT extends object = {}> = React.Context<
-  ContextStateT<StateT>
->;
+export type ReactContextT<StateT extends object = {}> = React.Context<ContextStateT<StateT>>;
 
 const isServer = () => {
   return typeof window === "undefined";
@@ -46,19 +41,16 @@ const AppContext = createContext<{
   state: typeof appState;
   updateKey: <Key extends keyof typeof appState = keyof typeof appState>(
     key: Key,
-    value: (typeof appState)[Key]
+    value: (typeof appState)[Key],
   ) => void;
 }>({
   state: { count: 0 },
   updateKey: () => {},
 });
 
-const clientToServerStateKeyUpdate = async <
-  StateT extends object,
-  Key extends keyof StateT = keyof StateT
->(
+const clientToServerStateKeyUpdate = async <StateT extends object, Key extends keyof StateT = keyof StateT>(
   key: Key,
-  value: StateT[Key]
+  value: StateT[Key],
 ) => {
   const res = await fetch("/state", {
     method: "post",
@@ -80,9 +72,7 @@ export const StateProvider = <StateT extends object>({
   children: React.ReactNode;
   defaultState?: StateT;
 }) => {
-  const [state, setState] = useState<StateT>(
-    () => (defaultState || {}) as StateT
-  );
+  const [state, setState] = useState<StateT>(() => (defaultState || {}) as StateT);
 
   useEffect(() => {
     initState().then((state) => {
@@ -95,10 +85,7 @@ export const StateProvider = <StateT extends object>({
 
   const isServerSide = isServer();
 
-  const updateKey = async <Key extends keyof StateT = keyof StateT>(
-    key: Key,
-    value: StateT[Key]
-  ) => {
+  const updateKey = async <Key extends keyof StateT = keyof StateT>(key: Key, value: StateT[Key]) => {
     if (isServerSide) return null;
 
     setState((prev) => ({
@@ -108,11 +95,7 @@ export const StateProvider = <StateT extends object>({
     clientToServerStateKeyUpdate<StateT>(key, value);
   };
 
-  return (
-    <AppContext.Provider value={{ state, updateKey }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={{ state, updateKey }}>{children}</AppContext.Provider>;
 };
 
 const useClientAppState = () => {
@@ -130,9 +113,7 @@ const Counter = () => {
   return (
     <div>
       <div>Count: {state.count}</div>
-      <button onClick={() => updateKey("count", (state.count || 0) + 1)}>
-        Increment
-      </button>
+      <button onClick={() => updateKey("count", (state.count || 0) + 1)}>Increment</button>
     </div>
   );
 };

@@ -1,9 +1,6 @@
 import { OAuthConfig, OAuthProviderFn } from "./oauth-types";
 
-export type ProvidersConfigRecord = Record<
-  string,
-  Omit<OAuthConfig, "clientId" | "clientSecret">
->;
+export type ProvidersConfigRecord = Record<string, Omit<OAuthConfig, "clientId" | "clientSecret">>;
 
 export const oAuthProviders = {
   google: {
@@ -13,8 +10,7 @@ export const oAuthProviders = {
   },
   microsoft: {
     redirectUri: "http://localhost:3000/callback",
-    authReqUrl:
-      "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+    authReqUrl: "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
     tokenUrl: "http://needtofind",
   },
   github: {
@@ -24,10 +20,7 @@ export const oAuthProviders = {
   },
 } satisfies ProvidersConfigRecord;
 
-export const initGoogleOAuth: OAuthProviderFn = (
-  { clientId, clientSecret },
-  options
-) => {
+export const initGoogleOAuth: OAuthProviderFn = ({ clientId, clientSecret }, options) => {
   const redirectUrl = options?.redirectUrl;
   return {
     ...oAuthProviders.google,
@@ -37,10 +30,7 @@ export const initGoogleOAuth: OAuthProviderFn = (
   };
 };
 
-export const initGithubOAuth: OAuthProviderFn = (
-  { clientId, clientSecret },
-  options
-) => {
+export const initGithubOAuth: OAuthProviderFn = ({ clientId, clientSecret }, options) => {
   const redirectUrl = options?.redirectUrl;
   return {
     ...oAuthProviders.github,
@@ -49,4 +39,3 @@ export const initGithubOAuth: OAuthProviderFn = (
     clientSecret,
   };
 };
-

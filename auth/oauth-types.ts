@@ -30,9 +30,6 @@ export type OAuthProviderOptions = {
 };
 
 export type OAuthProviderCreds = Pick<OAuthConfig, "clientId" | "clientSecret">;
-export type OAuthProviderFn = (
-  config: OAuthProviderCreds,
-  options?: OAuthProviderOptions
-) => OAuthConfig;
+export type OAuthProviderFn = (config: OAuthProviderCreds, options?: OAuthProviderOptions) => OAuthConfig;
 
 export type OAuthProviderInitializer = (config: OAuthConfig) => OAuthHelpers;

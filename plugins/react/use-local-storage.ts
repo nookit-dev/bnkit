@@ -5,27 +5,17 @@ export type LocalStoreConfig<DataT> = {
   initialState: DataT; // Initial state if there's nothing in LocalStorage
 };
 
-export type LocalStoreReturnT<DataT> = [
-  DataT,
-  React.Dispatch<React.SetStateAction<DataT>>
-];
+export type LocalStoreReturnT<DataT> = [DataT, React.Dispatch<React.SetStateAction<DataT>>];
 
 export type GetLSKeyOptions = {
   fallbackToInitialValOnError?: boolean;
 };
 
-export type GetLSKeyFn<DataT> = (
-  options: GetLSKeyOptions,
-  onData?: (data: DataT) => void
-) => DataT | null;
+export type GetLSKeyFn<DataT> = (options: GetLSKeyOptions, onData?: (data: DataT) => void) => DataT | null;
 
-export type SetLSKeyFn<DataT> = (
-  val: DataT | ((prevState: DataT) => DataT) 
-) => void;
+export type SetLSKeyFn<DataT> = (val: DataT | ((prevState: DataT) => DataT)) => void;
 
-export type SyncLSKeyFn<DataT> = (
-  fallbackToInitialVal: boolean
-) => ReturnType<GetLSKeyFn<DataT>>;
+export type SyncLSKeyFn<DataT> = (fallbackToInitialVal: boolean) => ReturnType<GetLSKeyFn<DataT>>;
 
 export type UseLocalStorageReturn<DataT> = {
   get: GetLSKeyFn<DataT>;
@@ -41,13 +31,10 @@ export type SyncIntervalConfig = {
   interval: number; // Time interval in milliseconds
 };
 
-export function useLocalStorage<DataT>(
-  config: LocalStoreConfig<DataT>
-): UseLocalStorageReturn<DataT> {
+export function useLocalStorage<DataT>(config: LocalStoreConfig<DataT>): UseLocalStorageReturn<DataT> {
   // Initial state from local storage or fallback to initialState
   const getLSKey: GetLSKeyFn<DataT> = (options, onData) => {
-    const { fallbackToInitialValOnError: fallbackToInitialValOnErrror = true } =
-      options;
+    const { fallbackToInitialValOnError: fallbackToInitialValOnErrror = true } = options;
 
     const storedData = localStorage.getItem(config.key);
 
@@ -63,7 +50,7 @@ export function useLocalStorage<DataT>(
         "Failed to properly get Local Storage key/value, returning initial state",
         config.key,
         storedData,
-        e
+        e,
       );
 
       if (fallbackToInitialValOnErrror) {
@@ -85,7 +72,7 @@ export function useLocalStorage<DataT>(
       },
       (dataCb) => {
         data = dataCb;
-      }
+      },
     );
 
     return data ?? config.initialState;
@@ -121,16 +108,14 @@ export function useLocalStorage<DataT>(
   }, [syncIntervalId]);
 
   // syncs the state to local storage
-  const syncLSKeyState = (
-    fallbackToInitialVal: boolean = false
-  ): DataT | null => {
+  const syncLSKeyState = (fallbackToInitialVal: boolean = false): DataT | null => {
     return getLSKey(
       {
         fallbackToInitialValOnError: fallbackToInitialVal,
       },
       (data) => {
         setLsKeyState(data);
-      }
+      },
     );
   };
 
@@ -140,24 +125,14 @@ export function useLocalStorage<DataT>(
     try {
       stringifiedVal = JSON.stringify(value);
     } catch (e) {
-      console.error(
-        "Failed to properly set Local Storage key/value",
-        config.key,
-        value,
-        e
-      );
+      console.error("Failed to properly set Local Storage key/value", config.key, value, e);
     }
 
     try {
       localStorage.setItem(config.key, stringifiedVal);
       setLsKeyState(value);
     } catch (e) {
-      console.error(
-        "Failed to properly set Local Storage key/value",
-        config.key,
-        value,
-        e
-      );
+      console.error("Failed to properly set Local Storage key/value", config.key, value, e);
     }
   };
 
@@ -169,7 +144,7 @@ export function useLocalStorage<DataT>(
       },
       (data) => {
         setLsKeyState(data);
-      }
+      },
     );
   }, [config.key]);
 

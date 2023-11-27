@@ -41,8 +41,8 @@ export type Dispatchers<State extends object, Options extends Object = {}> = {
   [Key in keyof State]: State[Key] extends (infer T)[]
     ? SetDispatch<State[Key], Options> & ArrayDispatch<T, Options>
     : State[Key] extends object
-    ? SetDispatch<State[Key], Options> & ObjectDispatch<State[Key], Options>
-    : State[Key] extends number
-    ? SetDispatch<State[Key], Options> & NumberDispatch<Options>
-    : SetDispatch<State[Key], Options>;
+      ? SetDispatch<State[Key], Options> & ObjectDispatch<State[Key], Options>
+      : State[Key] extends number
+        ? SetDispatch<State[Key], Options> & NumberDispatch<Options>
+        : SetDispatch<State[Key], Options>;
 };

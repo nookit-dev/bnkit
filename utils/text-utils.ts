@@ -1,8 +1,4 @@
-export function replaceMarkdown(
-  text: string,
-  regex: RegExp,
-  replacement: string
-): string {
+export function replaceMarkdown(text: string, regex: RegExp, replacement: string): string {
   return text.replace(regex, replacement);
 }
 
@@ -26,9 +22,7 @@ export const parsers = {
   unorderedLists(text: string): string {
     return text.replace(/(- .*(\n|$))+/g, (match) => {
       const items = match.split("\n").filter(Boolean);
-      const liItems = items
-        .map((item) => item.replace(/- (.*)/, "<li>$1</li>"))
-        .join("\n");
+      const liItems = items.map((item) => item.replace(/- (.*)/, "<li>$1</li>")).join("\n");
       return `<ul>${liItems}</ul>`;
     });
   },
@@ -36,9 +30,7 @@ export const parsers = {
   orderedLists(text: string): string {
     return text.replace(/(\d+\. .*(\n|$))+/g, (match) => {
       const items = match.split("\n").filter(Boolean);
-      const liItems = items
-        .map((item) => item.replace(/\d+\. (.*)/, "<li>$1</li>"))
-        .join("\n");
+      const liItems = items.map((item) => item.replace(/\d+\. (.*)/, "<li>$1</li>")).join("\n");
       return `<ol>${liItems}</ol>`;
     });
   },

@@ -2,7 +2,7 @@ import { ServerWebSocket, WebSocketHandler } from "bun";
 import { createStateManager } from "./state-manager";
 
 export const createWSStateHandler = <State extends object>(
-  stateMachine: ReturnType<typeof createStateManager<State>>
+  stateMachine: ReturnType<typeof createStateManager<State>>,
 ) => {
   const connectedClients = new Set<ServerWebSocket>();
 
@@ -16,8 +16,7 @@ export const createWSStateHandler = <State extends object>(
     message: (ws, msg) => {
       if (typeof msg !== "string") return;
 
-      const data: { key: keyof State; value: State[keyof State] } =
-        JSON.parse(msg);
+      const data: { key: keyof State; value: State[keyof State] } = JSON.parse(msg);
 
       if (data.key in stateMachine.state) {
         stateMachine.updateStateAndDispatch(data.key, data.value);
