@@ -1,6 +1,6 @@
 {
   "name": "bnkit",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "main": "index.ts",
   "devDependencies": {
     "@biomejs/biome": "1.4.0",
