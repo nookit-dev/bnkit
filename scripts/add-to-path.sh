@@ -25,4 +25,4 @@ function run_bnk_cli() {
     fi
 }
 
-alias bnkcli='run_bnk_cli'
+alias bnkit='run_bnk_cli'

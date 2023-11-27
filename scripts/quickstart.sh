@@ -74,7 +74,7 @@ cp -a ./node_modules/bnkit/scripts/starter/. ./
 
 echo "Thank you for trying Bun Nook Kit!"
 echo "Add the Bun Nook Kit CLI to your path to have quick access"
-echo "Copy the below code into your .zshrc or .bashrc file to add the bnkcli command to your shell: "
+echo "Copy the below code into your .zshrc or .bashrc file to add the bnkit command to your shell: "
 echo ""
 echo ""
 
