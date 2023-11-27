@@ -13,5 +13,8 @@
     "enabled": true,
     "lineWidth": 120,
     "indentStyle": "space"
+  },
+  "files": {
+    "ignore": [".vscode", "tsconfig.json"]
   }
 }

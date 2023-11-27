@@ -27,6 +27,13 @@ export const serverRequestHandler = <
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
 }): Promise<Response> => {
   const url = new URL(req.url);
+  console.log({
+    url,
+    routes,
+    middlewareFactory,
+    optionsHandler,
+  });
+
   let matchedHandler: RouteHandler<MiddlewareDataMap> | null | undefined = null;
 
   const pathRoutes = routes[url.pathname];

@@ -29,9 +29,7 @@ export function decrypt(encryptedData: string, secret: string): string {
   }
 }
 
-export function payloadValidator<T extends object>(
-  payload: JwtPayload<T>
-): boolean {
+export function payloadValidator<T extends object>(payload: JwtPayload<T>): boolean {
   if (!payload || Object.keys(payload).length === 0) {
     throw new Error("Payload cannot be empty");
   }
@@ -62,11 +60,7 @@ export function base64UrlDecode(str: string): string {
   return Buffer.from(str, "base64").toString();
 }
 
-export function encodeJwt<T extends object>(
-  header: JwtHeader,
-  payload: JwtPayload<T>,
-  secret: string
-): string {
+export function encodeJwt<T extends object>(header: JwtHeader, payload: JwtPayload<T>, secret: string): string {
   const headerEncoded = base64UrlEncode(JSON.stringify(header));
   const payloadEncoded = base64UrlEncode(JSON.stringify(payload));
   const signature = sign(`${headerEncoded}.${payloadEncoded}`, secret);
@@ -75,7 +69,7 @@ export function encodeJwt<T extends object>(
 
 export function decodeJwt<T extends object>(
   jwt: string,
-  secret: string
+  secret: string,
 ): { header: JwtHeader; payload: JwtPayload<T> } {
   const [headerEncoded, payloadEncoded, signatureEncoded] = jwt.split(".");
   const signatureToVerify = sign(`${headerEncoded}.${payloadEncoded}`, secret);

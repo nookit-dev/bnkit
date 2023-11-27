@@ -21,20 +21,31 @@ export const serverFactory = <
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
   serve?: typeof Bun.serve;
 }) => {
-  const start = (port: number = 3000) => {
-    if (Bun?.env.NODE_ENV === "development") {
-      console.log("Starting server on port: ", port);
+  const start = (port = 3000) => {
+    try {
+      if (Bun?.env.NODE_ENV === "development") {
+        console.log("Starting server on port: ", port);
+      }
+      const server = serve({
+        port,
+        fetch: (req) => {
+          console.log(req);
+          return fetchHandler({
+            req,
+            routes,
+            middlewareRet: middleware,
+            optionsHandler,
+          });
+        },
+      });
+
+
+      return server;
+    } catch (e) {
+      // exit
+      console.error(e);
+      process.exit(1);
     }
-    return serve({
-      port,
-      fetch: (req) =>
-        fetchHandler({
-          req,
-          routes,
-          middlewareRet: middleware,
-          optionsHandler,
-        }),
-    });
   };
 
   return {
