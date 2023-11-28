@@ -8,7 +8,7 @@
     "bun-types": "^1.0.14",
     "tsd": "^0.29.0"
   },
-  "description": "Bun Nook Kit is a simple zero-dependency, fast, and lightweight toolkit for Bun",
+  "description": "Bun Nookit is a simple zero-dependency, fast, and lightweight toolkit for Bun",
   "license": "MIT",
   "scripts": {
     "test": "bun test",

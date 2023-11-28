@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Script to setup and run a Bun project with a given project name
+# Exit immediately if a command exits with a non-zero status
+set -e
 
 # scripts url https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts
 BASE_URL="https://raw.githubusercontent.com/nookit-dev/bnkit/main/scripts"
@@ -46,6 +47,7 @@ install_unzip_on_linux() {
     sudo apt install unzip
   fi
 }
+
 # Parse command-line flags
 parse_flags "$@"
 
@@ -62,18 +64,29 @@ if ! command_exists bun; then
   export PATH="$HOME/.bun/bin:$PATH"
 fi
 
-mkdir "$PROJECT_NAME"
-cd "$PROJECT_NAME" 
 
-bun add bnkit
+mkdir $PROJECT_NAME
+cd $PROJECT_NAME
 
-# copy files from ./starter to the new project directory
+directory=$(pwd)
+# print directory
+
+echo Directory: $directory
+
+# Adding Bun Nookit to project
+echo "Adding Bun Nookit to project..."
+bun init
+bun add bnkit --save
+
+# Copy files from ./starter to the new project directory
 echo "Creating BNK quickstart project..."
+if ! cp -a ./node_modules/bnkit/scripts/starter/. ./; then
+  echo "Failed to copy starter project files. Exiting."
+  exit 1
+fi
 
-cp -a ./node_modules/bnkit/scripts/starter/. ./
-
-echo "Thank you for trying Bun Nook Kit!"
-echo "Add the Bun Nook Kit CLI to your path to have quick access"
+echo "Thank you for trying Bun Nookit!"
+echo "Add the Bun Nookit CLI to your path to have quick access"
 echo "Copy the below code into your .zshrc or .bashrc file to add the bnkit command to your shell: "
 echo ""
 echo ""
@@ -91,6 +104,9 @@ bun install
 
 # starter ask if they want to add --no-start flag (i.e. don't start the server)
 read -p "Do you want to start the server on setup? (y/n): " START_SERVER
+
+echo "cd into your project directory:"
+echo "cd $PROJECT_NAME"
 
 # Check if --no-start flag is set
 if [[ $START_SERVER == "y" ]]; then
@@ -123,3 +139,4 @@ if [[ $START_SERVER == "y" ]]; then
 else
   echo "Setup complete! Server not started due to --no-start flag."
 fi
+

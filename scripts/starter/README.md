@@ -36,7 +36,7 @@ Dev server default port 3000, link: [`http://localhost:3000`](http://localhost:3
 Visit `http://localhost:3000` in your browser and you should see Hello world and
 `http://localhost:3000/json` for the json
 
-# [Bun Nook Kit Docs](https://nookit.dev/readme)
+# [Bun Nookit Docs](https://nookit.dev/readme)
 ## [BNK Server Docs](https://nookit.dev/readmes/server)
 
 

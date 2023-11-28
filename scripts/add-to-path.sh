@@ -3,7 +3,7 @@ export BNKIT_PATH="$BUN_INSTALL/install/cache/bnkit"
 
 function run_bnk_cli() {    
     echo "Bun install location: $BUN_INSTALL"
-    echo "Bun Nook Kit install location: $BNKIT_PATH"
+    echo "Bun Nookit install location: $BNKIT_PATH"
 
     # Find the latest version of bnkit
     versions=$(ls $BNKIT_PATH | sort -V)

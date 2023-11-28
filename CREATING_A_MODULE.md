@@ -1,8 +1,8 @@
-Certainly! Let's create a README document to guide users through the process of creating a module in BNK (Bun Nook Kit). This document will be structured to be user-friendly, informative, and aligned with BNK's principles and coding style.
+Certainly! Let's create a README document to guide users through the process of creating a module in BNK (Bun Nookit). This document will be structured to be user-friendly, informative, and aligned with BNK's principles and coding style.
 
 ---
 
-# Creating a Module in BNK (Bun Nook Kit)
+# Creating a Module in BNK (Bun Nookit)
 
 ## Overview
 This guide provides step-by-step instructions on how to create a new module for the BNK framework. Whether you're adding functionality like OAuth integration or something entirely different, these guidelines will help align the module with BNK's design philosophy and standards to ensure consistency.
