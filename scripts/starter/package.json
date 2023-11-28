@@ -1,0 +1,19 @@
+{
+  "name": "bnk-server-starter",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot ./index.ts",
+    "serve": "bun ./index.ts",
+    "cli": "sh ./node_modules/bnkit/scripts/cli.sh --dir $(pwd)"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "bnkit": "latest"
+  }
+}
