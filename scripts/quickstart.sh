@@ -76,6 +76,7 @@ directory=$(pwd)
 echo Directory: $directory
 
 echo "Adding Bun Nookit to project..."
+touch package.json
 bun add bnkit@latest --save
 
 # ask user if they want cli install they don't already have it

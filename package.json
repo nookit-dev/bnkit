@@ -23,5 +23,8 @@
   },
   "bin": {
     "bnkit": "sh ./scripts/cli.ts"
+  },
+  "dependencies": {
+    "bnkit": "latest"
   }
 }
