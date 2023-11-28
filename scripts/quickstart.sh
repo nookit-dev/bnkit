@@ -4,8 +4,10 @@
 set -e
 
 # scripts url https://raw.githubusercontent.com/brandon-schabel/bun-nook-kit/main/scripts
-BASE_URL="https://raw.githubusercontent.com/nookit-dev/bnkit/main/scripts"
+BASE_URL="https://raw.githubusercontent.com/nookit-dev/bnkit/main"
+SCRIPTS_URL="${BASE_URL}/scripts"
 HOST="http://localhost:3000"
+RUN_DIR=$(pwd)
 
 # Function to check if a command exists
 command_exists() {
@@ -73,10 +75,17 @@ directory=$(pwd)
 
 echo Directory: $directory
 
-# Adding Bun Nookit to project
 echo "Adding Bun Nookit to project..."
-bun init
-bun add bnkit --save
+bun add bnkit@latest --save
+
+# ask user if they want cli install they don't already have it
+# echo "Adding Bun Nookit CLI..."
+# bun add bnkit@latest -g 
+# store  the output of bun pm bin in a variable
+# BUN_BIN_PATH=$(bun pm bin)
+# BNKIT_BIN_PATH=$bun_bin_path/bnkit
+# LOCAL_BNK_PROJECT_PATH=$RUN_DIR/$PROJECT_NAME/node_modules/bnkit
+# SCRIPT_COPY_PATH = $LOCAL_BNK_PROJECT_PATH/scripts
 
 # Copy files from ./starter to the new project directory
 echo "Creating BNK quickstart project..."

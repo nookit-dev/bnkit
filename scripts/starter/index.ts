@@ -1,14 +1,14 @@
 import { jsonRes, serverFactory } from "bnkit/server";
-import { middleware, RoutesWithMiddleware } from "./middlewares";
+import { RoutesWithMiddleware, middleware } from "./middlewares";
 
 const routes = {
   "/": {
-    GET: (_, { time }) => {
+    get: (_, { time }) => {
       return new Response(`Hello World! ${time?.timestamp.toISOString()}`);
     },
   },
   "/json": {
-    GET: (_, { time }) =>
+    get: (_, { time }) =>
       jsonRes({
         message: "Hello JSON Response!",
         ...time,
