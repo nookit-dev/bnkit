@@ -103,7 +103,7 @@ echo ""
 
 # Fetch and display the content of the add-to-path.sh script
 echo "Fetching the content of the add-to-path.sh script..."
-curl -s ${BASE_URL}/add-to-path.sh
+curl -s ${SCRIPTS_URL}/add-to-path.sh
 
 echo ""
 echo ""
