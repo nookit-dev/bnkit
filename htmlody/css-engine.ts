@@ -322,7 +322,7 @@ function lightenColor(color: { r: number; g: number; b: number }, factor: number
 }
 
 export const generateVariablesForColor = <Color extends ColorType>(color: Color) => {
-  let cssVariables: string[] = [];
+  const cssVariables: string[] = [];
 
   const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
 
@@ -640,6 +640,13 @@ export const CSS_MAP = {
   "h-px": "height: 1px;",
   "w-0": "width: 0;",
   "h-0": "height: 0;",
+  "100vh": "height: 100vh;",
+  "min-h-screen": "min-height: 100vh;",
+  "min-w-screen": "min-width: 100vw;",
+  "min-h-0": "min-height: 0;",
+  "min-w-0": "min-width: 0;",
+  "min-h-full": "min-height: 100%;",
+  "min-w-full": "min-width: 100%;",
 
   // Display
   block: "display: block;",
@@ -692,6 +699,7 @@ export const CSS_MAP = {
   "flex-row-reverse": "flex-direction: row-reverse;",
   "flex-col": "flex-direction: column;",
   "flex-col-reverse": "flex-direction: column-reverse;",
+  "flex-grow": "flex-grow: 1;",
 
   "items-start": "align-items: flex-start;",
   "items-center": "align-items: center;",
@@ -880,7 +888,6 @@ export const CSS_MAP = {
   "max-h-6xl": "max-height: 72rem;",
   "max-h-7xl": "max-height: 80rem;",
   "max-h-full": "max-height: 100%;",
-  "100vh": "height: 100vh;",
 
   // to support the return type of uClass function`
   "u-class": "",

@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { SchemaMap, SQLInfer } from "../sqlite-factory";
+import { SQLInfer, SchemaMap } from "../sqlite-factory";
 import {
   deleteQueryString,
   insertQueryString,
@@ -27,7 +27,6 @@ export function createItem<S extends SchemaMap>({
 }: Omit<ParamsWithId, "id"> & {
   item: Partial<DBItem<S>>;
   returnInsertedItem?: boolean;
-  // key of schema for return lookup, defaults to "id"
   keyForInsertLookup?: keyof SQLInfer<S> extends string ? keyof SQLInfer<S> : never;
 }): SQLInfer<S> | null {
   const query = insertQueryString(tableName, item);
@@ -45,6 +44,15 @@ export function createItem<S extends SchemaMap>({
     // Perform the insert operation
     db.query(query).run(...valuesArray);
   } catch (e) {
+    if (debug) {
+      throw {
+        info: "CreateItem: Error during database insert operation",
+        message: e.message,
+        query,
+        valuesArray,
+      };
+    }
+
     throw e;
   }
 
@@ -52,7 +60,6 @@ export function createItem<S extends SchemaMap>({
   const lookupValue = item[lookupKey];
 
   if (lookupValue && lookupKey && returnInsertedItem) {
-    // Fetch the last inserted item using the lookupValue
     const selectQuery = `SELECT * FROM ${tableName} WHERE ${lookupKey} = ?;`;
     try {
       const insertedItem = db.prepare(selectQuery).get(lookupValue) as SQLInfer<S>;
@@ -61,17 +68,26 @@ export function createItem<S extends SchemaMap>({
 
       return insertedItem as SQLInfer<S>;
     } catch (e) {
+      if (debug) {
+        throw {
+          info: "CreateItem: Error during database select operation",
+          message: e.message,
+          selectQuery,
+          lookupValue,
+        };
+      }
       throw e;
     }
   }
 
   if ((!lookupValue || !lookupKey) && returnInsertedItem) {
-    throw new Error(
-      `returnInsertedItem is true but no lookupKey or lookupValue was provided \n
+    const errorMsg = `returnInsertedItem is true but no lookupKey or lookupValue was provided \n
       lookupKey: ${lookupKey} \n
-      lookupValue: ${lookupValue} \n`,
-    );
+      lookupValue: ${lookupValue} \n`;
+    console.error(errorMsg);
+    throw new Error(errorMsg);
   }
+
   return null;
 }
 
@@ -111,10 +127,7 @@ interface WhereClauseResult {
 }
 
 // Function to create a WHERE clause and parameters for a SQL query
-export function createWhereClause<T extends Record<string, any>>(
-  where: Where<T>,
-  debug: boolean = false,
-): WhereClauseResult {
+export function createWhereClause<T extends Record<string, any>>(where: Where<T>, debug = false): WhereClauseResult {
   const keys = Object.keys(where) as Array<keyof T>;
   const whereClause = keys.map((key) => `${String(key)} = ?`).join(" AND ");
   const parameters = keys.map((key) => where[key]);
@@ -185,6 +198,6 @@ export function updateItem<Schema extends SchemaMap>({
 
 export function deleteItemById({ db, debug, id, tableName }: ParamsWithId) {
   const query = deleteQueryString(tableName);
-  if (debug) console.info(`deleteQueryString: `, query);
+  if (debug) console.info("deleteQueryString: ", query);
   db.query(query).run({ $id: id });
 }
