@@ -130,7 +130,7 @@ describe("jsonToHtml", () => {
           id: "sample-id",
           class: "sample-class",
         },
-        children: {
+        child: {
           span_id1: {
             tag: "span",
             content: "Child Content",
@@ -143,7 +143,7 @@ describe("jsonToHtml", () => {
     expect(rendered).toContain(nodeMap.div_id1.content);
     expect(rendered).toContain(nodeMap.div_id1.attributes!.id);
     expect(rendered).toContain(nodeMap.div_id1.attributes!.class);
-    expect(rendered).toContain(nodeMap.div_id1.children!.span_id1.content);
+    expect(rendered).toContain(nodeMap.div_id1.child!.span_id1.content);
   });
 });
 

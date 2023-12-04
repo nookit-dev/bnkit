@@ -112,7 +112,7 @@ export function renderNodeToHtml<
   }
 
   const attributesStr = formatAttributes(node.attributes || {});
-  const childrenHtml = node.children ? renderChildrenNodes(node.children, plugins) : "";
+  const childrenHtml = node.child ? renderChildrenNodes(node.child, plugins) : "";
 
   return renderHtmlTag({ tagName, attributesStr, content, childrenHtml });
 }
@@ -150,7 +150,7 @@ export function renderNodeWithPlugins<
   }
 
   const attributesStr = formatAttributes(node.attributes || {});
-  const childrenHtml = node.children ? renderChildrenNodes(node.children, plugins) : "";
+  const childrenHtml = node.child ? renderChildrenNodes(node.child, plugins) : "";
 
   return renderHtmlTag({
     tagName,
@@ -422,7 +422,7 @@ export const htmlodyBuilder = <
         attributes: {
           id,
         },
-        children,
+        child: children,
       };
 
       if (src && turboFrame?.attributes) {

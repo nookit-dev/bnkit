@@ -1,5 +1,5 @@
 import Database from "bun:sqlite";
-import { SchemaMap, SQLInfer } from "./sqlite-factory";
+import { SQLInfer, SchemaMap } from "./sqlite-factory";
 import {
   createItem,
   deleteItemById,
@@ -47,14 +47,14 @@ export function sqliteTableFactory<
     readWhere(where: Partial<TranslatedSchema>) {
       return readItemsWhere<Schema>({ db, tableName, debug, where });
     },
-    create(
+    create<ReturnInserted extends boolean = false>(
       item: TranslatedSchema,
       createOptions?: {
-        returnInsertedItem?: boolean;
+        returnInsertedItem?: ReturnInserted;
         keyForInsertLookup?: keyof SQLInfer<Schema> extends string ? keyof SQLInfer<Schema> : never;
       },
     ) {
-      return createItem<Schema>({
+      return createItem<Schema, ReturnInserted>({
         db,
         tableName,
         debug,

@@ -40,7 +40,7 @@ export const htmlBody: JsonHtmlNodeTree<AppNode> = {
       class: "bg-red-500",
     },
 
-    children: {
+    child: {
       button_1: htmxButton,
       div_1: {
         tag: "div",

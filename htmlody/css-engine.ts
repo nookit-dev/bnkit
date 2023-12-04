@@ -81,9 +81,8 @@ function generateCssSelector(breakpoint: string, className: string): string {
 
   if (breakpoint === "*") {
     return `.${fullClassName} { ${cssRule} }`;
-  } else {
-    return `@media (min-width: ${breakpoints[breakpoint]}) { .${fullClassName} { ${cssRule} } }`;
   }
+  return `@media (min-width: ${breakpoints[breakpoint]}) { .${fullClassName} { ${cssRule} } }`;
 }
 
 function processClassRecords(classRecords: ResponsiveClassRecord, usedClasses: Set<string>): string | null {
@@ -118,8 +117,8 @@ export function processNode(node: JsonTagElNode<ClassRecordAttributes>, usedClas
     if (classRecords) cssStr += classRecords;
   }
 
-  if (node.children) {
-    Object.values(node.children).forEach((childNode) => {
+  if (node.child) {
+    Object.values(node.child).forEach((childNode) => {
       const childNodeStr = processNode(childNode, usedClasses);
       if (childNodeStr) cssStr += childNodeStr;
     });

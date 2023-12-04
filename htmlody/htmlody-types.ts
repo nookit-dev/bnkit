@@ -22,7 +22,7 @@ export type ExtensionRec = Record<string, unknown>;
 
 export type JsonTagElNode<Ext extends ExtensionRec = {}> = {
   content?: string;
-  children?: JsonHtmlNodeTree<JsonTagElNode<Ext>>;
+  child?: JsonHtmlNodeTree<JsonTagElNode<Ext>>;
   attributes?: Attributes;
   tag: HtmlTags;
 } & Omit<Ext, "content" | "children" | "attributes" | "tag">;
