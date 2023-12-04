@@ -1,6 +1,6 @@
 {
   "name": "@bnk/react-server",
-  "version": "0.5.10",
+  "version": "0.5.11",
   "module": "index.ts",
   "main": "index.ts",
   "scripts": {
