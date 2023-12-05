@@ -1,18 +1,12 @@
-import Bun from "bun";
 import { serverRequestHandler } from "./incoming-request-handler";
 import { middlewareFactory } from "./middleware-manager";
-import {
-  InferMiddlewareDataMap,
-  MiddlewareConfigMap,
-} from "./middleware-types";
+import { InferMiddlewareDataMap, MiddlewareConfigMap } from "./middleware-types";
 import { RouteHandler, Routes } from "./routes";
 
 export const serverFactory = <
   MiddlewareFactory extends ReturnType<typeof middlewareFactory>,
-  MiddlewareConfig extends MiddlewareConfigMap = Parameters<
-    typeof middlewareFactory
-  >[0],
-  MiddlewareDataMap extends InferMiddlewareDataMap<MiddlewareConfig> = InferMiddlewareDataMap<MiddlewareConfig>
+  MiddlewareConfig extends MiddlewareConfigMap = Parameters<typeof middlewareFactory>[0],
+  MiddlewareDataMap extends InferMiddlewareDataMap<MiddlewareConfig> = InferMiddlewareDataMap<MiddlewareConfig>,
 >({
   middleware,
   routes,
@@ -22,11 +16,7 @@ export const serverFactory = <
 }: {
   middleware?: MiddlewareFactory;
   routes: Routes<MiddlewareConfig>;
-  fetchHandler?: typeof serverRequestHandler<
-    MiddlewareFactory,
-    MiddlewareConfig,
-    MiddlewareDataMap
-  >;
+  fetchHandler?: typeof serverRequestHandler<MiddlewareFactory, MiddlewareConfig, MiddlewareDataMap>;
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
   serve?: typeof Bun.serve;
 }) => {
