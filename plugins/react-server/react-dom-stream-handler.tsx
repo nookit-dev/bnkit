@@ -3,12 +3,14 @@ import { renderToReadableStream } from "react-dom/server";
 
 export const createReactStreamHandler = async ({
   renderNode,
+  entryPath
 }: {
   renderNode: React.ReactNode;
+  entryPath: string;
 }) => {
   const reactDomStreamHandler: RouteHandler<any> = async (req) => {
     const stream = await renderToReadableStream(renderNode, {
-      bootstrapScripts: ["./build/base.js"],
+      bootstrapScripts: [entryPath],
     });
 
     return new Response(stream, {

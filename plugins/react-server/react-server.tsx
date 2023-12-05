@@ -1,20 +1,52 @@
-import { MiddlewareConfigMap, serverFactory } from "bnkit/server";
-import { createReactServerRoutes } from "./create-react-server-routes";
+import { MiddlewareConfigMap, Routes, serverFactory } from "bnkit/server";
+import { createReactStreamHandler } from "./react-dom-stream-handler";
+
+export const createReactServerRoutes = async <MiddlewareConfig extends MiddlewareConfigMap, State extends object>({
+  Component,
+  buildPath = "/build/",
+  fileBuildName = "app.js",
+}: {
+  Component: React.ReactNode;
+  middlewareConfig?: MiddlewareConfig;
+  buildPath?: string;
+  fileBuildName?: string;
+}) => {
+  // change ./ to just / for buildEntry
+
+  const routes: Routes<MiddlewareConfig> = {
+    "/": {
+      get: await createReactStreamHandler({
+        // idea pass middleware to renderNode and access data on client
+        renderNode: Component,
+        entryPath: buildPath + fileBuildName,
+      }),
+    },
+    "^/build/.+": {
+      get: () => {
+        return new Response(Bun.file(buildPath).stream(), {
+          headers: {
+            "Content-Type": "application/javascript",
+          },
+        });
+      },
+    },
+  };
+
+  return routes;
+};
 
 export const reactServer = async <AppStateT extends object = {}>({
   Entry,
-  appState = {} as AppStateT,
   port = 3000,
-  buildPath = "/build/app.js",
-  serve,
-  fileBuildName,
+  buildPath = "/build/",
+  fileBuildName = "app.js",
 }: {
   Entry: React.ReactNode;
   port?: number;
   appState?: AppStateT;
   buildPath?: string;
   fileBuildName?: string;
-  serve: typeof Bun.serve;
+  // serve: typeof Bun.serve;
 }) => {
   // ssr everything and use a server side state manager to handle all interactions
   const middlewareConfig = {
@@ -26,13 +58,14 @@ export const reactServer = async <AppStateT extends object = {}>({
   } satisfies MiddlewareConfigMap;
 
   const { start } = serverFactory({
-    serve,
+    serve: Bun.serve,
+    // serve,
     routes: await createReactServerRoutes({
       middlewareConfig,
       Component: Entry,
-      appState,
-      buildEntry: buildPath,
-      fileBuildName,
+      buildPath: buildPath,
+      fileBuildName: fileBuildName,
+
     }),
 
     // todo implement middleware
