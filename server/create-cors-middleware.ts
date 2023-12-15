@@ -14,10 +14,10 @@ const addAllowHeader = (headers: Headers, options?: CORSOptions) => {
 const setAllowCredentials = (headers: Headers, options?: CORSOptions) =>
   options?.credentials && headers.set("Access-Control-Allow-Credentials", "true");
 
-export const configCorsMW = (options?: CORSOptions, debug: boolean = false): Middleware<Response> => {
+export const configCorsMW = (options?: CORSOptions, debug = false) => {
   const allowedMethods: string[] = options?.allowedMethods || [];
 
-  const log = (input: any) => {
+  const log = (input: unknown[] | unknown) => {
     if (debug) {
       console.log(input);
     }
@@ -39,7 +39,7 @@ export const configCorsMW = (options?: CORSOptions, debug: boolean = false): Mid
     });
   };
 
-  const requestHandler = (request: Request) => {
+  const requestHandler: Middleware<{}> = (request: Request, next: () => Promise<Response>) => {
     const reqMethod = request.method;
     const reqOrigin = request.headers.get("Origin");
     const allowedOrigins = options?.allowedOrigins || [];
@@ -72,6 +72,10 @@ export const configCorsMW = (options?: CORSOptions, debug: boolean = false): Mid
 
     // Set Access-Control-Allow-Credentials header
     setAllowCredentials(headers, options);
+
+    if (originAllowed && allowedMethods.includes(request.method)) {
+      return next();
+    }
 
     // check if request method is options and allowed
     if (reqMethod === "OPTIONS") {

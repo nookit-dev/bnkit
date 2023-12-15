@@ -22,12 +22,12 @@ export const serverRequestHandler = <
   optionsHandler,
 }: {
   req: Request;
-  routes: Routes<MiddlewareConfig>;
+  routes: Routes<{ middleware: MiddlewareConfig }>;
   middlewareRet?: MiddlewareFactory;
-  optionsHandler?: RouteHandler<MiddlewareDataMap>;
+  optionsHandler?: RouteHandler<MiddlewareFactory>;
 }): Promise<Response> => {
   const url = new URL(req.url);
-  let matchedHandler: RouteHandler<MiddlewareDataMap> | null | undefined = null;
+  let matchedHandler: RouteHandler<MiddlewareConfig> | null | undefined = null;
 
   const pathRoutes = routes[url.pathname];
 
@@ -50,7 +50,19 @@ export const serverRequestHandler = <
   const executeMiddlewares = middlewareRet?.executeMiddlewares;
 
   // Ensure that middleware execution is properly handled when it's not provided
-  const middlewareResponses = executeMiddlewares ? executeMiddlewares(req) : Promise.resolve({} as MiddlewareDataMap);
+  const middlewareResponses = executeMiddlewares
+    ? executeMiddlewares(req, (resolvedMwResponses) => {
+        if (req.method === "options" && !matchedHandler && optionsHandler) {
+          return Promise.resolve(optionsHandler(req, resolvedMwResponses as MiddlewareDataMap));
+        }
+
+        return Promise.resolve(
+          matchedHandler
+            ? matchedHandler(req, resolvedMwResponses as MiddlewareDataMap)
+            : new Response("Method Not Allowed", { status: 405 }),
+        );
+      })
+    : Promise.resolve(new Response("Not Found", { status: 404 }));
 
   return middlewareResponses
     .then((resolvedMwResponses) => {
