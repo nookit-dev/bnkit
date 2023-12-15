@@ -1,4 +1,8 @@
-export type Middleware<Res extends unknown> = (request: Request) => Res;
+export type MWNext = <MidwareConfig extends MiddlewareConfigMap>(
+  data: InferMiddlewareDataMap<MidwareConfig>,
+) => Promise<Response>;
+
+export type Middleware<Res> = (request: Request, next: MWNext) => Res;
 
 export type MiddlewareConfigMap = {
   [id: string]: Middleware<unknown>;

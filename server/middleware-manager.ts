@@ -1,28 +1,33 @@
-import { InferMiddlewareDataMap, MiddlewareConfigMap } from "./middleware-types";
+import { InferMiddlewareDataMap, MWNext, MiddlewareConfigMap } from "./middleware-types";
 
 export type InferMiddlewareFromFactory<Factory extends typeof middlewareFactory> = ReturnType<
   ReturnType<Factory>["inferTypes"]
 >;
 
-export const middlewareFactory = <T extends MiddlewareConfigMap>(middlewareOptions: T) => {
+export const middlewareFactory = <
+  MidwareConfig extends MiddlewareConfigMap,
+  MidwareData extends Partial<InferMiddlewareDataMap<MidwareConfig>> = Partial<InferMiddlewareDataMap<MidwareConfig>>,
+>(
+  middlewareOptions: MidwareConfig,
+) => {
   const middlewares: MiddlewareConfigMap = {
     ...middlewareOptions,
   };
 
-  const executeMiddlewares = async (req: Request) => {
-    const results: InferMiddlewareDataMap<T> = {} as InferMiddlewareDataMap<T>;
+  const executeMiddlewares = async (req: Request, next: MWNext<MidwareData>): Promise<MidwareData> => {
+    const results: InferMiddlewareDataMap<MidwareConfig> = {} as InferMiddlewareDataMap<MidwareConfig>;
 
     // An array to store promises which will resolve with [key, value] pairs
     const promises: Promise<[string, any]>[] = [];
 
     for (const [id, mw] of Object.entries(middlewares)) {
-      const result = mw(req);
+      const result = mw(req, next);
 
       if (result instanceof Promise) {
         // Push a promise which will resolve with [id, resolvedValue]
         promises.push(result.then((resolvedValue) => [id, resolvedValue]));
       } else {
-        results[id as keyof T] = result;
+        results[id as keyof MidwareConfig] = result;
       }
     }
 
@@ -31,14 +36,15 @@ export const middlewareFactory = <T extends MiddlewareConfigMap>(middlewareOptio
 
     // Map the resolved [key, value] pairs to the results object
     for (const [key, value] of resolvedPairs) {
-      results[key as keyof T] = value;
+      results[key as keyof MidwareConfig] = value;
     }
 
-    return results;
+    // return results;
+    return next(results);
   };
 
   const inferTypes = () => {
-    return middlewares as InferMiddlewareDataMap<T>;
+    return middlewares as InferMiddlewareDataMap<MidwareConfig>;
   };
 
   return { executeMiddlewares, inferTypes };

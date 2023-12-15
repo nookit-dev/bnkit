@@ -21,7 +21,7 @@ export const serverFactory = <
   fetchHandler?: typeof serverRequestHandler<MiddlewareFactory, MiddlewareConfig, MiddlewareDataMap>;
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
   serve?: typeof Bun.serve;
-  websocket: WebSocketHandler
+  websocket?: WebSocketHandler
 }) => {
   const start = (port = 3000) => {
     if (Bun?.env.NODE_ENV === "development") {
