@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "bnkit": "^0.5.12",
+    "bnkit": "latest",
     "bun-types": "latest",
     "react": "latest",
     "react-dom": "^18.2.0"

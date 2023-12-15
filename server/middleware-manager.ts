@@ -15,7 +15,7 @@ export const middlewareFactory = <T extends MiddlewareConfigMap>(middlewareOptio
     // An array to store promises which will resolve with [key, value] pairs
     const promises: Promise<[string, any]>[] = [];
 
-    Object.entries(middlewares).forEach(([id, mw]) => {
+    for (const [id, mw] of Object.entries(middlewares)) {
       const result = mw(req);
 
       if (result instanceof Promise) {
@@ -24,15 +24,15 @@ export const middlewareFactory = <T extends MiddlewareConfigMap>(middlewareOptio
       } else {
         results[id as keyof T] = result;
       }
-    });
+    }
 
     // Wait for all promises to resolve
     const resolvedPairs = await Promise.all(promises);
 
     // Map the resolved [key, value] pairs to the results object
-    resolvedPairs.forEach(([key, value]) => {
+    for (const [key, value] of resolvedPairs) {
       results[key as keyof T] = value;
-    });
+    }
 
     return results;
   };

@@ -1,3 +1,4 @@
+import { WebSocketHandler } from "bun";
 import { serverRequestHandler } from "./incoming-request-handler";
 import { middlewareFactory } from "./middleware-manager";
 import { InferMiddlewareDataMap, MiddlewareConfigMap } from "./middleware-types";
@@ -13,12 +14,14 @@ export const serverFactory = <
   fetchHandler = serverRequestHandler,
   optionsHandler,
   serve = Bun.serve,
+  websocket
 }: {
   middleware?: MiddlewareFactory;
   routes: Routes<MiddlewareConfig>;
   fetchHandler?: typeof serverRequestHandler<MiddlewareFactory, MiddlewareConfig, MiddlewareDataMap>;
   optionsHandler?: RouteHandler<MiddlewareDataMap>;
   serve?: typeof Bun.serve;
+  websocket: WebSocketHandler
 }) => {
   const start = (port = 3000) => {
     if (Bun?.env.NODE_ENV === "development") {
@@ -34,7 +37,9 @@ export const serverFactory = <
           middlewareRet: middleware,
           optionsHandler,
         }),
+        websocket
     });
+    
   };
 
   return {
