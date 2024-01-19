@@ -1,8 +1,8 @@
-import { WebSocketHandler } from "bun";
-import { serverRequestHandler } from "./incoming-request-handler";
-import { middlewareFactory } from "./middleware-manager";
-import { InferMiddlewareDataMap, MiddlewareConfigMap } from "./middleware-types";
-import { RouteHandler, Routes } from "./routes";
+import { WebSocketHandler } from 'bun'
+import { serverRequestHandler } from './incoming-request-handler'
+import { middlewareFactory } from './middleware-manager'
+import { InferMiddlewareDataMap, MiddlewareConfigMap } from './middleware-types'
+import { RouteHandler, Routes } from './routes'
 
 export const serverFactory = <
   MiddlewareFactory extends ReturnType<typeof middlewareFactory>,
@@ -14,19 +14,18 @@ export const serverFactory = <
   fetchHandler = serverRequestHandler,
   optionsHandler,
   serve = Bun.serve,
-  websocket
+  websocket,
 }: {
-  middleware?: MiddlewareFactory;
-  routes: Routes<MiddlewareConfig>;
-  fetchHandler?: typeof serverRequestHandler<MiddlewareFactory, MiddlewareConfig, MiddlewareDataMap>;
-  optionsHandler?: RouteHandler<MiddlewareDataMap>;
-  serve?: typeof Bun.serve;
-  websocket: WebSocketHandler
+  middleware?: MiddlewareFactory
+  routes: Routes<MiddlewareConfig>
+  fetchHandler?: typeof serverRequestHandler<MiddlewareFactory, MiddlewareConfig, MiddlewareDataMap>
+  optionsHandler?: RouteHandler<MiddlewareDataMap>
+  serve?: typeof Bun.serve
+  websocket?: WebSocketHandler
 }) => {
   const start = (port = 3000) => {
-    if (Bun?.env.NODE_ENV === "development") {
-      console;
-      console.log("Starting server on port: ", port);
+    if (Bun?.env.NODE_ENV === 'development') {
+      console.log('Starting server on port: ', port)
     }
     return serve({
       port,
@@ -37,12 +36,11 @@ export const serverFactory = <
           middlewareRet: middleware,
           optionsHandler,
         }),
-        websocket
-    });
-    
-  };
+      websocket,
+    })
+  }
 
   return {
     start,
-  };
-};
+  }
+}

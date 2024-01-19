@@ -8,8 +8,10 @@ brew install flyctl
 ```
 
 ## Important
+
 ### Update `fly.toml`
-Change the "app"  value to a name of your choosing, this is important as this will throw an error if you try to deploy under the default name
+
+Change the "app" value to a name of your choosing, this is important as this will throw an error if you try to deploy under the default name
 
 [Fly Docs]("https://fly.io/docs/hands-on/install-flyctl/")
 
@@ -24,7 +26,7 @@ Or: [Fly Signup Link]("https://fly.io/app/sign-up")
 ## Sign In With Fly
 
 ```bash
-fly auth 
+fly auth
 ```
 
 Go to your [Fly dashboard](https://fly.io/dashboard/personal)

@@ -1,1 +1,1 @@
-export { createFetchFactory } from "./create-fetch-factory";
+export { createFetchFactory } from './create-fetch-factory'

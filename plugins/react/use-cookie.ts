@@ -1,62 +1,62 @@
-import { CookieOptions } from "bnkit/cookies/cookie-types";
-import { clientCookieFactory } from "bnkit/cookies/create-client-side-cookie-factory";
-import { useEffect, useState } from "react";
+import { CookieOptions } from 'bnkit/cookies/cookie-types'
+import { clientCookieFactory } from 'bnkit/cookies/create-client-side-cookie-factory'
+import { useEffect, useState } from 'react'
 
 export function useCookie<T = string>(cookieKey: string, options?: CookieOptions) {
-  const cookie = clientCookieFactory(cookieKey);
+  const cookie = clientCookieFactory(cookieKey)
 
   const [cookieData, setCookieData] = useState<{ value: T | null }>(() => {
     return {
       value: cookie.getParsedCookie(),
-    };
-  });
+    }
+  })
 
   const getCookie = () => {
-    return cookie.getRawCookie();
-  };
+    return cookie.getRawCookie()
+  }
 
   useEffect(() => {
     setCookieData({
       value: cookie.getParsedCookie(),
-    });
-  }, []);
+    })
+  }, [])
 
   const refreshCookie = () => {
     setCookieData({
       value: cookie.getParsedCookie(),
-    });
-  };
+    })
+  }
 
   const updateCookie = (
     value: T,
     updateOptions: CookieOptions & {
-      cookieKey?: string; // optionally override cookie  key
+      cookieKey?: string // optionally override cookie  key
     } = options || {},
   ) => {
-    const stringifiedValue = stringifyCookieData(value);
+    const stringifiedValue = stringifyCookieData(value)
     cookie.setCookie(stringifiedValue, {
       ...options,
       ...updateOptions,
-    });
-    setCookieData({ value: value });
-  };
+    })
+    setCookieData({ value: value })
+  }
 
   const removeCookie = () => {
-    cookie.deleteCookie();
-    setCookieData({ value: null });
-  };
+    cookie.deleteCookie()
+    setCookieData({ value: null })
+  }
 
   const stringifyCookieData = (data: T): string => {
-    if (typeof data === "string") {
-      return data;
+    if (typeof data === 'string') {
+      return data
     } else {
-      return JSON.stringify(data);
+      return JSON.stringify(data)
     }
-  };
+  }
 
   const checkCookie = () => {
-    return cookie.checkCookie();
-  };
+    return cookie.checkCookie()
+  }
 
   return {
     cookie: cookieData.value,
@@ -65,7 +65,7 @@ export function useCookie<T = string>(cookieKey: string, options?: CookieOptions
     checkCookie,
     getCookie,
     refreshCookie,
-  };
+  }
 }
 
-export default useCookie;
+export default useCookie

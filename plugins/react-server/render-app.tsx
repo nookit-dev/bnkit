@@ -1,31 +1,27 @@
-import { HtmlDocument } from "./html-document";
-import { AppEntry } from "./fullstack-state";
-import React from "react";
+import { HtmlDocument } from './html-document'
+import { AppEntry } from './fullstack-state'
+import React from 'react'
 
 const isServer = () => {
-  return typeof window === "undefined";
-};
+  return typeof window === 'undefined'
+}
 
 const useIsServer = () => {
-  const [server, setServer] = React.useState(isServer());
+  const [server, setServer] = React.useState(isServer())
 
   React.useEffect(() => {
-    setServer(isServer());
-  }, []);
+    setServer(isServer())
+  }, [])
 
-  return server;
-};
+  return server
+}
 
-export const RenderApp = <State,>({
-  retrieveStateFn,
-}: {
-  retrieveStateFn?: (...args: any[]) => State;
-}) => {
-  const isServer = useIsServer();
+export const RenderApp = <State,>({ retrieveStateFn }: { retrieveStateFn?: (...args: any[]) => State }) => {
+  const isServer = useIsServer()
   return (
-    <HtmlDocument entryFilePath={"/build/base.js"}>
+    <HtmlDocument entryFilePath={'/build/base.js'}>
       <AppEntry defaultState={{ ...(retrieveStateFn?.() || {}) }} />
       {isServer}
     </HtmlDocument>
-  );
-};
+  )
+}

@@ -1,31 +1,31 @@
-import { CookieOptions } from "./cookie-types";
-import { parseCookieData, retrieveRawCookieValue, setCookie } from "./cookie-utils";
+import { CookieOptions } from './cookie-types'
+import { parseCookieData, retrieveRawCookieValue, setCookie } from './cookie-utils'
 
 declare var document: {
-  cookie: any;
-};
+  cookie: any
+}
 
 export function clientCookieFactory<T = string>(cookieKey: string, options?: CookieOptions) {
   const handleSetCookie = (value: T, cookieSetOptions: CookieOptions = {}) => {
-    setCookie(cookieKey, value, cookieSetOptions || options || {});
-  };
+    setCookie(cookieKey, value, cookieSetOptions || options || {})
+  }
 
   const getRawCookie = () => {
-    return retrieveRawCookieValue(cookieKey);
-  };
+    return retrieveRawCookieValue(cookieKey)
+  }
 
   const deleteCookie = () => {
-    handleSetCookie("" as T, { maxAge: -1 });
-  };
+    handleSetCookie('' as T, { maxAge: -1 })
+  }
 
   const checkCookie = () => {
-    return getRawCookie() !== null;
-  };
+    return getRawCookie() !== null
+  }
 
   const getParsedCookie = <T = string>(): T | null => {
-    const rawCookie = getRawCookie();
-    return parseCookieData<T>(rawCookie);
-  };
+    const rawCookie = getRawCookie()
+    return parseCookieData<T>(rawCookie)
+  }
 
   return {
     setCookie: handleSetCookie,
@@ -33,5 +33,5 @@ export function clientCookieFactory<T = string>(cookieKey: string, options?: Coo
     checkCookie,
     getParsedCookie,
     getRawCookie,
-  };
+  }
 }

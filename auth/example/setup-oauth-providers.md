@@ -3,29 +3,35 @@
 ## Google OAuth Setup
 
 #### Step 1: Create a Google Cloud Project
+
 - **Access Google Cloud Console**: Go to [Google Cloud Console](https://console.cloud.google.com/).
 - **New Project**: Click 'New Project', name it, and create.
 
 #### Step 2: Configure OAuth Consent Screen
+
 - **Credentials Page**: Navigate to 'Credentials' under 'APIs & Services'.
 - **Consent Screen Setup**: Click 'Configure Consent Screen', select 'External', and create.
 - **Details**: Enter app name, support email, and developer email. Add optional details like logo and policy links.
 - **Save**: Click 'Save and Continue'.
 
 #### Step 3: Create OAuth 2.0 Credentials
+
 - **Credentials Creation**: Back on 'Credentials' page, select 'Create Credentials' > 'OAuth client ID'.
 - **Application Type**: Choose 'Web application'.
 - **Redirect URIs**: Add your redirect URI (/callback).
 - **Client ID & Secret**: After clicking 'Create', note down the client ID and secret.
 
 #### Step 4: Enable Required APIs
+
 - **API Library**: In 'Library', search and enable needed Google APIs.
 
 #### Step 5: Implement OAuth in Your App
+
 - **Integrate Credentials**: Use client ID and secret in your app's OAuth config.
 - **Handle Redirects**: Ensure handling of Google's redirects and token exchange.
 
 #### Step 6: Test and Deploy
+
 - **Testing**: Thoroughly test the OAuth flow.
 - **Verification and Deployment**: Submit for verification if needed and deploy.
 
@@ -40,11 +46,9 @@ This guide provides a condensed overview of setting up Google OAuth. Adapt it ba
 5. **Scopes**: Decide on the scopes you need, like `user:email` for email access.
 6. **Callback URL**: Set your callback URL that GitHub will redirect to after authentication.
 
-
 #### Don't Forget:
 
 1. **Submit for Verification**: If your application will be used by users outside your organization, you must submit your OAuth consent screen for verification by Google.
-
 
 ## Meta (Facebook) OAuth
 
@@ -78,4 +82,3 @@ This guide provides a condensed overview of setting up Google OAuth. Adapt it ba
 2. **Redirect to Authorization URL**: On your login page, add buttons for each service that redirects to their respective authorization URL with the necessary query parameters.
 3. **Handle Callbacks**: Implement routes in your server to handle the callbacks, exchanging the authorization code for tokens.
 4. **User Authentication**: Use the tokens to fetch user details and authenticate or register them in your system.
-

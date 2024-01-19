@@ -4,16 +4,15 @@
 
 **Bun Nookit (BNK)** is a comprehensive toolkit for software development, leveraging the power of Bun and TypeScript. With zero third-party dependencies, strong TypeScript inferencing, and a focus on Web API standards, BNK offers a modular, type-safe, and efficient way to build robust applications.
 
-
 ![GitHub License](https://img.shields.io/github/license/nookit-dev/bnkit)
 
-![npm](https://img.shields.io/npm/v/bnkit?logo=npm)  ![GitHub release (with filter)](https://img.shields.io/github/v/release/nookit-dev/bnkit)  ![Stars](https://img.shields.io/github/stars/nookit-dev/bnkit) 
-![npm bundle size](https://img.shields.io/bundlephobia/min/bnkit)  ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/bnkit)
+![npm](https://img.shields.io/npm/v/bnkit?logo=npm) ![GitHub release (with filter)](https://img.shields.io/github/v/release/nookit-dev/bnkit) ![Stars](https://img.shields.io/github/stars/nookit-dev/bnkit)
+![npm bundle size](https://img.shields.io/bundlephobia/min/bnkit) ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/bnkit)
 
-![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/bun_nook_kit).  ![Discord](https://img.shields.io/discord/1164699087543746560)' 
+![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/bun_nook_kit). ![Discord](https://img.shields.io/discord/1164699087543746560)'
 
+## BNK Server Quickstart
 
-## BNK Server Quickstart 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/nookit-dev/bnkit/main/scripts/quickstart.sh)
 ```
@@ -22,21 +21,25 @@ Visit `http://localhost:3000` in your browser and you should see Hello world and
 `http://localhost:3000/json` for the json
 
 ---
-### 
+
+###
+
 # [📋 Documentation](https://nookit.dev/readme)
+
 #### [🧩 Modules Docs](https://nookit.dev/modules)
+
 #### [🖥️ BNK CLI Docs](https://nookit.dev/bnk-cli/bnk-cli-readme)
+
 #### [🔌 Plugin Docs](https://nookit.dev/plugins/BNK+Plugins)
 
-### 
-
+###
 
 ## Bun Nookit Package Installation
 
-Install in your project: 
+Install in your project:
 `bun add bnkit`
 
-Plugin install example: 
+Plugin install example:
 `bun add @bnk/react`
 
 Use any an all Bun Nookit modules - server example with json response (similar to starter project)
@@ -44,26 +47,26 @@ Use any an all Bun Nookit modules - server example with json response (similar t
 `index.ts`
 
 ```typescript
-import { jsonRes, serverFactory } from "bnkit/server";
-import { middleware, RoutesWithMiddleware } from "./middlewares";
+import { jsonRes, serverFactory } from 'bnkit/server'
+import { middleware, RoutesWithMiddleware } from './middlewares'
 
 const routes = {
-  "/": {
+  '/': {
     // parse from request if neeeded
-    get: (request) => new Response("Hello World!")
+    get: (request) => new Response('Hello World!'),
   },
-  "/json": {
-    get: request => bnk.server.jsonRes({
-      message: "Hello JSON Response!"
-    })
-  }
+  '/json': {
+    get: (request) =>
+      bnk.server.jsonRes({
+        message: 'Hello JSON Response!',
+      }),
+  },
 } satisfies RoutesWithMiddleware
 
 const { start, routes } = bnk.server.serverFactory({
   routes,
-  middleware
-});
-
+  middleware,
+})
 
 // start on default port 3000
 start()
@@ -76,7 +79,6 @@ Join our [Discord Server]("https://discord.gg/rQyWN7V6") https://discord.gg/rQyW
 ## Key Highlights
 
 - **Zero Third Paty Dependencies** - BNK uses nothin' but Bun
-  
 - **Unit Tested** - To ensure BNK is reliable, changeable, and upgradeable.
 
 - **TypeSafe with Strong TypeScript type Inferencing** - Strong types tell you where things are incorrect, strong type inferrence allows you to utilize the advantages of strong types and not having to deal with too much TypeScript.
@@ -138,6 +140,7 @@ Close To Final For V1:
 ### Better handling for Server Sent Events in Server, Fetcher, etc
 
 ## Screenshots
+
 (if you made it this far)
 
 Create typesafe server routes and middleware!
@@ -146,8 +149,8 @@ Create typesafe server routes and middleware!
 
 <img width="582" alt="Xnapper-2023-11-14-19 47 14" src="https://github.com/nookit-dev/bnkit/assets/18100375/78afc0e7-46c0-4269-8072-e8622f111b08">
 
-
 ### Sponsors
+
 None! Be the first to sponsor BNK :)
 
 ## License
@@ -157,4 +160,5 @@ Bun Nookit is licensed under the MIT License. Enjoy the freedom to use, modify, 
 Jumpstart your journey to revolutionary software development with Bun Nookit!
 
 Contribute to the docs:
+
 ### [Docs Repo](https://github.com/nookit-dev/bnkit-docs)

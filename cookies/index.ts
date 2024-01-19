@@ -1,5 +1,5 @@
-export { clientCookieFactory as createClientCookieFactory } from "./client-cookie-factory";
-export type { CookieOptions } from "./cookie-types";
+export { clientCookieFactory as createClientCookieFactory } from './client-cookie-factory'
+export type { CookieOptions } from './cookie-types'
 export {
   encodeCookie,
   getAllCookies,
@@ -8,5 +8,5 @@ export {
   retrieveRawCookieValue,
   setCookie,
   stringifyCookieData,
-} from "./cookie-utils";
-export { serverCookieFactory as createServerCookieFactory } from "./server-side-cookie-factory";
+} from './cookie-utils'
+export { serverCookieFactory as createServerCookieFactory } from './server-side-cookie-factory'

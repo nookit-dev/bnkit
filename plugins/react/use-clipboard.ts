@@ -1,50 +1,50 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react'
 
 export type UseClipboardRes = {
-  clipboardData: string | null;
-  setClipboard: (data: string) => Promise<void>;
-  getClipboard: () => Promise<void>;
-};
+  clipboardData: string | null
+  setClipboard: (data: string) => Promise<void>
+  getClipboard: () => Promise<void>
+}
 
 export function useClipboard(externalValue?: string, updater?: (value: string) => void): UseClipboardRes {
-  const [internalClipboardData, setInternalClipboardData] = useState<string | null>(externalValue || null);
+  const [internalClipboardData, setInternalClipboardData] = useState<string | null>(externalValue || null)
 
-  const clipboardData = externalValue !== undefined ? externalValue : internalClipboardData;
+  const clipboardData = externalValue !== undefined ? externalValue : internalClipboardData
 
   // Write to clipboard
   const setClipboard = useCallback(
     async (data: string) => {
       try {
-        await navigator.clipboard.writeText(data);
+        await navigator.clipboard.writeText(data)
         if (updater) {
-          updater(data);
+          updater(data)
         } else {
-          setInternalClipboardData(data);
+          setInternalClipboardData(data)
         }
       } catch (error) {
-        console.error("Failed to write to clipboard", error);
+        console.error('Failed to write to clipboard', error)
       }
     },
     [updater],
-  );
+  )
 
   // Read from clipboard
   const getClipboard = useCallback(async () => {
     try {
-      const data = await navigator.clipboard.readText();
+      const data = await navigator.clipboard.readText()
       if (updater) {
-        updater(data);
+        updater(data)
       } else {
-        setInternalClipboardData(data);
+        setInternalClipboardData(data)
       }
     } catch (error) {
-      console.error("Failed to read from clipboard", error);
+      console.error('Failed to read from clipboard', error)
     }
-  }, [updater]);
+  }, [updater])
 
   return {
     clipboardData,
     setClipboard,
     getClipboard,
-  };
+  }
 }

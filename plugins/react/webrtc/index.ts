@@ -1,1 +1,1 @@
-export { createWebRTCFactory } from "./webrtc-factory";
+export { createWebRTCFactory } from './webrtc-factory'

@@ -1,125 +1,125 @@
-import { JsonTagElNode } from "bnkit/htmlody";
-import { describe, expect, it } from "bun:test";
-import { Attributes } from "./htmlody-types";
-import { collectClassNames, formatAttributes, nodeFactory, retrieveElement } from "./htmlody-utils";
+import { JsonTagElNode } from 'bnkit/htmlody'
+import { describe, expect, it } from 'bun:test'
+import { Attributes } from './htmlody-types'
+import { collectClassNames, formatAttributes, nodeFactory, retrieveElement } from './htmlody-utils'
 
-describe("formatAttributes", () => {
-  it("should handle empty attributes", () => {
-    const attributes: Attributes = {};
+describe('formatAttributes', () => {
+  it('should handle empty attributes', () => {
+    const attributes: Attributes = {}
     // @ts-expect-error
-    const formatted = formatAttributes(attributes, {});
-    expect(formatted).toBe("");
-  });
-});
+    const formatted = formatAttributes(attributes, {})
+    expect(formatted).toBe('')
+  })
+})
 
-describe("formatAttributes", () => {
-  it("should format attributes into string", () => {
+describe('formatAttributes', () => {
+  it('should format attributes into string', () => {
     const attributes: Attributes = {
       id: `id-${Math.floor(Math.random() * 1000)}`,
-      class: "sample-class",
-    };
+      class: 'sample-class',
+    }
     // @ts-expect-error
-    const formatted = formatAttributes(attributes, {});
-    expect(formatted).toContain(attributes.id);
-    expect(formatted).toContain(attributes.class);
-  });
-});
+    const formatted = formatAttributes(attributes, {})
+    expect(formatted).toContain(attributes.id)
+    expect(formatted).toContain(attributes.class)
+  })
+})
 
-describe("retrieveElement", () => {
-  it("should retrieve an element from a JsonHtmlNodeMap", () => {
+describe('retrieveElement', () => {
+  it('should retrieve an element from a JsonHtmlNodeMap', () => {
     const JsonHtmlNodeMap = {
       div: {
-        tag: "div",
+        tag: 'div',
         attributes: {
-          class: "sample-class",
+          class: 'sample-class',
         },
-        content: "Sample Content",
+        content: 'Sample Content',
       },
-    };
-    const element = retrieveElement(JsonHtmlNodeMap, "div");
+    }
+    const element = retrieveElement(JsonHtmlNodeMap, 'div')
     expect(element).toEqual({
-      tag: "div",
+      tag: 'div',
       attributes: {
-        class: "sample-class",
+        class: 'sample-class',
       },
-      content: "Sample Content",
-    });
-  });
+      content: 'Sample Content',
+    })
+  })
 
-  it("should return undefined if the element is not present in the JsonHtmlNodeMap", () => {
+  it('should return undefined if the element is not present in the JsonHtmlNodeMap', () => {
     const JsonHtmlNodeMap = {
       div: {
-        tag: "div",
+        tag: 'div',
         attributes: {
-          class: "sample-class",
+          class: 'sample-class',
         },
-        content: "Sample Content",
+        content: 'Sample Content',
       },
-    };
+    }
     // @ts-expect-error
-    const element = retrieveElement(JsonHtmlNodeMap, "span");
-    expect(element).toBeUndefined();
-  });
-});
+    const element = retrieveElement(JsonHtmlNodeMap, 'span')
+    expect(element).toBeUndefined()
+  })
+})
 
-describe("nodeFactory", () => {
-  it("should create a new node with the given configuration", () => {
+describe('nodeFactory', () => {
+  it('should create a new node with the given configuration', () => {
     const nodeConfig = {
-      tag: "div",
+      tag: 'div',
       attributes: {
-        class: "sample-class",
-        id: "sample-id",
+        class: 'sample-class',
+        id: 'sample-id',
       },
-      content: "Sample Content",
-    };
-    const factory = nodeFactory(nodeConfig);
-    const newNode = factory.create();
+      content: 'Sample Content',
+    }
+    const factory = nodeFactory(nodeConfig)
+    const newNode = factory.create()
     expect(newNode).toEqual({
-      tag: "div",
+      tag: 'div',
       attributes: {
-        class: "sample-class",
-        id: "sample-id",
+        class: 'sample-class',
+        id: 'sample-id',
       },
-      content: "Sample Content",
-    });
-  });
-});
+      content: 'Sample Content',
+    })
+  })
+})
 
-describe("collectClassNames", () => {
-  it("should add class names to uniqueClassNames set", () => {
+describe('collectClassNames', () => {
+  it('should add class names to uniqueClassNames set', () => {
     const node = {
-      tag: "div",
+      tag: 'div',
       attributes: {
-        class: "sample-class-1 sample-class-2",
+        class: 'sample-class-1 sample-class-2',
       },
-      content: "Sample Content",
-    };
-    const uniqueClassNames = new Set<string>();
-    collectClassNames(node, uniqueClassNames);
-    expect(uniqueClassNames).toEqual(new Set(["sample-class-1", "sample-class-2"]));
-  });
+      content: 'Sample Content',
+    }
+    const uniqueClassNames = new Set<string>()
+    collectClassNames(node, uniqueClassNames)
+    expect(uniqueClassNames).toEqual(new Set(['sample-class-1', 'sample-class-2']))
+  })
 
-  it("should not add class names to uniqueClassNames set if class attribute is not present", () => {
+  it('should not add class names to uniqueClassNames set if class attribute is not present', () => {
     const node = {
-      tag: "div",
-      content: "Sample Content",
-    };
-    const uniqueClassNames = new Set<string>();
-    collectClassNames(node, uniqueClassNames);
-    expect(uniqueClassNames).toEqual(new Set());
-  });
+      tag: 'div',
+      content: 'Sample Content',
+    }
+    const uniqueClassNames = new Set<string>()
+    collectClassNames(node, uniqueClassNames)
+    expect(uniqueClassNames).toEqual(new Set())
+  })
 
-  it("should not add class names to uniqueClassNames set if class attribute is not a string", () => {
+  it('should not add class names to uniqueClassNames set if class attribute is not a string', () => {
     const node: JsonTagElNode = {
-      tag: "div",
+      tag: 'div',
       attributes: {
         // @ts-expect-error
         class: 123,
       },
-      content: "Sample Content",
-    };
-    const uniqueClassNames = new Set<string>();
-    collectClassNames(node, uniqueClassNames);
-    expect(uniqueClassNames).toEqual(new Set());
-  });
-});
+      content: 'Sample Content',
+    }
+    const uniqueClassNames = new Set<string>()
+    collectClassNames(node, uniqueClassNames)
+    expect(uniqueClassNames).toEqual(new Set())
+  })
+})

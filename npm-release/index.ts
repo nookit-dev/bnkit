@@ -5,5 +5,5 @@ export {
   setupNpmAuth,
   updatePackageVersion,
   updateVersion,
-} from "./npm-release";
-export type { NpmReleaseFactoryOptions } from "./npm-release";
+} from './npm-release'
+export type { NpmReleaseFactoryOptions } from './npm-release'

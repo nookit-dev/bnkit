@@ -1,39 +1,39 @@
-import { htmlRes, middlewareFactory } from "../server";
-import { HtmlTags, SELF_CLOSING_TAGS, htmlTags } from "./constants";
-import { generateCSS, generateColorVariables } from "./css-engine";
-import { HTMLodyPlugin } from "./htmlody-plugins";
-import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from "./htmlody-types";
-import { formatAttributes, isValidAttributesString, isValidHtmlTag } from "./htmlody-utils";
+import { htmlRes, middlewareFactory } from '../server'
+import { HtmlTags, SELF_CLOSING_TAGS, htmlTags } from './constants'
+import { generateCSS, generateColorVariables } from './css-engine'
+import { HTMLodyPlugin } from './htmlody-plugins'
+import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from './htmlody-types'
+import { formatAttributes, isValidAttributesString, isValidHtmlTag } from './htmlody-utils'
 
 export function validateTagName(tagName: HtmlTags): string {
   if (!isValidHtmlTag(tagName)) {
-    throw new Error(`Invalid tag name provided: ${tagName}`);
+    throw new Error(`Invalid tag name provided: ${tagName}`)
   }
-  return tagName;
+  return tagName
 }
 
 export function getValidatedAttributesStr(attributesStr: string): string {
-  if (attributesStr !== "" && !isValidAttributesString(attributesStr)) {
-    throw new Error(`Invalid attributes string provided: ${attributesStr}`);
+  if (attributesStr !== '' && !isValidAttributesString(attributesStr)) {
+    throw new Error(`Invalid attributes string provided: ${attributesStr}`)
   }
-  return attributesStr;
+  return attributesStr
 }
 
 export function getHtmlTags(tagName: string, attributesStr: string): { startTag: string; closeTag: string } {
-  const space = attributesStr ? " " : "";
+  const space = attributesStr ? ' ' : ''
 
   // Check if the tag is a self-closing tag using Set lookup
   if (SELF_CLOSING_TAGS.has(tagName)) {
     return {
       startTag: `<${tagName}${space}${attributesStr} />`,
-      closeTag: "",
-    };
+      closeTag: '',
+    }
   }
 
   return {
     startTag: `<${tagName}${space}${attributesStr}>`,
     closeTag: `</${tagName}>`,
-  };
+  }
 }
 
 export function renderHtmlTag({
@@ -43,24 +43,24 @@ export function renderHtmlTag({
   tagName,
   validate,
 }: {
-  tagName: HtmlTags;
-  attributesStr: string;
-  content: string;
-  childrenHtml: string;
-  validate?: boolean;
+  tagName: HtmlTags
+  attributesStr: string
+  content: string
+  childrenHtml: string
+  validate?: boolean
 }): string {
   if (validate) {
-    validateTagName(tagName);
+    validateTagName(tagName)
   }
 
-  const validatedAttributesStr = getValidatedAttributesStr(attributesStr);
+  const validatedAttributesStr = getValidatedAttributesStr(attributesStr)
   const { startTag, closeTag } = getHtmlTags(
     // validatedTagName,
     tagName,
     validatedAttributesStr,
-  );
+  )
 
-  return `${startTag}${content}${childrenHtml}${closeTag}`;
+  return `${startTag}${content}${childrenHtml}${closeTag}`
 }
 
 export function renderChildrenNodes<Plugins extends HTMLodyPlugin<any>[]>(
@@ -69,7 +69,7 @@ export function renderChildrenNodes<Plugins extends HTMLodyPlugin<any>[]>(
 ): string {
   return Object.entries(children)
     .map(([childTagName, childNode]) => jsonToHtml({ [childTagName]: childNode }, plugins))
-    .join("");
+    .join('')
 }
 
 function processNodeWithPlugins<
@@ -77,44 +77,44 @@ function processNodeWithPlugins<
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
 >(node: Node, plugins: Plugins): Node {
-  let processedNode = { ...node };
+  let processedNode = { ...node }
   for (const plugin of plugins) {
-    processedNode = plugin.processNode(processedNode);
+    processedNode = plugin.processNode(processedNode)
   }
-  return processedNode;
+  return processedNode
 }
 
 export type JSONToHTMLOptions = {
-  validateHtmlTags?: boolean;
-};
+  validateHtmlTags?: boolean
+}
 
 export function renderNodeToHtml<
   Plugins extends HTMLodyPlugin<any>[],
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
 >(node: Node, plugins: Plugins, options?: JSONToHTMLOptions): string {
-  node = processNodeWithPlugins(node, plugins);
+  node = processNodeWithPlugins(node, plugins)
 
-  const idAttribute = node.attributes?.id ? `id="${node.attributes.id}"` : "";
+  const idAttribute = node.attributes?.id ? `id="${node.attributes.id}"` : ''
 
-  const tagName = node.tag;
+  const tagName = node.tag
 
-  const content = node?.content || "";
+  const content = node?.content || ''
   if (!tagName) {
     throw new Error(
       `Tag name not provided for node. 
-      ${idAttribute ? `ID: ${idAttribute}` : ""}
-      ${content ? `Content: ${content}` : ""}
+      ${idAttribute ? `ID: ${idAttribute}` : ''}
+      ${content ? `Content: ${content}` : ''}
 
       ${JSON.stringify(node, null, 2)}
       `,
-    );
+    )
   }
 
-  const attributesStr = formatAttributes(node.attributes || {});
-  const childrenHtml = node.child ? renderChildrenNodes(node.child, plugins) : "";
+  const attributesStr = formatAttributes(node.attributes || {})
+  const childrenHtml = node.child ? renderChildrenNodes(node.child, plugins) : ''
 
-  return renderHtmlTag({ tagName, attributesStr, content, childrenHtml });
+  return renderHtmlTag({ tagName, attributesStr, content, childrenHtml })
 }
 
 export function jsonToHtml<
@@ -125,7 +125,7 @@ export function jsonToHtml<
 >(nodeMap: NodeMap, plugins: Plugins, options?: JSONToHTMLOptions): string {
   return Object.keys(nodeMap)
     .map((id) => renderNodeToHtml(nodeMap[id], plugins, options))
-    .join("");
+    .join('')
 }
 
 export function renderNodeWithPlugins<
@@ -133,24 +133,24 @@ export function renderNodeWithPlugins<
   PluginProps extends ExtensionRec,
   Node extends JsonTagElNode<PluginProps> = JsonTagElNode<PluginProps>,
 >(node: Node, plugins: Plugins, options?: JSONToHTMLOptions): string {
-  node = processNodeWithPlugins(node, plugins);
+  node = processNodeWithPlugins(node, plugins)
 
-  const tagName = node.tag;
-  const content = node.content || "";
+  const tagName = node.tag
+  const content = node.content || ''
   if (!tagName) {
-    const idAttribute = node.attributes?.id ? `id="${node.attributes.id}"` : "";
+    const idAttribute = node.attributes?.id ? `id="${node.attributes.id}"` : ''
     throw new Error(
       `Tag name not provided for node. 
-      ${idAttribute ? `ID: ${idAttribute}` : ""}
-      ${content ? `Content: ${content}` : ""}
+      ${idAttribute ? `ID: ${idAttribute}` : ''}
+      ${content ? `Content: ${content}` : ''}
 
       ${JSON.stringify(node, null, 2)}
       `,
-    );
+    )
   }
 
-  const attributesStr = formatAttributes(node.attributes || {});
-  const childrenHtml = node.child ? renderChildrenNodes(node.child, plugins) : "";
+  const attributesStr = formatAttributes(node.attributes || {})
+  const childrenHtml = node.child ? renderChildrenNodes(node.child, plugins) : ''
 
   return renderHtmlTag({
     tagName,
@@ -158,104 +158,94 @@ export function renderNodeWithPlugins<
     content,
     childrenHtml,
     validate: options?.validateHtmlTags,
-  });
+  })
 }
 
 const generateTitleNode = (title: string): JsonTagElNode => {
   return {
-    tag: "title",
+    tag: 'title',
     content: title,
-  };
-};
+  }
+}
 
-const generateMetaTagNode = (meta: {
-  name: string;
-  content: string;
-}): JsonTagElNode => {
+const generateMetaTagNode = (meta: { name: string; content: string }): JsonTagElNode => {
   return {
-    tag: "meta",
+    tag: 'meta',
     attributes: { name: meta.name, content: meta.content },
-  };
-};
+  }
+}
 
-const generateLinkTagNode = (link: {
-  rel: string;
-  href: string;
-}): JsonTagElNode => {
+const generateLinkTagNode = (link: { rel: string; href: string }): JsonTagElNode => {
   return {
-    tag: "link",
+    tag: 'link',
     attributes: { rel: link.rel, href: link.href },
-  };
-};
+  }
+}
 
 const generateStyleTagNode = (content: string): JsonTagElNode => {
   return {
-    tag: "style",
+    tag: 'style',
     content,
-  };
-};
+  }
+}
 
-const generateScriptTagNode = (script: {
-  src?: string;
-  type?: string;
-  content: string;
-}): JsonTagElNode => {
+const generateScriptTagNode = (script: { src?: string; type?: string; content: string }): JsonTagElNode => {
   const node: JsonTagElNode = {
-    tag: "script",
+    tag: 'script',
     attributes: {},
     content: script.content,
-  };
+  }
 
   if (script.src && node.attributes) {
-    node.attributes.src = script.src;
+    node.attributes.src = script.src
   }
 
   if (script.type && node.attributes) {
-    node.attributes.type = script.type;
+    node.attributes.type = script.type
   }
 
-  return node;
-};
+  return node
+}
 
-export type NodePluginsMapper<Plugins extends HTMLodyPlugin<any>[]> = ReturnType<Plugins[number]["processNode"]>;
+export type NodePluginsMapper<Plugins extends HTMLodyPlugin<any>[]> = ReturnType<Plugins[number]['processNode']>
 
 type HeadConfig = {
-  title: string;
-  metaTags?: { name: string; content: string }[];
-  linkTags?: { rel: string; href: string }[];
-  styleTags?: { content: string }[];
-  scriptTags?: { src?: string; type: string; content: string }[];
-};
+  title: string
+  metaTags?: { name: string; content: string }[]
+  linkTags?: { rel: string; href: string }[]
+  styleTags?: { content: string }[]
+  scriptTags?: { src?: string; type: string; content: string }[]
+}
 
 type HTMLodyOptions = {
-  middleware?: ReturnType<typeof middlewareFactory>;
-};
+  middleware?: ReturnType<typeof middlewareFactory>
+}
 
 export const htmlodyNodeFactory = <
   Plugins extends HTMLodyPlugin<any>[],
   NodeWithPlugins extends NodePluginsMapper<Plugins>,
-  ReturnType extends Record<HtmlTags, (options?: Omit<NodeWithPlugins, "tag">) => JsonTagElNode> = Record<
+  ReturnType extends Record<HtmlTags, (options?: Omit<NodeWithPlugins, 'tag'>) => JsonTagElNode> = Record<
     HtmlTags,
-    (options?: Omit<NodeWithPlugins, "tag">) => JsonTagElNode
+    (options?: Omit<NodeWithPlugins, 'tag'>) => JsonTagElNode
   >,
 >(): ReturnType => {
-  const create = (tag: HtmlTags, options?: Omit<NodeWithPlugins, "tag">) => {
+  const create = (tag: HtmlTags, options?: Omit<NodeWithPlugins, 'tag'>) => {
     return {
       tag,
-      content: "",
+      content: '',
       attributes: {},
       ...options,
-    } as JsonTagElNode<NodeWithPlugins>;
-  };
-
-  const buildFns = {} as ReturnType;
-
-  for (const tag of htmlTags) {
-    buildFns[tag] = (options?: Omit<NodeWithPlugins, "tag">) => create(tag, options);
+    } as JsonTagElNode<NodeWithPlugins>
   }
 
-  return buildFns;
-};
+  const buildFns = {} as ReturnType
+
+  for (const tag of htmlTags) {
+    buildFns[tag] = (options?: Omit<NodeWithPlugins, 'tag'>) => create(tag, options)
+  }
+
+  return buildFns
+}
 
 export const htmlodyBuilder = <
   Plugins extends HTMLodyPlugin<any>[],
@@ -265,118 +255,118 @@ export const htmlodyBuilder = <
   plugins,
   options: builderOptions,
 }: {
-  plugins: Plugins;
+  plugins: Plugins
   options?: {
     allpages: {
-      headConfig?: HeadConfig;
-    };
-  };
+      headConfig?: HeadConfig
+    }
+  }
 }) => {
-  const effectivePlugins = plugins;
+  const effectivePlugins = plugins
 
   const nodeFactory = () => {
-    return htmlodyNodeFactory<Plugins, PluginReturns>();
-  };
+    return htmlodyNodeFactory<Plugins, PluginReturns>()
+  }
 
   const inferTreeFn = <
     Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>,
   >(): JsonHtmlNodeTree<Node> => {
-    return undefined as unknown as JsonHtmlNodeTree<Node>;
-  };
+    return undefined as unknown as JsonHtmlNodeTree<Node>
+  }
 
-  const inferTree = inferTreeFn();
+  const inferTree = inferTreeFn()
 
   const renderNodeTreeToHtml = (nodeMap: JsonHtmlNodeTree, pluginsOverride?: Plugins): string => {
-    const activePlugins = pluginsOverride || effectivePlugins;
+    const activePlugins = pluginsOverride || effectivePlugins
     return Object.keys(nodeMap)
       .map((id) => renderNodeWithPlugins(nodeMap[id], activePlugins))
-      .join("");
-  };
+      .join('')
+  }
 
   const renderSingleNode = <Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>>(
     node: Node,
     pluginsOverride?: Plugins,
   ): string => {
-    const activePlugins = pluginsOverride || effectivePlugins;
-    return renderNodeWithPlugins(node, activePlugins);
-  };
+    const activePlugins = pluginsOverride || effectivePlugins
+    return renderNodeWithPlugins(node, activePlugins)
+  }
 
   const renderChildren = (children: JsonHtmlNodeTree, pluginsOverride?: Plugins): string => {
-    const activePlugins = pluginsOverride || effectivePlugins;
+    const activePlugins = pluginsOverride || effectivePlugins
     return Object.entries(children)
       .map(([childTagName, childNode]) => renderNodeWithPlugins(childNode, activePlugins))
-      .join("");
-  };
+      .join('')
+  }
 
   const buildHtmlDoc = <JSONNodeTree extends JsonHtmlNodeTree = JsonHtmlNodeTree<PluginReturns>>(
     bodyConfig: JSONNodeTree,
     options?: {
-      headConfig?: HeadConfig;
+      headConfig?: HeadConfig
     },
   ) => {
-    const headNodes: JsonHtmlNodeTree = {};
+    const headNodes: JsonHtmlNodeTree = {}
 
     if (options?.headConfig?.title) {
-      headNodes["title"] = generateTitleNode(options.headConfig.title);
+      headNodes['title'] = generateTitleNode(options.headConfig.title)
     }
 
     if (builderOptions?.allpages?.headConfig?.title) {
-      headNodes["title"] = generateTitleNode(builderOptions?.allpages?.headConfig.title);
+      headNodes['title'] = generateTitleNode(builderOptions?.allpages?.headConfig.title)
     }
 
     if (options?.headConfig?.metaTags) {
       options.headConfig.metaTags.forEach((meta, index) => {
-        headNodes[`meta${index}`] = generateMetaTagNode(meta);
-      });
+        headNodes[`meta${index}`] = generateMetaTagNode(meta)
+      })
     }
 
     if (builderOptions?.allpages?.headConfig?.metaTags) {
       builderOptions?.allpages?.headConfig.metaTags.forEach((meta, index) => {
-        headNodes[`meta${index}`] = generateMetaTagNode(meta);
-      });
+        headNodes[`meta${index}`] = generateMetaTagNode(meta)
+      })
     }
 
     if (options?.headConfig?.linkTags) {
       options.headConfig.linkTags.forEach((link, index) => {
-        headNodes[`link${index}`] = generateLinkTagNode(link);
-      });
+        headNodes[`link${index}`] = generateLinkTagNode(link)
+      })
     }
 
     if (builderOptions?.allpages?.headConfig?.linkTags) {
       builderOptions?.allpages?.headConfig.linkTags.forEach((link, index) => {
-        headNodes[`link${index}`] = generateLinkTagNode(link);
-      });
+        headNodes[`link${index}`] = generateLinkTagNode(link)
+      })
     }
 
     if (options?.headConfig?.styleTags) {
       options.headConfig.styleTags.forEach((style, index) => {
-        headNodes[`style${index}`] = generateStyleTagNode(style.content);
-      });
+        headNodes[`style${index}`] = generateStyleTagNode(style.content)
+      })
     }
 
     if (builderOptions?.allpages?.headConfig?.styleTags) {
       builderOptions?.allpages?.headConfig.styleTags.forEach((style, index) => {
-        headNodes[`style${index}`] = generateStyleTagNode(style.content);
-      });
+        headNodes[`style${index}`] = generateStyleTagNode(style.content)
+      })
     }
     if (options?.headConfig?.scriptTags) {
       options.headConfig.scriptTags.forEach((script, index) => {
-        headNodes[`script${index}`] = generateScriptTagNode(script);
-      });
+        headNodes[`script${index}`] = generateScriptTagNode(script)
+      })
     }
 
     if (builderOptions?.allpages?.headConfig?.scriptTags) {
       builderOptions?.allpages?.headConfig.scriptTags.forEach((script, index) => {
-        headNodes[`script${index}`] = generateScriptTagNode(script);
-      });
+        headNodes[`script${index}`] = generateScriptTagNode(script)
+      })
     }
 
-    const headHtml = renderNodeTreeToHtml(headNodes);
-    const bodyHtml = renderNodeTreeToHtml(bodyConfig);
+    const headHtml = renderNodeTreeToHtml(headNodes)
+    const bodyHtml = renderNodeTreeToHtml(bodyConfig)
 
     // todo this needs to be externalized since this is specific to the class records plugin
-    const css = generateCSS(bodyConfig);
-    const colorVariables = generateColorVariables();
+    const css = generateCSS(bodyConfig)
+    const colorVariables = generateColorVariables()
 
     return `
       <!doctype html>
@@ -390,22 +380,22 @@ export const htmlodyBuilder = <
           ${bodyHtml}
         </body>
       </html>
-    `;
-  };
+    `
+  }
 
   const response = (
     bodyConfig: JsonHtmlNodeTree,
     options?: {
-      headConfig?: HeadConfig;
+      headConfig?: HeadConfig
     },
   ) => {
-    const html = buildHtmlDoc(bodyConfig, options);
+    const html = buildHtmlDoc(bodyConfig, options)
     return new Response(html, {
       headers: {
-        "Content-Type": "text/html; charset=utf-8",
+        'Content-Type': 'text/html; charset=utf-8',
       },
-    });
-  };
+    })
+  }
 
   const warp = ({ id, src }: { id: string; src: string }) => {
     const turboFrameNode = ({
@@ -413,24 +403,24 @@ export const htmlodyBuilder = <
       src,
       children,
     }: {
-      id: string;
-      src?: string;
-      children: JsonHtmlNodeTree<PluginReturns>;
+      id: string
+      src?: string
+      children: JsonHtmlNodeTree<PluginReturns>
     }) => {
       const turboFrame: JsonTagElNode = {
-        tag: "turbo-frame",
+        tag: 'turbo-frame',
         attributes: {
           id,
         },
         child: children,
-      };
-
-      if (src && turboFrame?.attributes) {
-        turboFrame.attributes.src = src;
       }
 
-      return turboFrame;
-    };
+      if (src && turboFrame?.attributes) {
+        turboFrame.attributes.src = src
+      }
+
+      return turboFrame
+    }
 
     return {
       pushNode: (content: JsonTagElNode<PluginReturns>) => {
@@ -439,9 +429,9 @@ export const htmlodyBuilder = <
           children: {
             CONTENT: content,
           },
-        });
+        })
 
-        return htmlRes(renderSingleNode(tfNode));
+        return htmlRes(renderSingleNode(tfNode))
       },
       docNodeMount: (content: JsonTagElNode<PluginReturns>) => {
         return turboFrameNode({
@@ -450,10 +440,10 @@ export const htmlodyBuilder = <
           children: {
             CONTENT: content,
           },
-        });
+        })
       },
-    };
-  };
+    }
+  }
 
   return {
     nodeFactory,
@@ -464,5 +454,5 @@ export const htmlodyBuilder = <
     response,
     inferTree,
     warp,
-  };
-};
+  }
+}

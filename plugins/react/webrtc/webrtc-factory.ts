@@ -1,22 +1,18 @@
 export type WebRTCConfig = {
-  iceServers?: RTCIceServer[];
-};
+  iceServers?: RTCIceServer[]
+}
 
-export type WebRTCFactoryMethods = keyof ReturnType<typeof createWebRTCFactory>;
+export type WebRTCFactoryMethods = keyof ReturnType<typeof createWebRTCFactory>
 
 /**
  * Creates a WebRTC factory object with methods to create peer connections, offers, answers, and set remote descriptions.
  * @param defaultConfig - Optional default configuration for the WebRTC factory.
  * @returns An object with methods to create peer connections, offers, answers, and set remote descriptions.
  */
-export function createWebRTCFactory({
-  defaultConfig,
-}: {
-  defaultConfig?: WebRTCConfig;
-}) {
+export function createWebRTCFactory({ defaultConfig }: { defaultConfig?: WebRTCConfig }) {
   const configuration: RTCConfiguration = {
     iceServers: defaultConfig?.iceServers || [],
-  };
+  }
 
   /**
    * Creates a new RTCPeerConnection object with the given custom configuration.
@@ -27,8 +23,8 @@ export function createWebRTCFactory({
     const peerConnection = new RTCPeerConnection({
       ...configuration,
       ...customConfig,
-    });
-    return peerConnection;
+    })
+    return peerConnection
   }
 
   /**
@@ -38,8 +34,8 @@ export function createWebRTCFactory({
    */
   function createOffer(peerConnection: RTCPeerConnection): Promise<RTCSessionDescriptionInit> {
     return peerConnection.createOffer().then((offer) => {
-      return peerConnection.setLocalDescription(offer).then(() => offer);
-    });
+      return peerConnection.setLocalDescription(offer).then(() => offer)
+    })
   }
 
   /**
@@ -49,8 +45,8 @@ export function createWebRTCFactory({
    */
   function createAnswer(peerConnection: RTCPeerConnection): Promise<RTCSessionDescriptionInit> {
     return peerConnection.createAnswer().then((answer) => {
-      return peerConnection.setLocalDescription(answer).then(() => answer);
-    });
+      return peerConnection.setLocalDescription(answer).then(() => answer)
+    })
   }
 
   /**
@@ -63,7 +59,7 @@ export function createWebRTCFactory({
     peerConnection: RTCPeerConnection,
     description: RTCSessionDescriptionInit,
   ): Promise<void> {
-    return peerConnection.setRemoteDescription(description);
+    return peerConnection.setRemoteDescription(description)
   }
 
   return {
@@ -71,5 +67,5 @@ export function createWebRTCFactory({
     createOffer,
     createAnswer,
     setRemoteDescription,
-  };
+  }
 }

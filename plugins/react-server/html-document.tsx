@@ -1,12 +1,6 @@
-import React from "react";
+import React from 'react'
 
-export const HtmlDocument = ({
-  children,
-  entryFilePath,
-}: {
-  children?: React.ReactNode;
-  entryFilePath: string;
-}) => {
+export const HtmlDocument = ({ children, entryFilePath }: { children?: React.ReactNode; entryFilePath: string }) => {
   return (
     <html lang="en">
       <head>
@@ -29,5 +23,5 @@ export const HtmlDocument = ({
         <div id="root">{children}</div>
       </body>
     </html>
-  );
-};
+  )
+}

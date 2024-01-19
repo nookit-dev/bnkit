@@ -1,8 +1,3 @@
-export { sqliteFactory as createSqliteFactory } from "./sqlite-factory";
-export {
-  createItem,
-  deleteItemById,
-  readItems,
-  updateItem,
-} from "./sqlite-utils/crud-fn-utils";
-export { createTableQuery } from "./sqlite-utils/table-query-gen";
+export { sqliteFactory as createSqliteFactory } from './sqlite-factory'
+export { createItem, deleteItemById, readItems, updateItem } from './sqlite-utils/crud-fn-utils'
+export { createTableQuery } from './sqlite-utils/table-query-gen'

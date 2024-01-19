@@ -3,7 +3,6 @@
   "version": "0.5.14",
   "main": "index.ts",
   "devDependencies": {
-    "@biomejs/biome": "1.4.0",
     "bun": "^1.0.14",
     "bun-types": "^1.0.14",
     "tsd": "^0.29.0"
@@ -18,10 +17,12 @@
     "tsc": "tsc --project tsconfig.json",
     "tsc:noEmit": "tsc --noEmit --project tsconfig-noEmit.json",
     "validate": "bun run tsc:noEmite && bun run test",
-    "format": "biome format . --write",
-    "lint": "biome lint ."
+    "format": "prettier --write ."
   },
   "bin": {
     "bnkit": "sh ./scripts/cli.ts"
+  },
+  "dependencies": {
+    "prettier": "^3.2.4"
   }
 }

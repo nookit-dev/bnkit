@@ -1,26 +1,26 @@
-import { createFetchFactory } from "bnkit/fetcher";
-import React, { ReactNode, createContext, useContext, useMemo, useState } from "react";
+import { createFetchFactory } from 'bnkit/fetcher'
+import React, { ReactNode, createContext, useContext, useMemo, useState } from 'react'
 // TODO: This hook needs some more work
-type FetchFactoryReturn<ConfigMap extends TypeMap = {}> = ReturnType<typeof createFetchFactory<ConfigMap>>;
+type FetchFactoryReturn<ConfigMap extends TypeMap = {}> = ReturnType<typeof createFetchFactory<ConfigMap>>
 
 const FetchContext = createContext<FetchFactoryReturn>(
   createFetchFactory({
-    baseUrl: "",
+    baseUrl: '',
     config: {
-      "/test": {
-        endpoint: "/test",
-        method: "get",
+      '/test': {
+        endpoint: '/test',
+        method: 'get',
       },
     },
   }),
-);
+)
 
 export const FetchProvider = <FetchConfig extends TypeMap>({
   children,
   factoryConfig,
 }: {
-  children: ReactNode;
-  factoryConfig: FetchConfig;
+  children: ReactNode
+  factoryConfig: FetchConfig
 }) => {
   const fetchFactory = useMemo(
     () =>
@@ -28,89 +28,89 @@ export const FetchProvider = <FetchConfig extends TypeMap>({
         config: factoryConfig,
       }),
     [],
-  );
+  )
 
-  return <FetchContext.Provider value={fetchFactory}>{children}</FetchContext.Provider>;
-};
+  return <FetchContext.Provider value={fetchFactory}>{children}</FetchContext.Provider>
+}
 
 export function useFetchFactory() {
-  const fetchFactory = useContext(FetchContext);
+  const fetchFactory = useContext(FetchContext)
 
   if (!fetchFactory) {
-    throw new Error("useFetchFactory must be used within a FetchProvider");
+    throw new Error('useFetchFactory must be used within a FetchProvider')
   }
 
-  return fetchFactory;
+  return fetchFactory
 }
 
 type FetchState<DataT> =
-  | { stage: "idle"; data: null; retries: 0 }
-  | { stage: "fetching"; data: null; retries: number }
-  | { stage: "resolved"; data: DataT; retries: number }
-  | { stage: "rejected"; data: null; retries: number };
+  | { stage: 'idle'; data: null; retries: 0 }
+  | { stage: 'fetching'; data: null; retries: number }
+  | { stage: 'resolved'; data: DataT; retries: number }
+  | { stage: 'rejected'; data: null; retries: number }
 
 export function createApiHook<ConfigMap extends TypeMap>({
   configMap,
   baseUrl,
 }: {
-  configMap: ConfigMap;
-  baseUrl: string;
+  configMap: ConfigMap
+  baseUrl: string
 }) {
   return function useCustomApi(endpointKey: keyof ConfigMap) {
-    const { get, post, ...rest } = useFetchFactory();
-    const endpointConfig = configMap[endpointKey];
+    const { get, post, ...rest } = useFetchFactory()
+    const endpointConfig = configMap[endpointKey]
 
     if (!endpointConfig) {
-      throw new Error(`No configuration found for endpoint: ${configMap[typeof endpointKey].endpoint}`);
+      throw new Error(`No configuration found for endpoint: ${configMap[typeof endpointKey].endpoint}`)
     }
 
-    const { response } = endpointConfig;
-    type DataT = typeof response.data;
+    const { response } = endpointConfig
+    type DataT = typeof response.data
 
     const [state, setState] = useState<FetchState<DataT>>({
-      stage: "idle",
+      stage: 'idle',
       data: null,
       retries: 0,
-    });
+    })
 
     const fetchWithStateMachine = (config: ConfigMap[typeof endpointKey]) => {
       switch (state.stage) {
-        case "idle":
+        case 'idle':
           setState((prev) => ({
             ...prev,
-            stage: "fetching",
+            stage: 'fetching',
             data: null,
             retries: prev.retries,
-          }));
-          break;
-        case "fetching":
+          }))
+          break
+        case 'fetching':
           // TODO ensure the request config in the config map matches what the get request expects
           get(config)
             .then((data) => {
-              setState({ stage: "resolved", data, retries: state.retries });
+              setState({ stage: 'resolved', data, retries: state.retries })
             })
             .catch(() => {
               setState((prev) => ({
-                stage: "rejected",
+                stage: 'rejected',
                 data: null,
                 retries: prev.retries + 1,
-              }));
-            });
-          break;
-        case "rejected":
+              }))
+            })
+          break
+        case 'rejected':
           if (state.retries <= 3) {
             setState((prev) => ({
               ...prev,
-              stage: "fetching",
+              stage: 'fetching',
               data: null,
               retries: prev.retries,
-            }));
+            }))
           }
-          break;
+          break
         default:
-          break;
+          break
       }
-    };
+    }
 
     // return {
     //   get: (fetchConfig: APIConfig<typeof request.params, {}>) =>
@@ -118,7 +118,7 @@ export function createApiHook<ConfigMap extends TypeMap>({
     //   data: state.data,
     //   // Include other properties/methods as needed
     // };
-  };
+  }
 }
 
 // Now you can use this to create custom hooks tailored for specific APIs

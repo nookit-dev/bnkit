@@ -17,9 +17,5 @@
     ],
     "baseUrl": "."
   },
-  "include": [
-    "apps/**/*.ts",
-    "_examples/**/*.ts",
-    "./release.ts"
-  ]
+  "include": ["apps/**/*.ts", "_examples/**/*.ts", "./release.ts"]
 }

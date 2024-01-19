@@ -1,19 +1,19 @@
-import { useFetcher } from "..";
-import "./App.css";
+import { useFetcher } from '..'
+import './App.css'
 
 interface DataType {
-  userId: number;
-  id: number;
-  title: string;
-  completed: boolean;
+  userId: number
+  id: number
+  title: string
+  completed: boolean
 }
 
 function App() {
   const { get, status, useData } = useFetcher<DataType>({
     options: {
-      baseUrl: "https://jsonplaceholder.typicode.com/",
+      baseUrl: 'https://jsonplaceholder.typicode.com/',
     },
-  });
+  })
 
   return (
     <div>
@@ -23,13 +23,13 @@ function App() {
 
       <button
         onClick={() => {
-          get("todos/1");
+          get('todos/1')
         }}
       >
         Click Me!
       </button>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

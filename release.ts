@@ -1,45 +1,45 @@
-import Bun from "bun";
-import path from "path";
-import { exit } from "process";
+import Bun from 'bun'
+import path from 'path'
+import { exit } from 'process'
 // import * as u from "./";
-import { deploy, npm } from "index";
-import { ulog } from "./utils/ulog";
+import { deploy, npm } from 'index'
+import { ulog } from './utils/ulog'
 
 // run bun test
-const testProc = Bun.spawnSync(["bun", "test", "--coverage"], {});
+const testProc = Bun.spawnSync(['bun', 'test', '--coverage'], {})
 
-const output = await deploy.logStdOutput(testProc);
+const output = await deploy.logStdOutput(testProc)
 
 if (!output) {
-  ulog("No output");
-  exit(1);
+  ulog('No output')
+  exit(1)
 }
 
-const NPM_TOKEN = Bun.env.NPM_TOKEN || "";
-const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10; // Define a max number of retries to prevent infinite loops
+const NPM_TOKEN = Bun.env.NPM_TOKEN || ''
+const MAX_RETRIES = Number(Bun.env.MAX_PUBLISH_RETRY) || 10 // Define a max number of retries to prevent infinite loops
 
-const e = Bun.env;
+const e = Bun.env
 
 const { commitAndPush, setupGitConfig, actionsEnv } = deploy.createGitHubActionsFactory({
-  sshRepoUrl: "git@github.com:brandon-schabel/bun-nook-kit.git",
-});
+  sshRepoUrl: 'git@github.com:brandon-schabel/bun-nook-kit.git',
+})
 
-const isBeta = actionsEnv.branch === "main";
-const isRelease = actionsEnv.branch === "release";
-const isAlpha = actionsEnv.eventName === "pull_request";
-const isLocalRun = Bun.env.LOCAL_RUN === "true";
+const isBeta = actionsEnv.branch === 'main'
+const isRelease = actionsEnv.branch === 'release'
+const isAlpha = actionsEnv.eventName === 'pull_request'
+const isLocalRun = Bun.env.LOCAL_RUN === 'true'
 
 const { npmPublish, setupNpmAuth, updatePackageVersion } = npm.npmReleaseFactory({
   maxRetries: MAX_RETRIES,
   npmToken: NPM_TOKEN,
-});
+})
 
-const corePackagePath = path.resolve(process.cwd(), "package.json");
+const corePackagePath = path.resolve(process.cwd(), 'package.json')
 
 // todo resolve all plugin paths
-const pluginReactPath = path.resolve(process.cwd(), "plugins", "react", "package.json");
+const pluginReactPath = path.resolve(process.cwd(), 'plugins', 'react', 'package.json')
 
-const pluginReactServerPath = path.resolve(process.cwd(), "plugins", "react-server", "package.json");
+const pluginReactServerPath = path.resolve(process.cwd(), 'plugins', 'react-server', 'package.json')
 
 ulog({
   actor: e?.GITHUB_ACTOR,
@@ -54,34 +54,34 @@ ulog({
   isAlpha,
   corePackagePath,
   pluginReactPath,
-});
+})
 
 /* Script */
 if (!isLocalRun) {
-  setupNpmAuth();
-  await setupGitConfig();
+  setupNpmAuth()
+  await setupGitConfig()
 }
 
-ulog(`Updating versions to ${isAlpha ? "alpha" : "Release"}`);
+ulog(`Updating versions to ${isAlpha ? 'alpha' : 'Release'}`)
 const newVersion = await updatePackageVersion({
   packagePath: corePackagePath,
-  isAlpha: actionsEnv.eventName === "pull_request",
-  isBeta: actionsEnv.eventName === "push",
-});
+  isAlpha: actionsEnv.eventName === 'pull_request',
+  isBeta: actionsEnv.eventName === 'push',
+})
 
-await npmPublish({ packagePath: corePackagePath, isAlpha, isBeta });
+await npmPublish({ packagePath: corePackagePath, isAlpha, isBeta })
 
-await updatePackageVersion({ packagePath: pluginReactPath, isAlpha, isBeta });
-await npmPublish({ packagePath: pluginReactPath, isAlpha, isBeta });
+await updatePackageVersion({ packagePath: pluginReactPath, isAlpha, isBeta })
+await npmPublish({ packagePath: pluginReactPath, isAlpha, isBeta })
 
 await updatePackageVersion({
   packagePath: pluginReactServerPath,
   isAlpha,
   isBeta,
-});
+})
 
-await npmPublish({ packagePath: pluginReactServerPath, isAlpha, isBeta });
+await npmPublish({ packagePath: pluginReactServerPath, isAlpha, isBeta })
 
 if (!isLocalRun && !isAlpha) {
-  await commitAndPush(`Pushing version: ${newVersion}`);
+  await commitAndPush(`Pushing version: ${newVersion}`)
 }

@@ -1,27 +1,27 @@
-import { OAuthConfig, OAuthProviderInitializer, OAuthToken } from "./oauth-types";
+import { OAuthConfig, OAuthProviderInitializer, OAuthToken } from './oauth-types'
 
 type FetcherResponse<T> = T & {
-  error?: string;
-};
+  error?: string
+}
 
 // Generic OAuth fetcher
 export async function oAuthFetcher<T>(
   url: string,
   options: {
-    params: Record<string, string | undefined>;
-    headers?: Record<string, string>;
+    params: Record<string, string | undefined>
+    headers?: Record<string, string>
   },
 ): Promise<FetcherResponse<T>> {
   const response = await fetch(url, {
-    method: "post",
+    method: 'post',
     headers: {
       ...options.headers,
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams(options.params).toString(),
-  });
+  })
 
-  return response.json();
+  return response.json()
 }
 
 // Wrapper function for getting token
@@ -29,66 +29,66 @@ export async function getOAuthToken<T extends OAuthToken>({
   code,
   config: { clientId, clientSecret, redirectUri, tokenUrl },
 }: {
-  code: string;
-  config: Omit<OAuthConfig, "authReqUrl">;
+  code: string
+  config: Omit<OAuthConfig, 'authReqUrl'>
 }): Promise<FetcherResponse<T>> {
   const params = {
     code,
     client_id: clientId,
     client_secret: clientSecret,
     redirect_uri: redirectUri,
-    grant_type: "authorization_code",
-  };
+    grant_type: 'authorization_code',
+  }
 
-  return oAuthFetcher<T>(tokenUrl, params);
+  return oAuthFetcher<T>(tokenUrl, params)
 }
 
 export const initProvider: OAuthProviderInitializer = ({ clientId, authReqUrl, redirectUri, headers }) => {
   return {
     // TODO add options to be able to change response_type/scope, etc
     getAuthorizationUrl: () => {
-      const authUrl = authReqUrl;
+      const authUrl = authReqUrl
       const queryParams = new URLSearchParams({
         client_id: clientId,
         redirect_uri: redirectUri,
-        response_type: "code",
-        scope: "email profile",
-      });
+        response_type: 'code',
+        scope: 'email profile',
+      })
 
-      return `${authUrl}?${queryParams.toString()}`;
+      return `${authUrl}?${queryParams.toString()}`
     },
     getToken: async (code: string) => {
       return getOAuthToken<OAuthToken>({
         code,
         config: {
           clientId,
-          clientSecret: "",
+          clientSecret: '',
           redirectUri,
-          tokenUrl: "https://oauth2.googleapis.com/token",
+          tokenUrl: 'https://oauth2.googleapis.com/token',
           headers,
         },
       }).then((response) => {
         if (response.error) {
-          console.error("Error fetching token:", response.error);
-          throw new Error(response.error);
+          console.error('Error fetching token:', response.error)
+          throw new Error(response.error)
         } else {
-          console.log("Access Token:", response.accessToken);
-          return response;
+          console.log('Access Token:', response.accessToken)
+          return response
         }
-      });
+      })
     },
-  };
-};
+  }
+}
 
 export const oAuthFactory = (config: OAuthConfig) => {
-  const provider = initProvider(config);
+  const provider = initProvider(config)
 
   return {
     handleRedirect: async (code: string) => {
-      return await provider.getToken(code, config);
+      return await provider.getToken(code, config)
     },
     initiateOAuthFlow: () => {
-      return provider.getAuthorizationUrl(config);
+      return provider.getAuthorizationUrl(config)
     },
-  };
-};
+  }
+}

@@ -1,9 +1,4 @@
-export {
-  generateUuid as uuid,
-  generateUuidV6 as v6,
-  generateUuidV7 as v7,
-  generateUuidV8 as v8,
-} from "./generate-uuid";
+export { generateUuid as uuid, generateUuidV6 as v6, generateUuidV7 as v7, generateUuidV8 as v8 } from './generate-uuid'
 
 export {
   extractClockSeqAndNodeFromUuidV6,
@@ -15,4 +10,4 @@ export {
   isValidUuid,
   uuidV7ToDate,
   uuidV7DT,
-} from "./generate-uuid";
+} from './generate-uuid'

@@ -1,51 +1,51 @@
-import { JsonHtmlNodeTree, JsonTagElNode } from ".";
-import { CRNode, MDNode } from "./htmlody-plugins";
+import { JsonHtmlNodeTree, JsonTagElNode } from '.'
+import { CRNode, MDNode } from './htmlody-plugins'
 // import { pageFactory } from "./html-generator";
 
-type AppNode = CRNode & MDNode;
+type AppNode = CRNode & MDNode
 
 export const htmxButton: JsonTagElNode<AppNode> = {
-  content: "Click Me",
+  content: 'Click Me',
   attributes: {
-    "hx-post": "/clicked",
-    "hx-trigger": "click",
-    "hx-target": "#clicked",
-    "hx-swap": "outerHTML",
+    'hx-post': '/clicked',
+    'hx-trigger': 'click',
+    'hx-target': '#clicked',
+    'hx-swap': 'outerHTML',
   },
-  tag: "button",
-};
+  tag: 'button',
+}
 
 export const htmlBody: JsonHtmlNodeTree<AppNode> = {
   h1: {
-    content: "Hello World",
+    content: 'Hello World',
     attributes: {
-      class: "bg-blue-500",
-      id: "title-id",
+      class: 'bg-blue-500',
+      id: 'title-id',
     },
 
-    tag: "h1",
+    tag: 'h1',
   },
-  p: { content: "This is a description", tag: "p" },
+  p: { content: 'This is a description', tag: 'p' },
   a: {
-    content: "Click Me",
+    content: 'Click Me',
     attributes: {
-      href: "https://www.example.com",
+      href: 'https://www.example.com',
     },
-    tag: "a",
+    tag: 'a',
   },
 
   div_1: {
-    tag: "div",
+    tag: 'div',
     attributes: {
-      class: "bg-red-500",
+      class: 'bg-red-500',
     },
 
     child: {
       button_1: htmxButton,
       div_1: {
-        tag: "div",
-        content: "Hello World",
+        tag: 'div',
+        content: 'Hello World',
       },
     },
   },
-};
+}

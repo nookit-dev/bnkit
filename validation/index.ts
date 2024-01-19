@@ -1,1 +1,1 @@
-export { createValidatorFactory } from "./validation-factory";
+export { createValidatorFactory } from './validation-factory'

@@ -1,33 +1,33 @@
-import { FilteredKeys } from "../type-utils";
-import { createStateDispatchers } from "./create-state-dispatchers";
+import { FilteredKeys } from '../type-utils'
+import { createStateDispatchers } from './create-state-dispatchers'
 
-export type AllowedStateKeys = boolean | string | number;
+export type AllowedStateKeys = boolean | string | number
 
 export const createStateManager = <State extends object>(initialState: State) => {
-  let currentState: State = initialState;
+  let currentState: State = initialState
 
   const stateChangeCallbacks: {
-    [Key in keyof State]?: Array<(newValue: State[Key]) => void>;
-  } = {};
+    [Key in keyof State]?: Array<(newValue: State[Key]) => void>
+  } = {}
 
-  const listeners: Array<() => void> = [];
+  const listeners: Array<() => void> = []
 
   function broadcast() {
-    listeners.forEach((fn) => fn());
+    listeners.forEach((fn) => fn())
   }
 
   function subscribe(listener: () => void) {
-    listeners.push(listener);
+    listeners.push(listener)
     return () => {
-      const index = listeners.indexOf(listener);
+      const index = listeners.indexOf(listener)
       if (index !== -1) {
-        listeners.splice(index, 1);
+        listeners.splice(index, 1)
       }
-    };
+    }
   }
 
   function onStateChange<Key extends keyof State>(key: Key, callback: (newValue: State[Key]) => void) {
-    (stateChangeCallbacks[key] ??= []).push(callback);
+    ;(stateChangeCallbacks[key] ??= []).push(callback)
   }
 
   function updateStateAndDispatch(
@@ -35,14 +35,14 @@ export const createStateManager = <State extends object>(initialState: State) =>
     updater: ((currentState: State[keyof State]) => State[keyof State]) | State[keyof State],
   ) {
     const newValue =
-      typeof updater === "function"
+      typeof updater === 'function'
         ? (updater as (currentState: State[keyof State]) => State[keyof State])(currentState[key])
-        : updater;
-    currentState[key] = newValue;
+        : updater
+    currentState[key] = newValue
 
-    stateChangeCallbacks[key]?.forEach((callback) => callback(newValue));
+    stateChangeCallbacks[key]?.forEach((callback) => callback(newValue))
 
-    broadcast();
+    broadcast()
   }
 
   const whenValueIs = <
@@ -52,27 +52,27 @@ export const createStateManager = <State extends object>(initialState: State) =>
     key: Key,
     expectedValue: ExpectedVal,
   ) => {
-    const value = currentState[key];
+    const value = currentState[key]
     return {
       then: (callback: () => void) => {
-        if (value === expectedValue) callback();
+        if (value === expectedValue) callback()
         else {
           onStateChange(key, (newValue) => {
             if (newValue === expectedValue) {
-              callback();
-              stateChangeCallbacks[key] = stateChangeCallbacks[key]?.filter((c) => c !== callback);
+              callback()
+              stateChangeCallbacks[key] = stateChangeCallbacks[key]?.filter((c) => c !== callback)
             }
-          });
+          })
         }
       },
-    };
-  };
+    }
+  }
 
   const dispatchers = createStateDispatchers({
     defaultState: initialState,
     state: currentState,
     updateFunction: updateStateAndDispatch,
-  });
+  })
 
   return {
     state: currentState,
@@ -81,5 +81,5 @@ export const createStateManager = <State extends object>(initialState: State) =>
     updateStateAndDispatch,
     whenValueIs,
     subscribe,
-  };
-};
+  }
+}
