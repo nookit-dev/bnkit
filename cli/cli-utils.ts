@@ -79,22 +79,18 @@ export function parseArgument(
 }
 
 export async function parseCliArgs(): Promise<ParsedArgs> {
-  try {
-    const args = getArguments()
-    const parsedArgs: ParsedArgs = {}
+  const args = getArguments()
+  const parsedArgs: ParsedArgs = {}
 
-    for (let i = 0; i < args.length; i++) {
-      const { key, value } = parseArgument(args[i], args[i + 1])
+  for (let i = 0; i < args.length; i++) {
+    const { key, value } = parseArgument(args[i], args[i + 1])
 
-      if (key) {
-        parsedArgs[key] = value
-      }
+    if (key) {
+      parsedArgs[key] = value
     }
-
-    return parsedArgs
-  } catch (error) {
-    throw error
   }
+
+  return parsedArgs
 }
 
 export const getAdditionalPrompt = () =>
@@ -112,6 +108,7 @@ export const getAdditionalPrompt = () =>
 export const chooseActions = async (actionsConfig: Record<string, any>): Promise<Array<keyof typeof actionsConfig>> => {
   cliLog('\nChoose actions (separated by commas):')
   const actions = Object.keys(actionsConfig)
+
   actions.forEach((action, index) => {
     cliLog(`${index + 1}. ${action}`)
   })
@@ -128,14 +125,14 @@ export const chooseActions = async (actionsConfig: Record<string, any>): Promise
     })
   })
 
-  const selectedIndexes = actionIndexes.split(',').map((index) => parseInt(index.trim()) - 1)
+  const selectedIndexes = actionIndexes.split(',').map((index) => Number.parseInt(index.trim()) - 1)
 
   const validSelection = selectedIndexes.every((index) => index >= 0 && index < actions.length)
 
   if (validSelection) {
     return selectedIndexes.map((index) => actions[index] as keyof typeof actionsConfig)
-  } else {
-    cliLog('Invalid input, please try again.')
-    return chooseActions(actionsConfig)
   }
+
+  cliLog('Invalid input, please try again.')
+  return chooseActions(actionsConfig)
 }

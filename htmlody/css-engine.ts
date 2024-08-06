@@ -88,10 +88,10 @@ function generateCssSelector(breakpoint: string, className: string): string {
 function processClassRecords(classRecords: ResponsiveClassRecord, usedClasses: Set<string>): string | null {
   let cssStr = ''
 
-  Object.entries(classRecords).forEach(([breakpoint, classRecord]) => {
+  for (const [breakpoint, classRecord] of Object.entries(classRecords)) {
     const classNames = extractClassNames(classRecord)
 
-    classNames.forEach((className) => {
+    for (const className of classNames) {
       const fullClassName = breakpoint === '*' ? className : `${breakpoint}_${className}`
 
       if (!usedClasses.has(fullClassName)) {
@@ -102,8 +102,8 @@ function processClassRecords(classRecords: ResponsiveClassRecord, usedClasses: S
           cssStr += `${selector}\n`
         }
       }
-    })
-  })
+    }
+  }
 
   if (!cssStr) return null
   return cssStr
@@ -118,10 +118,10 @@ export function processNode(node: JsonTagElNode<ClassRecordAttributes>, usedClas
   }
 
   if (node.child) {
-    Object.values(node.child).forEach((childNode) => {
+    for (const childNode of Object.values(node.child)) {
       const childNodeStr = processNode(childNode, usedClasses)
       if (childNodeStr) cssStr += childNodeStr
-    })
+    }
   }
 
   return cssStr || null
@@ -135,11 +135,10 @@ export function generateCSS<
   const usedClasses = new Set<string>()
   let cssStr = ''
 
-  Object.values(nodeMap).forEach((node) => {
+  for (const node of Object.values(nodeMap)) {
     const nodeStr = processNode(node, usedClasses)
-
     if (nodeStr) cssStr += nodeStr
-  })
+  }
 
   if (!cssStr) return null
   return cssStr
@@ -297,7 +296,8 @@ export function generateShades(color: ColorType): string[] {
   // and greater than 1 will lighten it
   const factors = [0.1, 0.3, 0.5, 0.7, 0.9, 1, 1.1, 1.3, 1.5, 1.7]
   factors.forEach((factor, index) => {
-    let adjustedColor
+    let adjustedColor: ReturnType<typeof adjustBrightness> | ReturnType<typeof lightenColor>
+
     if (index < 5) {
       // Darken the color for shades 50-400
       adjustedColor = adjustBrightness(baseColor, factor)

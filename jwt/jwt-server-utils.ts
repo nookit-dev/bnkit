@@ -15,7 +15,7 @@ export function encrypt(data: string, secret: string): string {
 export function decrypt(encryptedData: string, secret: string): string {
   try {
     const algorithm = 'aes-256-gcm'
-    const key = crypto.createHash('sha256').update(secret).digest() // Ensure 256-bit key
+    const key = crypto.createHash('sha256').update(secret).digest()
     const [ivHex, encrypted, authTagHex] = encryptedData.split('.')
     const iv = Buffer.from(ivHex, 'hex')
     const decipher = crypto.createDecipheriv(algorithm, key, iv)
@@ -24,6 +24,9 @@ export function decrypt(encryptedData: string, secret: string): string {
     decrypted += decipher.final('utf8')
     return decrypted
   } catch (e) {
+    if (e instanceof Error && e.message.includes('Unsupported state or unable to authenticate data')) {
+      throw new Error('Unable to decrypt token: Data integrity check failed')
+    }
     console.error(e)
     throw new Error('Unable to decrypt token')
   }

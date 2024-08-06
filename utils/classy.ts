@@ -6,21 +6,21 @@ interface ClassNameMap {
 export function classy(...args: ClassName[]): string {
   const classes: string[] = []
 
-  args.forEach((arg) => {
-    if (arg == null) return
+  for (const arg of args) {
+    if (arg == null) continue
 
     if (typeof arg === 'string' || typeof arg === 'number') {
       classes.push(arg.toString())
-    } else if (arg instanceof Array) {
+    } else if (Array.isArray(arg)) {
       classes.push(classy(...arg))
     } else if (typeof arg === 'object') {
-      Object.keys(arg).forEach((key) => {
+      for (const key in arg) {
         if (arg[key]) {
           classes.push(key)
         }
-      })
+      }
     }
-  })
+  }
 
   return classes.join(' ')
 }

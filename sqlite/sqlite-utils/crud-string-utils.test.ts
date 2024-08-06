@@ -6,7 +6,7 @@ test('insertQueryString', () => {
   const tableName = 'users'
   const item = { name: 'Alice', age: 30 }
   const query = insertQueryString(tableName, item)
-  const expectedQuery = `INSERT INTO users (name, age) VALUES (?, ?)`
+  const expectedQuery = 'INSERT INTO users (name, age) VALUES (?, ?)'
   expect(query).toBe(expectedQuery)
 })
 
@@ -14,7 +14,7 @@ test('insertQueryString', () => {
 test('selectAllTableQueryString', () => {
   const tableName = 'users'
   const query = selectAllTableQueryString(tableName)
-  const expectedQuery = `SELECT * FROM users;`
+  const expectedQuery = 'SELECT * FROM users;'
   expect(query).toBe(expectedQuery)
 })
 
@@ -22,7 +22,7 @@ test('selectAllTableQueryString', () => {
 test('deleteQueryString', () => {
   const tableName = 'users'
   const query = deleteQueryString(tableName)
-  const expectedQuery = `delete FROM users WHERE id = $id;`
+  const expectedQuery = 'delete FROM users WHERE id = $id;'
   expect(query).toBe(expectedQuery)
 })
 
@@ -31,6 +31,6 @@ test('updateQueryString', () => {
   const tableName = 'users'
   const item = { name: 'John', age: 25 } // example item
   const query = updateQueryString(tableName, item)
-  const expectedQuery = `UPDATE users SET name = $name, age = $age WHERE id = $id;`
+  const expectedQuery = 'UPDATE users SET name = $name, age = $age WHERE id = $id;'
   expect(query).toBe(expectedQuery)
 })

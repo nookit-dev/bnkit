@@ -168,14 +168,20 @@ const generateTitleNode = (title: string): JsonTagElNode => {
   }
 }
 
-const generateMetaTagNode = (meta: { name: string; content: string }): JsonTagElNode => {
+const generateMetaTagNode = (meta: {
+  name: string
+  content: string
+}): JsonTagElNode => {
   return {
     tag: 'meta',
     attributes: { name: meta.name, content: meta.content },
   }
 }
 
-const generateLinkTagNode = (link: { rel: string; href: string }): JsonTagElNode => {
+const generateLinkTagNode = (link: {
+  rel: string
+  href: string
+}): JsonTagElNode => {
   return {
     tag: 'link',
     attributes: { rel: link.rel, href: link.href },
@@ -189,7 +195,11 @@ const generateStyleTagNode = (content: string): JsonTagElNode => {
   }
 }
 
-const generateScriptTagNode = (script: { src?: string; type?: string; content: string }): JsonTagElNode => {
+const generateScriptTagNode = (script: {
+  src?: string
+  type?: string
+  content: string
+}): JsonTagElNode => {
   const node: JsonTagElNode = {
     tag: 'script',
     attributes: {},
@@ -279,7 +289,18 @@ export const htmlodyBuilder = <
   const renderNodeTreeToHtml = (nodeMap: JsonHtmlNodeTree, pluginsOverride?: Plugins): string => {
     const activePlugins = pluginsOverride || effectivePlugins
     return Object.keys(nodeMap)
-      .map((id) => renderNodeWithPlugins(nodeMap[id], activePlugins))
+      .map((id) => {
+        const node = nodeMap[id]
+        const childrenHtml = node.child ? renderNodeTreeToHtml(node.child, activePlugins) : ''
+        return renderNodeWithPlugins(
+          {
+            ...node,
+            content: node.content || '', // Remove childrenHtml from here
+            child: node.child, // Pass child to renderNodeWithPlugins
+          },
+          activePlugins
+        )
+      })
       .join('')
   }
 

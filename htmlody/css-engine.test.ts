@@ -39,11 +39,11 @@ describe('generateCSS', () => {
 
     const result = generateCSS(mockNodeMap)
     const expectedCss =
-      `.flex { display: flex; }\n` +
-      `.m-1 { margin: 0.25rem; }\n` +
-      `.w-1/2 { width: 50%; }\n` +
-      `.h-1/2 { height: 50%; }\n` +
-      `.p-1 { padding: 0.25rem; }\n`
+      '.flex { display: flex; }\n' +
+      '.m-1 { margin: 0.25rem; }\n' +
+      '.w-1/2 { width: 50%; }\n' +
+      '.h-1/2 { height: 50%; }\n' +
+      '.p-1 { padding: 0.25rem; }\n'
 
     expect(result).toEqual(expectedCss)
   })
@@ -136,7 +136,7 @@ describe('generateColorVariables', () => {
   it('should generate CSS variables for colors', () => {
     const result = generateColorVariables()
 
-    expect(result).toContain(`--red-50`)
+    expect(result).toContain('--red-50')
 
     expect(result).toContain(':root {\n--red-50: #1A0000;')
     expect(result).toContain('--slate-300: #4E5A65;')
@@ -148,10 +148,10 @@ describe('generateShades', () => {
     const result = generateShades('red')
     expect(result).toHaveLength(10)
 
-    result.forEach((shade) => {
+    for (const shade of result) {
       // validate that each shade is a valid hex color
       expect(shade).toHaveLength(7)
-    })
+    }
 
     expect(result[0][0]).toBe('#') // first shade, first charact
   })

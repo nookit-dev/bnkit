@@ -25,40 +25,28 @@ export function createCliFactory<DataT, E extends BaseError<DataT>>({
   })
 
   const processInput = async () => {
-    try {
-      const commandLineArgs = await parseCliArgs()
+    const commandLineArgs = await parseCliArgs()
 
-      const userInput = await getUserInput()
+    const userInput = await getUserInput()
 
-      // Handle user input and command line arguments...
-      return { commandLineArgs, userInput }
-    } catch (error) {
-      throw error
-    }
+    // Handle user input and command line arguments...
+    return { commandLineArgs, userInput }
   }
 
   const executeActions = async () => {
-    try {
-      const additionalPrompt = await getAdditionalPrompt()
+    const additionalPrompt = await getAdditionalPrompt()
 
-      const chosenActions = await chooseActions(actionsConfig)
+    const chosenActions = await chooseActions(actionsConfig)
 
-      // Execute chosen actions...
+    // Execute chosen actions...
 
-      return { additionalPrompt, chosenActions }
-    } catch (error) {
-      throw error
-    }
+    return { additionalPrompt, chosenActions }
   }
 
   const handleFiles = ({ filePath, fileContent }: { filePath: string; fileContent: string }) => {
-    try {
-      factory.directoryExists({ path: filePath })
+    factory.directoryExists({ path: filePath })
 
-      factory.createFile(filePath, fileContent)
-    } catch (error) {
-      throw error
-    }
+    factory.createFile(filePath, fileContent)
   }
 
   return {

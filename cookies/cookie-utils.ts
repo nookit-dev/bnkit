@@ -1,6 +1,6 @@
 import type { CookieOptions } from './cookie-types'
 
-declare var document: {
+declare const document: {
   cookie: any
 }
 
@@ -19,9 +19,9 @@ export const parseCookieData = <T = string>(data: string | null): T | null => {
 export const stringifyCookieData = <T>(data: T): string => {
   if (typeof data === 'string') {
     return data
-  } else {
-    return JSON.stringify(data)
   }
+
+  return JSON.stringify(data)
 }
 
 export const retrieveRawCookieValue = (name: string): string | null => {
@@ -55,11 +55,11 @@ export const encodeCookie = <T>(cookieKey: string, value: T, options: CookieOpti
   }
 
   if (options.secure) {
-    cookieString += `; secure`
+    cookieString += '; secure'
   }
 
   if (options.httpOnly) {
-    cookieString += `; httpOnly`
+    cookieString += '; httpOnly'
   }
 
   return cookieString
@@ -73,10 +73,10 @@ export function parseCookies(cookiesString: string) {
   const cookies: { [name: string]: string } = {}
   const pairs = cookiesString.split(';')
 
-  pairs.forEach((pair) => {
-    const [name, ...rest] = pair.split('=')
-    cookies[name.trim()] = rest.join('=').trim()
-  })
+  for (const pair of pairs) {
+    const [name, ...value] = pair.split('=')
+    cookies[name.trim()] = value.join('=').trim()
+  }
 
   return cookies
 }

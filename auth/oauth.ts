@@ -71,10 +71,9 @@ export const initProvider: OAuthProviderInitializer = ({ clientId, authReqUrl, r
         if (response.error) {
           console.error('Error fetching token:', response.error)
           throw new Error(response.error)
-        } else {
-          console.log('Access Token:', response.accessToken)
-          return response
         }
+
+        return response
       })
     },
   }

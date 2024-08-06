@@ -4,7 +4,7 @@ import { createStateDispatchers } from './create-state-dispatchers'
 export type AllowedStateKeys = boolean | string | number
 
 export const createStateManager = <State extends object>(initialState: State) => {
-  let currentState: State = initialState
+  const currentState: State = initialState
 
   const stateChangeCallbacks: {
     [Key in keyof State]?: Array<(newValue: State[Key]) => void>
@@ -13,7 +13,9 @@ export const createStateManager = <State extends object>(initialState: State) =>
   const listeners: Array<() => void> = []
 
   function broadcast() {
-    listeners.forEach((fn) => fn())
+    for (const fn of listeners) {
+      fn()
+    }
   }
 
   function subscribe(listener: () => void) {

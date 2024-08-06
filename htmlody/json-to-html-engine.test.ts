@@ -240,7 +240,7 @@ describe('renderNodeToHtml', () => {
         id: 'sample-id',
         class: 'sample-class',
       },
-      children: {
+      child: {
         span_id1: {
           tag: 'span',
           content: 'Child Content',
@@ -293,7 +293,7 @@ describe('createNodeFactory', () => {
             id: 'sample-id',
             class: 'sample-class',
           },
-          children: {
+          child: {
             span_id1: {
               tag: 'span',
               content: 'Child Content',

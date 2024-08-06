@@ -1,9 +1,15 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 import { parseCookieData, retrieveRawCookieValue, stringifyCookieData } from './cookie-utils'
 
-declare var document: {
-  cookie: any
+// declare var document: {
+//   cookie: any
+// }
+const mockDocument = {
+  cookie: '',
 }
+
+// Mock global document
+global.document = mockDocument as any
 
 describe('Cookie Helpers', () => {
   describe('parseCookieData', () => {

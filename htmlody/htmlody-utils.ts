@@ -47,10 +47,11 @@ export function isValidAttributesString(attributesStr: string): boolean {
 export function collectClassNames(node: JsonTagElNode, uniqueClassNames: Set<string>) {
   if (node.attributes && typeof node.attributes.class === 'string') {
     const classList = node.attributes.class.split(' ')
-    classList.forEach((cls) => uniqueClassNames.add(cls))
+    for (const cls of classList) {
+      uniqueClassNames.add(cls)
+    }
   }
 }
-
 export const children = (children: JsonTagElNode<CRNode>[]) => {
   const returnChildren: JsonHtmlNodeTree = {}
 
