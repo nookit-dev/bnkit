@@ -1,5 +1,5 @@
 import type { InferMiddlewareDataMap, MiddlewareConfigMap } from '.'
-import type { middlewareFactory } from './middleware-manager'
+import type { middlewareFactory } from './middleware-factory'
 import type { RouteHandler, Routes } from './route-types'
 
 function isValidRegex(str: string): boolean {

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest, test } from 'bun:test'
 import { serverRequestHandler } from './incoming-request-handler'
-import { middlewareFactory } from './middleware-manager'
+import { middlewareFactory } from './middleware-factory'
 
 describe('serverRequestHandler', () => {
   const mockRoutes = {
@@ -52,7 +52,7 @@ describe('serverRequestHandler', () => {
     expect(response.status).toBe(404)
     expect(await response.text()).toBe('Not Found')
   })
-  
+
   it('executes middleware before route handler', async () => {
     const req = new Request('http://example.com/test', { method: 'GET' })
     await serverRequestHandler({ req, routes: mockRoutes, middlewareRet: mockMiddlewareFactory })

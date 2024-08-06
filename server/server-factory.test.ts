@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, jest, mock, spyOn } from 'bun:test'
 import { serverRequestHandler } from './incoming-request-handler'
-import { middlewareFactory } from './middleware-manager'
+import { middlewareFactory } from './middleware-factory'
 import { serverFactory } from './server-factory'
 
 describe('serverFactory', () => {

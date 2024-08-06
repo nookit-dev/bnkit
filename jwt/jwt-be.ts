@@ -11,33 +11,42 @@ import {
 import type { JwtHeader, JwtPayload, RefreshToken } from './jwt-types'
 
 export interface JwtHandlers {
-  getInvalidTokens: () => Promise<string[]>
-  addInvalidToken: (token: string) => Promise<void>
-  getRefreshTokens: () => Promise<RefreshToken[]>
-  saveRefreshToken: (token: RefreshToken) => Promise<void>
-  removeRefreshToken: (token: string) => Promise<void>
+  getInvalidTokens?: () => Promise<string[]>
+  addInvalidToken?: (token: string) => Promise<void>
+  getRefreshTokens?: () => Promise<RefreshToken[]>
+  saveRefreshToken?: (token: RefreshToken) => Promise<void>
+  removeRefreshToken?: (token: string) => Promise<void>
 }
 
-// backend  jwt handling
+// Default implementations
+const defaultHandlers: Required<JwtHandlers> = {
+  getInvalidTokens: async () => [],
+  addInvalidToken: async () => {},
+  getRefreshTokens: async () => [],
+  saveRefreshToken: async () => {},
+  removeRefreshToken: async () => {},
+}
+
 export const jwtBackend = <
   Payload extends object,
   FactoryJwtPayload extends JwtPayload<Payload> = JwtPayload<Payload>,
 >({
   factorySignSecret,
-  handlers,
+  handlers = {},
   encryption,
 }: {
   factorySignSecret: string
-  handlers: JwtHandlers
+  handlers?: Partial<JwtHandlers>
   encryption?: {
     encryptionSecret: string
   }
 }) => {
+  const finalHandlers = { ...defaultHandlers, ...handlers }
   async function generateRefreshToken(): Promise<string> {
     const refreshToken = crypto.randomBytes(40).toString('hex')
     const expiresIn = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 // Token valid for one week
     const tokenData = { token: refreshToken, exp: expiresIn }
-    await handlers.saveRefreshToken(tokenData)
+    await finalHandlers.saveRefreshToken(tokenData)
     return refreshToken
   }
 
@@ -46,24 +55,24 @@ export const jwtBackend = <
       return false
     }
 
-    const refreshTokens = await handlers.getRefreshTokens()
+    const refreshTokens = await finalHandlers.getRefreshTokens()
     const refreshToken = refreshTokens.find((t) => t.token === token)
     if (!refreshToken) {
       return false
     }
     if (refreshToken.exp < Math.floor(Date.now() / 1000)) {
-      await handlers.removeRefreshToken(token)
+      await finalHandlers.removeRefreshToken(token)
       return false
     }
     return true
   }
 
   async function invalidateToken(token: string): Promise<void> {
-    await handlers.addInvalidToken(token)
+    await finalHandlers.addInvalidToken(token)
   }
 
   async function isValidToken(token: string): Promise<boolean> {
-    const invalidTokens = await handlers.getInvalidTokens()
+    const invalidTokens = await finalHandlers.getInvalidTokens()
 
     return invalidTokens.includes(token)
   }

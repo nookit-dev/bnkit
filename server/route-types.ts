@@ -1,5 +1,5 @@
 import type { RouteMethods } from '../utils/http-types'
-import type { middlewareFactory } from './middleware-manager'
+import type { middlewareFactory } from './middleware-factory'
 
 import type { HTMLodyPlugin, htmlodyBuilder } from '../htmlody'
 import type { InferMiddlewareDataMap, MiddlewareConfigMap } from './middleware-types'

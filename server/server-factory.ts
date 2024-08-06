@@ -1,6 +1,6 @@
 import type { WebSocketHandler } from 'bun'
 import { serverRequestHandler } from './incoming-request-handler'
-import type { middlewareFactory } from './middleware-manager'
+import type { middlewareFactory } from './middleware-factory'
 import type { InferMiddlewareDataMap, MiddlewareConfigMap } from './middleware-types'
 import type { RouteHandler, Routes } from './route-types'
 

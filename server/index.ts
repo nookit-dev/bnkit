@@ -1,5 +1,5 @@
-export { middlewareFactory } from './middleware-manager'
-export type { InferMiddlewareFromFactory } from './middleware-manager'
+export { middlewareFactory } from './middleware-factory'
+export type { InferMiddlewareFromFactory } from './middleware-factory'
 export { serverFactory } from './server-factory'
 export type { InferMiddlewareDataMap, Middleware, MiddlewareConfigMap } from './middleware-types'
 export type { RouteHandler, RouteOptionsMiddlewareManger, Routes } from './route-types'

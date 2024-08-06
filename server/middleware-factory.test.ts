@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from 'bun:test'
-import { middlewareFactory } from './middleware-manager'
+import { middlewareFactory } from './middleware-factory'
 import type { Middleware } from './middleware-types'
 
 describe('middlewareFactory', () => {
