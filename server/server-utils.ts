@@ -17,7 +17,7 @@ export function parseRequestHeaders<HeadersType>(request: Request): HeadersType 
 export type JSONResType = <JSONBodyGeneric extends object>(
   body: JSONBodyGeneric,
   options?: ResponseInit,
-  response?: Response,
+  response?: Response
 ) => Response
 
 // json res creates it's own response object, but if one is passed in, it will copy headers

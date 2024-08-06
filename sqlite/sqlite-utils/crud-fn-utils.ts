@@ -1,5 +1,5 @@
 import Database from 'bun:sqlite'
-import type  { SQLInfer, SchemaMap } from '../sqlite-factory'
+import type { SQLInfer, SchemaMap } from '../sqlite-factory'
 import { deleteQueryString, insertQueryString, selectAllTableQueryString, updateQueryString } from './crud-string-utils'
 
 type BaseDBParams = {

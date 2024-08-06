@@ -57,7 +57,7 @@ export function renderHtmlTag({
   const { startTag, closeTag } = getHtmlTags(
     // validatedTagName,
     tagName,
-    validatedAttributesStr,
+    validatedAttributesStr
   )
 
   return `${startTag}${content}${childrenHtml}${closeTag}`
@@ -65,7 +65,7 @@ export function renderHtmlTag({
 
 export function renderChildrenNodes<Plugins extends HTMLodyPlugin<any>[]>(
   children: JsonHtmlNodeTree,
-  plugins: Plugins,
+  plugins: Plugins
 ): string {
   return Object.entries(children)
     .map(([childTagName, childNode]) => jsonToHtml({ [childTagName]: childNode }, plugins))
@@ -107,7 +107,7 @@ export function renderNodeToHtml<
       ${content ? `Content: ${content}` : ''}
 
       ${JSON.stringify(node, null, 2)}
-      `,
+      `
     )
   }
 
@@ -145,7 +145,7 @@ export function renderNodeWithPlugins<
       ${content ? `Content: ${content}` : ''}
 
       ${JSON.stringify(node, null, 2)}
-      `,
+      `
     )
   }
 
@@ -285,7 +285,7 @@ export const htmlodyBuilder = <
 
   const renderSingleNode = <Node extends JsonTagElNode<PluginReturns> = JsonTagElNode<PluginReturns>>(
     node: Node,
-    pluginsOverride?: Plugins,
+    pluginsOverride?: Plugins
   ): string => {
     const activePlugins = pluginsOverride || effectivePlugins
     return renderNodeWithPlugins(node, activePlugins)
@@ -302,7 +302,7 @@ export const htmlodyBuilder = <
     bodyConfig: JSONNodeTree,
     options?: {
       headConfig?: HeadConfig
-    },
+    }
   ) => {
     const headNodes: JsonHtmlNodeTree = {}
 
@@ -387,7 +387,7 @@ export const htmlodyBuilder = <
     bodyConfig: JsonHtmlNodeTree,
     options?: {
       headConfig?: HeadConfig
-    },
+    }
   ) => {
     const html = buildHtmlDoc(bodyConfig, options)
     return new Response(html, {

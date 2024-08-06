@@ -3,7 +3,7 @@ import type { FieldDef, SchemaMap } from '../sqlite-factory'
 export function assembleCreateTableQuery(
   tableName: string,
   columns: string[],
-  tableLevelConstraints: string[],
+  tableLevelConstraints: string[]
 ): string {
   if (columns.length === 0) throw new Error(`No columns for table ${tableName}`)
   const tableDefinition = [...columns, ...tableLevelConstraints].filter(Boolean).join(', ')

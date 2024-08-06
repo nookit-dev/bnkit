@@ -115,9 +115,9 @@ describe('jsonToHtml', () => {
       // @ts-expect-error
       jsonToHtml(nodeMap, plugins, {
         validateHtmlTags: true,
-      }),
+      })
     ).toThrow(
-      'Tag name not provided for node. \n      \n      Content: Sample Content\n\n      {\n  "attributes": {\n    "class": "sample-class"\n  },\n  "content": "Sample Content"\n}\n      ',
+      'Tag name not provided for node. \n      \n      Content: Sample Content\n\n      {\n  "attributes": {\n    "class": "sample-class"\n  },\n  "content": "Sample Content"\n}\n      '
     )
   })
 
@@ -359,7 +359,7 @@ describe('renderNodeWithPlugins', () => {
     }
     const plugins = []
     expect(() => renderNodeWithPlugins(node, plugins)).toThrow(
-      'Tag name not provided for node. \n      ID: id="sample-id"\n      Content: Sample Content\n\n      {\n  "attributes": {\n    "id": "sample-id"\n  },\n  "content": "Sample Content"\n}\n      ',
+      'Tag name not provided for node. \n      ID: id="sample-id"\n      Content: Sample Content\n\n      {\n  "attributes": {\n    "id": "sample-id"\n  },\n  "content": "Sample Content"\n}\n      '
     )
   })
 })

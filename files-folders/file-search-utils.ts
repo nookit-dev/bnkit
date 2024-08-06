@@ -45,7 +45,7 @@ export type FileSearchParams<T extends boolean> = {
 }
 
 export const recursiveDirSearch = async <T extends boolean = false>(
-  params: FileSearchParams<T>,
+  params: FileSearchParams<T>
 ): Promise<T extends true ? FileWithContent[] : FileDirInfo[]> => {
   const {
     directory,

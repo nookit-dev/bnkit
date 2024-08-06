@@ -69,7 +69,7 @@ export function encodeJwt<T extends object>(header: JwtHeader, payload: JwtPaylo
 
 export function decodeJwt<T extends object>(
   jwt: string,
-  secret: string,
+  secret: string
 ): { header: JwtHeader; payload: JwtPayload<T> } {
   const [headerEncoded, payloadEncoded, signatureEncoded] = jwt.split('.')
   const signatureToVerify = sign(`${headerEncoded}.${payloadEncoded}`, secret)

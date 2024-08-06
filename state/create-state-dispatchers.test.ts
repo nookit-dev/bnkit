@@ -43,7 +43,6 @@ describe('createStateDispatchers', () => {
     let [lastKey, lastValue] = updateAndGetLastCall()
     expect(lastKey).toBe('age')
     expect(lastValue).toBe(30)
-
     ;(dispatchers.age as { decrement: Function }).decrement(10)
     ;[lastKey, lastValue] = updateAndGetLastCall()
     expect(lastKey).toBe('age')

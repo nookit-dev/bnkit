@@ -32,7 +32,7 @@ export function getArguments(): string[] {
 export function getOptionValue(
   arg: string,
   nextArg: string,
-  optionDef: OptionDefinition,
+  optionDef: OptionDefinition
 ): string | boolean | undefined {
   let value = optionDef.default
 
@@ -58,7 +58,7 @@ export function getOptionValue(
 
 export function parseArgument(
   arg: string,
-  nextArg: string,
+  nextArg: string
 ): { key: string | undefined; value: string | boolean | undefined } {
   let key: string | undefined = undefined
   let value: string | boolean | undefined

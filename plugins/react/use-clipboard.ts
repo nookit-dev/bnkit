@@ -25,7 +25,7 @@ export function useClipboard(externalValue?: string, updater?: (value: string) =
         console.error('Failed to write to clipboard', error)
       }
     },
-    [updater],
+    [updater]
   )
 
   // Read from clipboard

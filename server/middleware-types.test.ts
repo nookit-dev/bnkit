@@ -1,4 +1,4 @@
-import type{  InferMiddlewareDataMap } from '.'
+import type { InferMiddlewareDataMap } from '.'
 import { type TypeCheck, typeCheck } from '../test-utils/type-testers'
 
 const middlewareMap = {

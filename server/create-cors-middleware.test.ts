@@ -18,7 +18,7 @@ const tstReq = (
     headers?: Record<string, string>
     Origin?: string
     noOrigin?: boolean
-  },
+  }
 ) => {
   const req = (rMethod: HTTPMethod = 'GET') => {
     const headers = new Headers({
@@ -243,7 +243,7 @@ describe('createCorsMiddleware function', () => {
         allowedMethods: ['GET'],
         allowedOrigins: [tstOrigin],
       },
-      true,
+      true
     )(request)
 
     expect(response.status).toBe(405)

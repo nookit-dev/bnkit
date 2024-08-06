@@ -39,7 +39,7 @@ export const retrieveRawCookieValue = (name: string): string | null => {
 
 export const encodeCookie = <T>(cookieKey: string, value: T, options: CookieOptions): string => {
   let cookieString = `${encodeURIComponent(cookieKey)}=${encodeURIComponent(
-    typeof value === 'string' ? value : JSON.stringify(value),
+    typeof value === 'string' ? value : JSON.stringify(value)
   )}`
 
   if (options.maxAge) {

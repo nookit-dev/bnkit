@@ -4,7 +4,7 @@ import { isArray, isBool, isNum, isObj } from '../utils/value-checkers'
 export function createArrayDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   state: readonly T[], // mark it as readonly
-  updateFunction: (key: Key, value: T[], opts?: Options) => void,
+  updateFunction: (key: Key, value: T[], opts?: Options) => void
 ) {
   return {
     set: (value: T[], opts?: Options) => {
@@ -47,7 +47,7 @@ export function createArrayDispatchers<Key, T, Options extends object = {}>(
 export function createBooleanDispatchers<Key, Options extends object = {}>(
   key: Key,
   state: boolean,
-  updateFunction: (key: Key, value: any, opts?: Options) => void,
+  updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
   return {
     set: (value: boolean, opts?: Options) => {
@@ -62,7 +62,7 @@ export function createBooleanDispatchers<Key, Options extends object = {}>(
 export function createObjectDispatchers<Key, T, Options extends object = {}>(
   key: Key,
   state: T,
-  updateFunction: (key: Key, value: any, opts?: Options) => void,
+  updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
   return {
     set: (value: T, opts?: Options) => {
@@ -78,7 +78,7 @@ export function createObjectDispatchers<Key, T, Options extends object = {}>(
 export function createNumberDispatchers<Key, Options extends object = {}>(
   key: Key,
   state: number,
-  updateFunction: (key: Key, value: any, opts?: Options) => void,
+  updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
   return {
     set: (value: number, opts?: Options) => {
@@ -95,7 +95,7 @@ export function createNumberDispatchers<Key, Options extends object = {}>(
 
 export function createDefaultDispatchers<Key, T, Options extends object = {}>(
   key: Key,
-  updateFunction: (key: Key, value: any, opts?: Options) => void,
+  updateFunction: (key: Key, value: any, opts?: Options) => void
 ) {
   return {
     set: (value: T, opts?: Options) => {
@@ -106,7 +106,7 @@ export function createDefaultDispatchers<Key, T, Options extends object = {}>(
 
 export function mergeWithDefault<State extends object>(
   defaultState: Readonly<State>, // mark it as readonly
-  state: Readonly<State>, // mark it as readonly
+  state: Readonly<State> // mark it as readonly
 ): State {
   const mergedState: Partial<State> = {}
   const missingKeys: (keyof State)[] = []
@@ -139,22 +139,25 @@ export function createStateDispatchers<State extends object, UpdateFnOpts extend
 }): Dispatchers<State> {
   const mergedState = mergeWithDefault<State>(defaultState, state)
 
-  return (Object.keys(mergedState) as (keyof State)[]).reduce((acc, key) => {
-    const k = key as keyof State
-    const currentValue = mergedState[k]
+  return (Object.keys(mergedState) as (keyof State)[]).reduce(
+    (acc, key) => {
+      const k = key as keyof State
+      const currentValue = mergedState[k]
 
-    if (isArray(currentValue)) {
-      acc[k] = createArrayDispatchers(k, currentValue, updateFunction) as any
-    } else if (isObj(currentValue)) {
-      acc[k] = createObjectDispatchers(k, currentValue, updateFunction) as any
-    } else if (isNum(currentValue)) {
-      acc[k] = createNumberDispatchers(k, currentValue, updateFunction) as any
-    } else if (isBool(currentValue)) {
-      acc[k] = createBooleanDispatchers(k, currentValue, updateFunction) as any
-    } else {
-      acc[k] = createDefaultDispatchers(k, updateFunction) as any
-    }
+      if (isArray(currentValue)) {
+        acc[k] = createArrayDispatchers(k, currentValue, updateFunction) as any
+      } else if (isObj(currentValue)) {
+        acc[k] = createObjectDispatchers(k, currentValue, updateFunction) as any
+      } else if (isNum(currentValue)) {
+        acc[k] = createNumberDispatchers(k, currentValue, updateFunction) as any
+      } else if (isBool(currentValue)) {
+        acc[k] = createBooleanDispatchers(k, currentValue, updateFunction) as any
+      } else {
+        acc[k] = createDefaultDispatchers(k, updateFunction) as any
+      }
 
-    return acc
-  }, {} as Dispatchers<State>)
+      return acc
+    },
+    {} as Dispatchers<State>
+  )
 }

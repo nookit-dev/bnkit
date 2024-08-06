@@ -32,7 +32,7 @@ export const createStateManager = <State extends object>(initialState: State) =>
 
   function updateStateAndDispatch(
     key: keyof State,
-    updater: ((currentState: State[keyof State]) => State[keyof State]) | State[keyof State],
+    updater: ((currentState: State[keyof State]) => State[keyof State]) | State[keyof State]
   ) {
     const newValue =
       typeof updater === 'function'
@@ -50,7 +50,7 @@ export const createStateManager = <State extends object>(initialState: State) =>
     ExpectedVal extends State[Key] = State[Key],
   >(
     key: Key,
-    expectedValue: ExpectedVal,
+    expectedValue: ExpectedVal
   ) => {
     const value = currentState[key]
     return {

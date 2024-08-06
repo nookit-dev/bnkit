@@ -25,7 +25,7 @@ export function createFetchFactory<TMap extends TypeMap>({
 }) {
   return {
     fetcher: <Endpoint extends keyof TMap>(
-      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, HTTPMethod>,
+      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, HTTPMethod>
     ): Promise<TMap[Endpoint]['response']> => {
       const headers = computeHeaders(defaultHeaders || {}, fetcherConfig.headers || {})
 
@@ -36,11 +36,11 @@ export function createFetchFactory<TMap extends TypeMap>({
           method: fetcherConfig.method || 'GET',
         },
         config,
-        baseUrl,
+        baseUrl
       )
     },
     get: <Endpoint extends keyof TMap>(
-      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, 'GET'>,
+      fetcherConfig: ExternalFetchConfig<Endpoint, TMap, 'GET'>
     ): Promise<TMap[Endpoint]['response']> => {
       const headers = computeHeaders(defaultHeaders || {}, fetcherConfig.headers || {})
 
@@ -51,13 +51,13 @@ export function createFetchFactory<TMap extends TypeMap>({
           method: 'GET',
         },
         config,
-        baseUrl,
+        baseUrl
       )
     },
     post: <Endpoint extends keyof TMap>(
       fetchConfig: ExternalFetchConfig<Endpoint, TMap, 'POST'> & {
         endpoint: Endpoint
-      },
+      }
     ): Promise<TMap[Endpoint]['response']> => {
       const headers = computeHeaders(defaultHeaders || {}, fetchConfig.headers || {})
 
@@ -68,7 +68,7 @@ export function createFetchFactory<TMap extends TypeMap>({
       fetchConfig: ExternalFetchConfig<Endpoint, TMap, 'POST'> & {
         endpoint: Endpoint
         boundary?: string
-      },
+      }
     ): Promise<TMap[Endpoint]['response']> => {
       const defaultContentType = fetchConfig.boundary
         ? `multipart/form-data; boundary=${fetchConfig.boundary}`
@@ -87,14 +87,14 @@ export function createFetchFactory<TMap extends TypeMap>({
           method: 'POST',
         },
         config,
-        baseUrl,
+        baseUrl
       )
     },
 
     delete: <Endpoint extends keyof TMap>(
       fetchConfig: ExternalFetchConfig<Endpoint, TMap, 'DELETE'> & {
         endpoint: Endpoint
-      },
+      }
     ): Promise<TMap[Endpoint]['response']> => {
       const headers = computeHeaders(defaultHeaders || {}, fetchConfig.headers || {})
       return fetcher({ ...fetchConfig, headers, method: 'DELETE' }, config, baseUrl)

@@ -50,7 +50,7 @@ export function useLocalStorage<DataT>(config: LocalStoreConfig<DataT>): UseLoca
         'Failed to properly get Local Storage key/value, returning initial state',
         config.key,
         storedData,
-        e,
+        e
       )
 
       if (fallbackToInitialValOnErrror) {
@@ -72,7 +72,7 @@ export function useLocalStorage<DataT>(config: LocalStoreConfig<DataT>): UseLoca
       },
       (dataCb) => {
         data = dataCb
-      },
+      }
     )
 
     return data ?? config.initialState
@@ -115,7 +115,7 @@ export function useLocalStorage<DataT>(config: LocalStoreConfig<DataT>): UseLoca
       },
       (data) => {
         setLsKeyState(data)
-      },
+      }
     )
   }
 
@@ -144,7 +144,7 @@ export function useLocalStorage<DataT>(config: LocalStoreConfig<DataT>): UseLoca
       },
       (data) => {
         setLsKeyState(data)
-      },
+      }
     )
   }, [config.key])
 

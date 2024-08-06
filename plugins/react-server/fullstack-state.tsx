@@ -41,7 +41,7 @@ const AppContext = createContext<{
   state: typeof appState
   updateKey: <Key extends keyof typeof appState = keyof typeof appState>(
     key: Key,
-    value: (typeof appState)[Key],
+    value: (typeof appState)[Key]
   ) => void
 }>({
   state: { count: 0 },
@@ -50,7 +50,7 @@ const AppContext = createContext<{
 
 const clientToServerStateKeyUpdate = async <StateT extends object, Key extends keyof StateT = keyof StateT>(
   key: Key,
-  value: StateT[Key],
+  value: StateT[Key]
 ) => {
   const res = await fetch('/state', {
     method: 'post',

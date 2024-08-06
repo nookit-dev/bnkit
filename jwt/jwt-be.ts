@@ -101,7 +101,7 @@ export const jwtBackend = <
     token: string,
     signSecret: string = factorySignSecret,
     // encryption must be enabled on the factory in order for this to work
-    encryptionSecret: string | undefined = encryption?.encryptionSecret,
+    encryptionSecret: string | undefined = encryption?.encryptionSecret
   ): Promise<{ header: JwtHeader; payload: FactoryJwtPayload }> {
     let decryptedToken: string = token
 

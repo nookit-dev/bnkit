@@ -12,7 +12,7 @@ const FetchContext = createContext<FetchFactoryReturn>(
         method: 'get',
       },
     },
-  }),
+  })
 )
 
 export const FetchProvider = <FetchConfig extends TypeMap>({
@@ -27,7 +27,7 @@ export const FetchProvider = <FetchConfig extends TypeMap>({
       createFetchFactory({
         config: factoryConfig,
       }),
-    [],
+    []
   )
 
   return <FetchContext.Provider value={fetchFactory}>{children}</FetchContext.Provider>

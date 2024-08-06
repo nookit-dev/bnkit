@@ -43,7 +43,7 @@ export async function directoryExists({
     if (error?.code === 'ENOENT') {
       if (!createMissingDirs && typeof createMissingDirs !== 'boolean') {
         console.error(
-          `directoryExists: Directory does not exist: ${path}, but createMissingDirs is false, set to true to create the directory.`,
+          `directoryExists: Directory does not exist: ${path}, but createMissingDirs is false, set to true to create the directory.`
         )
         return false
       }

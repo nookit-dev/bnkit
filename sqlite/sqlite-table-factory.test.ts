@@ -21,7 +21,7 @@ describe('sqliteTableFactory', () => {
       schema: testSchema,
       tableName: 'test',
     },
-    factoryOptions,
+    factoryOptions
   )
 
   afterEach(() => {

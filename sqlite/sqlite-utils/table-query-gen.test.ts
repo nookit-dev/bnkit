@@ -20,7 +20,7 @@ test('createTableQuery constructs SQL query correctly with foreign keys', () => 
   })
 
   expect(result).toBe(
-    'CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT, `fkTest` TEXT, FOREIGN KEY (`fkTest`) REFERENCES other_table(id));',
+    'CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT, `fkTest` TEXT, FOREIGN KEY (`fkTest`) REFERENCES other_table(id));'
   )
 })
 
@@ -210,7 +210,7 @@ describe('assembleCreateTableQuery', () => {
     const constraints = ['FOREIGN KEY (`id`) REFERENCES other_table(id)']
     const result = assembleCreateTableQuery('test_table', columns, constraints)
     expect(result).toBe(
-      'CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT, FOREIGN KEY (`id`) REFERENCES other_table(id));',
+      'CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `name` TEXT, FOREIGN KEY (`id`) REFERENCES other_table(id));'
     )
   })
 
@@ -222,7 +222,7 @@ describe('assembleCreateTableQuery', () => {
     ]
     const result = assembleCreateTableQuery('test_table', columns, constraints)
     expect(result).toBe(
-      'CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `parent_id` INTEGER, `owner_id` INTEGER, FOREIGN KEY (`parent_id`) REFERENCES parents(id), FOREIGN KEY (`owner_id`) REFERENCES owners(id));',
+      'CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `parent_id` INTEGER, `owner_id` INTEGER, FOREIGN KEY (`parent_id`) REFERENCES parents(id), FOREIGN KEY (`owner_id`) REFERENCES owners(id));'
     )
   })
 
@@ -255,7 +255,7 @@ describe('assembleCreateTableQuery', () => {
     const columns = ['`id` INTEGER', "`name` TEXT DEFAULT 'Unknown'"]
     const result = assembleCreateTableQuery('default_values_table', columns, [])
     expect(result).toBe(
-      "CREATE TABLE IF NOT EXISTS `default_values_table` (`id` INTEGER, `name` TEXT DEFAULT 'Unknown');",
+      "CREATE TABLE IF NOT EXISTS `default_values_table` (`id` INTEGER, `name` TEXT DEFAULT 'Unknown');"
     )
   })
 
@@ -271,7 +271,7 @@ describe('assembleCreateTableQuery', () => {
     const constraints = ['PRIMARY KEY (`id`, `revision`)']
     const result = assembleCreateTableQuery('composite_keys_table', columns, constraints)
     expect(result).toBe(
-      'CREATE TABLE IF NOT EXISTS `composite_keys_table` (`id` INTEGER, `revision` INTEGER, PRIMARY KEY (`id`, `revision`));',
+      'CREATE TABLE IF NOT EXISTS `composite_keys_table` (`id` INTEGER, `revision` INTEGER, PRIMARY KEY (`id`, `revision`));'
     )
   })
 
@@ -281,7 +281,7 @@ describe('assembleCreateTableQuery', () => {
     const constraints = ['FOREIGN KEY (`id`) REFERENCES `other_table`(`id`)']
     const result = assembleCreateTableQuery('backtick_test', columns, constraints)
     expect(result).toBe(
-      'CREATE TABLE IF NOT EXISTS `backtick_test` (`id` INTEGER, `name` TEXT, FOREIGN KEY (`id`) REFERENCES `other_table`(`id`));',
+      'CREATE TABLE IF NOT EXISTS `backtick_test` (`id` INTEGER, `name` TEXT, FOREIGN KEY (`id`) REFERENCES `other_table`(`id`));'
     )
   })
 

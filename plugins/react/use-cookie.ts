@@ -31,7 +31,7 @@ export function useCookie<T = string>(cookieKey: string, options?: CookieOptions
     value: T,
     updateOptions: CookieOptions & {
       cookieKey?: string // optionally override cookie  key
-    } = options || {},
+    } = options || {}
   ) => {
     const stringifiedValue = stringifyCookieData(value)
     cookie.setCookie(stringifiedValue, {

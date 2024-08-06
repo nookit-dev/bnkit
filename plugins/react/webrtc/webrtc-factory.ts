@@ -57,7 +57,7 @@ export function createWebRTCFactory({ defaultConfig }: { defaultConfig?: WebRTCC
    */
   function setRemoteDescription(
     peerConnection: RTCPeerConnection,
-    description: RTCSessionDescriptionInit,
+    description: RTCSessionDescriptionInit
   ): Promise<void> {
     return peerConnection.setRemoteDescription(description)
   }

@@ -21,7 +21,7 @@ export function fileFactory({ baseDirectory }: { baseDirectory: string }) {
     },
     readTextFromMultipleFiles: (relativePaths: string[]) => {
       const fullPaths = relativePaths.map((relativePath) =>
-        getFullPath({ baseDir: baseDirectory, filePath: relativePath }),
+        getFullPath({ baseDir: baseDirectory, filePath: relativePath })
       )
       return readTextFromMultipleFiles(fullPaths)
     },

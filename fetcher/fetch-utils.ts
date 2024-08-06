@@ -1,4 +1,4 @@
-import  type { EventHandlerMap, ExternalFetchConfig, FileDownloadConfig, MappedApiConfig, TypeMap } from './fetch-types'
+import type { EventHandlerMap, ExternalFetchConfig, FileDownloadConfig, MappedApiConfig, TypeMap } from './fetch-types'
 
 declare var window: {
   fetch: any
@@ -15,7 +15,6 @@ export function appendURLParameters(url: string, params: Record<string, string> 
   for (const [key, value] of Object.entries(params || {})) {
     urlWithParams.append(key, value)
   }
-
 
   return urlWithParams.toString() ? `${url}?${urlWithParams.toString()}` : url
 }
@@ -50,7 +49,7 @@ export function computeHeaders(defaultHeaders: HeadersInit, customHeaders?: Head
 export async function fetcher<Endpoint extends keyof TMap, TMap extends TypeMap>(
   fetcherConfig: ExternalFetchConfig<Endpoint, TMap>,
   config: Record<keyof TMap, MappedApiConfig<TMap>>,
-  baseUrl: string,
+  baseUrl: string
   // computeHeadersFunction: (headers?: HeadersInit) => HeadersInit
 ): Promise<TMap[Endpoint]['response']> {
   const endpointConfig = config[fetcherConfig.endpoint]

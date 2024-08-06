@@ -41,7 +41,7 @@ export type DataGeneratorMapConfig = {
 type DataGenMap = typeof dataGeneratorMap
 
 export function createRandomData<T extends Record<string, DataConfigItem>>(
-  config: T,
+  config: T
 ): {
   [K in keyof T]: OutputT<T[K]>
 } {

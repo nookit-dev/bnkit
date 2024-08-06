@@ -1,29 +1,23 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-    "organizeImports": {
-        "enabled": true
-    },
+  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120
+  },
+  "javascript": {
     "formatter": {
-        "enabled": true,
-        "formatWithErrors": false,
-        "indentStyle": "space",
-        "indentSize": 2,
-        "lineWidth": 120
-    },
-    "javascript": {
-        "formatter": {
-            "quoteStyle": "single",
-            "semicolons": "asNeeded",
-            "trailingComma": "es5"
-        }
-    },
-    "files": {
-        "ignore": [
-            "node_modules",
-            "dist",
-            "build",
-            "*.min.js",
-            "*.d.ts"
-        ]
+      "quoteStyle": "single",
+      "semicolons": "asNeeded",
+      "trailingCommas": "es5"
     }
+  },
+  "files": {
+    "ignore": ["node_modules", "dist", "build", "*.min.js", "*.d.ts", ".vscode"]
+  }
 }

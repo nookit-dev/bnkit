@@ -10,7 +10,7 @@ export async function oAuthFetcher<T>(
   options: {
     params: Record<string, string | undefined>
     headers?: Record<string, string>
-  },
+  }
 ): Promise<FetcherResponse<T>> {
   const response = await fetch(url, {
     method: 'post',

@@ -1,48 +1,48 @@
-import type { Database } from 'bun:sqlite';
+import type { Database } from 'bun:sqlite'
 
 import { type SqliteTableFactoryParams, sqliteTableFactory } from './sqlite-table-factory'
 
 type SqliteFactoryParams = {
-  db: Database;
-  debug?: boolean;
-  enableForeignKeys?: boolean;
-};
+  db: Database
+  debug?: boolean
+  enableForeignKeys?: boolean
+}
 
 type DBTableFactoryParams<Schema extends SchemaMap> = Omit<SqliteTableFactoryParams<Schema>, 'db'> & {
-  debug?: boolean;
-};
+  debug?: boolean
+}
 
 // Mapping of SQLite types to TypeScript types.
 export type SQLiteSchemaToTSMap = {
-  TEXT: string;
-  NUMERIC: number | string;
-  INTEGER: number;
-  REAL: number;
-  BLOB: any;
-  DATE: Date;
-};
+  TEXT: string
+  NUMERIC: number | string
+  INTEGER: number
+  REAL: number
+  BLOB: any
+  DATE: Date
+}
 
-export type SQLiteData = keyof SQLiteSchemaToTSMap;
+export type SQLiteData = keyof SQLiteSchemaToTSMap
 
 export type FieldDef = {
-  type: SQLiteData;
-  primaryKey?: boolean;
-  unique?: boolean;
-  foreignKey?: string;
-  required?: boolean;
-  defaultValue?: string | number;
-};
+  type: SQLiteData
+  primaryKey?: boolean
+  unique?: boolean
+  foreignKey?: string
+  required?: boolean
+  defaultValue?: string | number
+}
 
 // Mapped type that takes a schema with SQLite types and returns a schema with TypeScript types.
 export type SQLInfer<T extends SchemaMap> = {
-  [K in keyof T]: T[K] extends FieldDef ? SQLiteSchemaToTSMap[T[K]['type']] : never;
-};
+  [K in keyof T]: T[K] extends FieldDef ? SQLiteSchemaToTSMap[T[K]['type']] : never
+}
 
-export type SchemaMap = Partial<Record<string, FieldDef>>;
+export type SchemaMap = Partial<Record<string, FieldDef>>
 
 export const getType = <T extends SchemaMap>(schema: T): SQLInfer<T> => {
-  return undefined as any as SQLInfer<T>;
-};
+  return undefined as any as SQLInfer<T>
+}
 
 export function sqliteFactory({
   db,
@@ -54,7 +54,7 @@ export function sqliteFactory({
 }: SqliteFactoryParams) {
   if (enableForeignKeys) {
     // Enable foreign key constraints
-    db.query('PRAGMA foreign_keys = ON;').run();
+    db.query('PRAGMA foreign_keys = ON;').run()
   }
 
   function dbTableFactory<Schema extends SchemaMap>({
@@ -72,8 +72,8 @@ export function sqliteFactory({
         debug: debugTable,
         enableForeignKeys: debug,
       }
-    );
+    )
   }
 
-  return { dbTableFactory };
+  return { dbTableFactory }
 }

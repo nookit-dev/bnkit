@@ -7,7 +7,7 @@ interface DataGenerators {
   date: (generator?: DataGenerator<Date>) => Date
   object: <T extends Record<string, any>>(
     shape: T,
-    generatorMap?: Partial<Record<keyof T, DataGenerator<any>>>,
+    generatorMap?: Partial<Record<keyof T, DataGenerator<any>>>
   ) => DataGenerator<T>
   array: <T>(generator: DataGenerator<T>, length?: number) => DataGenerator<T[]>
 }
@@ -19,7 +19,7 @@ export const dataGenerators: DataGenerators = {
   date: (generator = () => new Date()) => generator(),
   object: <T extends Record<string, any>>(
     shape: T,
-    generatorMap: Partial<Record<keyof T, DataGenerator<any>>> = {},
+    generatorMap: Partial<Record<keyof T, DataGenerator<any>>> = {}
   ) => {
     return () => {
       const result = {} as any
