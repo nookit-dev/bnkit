@@ -1,4 +1,4 @@
-import { HTTPMethod, RouteMethods } from '../utils/http-types'
+import type { HTTPMethod, RouteMethods } from '../utils/http-types'
 
 export type EventHandlerMap = { [event: string]: (ev: MessageEvent) => void }
 

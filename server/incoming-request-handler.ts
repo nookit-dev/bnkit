@@ -1,8 +1,10 @@
 import type { InferMiddlewareDataMap, MiddlewareConfigMap } from '.'
 import type { middlewareFactory } from './middleware-manager'
-import type { RouteHandler, Routes } from './routes'
+import type { RouteHandler, Routes } from './route-types'
+
 function isValidRegex(str: string): boolean {
   if (str === '/') return false
+
   try {
     new RegExp(str)
     return true
@@ -49,12 +51,17 @@ export const serverRequestHandler = <
   if (!matchedHandler && !optionsHandler) return Promise.resolve(new Response('Not Found', { status: 404 }))
   const executeMiddlewares = middlewareRet?.executeMiddlewares
 
+  // Create a new Response object to pass to middleware
+  const res = new Response()
+
   // Ensure that middleware execution is properly handled when it's not provided
-  const middlewareResponses = executeMiddlewares ? executeMiddlewares(req) : Promise.resolve({} as MiddlewareDataMap)
+  const middlewareResponses = executeMiddlewares
+    ? executeMiddlewares(req, res)
+    : Promise.resolve({} as MiddlewareDataMap)
 
   return middlewareResponses
     .then((resolvedMwResponses) => {
-      if (req.method === 'options' && !matchedHandler && optionsHandler) {
+      if (req.method === 'OPTIONS' && !matchedHandler && optionsHandler) {
         return optionsHandler(req, resolvedMwResponses as MiddlewareDataMap)
       }
 

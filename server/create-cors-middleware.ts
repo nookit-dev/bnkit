@@ -1,5 +1,5 @@
 import type { CORSOptions } from '../utils/http-types'
-import type { Middleware } from './middleware-types'
+import type { Middleware, NextFunction } from './middleware-types'
 
 const setAllowOrigin = (headers: Headers, originToSet: string) =>
   headers.set('Access-Control-Allow-Origin', originToSet || '')
@@ -39,7 +39,7 @@ export const configCorsMW = (options?: CORSOptions, debug = false): Middleware<R
     })
   }
 
-  const requestHandler = (request: Request) => {
+  return async (request: Request, next: NextFunction) => {
     const reqMethod = request.method
     const reqOrigin = request.headers.get('Origin')
     const allowedOrigins = options?.allowedOrigins || []
@@ -53,7 +53,6 @@ export const configCorsMW = (options?: CORSOptions, debug = false): Middleware<R
       })
     }
 
-    // if (originToSet) {
     const headers = new Headers()
     const originToSet = allowedOrigins.includes('*') ? '*' : reqOrigin
 
@@ -61,46 +60,41 @@ export const configCorsMW = (options?: CORSOptions, debug = false): Middleware<R
       return sendErrorResponse(400, 'Bad Request', 'Origin header missing')
     }
 
-    // Set Access-Control-Allow-Origin header
+    // Set CORS headers
     setAllowOrigin(headers, originToSet || '')
-
-    // Set Access-Control-Allow-Methods header
     setAllowMethods(headers, allowedMethods)
-
-    // Set Access-Control-Allow-Headers header
     addAllowHeader(headers, options)
-
-    // Set Access-Control-Allow-Credentials header
     setAllowCredentials(headers, options)
 
-    // check if request method is options and allowed
     if (reqMethod === 'OPTIONS') {
-      const optionRequestMethod = request.headers.get('Access-Control-Allow-Methods')
+      const optionRequestMethod = request.headers.get('Access-Control-Request-Method')
 
-      if (!allowedMethods.includes(optionRequestMethod || '')) {
+      // Check if the requested method is allowed, but only if it's specified
+      if (optionRequestMethod && !allowedMethods.includes(optionRequestMethod)) {
         return sendErrorResponse(405, 'Method Not Allowed', `Method ${optionRequestMethod} is not allowed`, headers)
       }
 
-      if (!headers) {
-        return sendErrorResponse(500, 'Internal Server Error', 'Missing headers for options return', headers)
-      }
-
-      // Set Access-Control-Max-Age for caching preflight request
-      // headers.set("Access-Control-Max-Age", "600"); // 10 minutes
+      // If it's an OPTIONS request and the method is allowed (or not specified), return 204 No Content
       return new Response(null, { status: 204, headers })
     }
 
+    // For non-OPTIONS requests
+    await next()
+
+    // Apply CORS headers to the response after next() has been called
+    const response = new Response(null, { status: 200 })
+    headers.forEach((value, key) => {
+      response.headers.set(key, value)
+    })
+
     if (!allowedOrigins.includes(reqOrigin || '')) {
-      setAllowMethods(headers, allowedMethods)
-      return sendErrorResponse(403, 'Forbidden', `Origin ${reqOrigin} not allowed`, headers)
+      return sendErrorResponse(403, 'Forbidden', `Origin ${reqOrigin} not allowed`, response.headers)
     }
 
     if (!allowedMethods.includes(request.method)) {
-      return sendErrorResponse(405, 'Method Not Allowed', `Method ${reqMethod} not allowed`, headers)
+      return sendErrorResponse(405, 'Method Not Allowed', `Method ${reqMethod} not allowed`, response.headers)
     }
 
-    return new Response(null, { status: 200, headers })
+    return response
   }
-
-  return requestHandler
 }

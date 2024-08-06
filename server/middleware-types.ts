@@ -1,4 +1,6 @@
-export type Middleware<Res extends unknown> = (request: Request) => Res
+export type NextFunction = (error?: Error) => Promise<void>
+
+export type Middleware<Res extends unknown> = (request: Request, next: NextFunction) => Res | Promise<Res>
 
 export type MiddlewareConfigMap = {
   [id: string]: Middleware<unknown>

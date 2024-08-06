@@ -63,7 +63,7 @@ describe('createCorsMiddleware function', () => {
       allowedHeaders: ['Content-Type'],
     })
 
-    const response = mwConfig(requester)
+    const response = await mwConfig(requester, async () => {})
 
     expect(response.headers.get('Access-Control-Allow-Methods')).toBe('GET, POST, PUT, DELETE')
     expect(response.headers.get('Access-Control-Allow-Headers')).toBe('Content-Type')
@@ -77,7 +77,7 @@ describe('createCorsMiddleware function', () => {
       ...defaultOptions,
     })
 
-    const response = await middlewareHandler(requester)
+    const response = await middlewareHandler(requester, async () => {})
 
     expect(response.status).toBe(400)
   })
@@ -89,7 +89,7 @@ describe('createCorsMiddleware function', () => {
       },
     }).options
 
-    const response = await configCorsMW(defaultOptions)(requester)
+    const response = await configCorsMW(defaultOptions)(requester, async () => {})
 
     expect(response.status).toBe(204)
     expect(response.headers.get('Access-Control-Allow-Methods')).toBe('GET, POST, PUT, DELETE')
@@ -105,7 +105,7 @@ describe('createCorsMiddleware function', () => {
       allowedMethods: ['GET', 'PATCH'],
     })
 
-    const response = mwConfig(requester)
+    const response = await mwConfig(requester, async () => {})
 
     expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
   })
@@ -123,7 +123,7 @@ describe('createCorsMiddleware function', () => {
       allowedMethods: ['GET', 'POST'],
     })
 
-    const response = mwConfig(request)
+    const response = await mwConfig(request, async () => {})
 
     expect(response.status).toBe(405)
   })
@@ -140,7 +140,7 @@ describe('createCorsMiddleware function', () => {
       allowedOrigins: [tstOrigin],
     })
 
-    const response = mwConfig(requester)
+    const response = await mwConfig(requester, async () => {})
 
     expect(response?.headers.get('Access-Control-Allow-Origin')).toBe(tstOrigin)
   })
@@ -154,7 +154,7 @@ describe('createCorsMiddleware function', () => {
       allowedOrigins: [tstOrigin],
     })
 
-    const response = mwConfig(request)
+    const response = await mwConfig(request, async () => {})
 
     expect(response.headers.get('Access-Control-Allow-Origin')).toBe(tstOrigin)
   })
@@ -166,7 +166,7 @@ describe('createCorsMiddleware function', () => {
 
     const mwConfig = await configCorsMW({ allowedOrigins: ['*'] })
 
-    const response = mwConfig(request)
+    const response = await mwConfig(request, async () => {})
 
     expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*')
   })
@@ -182,7 +182,7 @@ describe('createCorsMiddleware function', () => {
       allowedOrigins: [tstOrigin],
     })
 
-    const response = mwConfig(request)
+    const response = await mwConfig(request, async () => {})
     expect(response.headers.get('Access-Control-Allow-Methods')).toBe('GET, POST')
   })
 
@@ -196,7 +196,7 @@ describe('createCorsMiddleware function', () => {
       allowedOrigins: [tstOrigin],
     })
 
-    const response = await mwConfig(request)
+    const response = await mwConfig(request, async () => {})
 
     console.log({
       mwConfig,
@@ -212,7 +212,7 @@ describe('createCorsMiddleware function', () => {
       noOrigin: true,
     }).get
     const mwConfig = await configCorsMW({})
-    const response = mwConfig(request)
+    const response = await mwConfig(request, async () => {})
 
     expect(response.status).toBe(400)
   })
@@ -226,7 +226,7 @@ describe('createCorsMiddleware function', () => {
       allowedOrigins: ['http://example.com'],
     })
 
-    const response = mwConfig(request)
+    const response = await mwConfig(request, async () => {})
 
     expect(response.status).toBe(403)
   })
@@ -244,7 +244,7 @@ describe('createCorsMiddleware function', () => {
         allowedOrigins: [tstOrigin],
       },
       true
-    )(request)
+    )(request, async () => {})
 
     expect(response.status).toBe(405)
   })
@@ -261,7 +261,7 @@ describe('createCorsMiddleware function', () => {
       allowedOrigins: [tstOrigin],
     })
 
-    const response = mwConfig(request)
+    const response = await mwConfig(request, async () => {})
 
     expect(response.status).toBe(204)
   })
