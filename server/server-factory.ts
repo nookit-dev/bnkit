@@ -1,8 +1,8 @@
-import { WebSocketHandler } from 'bun'
+import type { WebSocketHandler } from 'bun'
 import { serverRequestHandler } from './incoming-request-handler'
-import { middlewareFactory } from './middleware-manager'
-import { InferMiddlewareDataMap, MiddlewareConfigMap } from './middleware-types'
-import { RouteHandler, Routes } from './routes'
+import type { middlewareFactory } from './middleware-manager'
+import type { InferMiddlewareDataMap, MiddlewareConfigMap } from './middleware-types'
+import type { RouteHandler, Routes } from './route-types'
 
 export const serverFactory = <
   MiddlewareFactory extends ReturnType<typeof middlewareFactory>,

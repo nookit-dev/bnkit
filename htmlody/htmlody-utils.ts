@@ -1,62 +1,69 @@
-import { HtmlTags, htmlTagsSet } from './constants'
-import { CRNode } from './htmlody-plugins'
-import { Attributes, JsonHtmlNodeTree, JsonTagElNode } from './htmlody-types'
+import { type HtmlTags, htmlTagsSet } from './constants';
+import type { CRNode } from './htmlody-plugins';
+import type {
+  Attributes,
+  JsonHtmlNodeTree,
+  JsonTagElNode,
+} from './htmlody-types';
 
 export const retrieveElement = <Structure extends JsonHtmlNodeTree>(
   JsonHtmlNodeMap: Structure,
-  element: keyof Structure,
+  element: keyof Structure
 ) => {
-  return JsonHtmlNodeMap[element]
-}
+  return JsonHtmlNodeMap[element];
+};
 
 export const nodeFactory = <
   Extension extends Record<string, unknown>,
   NodeT extends JsonTagElNode = JsonTagElNode<Extension>,
   NodeConfigT extends NodeT = NodeT,
 >(
-  config: NodeConfigT,
+  config: NodeConfigT
 ) => {
   const createNode = (options?: Omit<NodeConfigT, 'tag'>): NodeT => {
     return {
       ...config,
       ...options,
-    }
-  }
+    };
+  };
 
   return {
     create: createNode,
-  }
-}
+  };
+};
 
 export function formatAttributes(attributes: Attributes): string {
   return Object.entries(attributes)
     .map(([key, value]) => `${key}="${value}"`)
-    .join(' ')
+    .join(' ');
 }
 
 export function isValidHtmlTag(tagName: HtmlTags): boolean {
-  return htmlTagsSet.has(tagName)
+  return htmlTagsSet.has(tagName);
 }
 
 export function isValidAttributesString(attributesStr: string): boolean {
   // Regex pattern for valid attribute format: key="value"
-  const attributePattern = /^(\s?[a-zA-Z-]+="[^"]*"\s?)+$/
-  return attributePattern.test(attributesStr)
+  const attributePattern = /^(\s?[a-zA-Z-]+="[^"]*"\s?)+$/;
+  return attributePattern.test(attributesStr);
 }
 
-export function collectClassNames(node: JsonTagElNode, uniqueClassNames: Set<string>) {
+export function collectClassNames(
+  node: JsonTagElNode,
+  uniqueClassNames: Set<string>
+) {
   if (node.attributes && typeof node.attributes.class === 'string') {
-    const classList = node.attributes.class.split(' ')
-    classList.forEach((cls) => uniqueClassNames.add(cls))
+    const classList = node.attributes.class.split(' ');
+    classList.forEach((cls) => uniqueClassNames.add(cls));
   }
 }
 
 export const children = (children: JsonTagElNode<CRNode>[]) => {
-  const returnChildren: JsonHtmlNodeTree = {}
+  const returnChildren: JsonHtmlNodeTree = {};
 
   for (let i = 0; i < children.length; i++) {
-    returnChildren[i] = children[i]
+    returnChildren[i] = children[i];
   }
 
-  return returnChildren
-}
+  return returnChildren;
+};

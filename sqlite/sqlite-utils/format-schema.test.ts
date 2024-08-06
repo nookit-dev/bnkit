@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import { SchemaMap } from '../sqlite-factory'
+import type { SchemaMap } from '../sqlite-factory'
 import { formatSchema } from './format-schema'
 
 test('formatSchema formats schema correctly', () => {

@@ -1,6 +1,6 @@
 import Database from 'bun:sqlite'
 import { beforeEach, describe, expect, it, test } from 'bun:test'
-import { SchemaMap } from '../sqlite-factory'
+import type { SchemaMap } from '../sqlite-factory'
 import { createItem, createWhereClause, deleteItemById, readItems, updateItem } from './crud-fn-utils'
 
 const testSchema = {

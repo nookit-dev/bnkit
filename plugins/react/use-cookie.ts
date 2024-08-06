@@ -1,4 +1,4 @@
-import { CookieOptions } from 'bnkit/cookies/cookie-types'
+import type { CookieOptions } from 'bnkit/cookies/cookie-types'
 import { clientCookieFactory } from 'bnkit/cookies/create-client-side-cookie-factory'
 import { useEffect, useState } from 'react'
 

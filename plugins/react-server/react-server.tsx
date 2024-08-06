@@ -1,4 +1,4 @@
-import { MiddlewareConfigMap, Routes, serverFactory } from 'bnkit/server'
+import type { MiddlewareConfigMap, Routes, serverFactory } from 'bnkit/server'
 import { createReactStreamHandler } from './react-dom-stream-handler'
 
 export const createReactServerRoutes = async <MiddlewareConfig extends MiddlewareConfigMap, State extends object>({

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Dispatchers } from '../../types'
 import { createStateDispatchers } from 'state/create-state-dispatchers'
+import type { Dispatchers } from '../../types'
 const MAX_RETRIES = 5
 
 const getAppStateFromLocalStorage = <State extends object>(defaultState: State): State => {

@@ -1,4 +1,4 @@
-import { EventHandlerMap, ExternalFetchConfig, FileDownloadConfig, MappedApiConfig, TypeMap } from './fetch-types'
+import  type { EventHandlerMap, ExternalFetchConfig, FileDownloadConfig, MappedApiConfig, TypeMap } from './fetch-types'
 
 declare var window: {
   fetch: any
@@ -11,9 +11,12 @@ declare var document: {
 
 export function appendURLParameters(url: string, params: Record<string, string> = {}): string {
   const urlWithParams = new URLSearchParams()
-  Object.entries(params).forEach(([key, value]) => {
+
+  for (const [key, value] of Object.entries(params || {})) {
     urlWithParams.append(key, value)
-  })
+  }
+
+
   return urlWithParams.toString() ? `${url}?${urlWithParams.toString()}` : url
 }
 
@@ -32,9 +35,9 @@ export function computeHeaders(defaultHeaders: HeadersInit, customHeaders?: Head
       resultHeaders.set(key, value)
     }
   } else if (Array.isArray(customHeaders)) {
-    customHeaders.forEach(([key, value]) => {
+    for (const [key, value] of customHeaders) {
       resultHeaders.set(key, value)
-    })
+    }
   } else {
     for (const [key, value] of Object.entries(customHeaders || {})) {
       resultHeaders.set(key, value as string)
@@ -73,9 +76,9 @@ export function fileDownload(config: FileDownloadConfig, baseUrl: string): void 
   if (typeof window === 'undefined') return
   const finalUrl = new URL(baseUrl + config.endpoint)
   if (config.params) {
-    Object.keys(config.params).forEach((key) => {
-      finalUrl.searchParams.append(key, config.params![key])
-    })
+    for (const [key, value] of Object.entries(config.params)) {
+      finalUrl.searchParams.append(key, value)
+    }
   }
 
   const a = document.createElement('a')

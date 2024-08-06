@@ -1,4 +1,4 @@
-import { PartialRecord } from '../type-utils'
+import type { PartialRecord } from '../type-utils'
 
 // for improved readbility when creating server routes lower
 export type RouteMethods = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head'

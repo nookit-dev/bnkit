@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { JwtHeader, JwtPayload } from './jwt-types'
+import type { JwtHeader, JwtPayload } from './jwt-types'
 
 export function encrypt(data: string, secret: string): string {
   const algorithm = 'aes-256-gcm'

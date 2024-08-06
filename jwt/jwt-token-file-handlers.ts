@@ -1,5 +1,5 @@
-import { JwtHandlers } from './jwt-be'
-import { RefreshToken } from './jwt-types'
+import type { JwtHandlers } from './jwt-be'
+import type { RefreshToken } from './jwt-types'
 
 export interface StoredRefreshToken extends RefreshToken {
   token: string

@@ -1,4 +1,4 @@
-import { CommonHttpHeaders, RouteMethods } from '../utils/http-types'
+import tyep { CommonHttpHeaders, RouteMethods } from '../utils/http-types'
 
 export type CORSOptions = {
   origins?: string[]

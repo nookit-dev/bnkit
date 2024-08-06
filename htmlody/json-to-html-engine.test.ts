@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { HTMLodyPlugin, classRecordPlugin, markdownPlugin } from './htmlody-plugins'
-import { Attributes, JsonHtmlNodeTree } from './htmlody-types'
+import { type HTMLodyPlugin, classRecordPlugin, markdownPlugin } from './htmlody-plugins'
+import type { Attributes, JsonHtmlNodeTree } from './htmlody-types'
 import { formatAttributes, isValidAttributesString } from './htmlody-utils'
 import {
   getHtmlTags,
@@ -14,7 +14,7 @@ import {
   validateTagName,
 } from './json-to-html-engine'
 
-export function randomAttributes(): Attributes {
+function randomAttributes(): Attributes {
   return {
     id: `id-${Math.floor(Math.random() * 1000)}`,
     class: `class-${Math.floor(Math.random() * 1000)}`,

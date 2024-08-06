@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { CORSOptions, HTTPMethod } from 'utils/http-types'
+import type { CORSOptions, HTTPMethod } from 'utils/http-types'
 import { configCorsMW } from './create-cors-middleware'
 
 const tstOrigin = 'http://example.com'

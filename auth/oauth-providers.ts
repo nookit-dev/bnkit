@@ -1,4 +1,4 @@
-import { OAuthConfig, OAuthProviderFn } from './oauth-types'
+import type { OAuthConfig, OAuthProviderFn } from './oauth-types'
 
 export type ProvidersConfigRecord = Record<string, Omit<OAuthConfig, 'clientId' | 'clientSecret'>>
 

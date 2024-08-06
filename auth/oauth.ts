@@ -1,4 +1,4 @@
-import { OAuthConfig, OAuthProviderInitializer, OAuthToken } from './oauth-types'
+import type { OAuthConfig, OAuthProviderInitializer, OAuthToken } from './oauth-types'
 
 type FetcherResponse<T> = T & {
   error?: string

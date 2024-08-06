@@ -1,4 +1,4 @@
-import { FieldDef, SchemaMap } from '../sqlite-factory'
+import type { FieldDef, SchemaMap } from '../sqlite-factory'
 
 export function assembleCreateTableQuery(
   tableName: string,

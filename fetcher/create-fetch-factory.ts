@@ -6,8 +6,8 @@ declare var document: {
     removeChild: any
   }
 }
-import { HTTPMethod } from '../utils/http-types'
-import { ExternalFetchConfig, MappedApiConfig, TypeMap } from './fetch-types'
+import type { HTTPMethod } from '../utils/http-types'
+import type { ExternalFetchConfig, MappedApiConfig, TypeMap } from './fetch-types'
 import { computeHeaders, createEventStream, fetcher, fileDownload } from './fetch-utils'
 
 export type FactoryMethods = keyof ReturnType<typeof createFetchFactory>

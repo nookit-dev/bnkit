@@ -1,7 +1,7 @@
-import { RouteMethods } from '../utils/http-types'
-import { middlewareFactory } from './middleware-manager'
+import type { RouteMethods } from '../utils/http-types'
+import type { middlewareFactory } from './middleware-manager'
 
-import { HTMLodyPlugin, htmlodyBuilder } from '../htmlody'
+import type { HTMLodyPlugin, htmlodyBuilder } from '../htmlody'
 import type { InferMiddlewareDataMap, MiddlewareConfigMap } from './middleware-types'
 
 export type RouteHandler<M = {}> = (request: Request, middlewareData: M) => Response | Promise<Response>

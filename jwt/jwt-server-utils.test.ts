@@ -10,7 +10,7 @@ import {
   payloadValidator,
   sign,
 } from './jwt-server-utils'
-import { JwtHeader, JwtPayload } from './jwt-types'
+import type { JwtHeader, JwtPayload } from './jwt-types'
 
 const secret = 'test-secret' // For testing purposes only
 const header: JwtHeader = { alg: 'HS256', typ: 'JWT' }

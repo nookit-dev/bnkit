@@ -1,106 +1,106 @@
-import { CORSOptions } from '../utils/http-types'
-import { Middleware } from './middleware-types'
+import type { CORSOptions } from '../utils/http-types';
+import type { Middleware } from './middleware-types';
 
 const setAllowOrigin = (headers: Headers, originToSet: string) =>
-  headers.set('Access-Control-Allow-Origin', originToSet || '')
+  headers.set('Access-Control-Allow-Origin', originToSet || '');
 const setAllowMethods = (headers: Headers, methods: string[]) =>
-  headers.set('Access-Control-Allow-Methods', methods.join(', '))
+  headers.set('Access-Control-Allow-Methods', methods.join(', '));
 const addAllowHeader = (headers: Headers, options?: CORSOptions) => {
   if (options?.allowedHeaders?.join) {
-    headers.set('Access-Control-Allow-Headers', options.allowedHeaders.join(', '))
+    headers.set('Access-Control-Allow-Headers', options.allowedHeaders.join(', '));
   }
-}
+};
 
 const setAllowCredentials = (headers: Headers, options?: CORSOptions) =>
-  options?.credentials && headers.set('Access-Control-Allow-Credentials', 'true')
+  options?.credentials && headers.set('Access-Control-Allow-Credentials', 'true');
 
-export const configCorsMW = (options?: CORSOptions, debug: boolean = false): Middleware<Response> => {
-  const allowedMethods: string[] = options?.allowedMethods || []
+export const configCorsMW = (options?: CORSOptions, debug = false): Middleware<Response> => {
+  const allowedMethods: string[] = options?.allowedMethods || [];
 
   const log = (input: any) => {
     if (debug) {
-      console.log(input)
+      console.log(input);
     }
-  }
+  };
 
   const sendErrorResponse = (status: number, statusText: string, detail: string, headers?: Headers) => {
-    const errorResponse = { statusText, detail }
+    const errorResponse = { statusText, detail };
     if (debug) {
-      console.error(errorResponse)
+      console.error(errorResponse);
     }
 
-    const finalHeaders = headers
+    const finalHeaders = headers;
 
-    finalHeaders?.set('Content-Type', 'application/json')
+    finalHeaders?.set('Content-Type', 'application/json');
 
     return new Response(JSON.stringify(errorResponse), {
       status,
       headers: finalHeaders,
-    })
-  }
+    });
+  };
 
   const requestHandler = (request: Request) => {
-    const reqMethod = request.method
-    const reqOrigin = request.headers.get('Origin')
-    const allowedOrigins = options?.allowedOrigins || []
-    const originAllowed = allowedOrigins.includes(reqOrigin || '')
+    const reqMethod = request.method;
+    const reqOrigin = request.headers.get('Origin');
+    const allowedOrigins = options?.allowedOrigins || [];
+    const originAllowed = allowedOrigins.includes(reqOrigin || '');
 
     if (debug && !originAllowed) {
       log({
         allowedOrigins,
         reqOrigin,
         originAllowed,
-      })
+      });
     }
 
     // if (originToSet) {
-    const headers = new Headers()
-    const originToSet = allowedOrigins.includes('*') ? '*' : reqOrigin
+    const headers = new Headers();
+    const originToSet = allowedOrigins.includes('*') ? '*' : reqOrigin;
 
     if (!reqOrigin) {
-      return sendErrorResponse(400, 'Bad Request', 'Origin header missing')
+      return sendErrorResponse(400, 'Bad Request', 'Origin header missing');
     }
 
     // Set Access-Control-Allow-Origin header
-    setAllowOrigin(headers, originToSet || '')
+    setAllowOrigin(headers, originToSet || '');
 
     // Set Access-Control-Allow-Methods header
-    setAllowMethods(headers, allowedMethods)
+    setAllowMethods(headers, allowedMethods);
 
     // Set Access-Control-Allow-Headers header
-    addAllowHeader(headers, options)
+    addAllowHeader(headers, options);
 
     // Set Access-Control-Allow-Credentials header
-    setAllowCredentials(headers, options)
+    setAllowCredentials(headers, options);
 
     // check if request method is options and allowed
     if (reqMethod === 'OPTIONS') {
-      const optionRequestMethod = request.headers.get('Access-Control-Allow-Methods')
+      const optionRequestMethod = request.headers.get('Access-Control-Allow-Methods');
 
       if (!allowedMethods.includes(optionRequestMethod || '')) {
-        return sendErrorResponse(405, 'Method Not Allowed', `Method ${optionRequestMethod} is not allowed`, headers)
+        return sendErrorResponse(405, 'Method Not Allowed', `Method ${optionRequestMethod} is not allowed`, headers);
       }
 
       if (!headers) {
-        return sendErrorResponse(500, 'Internal Server Error', 'Missing headers for options return', headers)
+        return sendErrorResponse(500, 'Internal Server Error', 'Missing headers for options return', headers);
       }
 
       // Set Access-Control-Max-Age for caching preflight request
       // headers.set("Access-Control-Max-Age", "600"); // 10 minutes
-      return new Response(null, { status: 204, headers })
+      return new Response(null, { status: 204, headers });
     }
 
     if (!allowedOrigins.includes(reqOrigin || '')) {
-      setAllowMethods(headers, allowedMethods)
-      return sendErrorResponse(403, 'Forbidden', `Origin ${reqOrigin} not allowed`, headers)
+      setAllowMethods(headers, allowedMethods);
+      return sendErrorResponse(403, 'Forbidden', `Origin ${reqOrigin} not allowed`, headers);
     }
 
     if (!allowedMethods.includes(request.method)) {
-      return sendErrorResponse(405, 'Method Not Allowed', `Method ${reqMethod} not allowed`, headers)
+      return sendErrorResponse(405, 'Method Not Allowed', `Method ${reqMethod} not allowed`, headers);
     }
 
-    return new Response(null, { status: 200, headers })
-  }
+    return new Response(null, { status: 200, headers });
+  };
 
-  return requestHandler
-}
+  return requestHandler;
+};

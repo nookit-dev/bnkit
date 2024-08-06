@@ -1,5 +1,5 @@
 import { convertMarkdownToHTML } from '../utils/text-utils'
-import { ExtensionRec, JsonTagElNode, ResponsiveClassRecord } from './htmlody-types'
+import type { ExtensionRec, JsonTagElNode, ResponsiveClassRecord } from './htmlody-types'
 
 // this will be the node that will be attached to our json node
 export type ClassRecordAttributes = {

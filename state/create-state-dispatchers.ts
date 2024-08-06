@@ -1,4 +1,4 @@
-import { Dispatchers } from '../types'
+import type { Dispatchers } from '../types'
 import { isArray, isBool, isNum, isObj } from '../utils/value-checkers'
 
 export function createArrayDispatchers<Key, T, Options extends object = {}>(

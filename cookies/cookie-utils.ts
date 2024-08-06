@@ -1,4 +1,4 @@
-import { CookieOptions } from './cookie-types'
+import type { CookieOptions } from './cookie-types'
 
 declare var document: {
   cookie: any

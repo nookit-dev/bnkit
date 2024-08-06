@@ -1,6 +1,6 @@
-import { InferMiddlewareDataMap, MiddlewareConfigMap } from '.'
-import { middlewareFactory } from './middleware-manager'
-import { RouteHandler, Routes } from './routes'
+import type { InferMiddlewareDataMap, MiddlewareConfigMap } from '.'
+import type { middlewareFactory } from './middleware-manager'
+import type { RouteHandler, Routes } from './routes'
 function isValidRegex(str: string): boolean {
   if (str === '/') return false
   try {

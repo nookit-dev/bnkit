@@ -1,6 +1,6 @@
 import Database from 'bun:sqlite'
 import { beforeEach, describe, expect, test } from 'bun:test'
-import { SchemaMap, sqliteFactory } from './sqlite-factory'
+import { type SchemaMap, sqliteFactory } from './sqlite-factory'
 
 let db = new Database(':memory:')
 

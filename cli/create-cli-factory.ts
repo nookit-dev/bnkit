@@ -1,6 +1,6 @@
 import { fileFactory } from '../files-folders'
-import { defaultLogger } from '../logger'
-import { BaseError } from '../utils/base-error'
+import type { defaultLogger } from '../logger'
+import type { BaseError } from '../utils/base-error'
 import { chooseActions, getAdditionalPrompt, getUserInput, parseCliArgs } from './cli-utils'
 
 export type CLIOptions = {

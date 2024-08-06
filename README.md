@@ -48,7 +48,7 @@ Use any an all Bun Nookit modules - server example with json response (similar t
 
 ```typescript
 import { jsonRes, serverFactory } from 'bnkit/server'
-import { middleware, RoutesWithMiddleware } from './middlewares'
+import { middleware, type RoutesWithMiddleware } from './middlewares'
 
 const routes = {
   '/': {

@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from 'bun:test'
-import { FieldDef, SchemaMap } from '../sqlite-factory'
+import type { FieldDef, SchemaMap } from '../sqlite-factory'
 import {
   assembleCreateTableQuery,
   createColumnDefinition,

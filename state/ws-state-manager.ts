@@ -1,5 +1,5 @@
-import { ServerWebSocket, WebSocketHandler } from 'bun'
-import { createStateManager } from './state-manager'
+import type { ServerWebSocket, WebSocketHandler } from 'bun'
+import type { createStateManager } from './state-manager'
 
 export const createWSStateHandler = <State extends object>(
   stateMachine: ReturnType<typeof createStateManager<State>>,

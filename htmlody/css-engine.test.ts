@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { JsonHtmlNodeTree, JsonTagElNode } from '.'
+import type { JsonHtmlNodeTree, JsonTagElNode } from '.'
 import {
   adjustBrightness,
   generateCSS,
@@ -9,7 +9,7 @@ import {
   hexToRgb,
   rgbToHex,
 } from './css-engine' // Update this import path
-import { ClassRecordAttributes } from './htmlody-plugins'
+import type { ClassRecordAttributes } from './htmlody-plugins'
 
 describe('generateCSS', () => {
   it('should generate correct CSS from nodeMap', () => {

@@ -1,8 +1,8 @@
-import { htmlRes, middlewareFactory } from '../server'
-import { HtmlTags, SELF_CLOSING_TAGS, htmlTags } from './constants'
+import { htmlRes, type middlewareFactory } from '../server'
+import { type HtmlTags, SELF_CLOSING_TAGS, htmlTags } from './constants'
 import { generateCSS, generateColorVariables } from './css-engine'
-import { HTMLodyPlugin } from './htmlody-plugins'
-import { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from './htmlody-types'
+import type { HTMLodyPlugin } from './htmlody-plugins'
+import type { ExtensionRec, JsonHtmlNodeTree, JsonTagElNode } from './htmlody-types'
 import { formatAttributes, isValidAttributesString, isValidHtmlTag } from './htmlody-utils'
 
 export function validateTagName(tagName: HtmlTags): string {

@@ -8,7 +8,7 @@ import {
   isTokenExpired,
   payloadValidator,
 } from './jwt-server-utils'
-import { JwtHeader, JwtPayload, RefreshToken } from './jwt-types'
+import type { JwtHeader, JwtPayload, RefreshToken } from './jwt-types'
 
 export interface JwtHandlers {
   getInvalidTokens: () => Promise<string[]>

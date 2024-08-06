@@ -1,6 +1,6 @@
 import { Database } from 'bun:sqlite'
 import { afterEach, describe, expect, test } from 'bun:test'
-import { SchemaMap } from './sqlite-factory'
+import type { SchemaMap } from './sqlite-factory'
 import { sqliteTableFactory } from './sqlite-table-factory'
 
 const mockDb = new Database(':memory:')

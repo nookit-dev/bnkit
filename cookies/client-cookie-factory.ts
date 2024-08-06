@@ -1,4 +1,4 @@
-import { CookieOptions } from './cookie-types'
+import type { CookieOptions } from './cookie-types'
 import { parseCookieData, retrieveRawCookieValue, setCookie } from './cookie-utils'
 
 declare var document: {

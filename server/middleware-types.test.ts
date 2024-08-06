@@ -1,5 +1,5 @@
-import { InferMiddlewareDataMap } from '.'
-import { TypeCheck, typeCheck } from '../test-utils/type-testers'
+import type{  InferMiddlewareDataMap } from '.'
+import { type TypeCheck, typeCheck } from '../test-utils/type-testers'
 
 const middlewareMap = {
   syncMiddleware: (req: Request) => ({ sync: true }),

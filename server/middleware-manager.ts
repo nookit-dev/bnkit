@@ -1,4 +1,4 @@
-import { InferMiddlewareDataMap, MiddlewareConfigMap } from './middleware-types'
+import type { InferMiddlewareDataMap, MiddlewareConfigMap } from './middleware-types'
 
 export type InferMiddlewareFromFactory<Factory extends typeof middlewareFactory> = ReturnType<
   ReturnType<Factory>['inferTypes']

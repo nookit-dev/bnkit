@@ -1,4 +1,4 @@
-import { SyncSubprocess } from 'bun'
+import type  { SyncSubprocess } from 'bun'
 import { exit } from 'process'
 import { ulog } from '../utils/ulog'
 

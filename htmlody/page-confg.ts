@@ -1,5 +1,5 @@
-import { JsonHtmlNodeTree, JsonTagElNode } from '.'
-import { CRNode, MDNode } from './htmlody-plugins'
+import type { JsonHtmlNodeTree, JsonTagElNode } from '.'
+import type { CRNode, MDNode } from './htmlody-plugins'
 // import { pageFactory } from "./html-generator";
 
 type AppNode = CRNode & MDNode

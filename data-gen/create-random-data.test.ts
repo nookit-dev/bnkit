@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'bun:test'
-import { dataGenerators } from './object-gen'
 import { createRandomData } from './create-random-data'
 
 describe('createRandomData', () => {

@@ -3,9 +3,10 @@
   "version": "0.5.15",
   "main": "index.ts",
   "devDependencies": {
-    "bun": "^1.0.14",
-    "bun-types": "^1.0.14",
-    "tsd": "^0.29.0"
+    "bun": "^1.1.21",
+    "bun-types": "^1.1.21",
+    "tsd": "^0.31.1",
+    "@biomejs/biome": "1.8.3"
   },
   "description": "Bun Nookit is a simple zero-dependency, fast, and lightweight toolkit for Bun",
   "license": "MIT",
@@ -16,13 +17,13 @@
     "release": "LOCAL_RUN=true bun ./release.ts",
     "tsc": "tsc --project tsconfig.json",
     "tsc:noEmit": "tsc --noEmit --project tsconfig-noEmit.json",
-    "validate": "bun run tsc:noEmite && bun run test",
-    "format": "prettier --write ."
+    "validate": "bun run tsc:noEmit && bun run test",
+    "format": "bunx @biomejs/biome format --write .",
+    "lint": "bunx @biomejs/biome lint .",
+    "check": "bunx @biomejs/biome check --apply ."
   },
   "bin": {
     "bnkit": "sh ./scripts/cli.ts"
   },
-  "dependencies": {
-    "prettier": "^3.2.4"
-  }
+  "dependencies": {}
 }
