@@ -29,43 +29,81 @@ export const serverRequestHandler = <
   optionsHandler?: RouteHandler<MiddlewareDataMap>
 }): Promise<Response> => {
   const url = new URL(req.url)
-  let matchedHandler: RouteHandler<MiddlewareDataMap> | null | undefined = null
-
-  const pathRoutes = routes[url.pathname]
-
-  matchedHandler = pathRoutes ? pathRoutes[req.method.toLowerCase() as keyof typeof pathRoutes] : null
-
-  // try regex match after direct string match
-  if (!matchedHandler) {
-    for (const pattern in routes) {
-      if (isValidRegex(pattern)) {
-        const regex = new RegExp(pattern, 'i')
-        if (regex.test(url.pathname)) {
-          matchedHandler = routes[pattern][req.method.toLowerCase() as keyof (typeof routes)[typeof pattern]]
-          break
-        }
-      }
-    }
-  }
-
-  if (!matchedHandler && !optionsHandler) return Promise.resolve(new Response('Not Found', { status: 404 }))
+  const decodedPathname = decodeURIComponent(url.pathname)
   const executeMiddlewares = middlewareRet?.executeMiddlewares
 
+  // Execute middleware first
+  const middlewarePromise = executeMiddlewares ? executeMiddlewares(req) : Promise.resolve({} as MiddlewareDataMap)
 
-  // Ensure that middleware execution is properly handled when it's not provided
-  const middlewareResponses = executeMiddlewares
-    ? executeMiddlewares(req)
-    : Promise.resolve({} as MiddlewareDataMap)
+  console.log({
+    req,
+    middlewarePromise,
+  })
 
-  return middlewareResponses
-    .then((resolvedMwResponses) => {
-      if (req.method === 'OPTIONS' && !matchedHandler && optionsHandler) {
-        return optionsHandler(req, resolvedMwResponses as MiddlewareDataMap)
+  return middlewarePromise
+    .then(async (middlewareResponses) => {
+      // Check if middleware has already handled the response
+      if (middlewareResponses && typeof middlewareResponses === 'object') {
+        for (const key in middlewareResponses) {
+          if (middlewareResponses[key] instanceof Response) {
+            return middlewareResponses[key] as Response
+          }
+        }
       }
 
-      return matchedHandler
-        ? matchedHandler(req, resolvedMwResponses as MiddlewareDataMap)
-        : new Response('Method Not Allowed', { status: 405 })
+      let matchedHandler: RouteHandler<MiddlewareDataMap> | null | undefined = null
+
+      const pathRoutes = routes[decodedPathname]
+
+      if (pathRoutes) {
+        matchedHandler = pathRoutes[req.method.toLowerCase() as keyof typeof pathRoutes]
+        if (!matchedHandler && req.method !== 'OPTIONS') {
+          // Method not allowed for this path
+          return new Response('Method Not Allowed', { status: 405 })
+        }
+      }
+
+      // try regex match after direct string match
+      if (!matchedHandler) {
+        for (const pattern in routes) {
+          if (isValidRegex(pattern)) {
+            const regex = new RegExp(pattern, 'i')
+            if (regex.test(decodedPathname)) {
+              matchedHandler = routes[pattern][req.method.toLowerCase() as keyof (typeof routes)[typeof pattern]]
+              break
+            }
+          }
+        }
+      }
+
+      if (req.method === 'OPTIONS') {
+        return optionsHandler
+          ? optionsHandler(req, middlewareResponses as MiddlewareDataMap)
+          : new Response(null, { status: 204 }) // Default OPTIONS response
+      }
+
+      if (!matchedHandler) {
+        console.error('No match found for request', {
+          url: req.url,
+          method: req.method,
+          pathRoutes,
+          routes,
+        })
+        return new Response('Not Found', { status: 404 })
+      }
+
+      const response = await matchedHandler(req, middlewareResponses as MiddlewareDataMap)
+
+      const corsHeaders = middlewareResponses.cors as Headers | undefined
+      if (corsHeaders) {
+        corsHeaders.forEach((value, key) => {
+          response.headers.set(key, value)
+        })
+      }
+
+
+
+      return response
     })
     .catch((err) => new Response(err.message, { status: 500 }))
 }

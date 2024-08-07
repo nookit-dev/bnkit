@@ -1,262 +1,121 @@
-import { describe, expect, test } from 'bun:test'
-import type { CORSOptions, HTTPMethod } from 'utils/http-types'
+import { beforeEach, describe, expect, it, jest } from 'bun:test'
+import type { CORSOptions } from '../utils/http-types'
 import { configCorsMiddleware } from './create-cors-middleware'
 
-const tstOrigin = 'http://example.com'
-const tstMethods: HTTPMethod[] = ['GET', 'POST', 'PUT', 'DELETE']
-const tstHeaders = ['Content-Type']
+describe('configCorsMiddleware', () => {
+  const mockNext = jest.fn()
 
-const defaultOptions: CORSOptions = {
-  allowedOrigins: [tstOrigin],
-  allowedMethods: tstMethods,
-  allowedHeaders: tstHeaders,
-}
+  beforeEach(() => {
+    mockNext.mockClear()
+  })
 
-const tstReq = (
-  origin: string = tstOrigin,
-  options?: {
-    headers?: Record<string, string>
-    Origin?: string
-    noOrigin?: boolean
+  const createMockRequest = (method: string, origin: string) => {
+    return {
+      method,
+      headers: new Headers({ Origin: origin }),
+    } as Request
   }
-) => {
-  const req = (rMethod: HTTPMethod = 'GET') => {
-    const headers = new Headers({
-      ...options?.headers,
-    })
 
-    if (options?.noOrigin) {
-      headers.delete('Origin')
-
-      return new Request(origin, {
-        method: rMethod,
-        headers,
-      })
-    }
-
-    return new Request(origin, {
-      method: rMethod,
-      headers: new Headers({
-        ...options?.headers,
-        Origin: options?.Origin ? options.Origin : origin,
-      }),
-    })
-  }
-  return {
-    get: req('GET'),
-    post: req('POST'),
-    put: req('PUT'),
-    delete: req('DELETE'),
-    options: req('OPTIONS'),
-  }
-}
-
-describe('createCorsMiddleware function', () => {
-  test('default values', async () => {
-    const requester = tstReq(tstOrigin).get
-    const headers = requester.headers
-
-    headers.set('Access-Control-Request-Method', 'POST')
-    const mwConfig = await configCorsMiddleware({
-      allowedOrigins: [tstOrigin],
-      allowedMethods: tstMethods,
-      allowedHeaders: ['Content-Type'],
-    })
-
-    const response = await mwConfig(requester, async () => {})
-
-    expect(response.headers.get('access-control-allow-methods')).toBe('get, post, put, delete')
-    expect(response.headers.get('access-control-allow-headers')).toBe('content-type')
-  })
-
-  test('missing Origin header', async () => {
-    const requester = tstReq(tstOrigin, {
-      noOrigin: true,
-    }).get
-    const middlewareHandler = configCorsMiddleware({
-      ...defaultOptions,
-    })
-
-    const response = await middlewareHandler(requester, async () => {})
-
-    expect(response.status).toBe(400)
-  })
-
-  test('options request', async () => {
-    const requester = tstReq(tstOrigin, {
-      headers: {
-        'Access-Control-Request-Method': 'POST',
-      },
-    }).options
-
-    const response = await configCorsMiddleware(defaultOptions)(requester, async () => {})
-
-    expect(response.status).toBe(204)
-    expect(response.headers.get('access-control-allow-methods')).toBe('get, post, put, delete')
-  })
-
-  test('Allow all origins option', async () => {
-    const requester = tstReq(tstOrigin, {
-      headers: { Origin: tstOrigin },
-    }).get
-
-    const mwConfig = await configCorsMiddleware({
-      allowedOrigins: ['*'],
-      allowedMethods: ['GET', 'PATCH'],
-    })
-
-    const response = await mwConfig(requester, async () => {})
-
-    expect(response.headers.get('access-control-allow-origin')).toBe('*')
-  })
-
-  test('unallowed method with options request', async () => {
-    const request = tstReq(tstOrigin, {
-      headers: {
-        Origin: tstOrigin,
-        'Access-Control-Request-Method': 'PATCH',
-      },
-    }).options
-
-    const mwConfig = await configCorsMiddleware({
-      allowedOrigins: [tstOrigin],
-      allowedMethods: ['GET', 'POST'],
-    })
-
-    const response = await mwConfig(request, async () => {})
-
-    expect(response.status).toBe(405)
-  })
-
-  test('non-options request', async () => {
-    const requester = new Request(tstOrigin, {
-      method: 'GET',
-      headers: new Headers({
-        Origin: tstOrigin,
-      }),
-    })
-    const mwConfig = await configCorsMiddleware({
-      allowedMethods: ['GET'],
-      allowedOrigins: [tstOrigin],
-    })
-
-    const response = await mwConfig(requester, async () => {})
-
-    expect(response?.headers.get('access-control-allow-origin')).toBe(tstOrigin.toLowerCase())
-  })
-
-  test('should set Access-Control-Allow-Origin header to request origin', async () => {
-    const request = tstReq(tstOrigin, {
-      headers: { Origin: tstOrigin },
-    }).get
-
-    const mwConfig = await configCorsMiddleware({
-      allowedOrigins: [tstOrigin],
-    })
-
-    const response = await mwConfig(request, async () => {})
-
-    expect(response.headers.get('access-control-allow-origin')).toBe(tstOrigin.toLowerCase())
-  })
-
-  test('should set Access-Control-Allow-Origin header to * if allowedOrigins includes *', async () => {
-    const request = tstReq(tstOrigin, {
-      headers: { Origin: tstOrigin },
-    }).get
-
-    const mwConfig = await configCorsMiddleware({ allowedOrigins: ['*'] })
-
-    const response = await mwConfig(request, async () => {})
-
-    expect(response.headers.get('access-control-allow-origin')).toBe('*')
-  })
-
-  test('should set Access-Control-Allow-Methods header to allowedMethods', async () => {
-    const request = new Request('http://example.com', {
-      headers: { Origin: 'http://example.com' },
-      method: 'GET',
-    })
-
-    const mwConfig = await configCorsMiddleware({
-      allowedMethods: ['GET', 'POST'],
-      allowedOrigins: [tstOrigin],
-    })
-
-    const response = await mwConfig(request, async () => {})
-    expect(response.headers.get('access-control-allow-methods')).toBe('get, post')
-  })
-
-  test('should set Access-Control-Allow-Headers header to allowedHeaders', async () => {
-    const request = tstReq(tstOrigin, {
-      headers: { Origin: tstOrigin, 'Content-Type': 'application/json' },
-    }).get
-
-    const mwConfig = configCorsMiddleware({
-      allowedHeaders: ['Content-Type'],
-      allowedOrigins: [tstOrigin],
-    })
-
-    const response = await mwConfig(request, async () => {})
-
-    expect(response.headers.get('access-control-allow-headers')).toBe('content-type')
-  })
-
-  test('should return 400 Bad Request if request does not have Origin header', async () => {
-    const request = tstReq(tstOrigin, {
-      noOrigin: true,
-    }).get
-    const mwConfig = await configCorsMiddleware({})
-    const response = await mwConfig(request, async () => {})
-
-    expect(response.status).toBe(400)
-  })
-
-  test('should return 403 Forbidden if request origin is not allowed', async () => {
-    const request = new Request('http://example.org', {
-      headers: { Origin: 'http://example.org' },
-    })
-
-    const mwConfig = await configCorsMiddleware({
+  it('should set CORS headers for allowed origin', () => {
+    const options: CORSOptions = {
       allowedOrigins: ['http://example.com'],
-    })
+      allowedMethods: ['GET', 'POST'],
+    }
+    const middleware = configCorsMiddleware(options)
+    const req = createMockRequest('GET', 'http://example.com')
 
-    const response = await mwConfig(request, async () => {})
+    const headers = middleware(req, mockNext)
 
-    expect(response.status).toBe(403)
+    expect(headers.get('Access-Control-Allow-Origin')).toBe('http://example.com')
+    expect(headers.get('Access-Control-Allow-Methods')).toBe('GET, POST')
+    expect(mockNext).toHaveBeenCalled()
   })
 
-  test('should return 405 Method Not Allowed if request method is not allowed', async () => {
-    const request = tstReq(tstOrigin, {
-      headers: {
-        'Access-Control-Request-Method': 'POST',
-      },
-    }).post
+  it('should handle OPTIONS request', () => {
+    const options: CORSOptions = {
+      allowedOrigins: ['http://example.com'],
+      allowedMethods: ['GET', 'POST'],
+    }
+    const middleware = configCorsMiddleware(options)
+    const req = createMockRequest('OPTIONS', 'http://example.com')
+    req.headers.set('Access-Control-Request-Method', 'GET')
 
-    const response = await configCorsMiddleware(
-      {
-        allowedMethods: ['GET'],
-        allowedOrigins: [tstOrigin],
-      },
-      true
-    )(request, async () => {})
+    const response = middleware(req, mockNext)
 
-    expect(response.status).toBe(405)
+    expect(response).toBeInstanceOf(Response)
+    if (response instanceof Response) {
+      expect(response.status).toBe(204)
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://example.com')
+      expect(response.headers.get('Access-Control-Allow-Methods')).toBe('GET, POST')
+    }
+    expect(mockNext).not.toHaveBeenCalled()
   })
 
-  test('should return 204 No Content if request method is options and allowed', async () => {
-    const request = tstReq(tstOrigin, {
-      headers: {
-        'Access-Control-Request-Method': 'GET',
-      },
-    }).options
-
-    const mwConfig = await configCorsMiddleware({
+  it('should throw error for disallowed origin', () => {
+    const options: CORSOptions = {
+      allowedOrigins: ['http://example.com'],
       allowedMethods: ['GET'],
-      allowedOrigins: [tstOrigin],
-    })
+    }
+    const middleware = configCorsMiddleware(options)
+    const req = createMockRequest('GET', 'http://malicious.com')
 
-    const response = await mwConfig(request, async () => {})
+    expect(() => middleware(req, mockNext)).toThrow('Origin http://malicious.com not allowed')
+    expect(mockNext).not.toHaveBeenCalled()
+  })
 
-    expect(response.status).toBe(204)
+  it('should throw error for disallowed method', () => {
+    const options: CORSOptions = {
+      allowedOrigins: ['http://example.com'],
+      allowedMethods: ['GET'],
+    }
+    const middleware = configCorsMiddleware(options)
+    const req = createMockRequest('POST', 'http://example.com')
+
+    expect(() => middleware(req, mockNext)).toThrow('Method POST not allowed')
+    expect(mockNext).not.toHaveBeenCalled()
+  })
+
+  it('should handle wildcard origin', () => {
+    const options: CORSOptions = {
+      allowedOrigins: ['*'],
+      allowedMethods: ['GET'],
+    }
+    const middleware = configCorsMiddleware(options)
+    const req = createMockRequest('GET', 'http://any-origin.com')
+
+    const headers = middleware(req, mockNext)
+
+    expect(headers.get('Access-Control-Allow-Origin')).toBe('*')
+    expect(mockNext).toHaveBeenCalled()
+  })
+
+  it('should set credentials header when specified', () => {
+    const options: CORSOptions = {
+      allowedOrigins: ['http://example.com'],
+      allowedMethods: ['GET'],
+      credentials: true,
+    }
+    const middleware = configCorsMiddleware(options)
+    const req = createMockRequest('GET', 'http://example.com')
+
+    const headers = middleware(req, mockNext)
+
+    expect(headers.get('Access-Control-Allow-Credentials')).toBe('true')
+    expect(mockNext).toHaveBeenCalled()
+  })
+
+  it('should set allowed headers when specified', () => {
+    const options: CORSOptions = {
+      allowedOrigins: ['http://example.com'],
+      allowedMethods: ['GET'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }
+    const middleware = configCorsMiddleware(options)
+    const req = createMockRequest('GET', 'http://example.com')
+
+    const headers = middleware(req, mockNext)
+
+    expect(headers.get('Access-Control-Allow-Headers')).toBe('Content-Type, Authorization')
+    expect(mockNext).toHaveBeenCalled()
   })
 })

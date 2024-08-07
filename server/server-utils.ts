@@ -83,3 +83,17 @@ export const redirectRes = (url: string, options: RedirectOptions = {}): Respons
     headers,
   })
 }
+
+export function combineResponseHeaders(...responses: Response[] | [Response, Response]): Headers {
+  const combinedHeaders = new Headers()
+
+  const responsesToCombine: Response[] = Array.isArray(responses[0]) ? responses[0] : responses
+
+  for (const response of responsesToCombine) {
+    response.headers.forEach((value, key) => {
+      combinedHeaders.set(key, value)
+    })
+  }
+
+  return combinedHeaders
+}

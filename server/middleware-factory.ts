@@ -26,7 +26,9 @@ export const middlewareFactory = <T extends MiddlewareConfigMap>(middlewareOptio
       }
 
       const result = await mw(req, next)
-      results[id as keyof T] = result
+      if (result !== undefined) {
+        results[id as keyof T] = result
+      }
     }
 
     await executeMiddleware(0)
