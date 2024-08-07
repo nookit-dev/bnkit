@@ -2,19 +2,21 @@ import type { CORSOptions } from '../utils/http-types'
 import type { Middleware, NextFunction } from './middleware-types'
 
 const setAllowOrigin = (headers: Headers, originToSet: string) =>
-  headers.set('Access-Control-Allow-Origin', originToSet || '')
+  headers.set('access-control-allow-origin', originToSet?.toLowerCase() || '')
+
 const setAllowMethods = (headers: Headers, methods: string[]) =>
-  headers.set('Access-Control-Allow-Methods', methods.join(', '))
+  headers.set('access-control-allow-methods', methods.map((m) => m.toLowerCase()).join(', '))
+
 const addAllowHeader = (headers: Headers, options?: CORSOptions) => {
   if (options?.allowedHeaders?.join) {
-    headers.set('Access-Control-Allow-Headers', options.allowedHeaders.join(', '))
+    headers.set('access-control-allow-headers', options.allowedHeaders.map((h) => h.toLowerCase()).join(', '))
   }
 }
 
 const setAllowCredentials = (headers: Headers, options?: CORSOptions) =>
-  options?.credentials && headers.set('Access-Control-Allow-Credentials', 'true')
+  options?.credentials && headers.set('access-control-allow-credentials', 'true')
 
-export const configCorsMW = (options?: CORSOptions, debug = false): Middleware<Response> => {
+export const configCorsMiddleware = (options?: CORSOptions, debug = false): Middleware<Response> => {
   const allowedMethods: string[] = options?.allowedMethods || []
 
   const log = (input: any) => {
@@ -40,9 +42,9 @@ export const configCorsMW = (options?: CORSOptions, debug = false): Middleware<R
   }
 
   return async (request: Request, next: NextFunction) => {
-    const reqMethod = request.method
-    const reqOrigin = request.headers.get('Origin')
-    const allowedOrigins = options?.allowedOrigins || []
+    const reqMethod = request.method.toUpperCase()
+    const reqOrigin = request.headers.get('Origin')?.toLowerCase()
+    const allowedOrigins = options?.allowedOrigins?.map((origin) => origin.toLowerCase()) || []
     const originAllowed = allowedOrigins.includes(reqOrigin || '')
 
     if (debug && !originAllowed) {
@@ -91,7 +93,7 @@ export const configCorsMW = (options?: CORSOptions, debug = false): Middleware<R
       return sendErrorResponse(403, 'Forbidden', `Origin ${reqOrigin} not allowed`, response.headers)
     }
 
-    if (!allowedMethods.includes(request.method)) {
+    if (!allowedMethods.includes(reqMethod)) {
       return sendErrorResponse(405, 'Method Not Allowed', `Method ${reqMethod} not allowed`, response.headers)
     }
 

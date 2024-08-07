@@ -1,6 +1,7 @@
 import { describe, expect, jest, test } from 'bun:test'
-import { isTestFile } from '../test-utils'
 import { getCurrentVersion, npmPublish, updateVersion } from './npm-release'
+import { isTestFile } from './test-utils'
+
 describe('getCurrentVersion', () => {
   test('returns the version from the package.json', async () => {
     const packagePath = isTestFile(import.meta) ? import.meta.dir + '/mock-package.json' : './package.json'

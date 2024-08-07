@@ -51,12 +51,10 @@ export const serverRequestHandler = <
   if (!matchedHandler && !optionsHandler) return Promise.resolve(new Response('Not Found', { status: 404 }))
   const executeMiddlewares = middlewareRet?.executeMiddlewares
 
-  // Create a new Response object to pass to middleware
-  const res = new Response()
 
   // Ensure that middleware execution is properly handled when it's not provided
   const middlewareResponses = executeMiddlewares
-    ? executeMiddlewares(req, res)
+    ? executeMiddlewares(req)
     : Promise.resolve({} as MiddlewareDataMap)
 
   return middlewareResponses
